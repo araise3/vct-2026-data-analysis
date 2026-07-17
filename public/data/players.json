@@ -6,6 +6,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 27,
+      "roundsPlayed": 583,
       "avgRating": 1.1915,
       "avgAcs": 230.0741,
       "totalKills": 484,
@@ -31,6 +32,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 12,
+      "roundsPlayed": 261,
       "avgRating": 0.78,
       "avgAcs": 149.6667,
       "totalKills": 132,
@@ -56,6 +58,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 542,
       "avgRating": 0.9212,
       "avgAcs": 192.4,
       "totalKills": 365,
@@ -81,6 +84,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 27,
+      "roundsPlayed": 583,
       "avgRating": 1.1344,
       "avgAcs": 218.1852,
       "totalKills": 452,
@@ -106,6 +110,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 52,
+      "roundsPlayed": 1116,
       "avgRating": 0.9594,
       "avgAcs": 184.6346,
       "totalKills": 712,
@@ -131,6 +136,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 24,
+      "roundsPlayed": 503,
       "avgRating": 0.8583,
       "avgAcs": 179.2917,
       "totalKills": 311,
@@ -156,6 +162,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 24,
+      "roundsPlayed": 503,
       "avgRating": 0.9938,
       "avgAcs": 187.4167,
       "totalKills": 332,
@@ -181,6 +188,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 24,
+      "roundsPlayed": 503,
       "avgRating": 0.99,
       "avgAcs": 216.9583,
       "totalKills": 381,
@@ -206,6 +214,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 24,
+      "roundsPlayed": 503,
       "avgRating": 1.0483,
       "avgAcs": 196.25,
       "totalKills": 353,
@@ -231,6 +240,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 11,
+      "roundsPlayed": 230,
       "avgRating": 0.8755,
       "avgAcs": 156.9091,
       "totalKills": 126,
@@ -256,6 +266,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 48,
+      "roundsPlayed": 1042,
       "avgRating": 0.9554,
       "avgAcs": 208.3333,
       "totalKills": 797,
@@ -281,6 +292,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 48,
+      "roundsPlayed": 1042,
       "avgRating": 1.0104,
       "avgAcs": 186.5208,
       "totalKills": 684,
@@ -306,6 +318,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 187,
       "avgRating": 0.9363,
       "avgAcs": 173.625,
       "totalKills": 117,
@@ -331,6 +344,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 48,
+      "roundsPlayed": 1042,
       "avgRating": 0.9067,
       "avgAcs": 171.8125,
       "totalKills": 624,
@@ -356,6 +370,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 187,
       "avgRating": 0.6787,
       "avgAcs": 158.75,
       "totalKills": 102,
@@ -381,6 +396,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 42,
+      "roundsPlayed": 907,
       "avgRating": 1.0712,
       "avgAcs": 196.9762,
       "totalKills": 648,
@@ -406,6 +422,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 42,
+      "roundsPlayed": 907,
       "avgRating": 0.8476,
       "avgAcs": 184.0714,
       "totalKills": 593,
@@ -431,6 +448,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 42,
+      "roundsPlayed": 907,
       "avgRating": 1.2348,
       "avgAcs": 245.9048,
       "totalKills": 787,
@@ -456,6 +474,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 42,
+      "roundsPlayed": 907,
       "avgRating": 0.9471,
       "avgAcs": 182.1905,
       "totalKills": 562,
@@ -481,6 +500,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 42,
+      "roundsPlayed": 907,
       "avgRating": 0.9502,
       "avgAcs": 172.0952,
       "totalKills": 538,
@@ -506,6 +526,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 430,
       "avgRating": 0.963,
       "avgAcs": 203.2,
       "totalKills": 295,
@@ -531,6 +552,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 430,
       "avgRating": 0.985,
       "avgAcs": 202.4,
       "totalKills": 318,
@@ -556,6 +578,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 430,
       "avgRating": 0.8505,
       "avgAcs": 152.35,
       "totalKills": 228,
@@ -581,6 +604,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 430,
       "avgRating": 0.8175,
       "avgAcs": 174.2,
       "totalKills": 269,
@@ -606,6 +630,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 430,
       "avgRating": 0.923,
       "avgAcs": 177.05,
       "totalKills": 277,
@@ -631,6 +656,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 34,
+      "roundsPlayed": 730,
       "avgRating": 0.8197,
       "avgAcs": 162.6765,
       "totalKills": 413,
@@ -656,6 +682,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 34,
+      "roundsPlayed": 730,
       "avgRating": 0.9929,
       "avgAcs": 176.9118,
       "totalKills": 460,
@@ -681,6 +708,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 34,
+      "roundsPlayed": 730,
       "avgRating": 1.0088,
       "avgAcs": 211.5294,
       "totalKills": 542,
@@ -706,6 +734,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 34,
+      "roundsPlayed": 730,
       "avgRating": 1.0103,
       "avgAcs": 213.6176,
       "totalKills": 547,
@@ -731,6 +760,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 34,
+      "roundsPlayed": 730,
       "avgRating": 0.9132,
       "avgAcs": 185.4118,
       "totalKills": 481,
@@ -756,6 +786,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 34,
+      "roundsPlayed": 712,
       "avgRating": 1.0318,
       "avgAcs": 215.6765,
       "totalKills": 546,
@@ -781,6 +812,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 34,
+      "roundsPlayed": 712,
       "avgRating": 1.0247,
       "avgAcs": 180.8235,
       "totalKills": 458,
@@ -806,6 +838,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 34,
+      "roundsPlayed": 712,
       "avgRating": 0.9638,
       "avgAcs": 191.7647,
       "totalKills": 486,
@@ -831,6 +864,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 9,
+      "roundsPlayed": 175,
       "avgRating": 0.7111,
       "avgAcs": 162.2222,
       "totalKills": 103,
@@ -856,6 +890,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 9,
+      "roundsPlayed": 175,
       "avgRating": 0.7789,
       "avgAcs": 181.1111,
       "totalKills": 112,
@@ -881,6 +916,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 52,
+      "roundsPlayed": 1074,
       "avgRating": 1.1223,
       "avgAcs": 234.5769,
       "totalKills": 873,
@@ -906,6 +942,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 52,
+      "roundsPlayed": 1074,
       "avgRating": 1.0785,
       "avgAcs": 208.1538,
       "totalKills": 787,
@@ -931,6 +968,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 52,
+      "roundsPlayed": 1074,
       "avgRating": 0.9888,
       "avgAcs": 192.1154,
       "totalKills": 731,
@@ -956,6 +994,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 52,
+      "roundsPlayed": 1074,
       "avgRating": 1.0104,
       "avgAcs": 180.2885,
       "totalKills": 691,
@@ -981,6 +1020,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 14,
+      "roundsPlayed": 280,
       "avgRating": 0.8536,
       "avgAcs": 149.1429,
       "totalKills": 142,
@@ -1006,6 +1046,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 51,
+      "roundsPlayed": 1065,
       "avgRating": 1.0486,
       "avgAcs": 202.902,
       "totalKills": 765,
@@ -1031,6 +1072,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 51,
+      "roundsPlayed": 1065,
       "avgRating": 0.999,
       "avgAcs": 166.5686,
       "totalKills": 621,
@@ -1056,6 +1098,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 51,
+      "roundsPlayed": 1065,
       "avgRating": 1.0,
       "avgAcs": 208.1373,
       "totalKills": 776,
@@ -1081,6 +1124,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 51,
+      "roundsPlayed": 1065,
       "avgRating": 1.0259,
       "avgAcs": 192.2941,
       "totalKills": 746,
@@ -1106,6 +1150,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 24,
+      "roundsPlayed": 503,
       "avgRating": 0.9508,
       "avgAcs": 207.2083,
       "totalKills": 366,
@@ -1131,6 +1176,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 540,
       "avgRating": 0.932,
       "avgAcs": 172.2,
       "totalKills": 329,
@@ -1156,6 +1202,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 27,
+      "roundsPlayed": 590,
       "avgRating": 0.9881,
       "avgAcs": 185.8519,
       "totalKills": 380,
@@ -1181,6 +1228,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 27,
+      "roundsPlayed": 590,
       "avgRating": 0.9515,
       "avgAcs": 195.3704,
       "totalKills": 420,
@@ -1206,6 +1254,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 27,
+      "roundsPlayed": 590,
       "avgRating": 0.9319,
       "avgAcs": 188.7778,
       "totalKills": 388,
@@ -1231,6 +1280,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 27,
+      "roundsPlayed": 590,
       "avgRating": 0.987,
       "avgAcs": 202.4444,
       "totalKills": 433,
@@ -1256,6 +1306,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 888,
       "avgRating": 1.0379,
       "avgAcs": 183.6923,
       "totalKills": 587,
@@ -1281,6 +1332,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 888,
       "avgRating": 1.0049,
       "avgAcs": 216.1026,
       "totalKills": 688,
@@ -1306,6 +1358,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 888,
       "avgRating": 1.1228,
       "avgAcs": 233.0256,
       "totalKills": 745,
@@ -1331,6 +1384,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 888,
       "avgRating": 0.8728,
       "avgAcs": 148.7949,
       "totalKills": 451,
@@ -1356,6 +1410,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 27,
+      "roundsPlayed": 635,
       "avgRating": 1.117,
       "avgAcs": 220.5556,
       "totalKills": 474,
@@ -1381,6 +1436,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 45,
+      "roundsPlayed": 969,
       "avgRating": 1.0082,
       "avgAcs": 204.4889,
       "totalKills": 698,
@@ -1406,6 +1462,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 47,
+      "roundsPlayed": 1003,
       "avgRating": 0.9811,
       "avgAcs": 209.1489,
       "totalKills": 737,
@@ -1431,6 +1488,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 47,
+      "roundsPlayed": 1003,
       "avgRating": 0.9577,
       "avgAcs": 171.4255,
       "totalKills": 642,
@@ -1456,6 +1514,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 5,
+      "roundsPlayed": 106,
       "avgRating": 0.91,
       "avgAcs": 166.2,
       "totalKills": 59,
@@ -1481,6 +1540,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 45,
+      "roundsPlayed": 969,
       "avgRating": 1.0231,
       "avgAcs": 219.6667,
       "totalKills": 749,
@@ -1506,6 +1566,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 42,
+      "roundsPlayed": 897,
       "avgRating": 0.9883,
       "avgAcs": 181.381,
       "totalKills": 576,
@@ -1531,6 +1592,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 840,
       "avgRating": 1.0587,
       "avgAcs": 229.0513,
       "totalKills": 672,
@@ -1556,6 +1618,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 840,
       "avgRating": 1.0833,
       "avgAcs": 197.6154,
       "totalKills": 576,
@@ -1581,6 +1644,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 840,
       "avgRating": 0.9826,
       "avgAcs": 216.2564,
       "totalKills": 625,
@@ -1606,6 +1670,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 840,
       "avgRating": 0.9936,
       "avgAcs": 168.0769,
       "totalKills": 504,
@@ -1631,6 +1696,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 840,
       "avgRating": 1.0123,
       "avgAcs": 192.0769,
       "totalKills": 578,
@@ -1656,6 +1722,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 22,
+      "roundsPlayed": 467,
       "avgRating": 0.9841,
       "avgAcs": 208.2273,
       "totalKills": 336,
@@ -1681,6 +1748,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 22,
+      "roundsPlayed": 467,
       "avgRating": 0.9691,
       "avgAcs": 187.4545,
       "totalKills": 316,
@@ -1706,6 +1774,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 19,
+      "roundsPlayed": 402,
       "avgRating": 0.8832,
       "avgAcs": 168.6316,
       "totalKills": 238,
@@ -1731,6 +1800,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 19,
+      "roundsPlayed": 402,
       "avgRating": 0.9158,
       "avgAcs": 179.1053,
       "totalKills": 246,
@@ -1756,6 +1826,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 7,
+      "roundsPlayed": 133,
       "avgRating": 0.7757,
       "avgAcs": 171.0,
       "totalKills": 80,
@@ -1781,6 +1852,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 517,
       "avgRating": 0.9252,
       "avgAcs": 192.32,
       "totalKills": 349,
@@ -1806,6 +1878,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 517,
       "avgRating": 0.9344,
       "avgAcs": 212.68,
       "totalKills": 380,
@@ -1831,6 +1904,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 517,
       "avgRating": 0.8916,
       "avgAcs": 181.16,
       "totalKills": 317,
@@ -1856,6 +1930,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 517,
       "avgRating": 0.8828,
       "avgAcs": 181.76,
       "totalKills": 339,
@@ -1881,6 +1956,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 517,
       "avgRating": 0.86,
       "avgAcs": 165.16,
       "totalKills": 306,
@@ -1906,6 +1982,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 38,
+      "roundsPlayed": 779,
       "avgRating": 1.25,
       "avgAcs": 264.6316,
       "totalKills": 736,
@@ -1931,6 +2008,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 38,
+      "roundsPlayed": 779,
       "avgRating": 1.0229,
       "avgAcs": 194.2632,
       "totalKills": 538,
@@ -1956,6 +2034,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 12,
+      "roundsPlayed": 237,
       "avgRating": 0.7908,
       "avgAcs": 169.0833,
       "totalKills": 136,
@@ -1981,6 +2060,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 38,
+      "roundsPlayed": 779,
       "avgRating": 0.9153,
       "avgAcs": 189.5789,
       "totalKills": 523,
@@ -2006,6 +2086,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 38,
+      "roundsPlayed": 779,
       "avgRating": 0.9397,
       "avgAcs": 177.8947,
       "totalKills": 498,
@@ -2031,6 +2112,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 23,
+      "roundsPlayed": 527,
       "avgRating": 0.9078,
       "avgAcs": 210.5217,
       "totalKills": 386,
@@ -2056,6 +2138,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 462,
       "avgRating": 0.868,
       "avgAcs": 179.35,
       "totalKills": 305,
@@ -2081,6 +2164,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 23,
+      "roundsPlayed": 527,
       "avgRating": 1.0248,
       "avgAcs": 194.7391,
       "totalKills": 365,
@@ -2106,6 +2190,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 23,
+      "roundsPlayed": 527,
       "avgRating": 1.017,
       "avgAcs": 204.2174,
       "totalKills": 372,
@@ -2131,6 +2216,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 23,
+      "roundsPlayed": 527,
       "avgRating": 0.7187,
       "avgAcs": 144.087,
       "totalKills": 258,
@@ -2156,6 +2242,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 46,
+      "roundsPlayed": 989,
       "avgRating": 0.9326,
       "avgAcs": 174.1087,
       "totalKills": 609,
@@ -2181,6 +2268,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 46,
+      "roundsPlayed": 989,
       "avgRating": 0.9937,
       "avgAcs": 210.8043,
       "totalKills": 737,
@@ -2206,6 +2294,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 46,
+      "roundsPlayed": 989,
       "avgRating": 0.9937,
       "avgAcs": 184.9348,
       "totalKills": 629,
@@ -2231,6 +2320,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 46,
+      "roundsPlayed": 989,
       "avgRating": 1.0439,
       "avgAcs": 207.9565,
       "totalKills": 739,
@@ -2256,6 +2346,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 46,
+      "roundsPlayed": 989,
       "avgRating": 1.0509,
       "avgAcs": 220.1304,
       "totalKills": 764,
@@ -2281,6 +2372,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 32,
+      "roundsPlayed": 680,
       "avgRating": 0.9141,
       "avgAcs": 204.9062,
       "totalKills": 481,
@@ -2306,6 +2398,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 32,
+      "roundsPlayed": 680,
       "avgRating": 0.8956,
       "avgAcs": 162.7188,
       "totalKills": 377,
@@ -2331,6 +2424,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 32,
+      "roundsPlayed": 680,
       "avgRating": 0.9009,
       "avgAcs": 168.1875,
       "totalKills": 410,
@@ -2356,6 +2450,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 32,
+      "roundsPlayed": 680,
       "avgRating": 0.9406,
       "avgAcs": 191.125,
       "totalKills": 451,
@@ -2381,6 +2476,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 32,
+      "roundsPlayed": 680,
       "avgRating": 1.1203,
       "avgAcs": 245.0938,
       "totalKills": 593,
@@ -2406,6 +2502,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 24,
+      "roundsPlayed": 560,
       "avgRating": 0.9458,
       "avgAcs": 178.25,
       "totalKills": 345,
@@ -2431,6 +2528,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 26,
+      "roundsPlayed": 598,
       "avgRating": 1.0473,
       "avgAcs": 228.5,
       "totalKills": 479,
@@ -2456,6 +2554,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 26,
+      "roundsPlayed": 598,
       "avgRating": 1.1038,
       "avgAcs": 211.0,
       "totalKills": 458,
@@ -2481,6 +2580,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 18,
+      "roundsPlayed": 405,
       "avgRating": 0.8222,
       "avgAcs": 193.6111,
       "totalKills": 283,
@@ -2506,6 +2606,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 24,
+      "roundsPlayed": 548,
       "avgRating": 0.9179,
       "avgAcs": 179.5833,
       "totalKills": 327,
@@ -2531,6 +2632,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 881,
       "avgRating": 1.049,
       "avgAcs": 233.0976,
       "totalKills": 720,
@@ -2556,6 +2658,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 881,
       "avgRating": 0.9983,
       "avgAcs": 178.6098,
       "totalKills": 532,
@@ -2581,6 +2684,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 881,
       "avgRating": 1.0051,
       "avgAcs": 175.7561,
       "totalKills": 545,
@@ -2606,6 +2710,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 881,
       "avgRating": 0.9793,
       "avgAcs": 205.2683,
       "totalKills": 634,
@@ -2631,6 +2736,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 881,
       "avgRating": 1.1663,
       "avgAcs": 221.4878,
       "totalKills": 721,
@@ -2656,6 +2762,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 36,
+      "roundsPlayed": 774,
       "avgRating": 1.0908,
       "avgAcs": 203.8889,
       "totalKills": 556,
@@ -2681,6 +2788,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 36,
+      "roundsPlayed": 774,
       "avgRating": 0.9464,
       "avgAcs": 191.0278,
       "totalKills": 527,
@@ -2706,6 +2814,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 36,
+      "roundsPlayed": 774,
       "avgRating": 0.97,
       "avgAcs": 176.1667,
       "totalKills": 477,
@@ -2731,6 +2840,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 18,
+      "roundsPlayed": 381,
       "avgRating": 0.8306,
       "avgAcs": 169.5556,
       "totalKills": 225,
@@ -2756,6 +2866,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 36,
+      "roundsPlayed": 774,
       "avgRating": 1.0558,
       "avgAcs": 227.0833,
       "totalKills": 620,
@@ -2781,6 +2892,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 83,
+      "roundsPlayed": 1740,
       "avgRating": 1.1065,
       "avgAcs": 222.8675,
       "totalKills": 1360,
@@ -2806,6 +2918,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 83,
+      "roundsPlayed": 1740,
       "avgRating": 1.0943,
       "avgAcs": 198.9639,
       "totalKills": 1217,
@@ -2831,6 +2944,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 83,
+      "roundsPlayed": 1740,
       "avgRating": 1.0106,
       "avgAcs": 210.6747,
       "totalKills": 1283,
@@ -2856,6 +2970,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 83,
+      "roundsPlayed": 1740,
       "avgRating": 1.0982,
       "avgAcs": 211.241,
       "totalKills": 1333,
@@ -2881,6 +2996,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 83,
+      "roundsPlayed": 1740,
       "avgRating": 1.0325,
       "avgAcs": 197.6145,
       "totalKills": 1234,
@@ -2906,6 +3022,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 37,
+      "roundsPlayed": 817,
       "avgRating": 1.0841,
       "avgAcs": 204.4595,
       "totalKills": 588,
@@ -2931,6 +3048,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 37,
+      "roundsPlayed": 817,
       "avgRating": 0.9419,
       "avgAcs": 174.4054,
       "totalKills": 494,
@@ -2956,6 +3074,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 37,
+      "roundsPlayed": 817,
       "avgRating": 1.16,
       "avgAcs": 226.2162,
       "totalKills": 671,
@@ -2981,6 +3100,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 37,
+      "roundsPlayed": 817,
       "avgRating": 0.9114,
       "avgAcs": 169.7027,
       "totalKills": 481,
@@ -3006,6 +3126,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 37,
+      "roundsPlayed": 817,
       "avgRating": 0.8846,
       "avgAcs": 196.5405,
       "totalKills": 544,
@@ -3031,6 +3152,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 22,
+      "roundsPlayed": 457,
       "avgRating": 0.9464,
       "avgAcs": 198.6818,
       "totalKills": 316,
@@ -3056,6 +3178,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 22,
+      "roundsPlayed": 457,
       "avgRating": 0.8918,
       "avgAcs": 168.0455,
       "totalKills": 270,
@@ -3081,6 +3204,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 22,
+      "roundsPlayed": 457,
       "avgRating": 0.7959,
       "avgAcs": 178.8182,
       "totalKills": 284,
@@ -3106,6 +3230,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 7,
+      "roundsPlayed": 146,
       "avgRating": 0.8514,
       "avgAcs": 157.2857,
       "totalKills": 78,
@@ -3131,6 +3256,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 22,
+      "roundsPlayed": 457,
       "avgRating": 1.0659,
       "avgAcs": 218.6818,
       "totalKills": 359,
@@ -3156,6 +3282,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 23,
+      "roundsPlayed": 483,
       "avgRating": 1.0322,
       "avgAcs": 231.6522,
       "totalKills": 406,
@@ -3181,6 +3308,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 23,
+      "roundsPlayed": 503,
       "avgRating": 0.9243,
       "avgAcs": 190.3478,
       "totalKills": 344,
@@ -3206,6 +3334,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 26,
+      "roundsPlayed": 562,
       "avgRating": 1.0212,
       "avgAcs": 186.4615,
       "totalKills": 373,
@@ -3231,6 +3360,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 28,
+      "roundsPlayed": 603,
       "avgRating": 0.9661,
       "avgAcs": 192.5,
       "totalKills": 397,
@@ -3256,6 +3386,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 28,
+      "roundsPlayed": 603,
       "avgRating": 0.8125,
       "avgAcs": 157.2857,
       "totalKills": 316,
@@ -3281,6 +3412,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 535,
       "avgRating": 1.0596,
       "avgAcs": 197.36,
       "totalKills": 369,
@@ -3306,6 +3438,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 11,
+      "roundsPlayed": 256,
       "avgRating": 1.0782,
       "avgAcs": 200.0,
       "totalKills": 183,
@@ -3331,6 +3464,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 535,
       "avgRating": 1.0016,
       "avgAcs": 219.2,
       "totalKills": 408,
@@ -3356,6 +3490,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 535,
       "avgRating": 0.7896,
       "avgAcs": 177.76,
       "totalKills": 327,
@@ -3381,6 +3516,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 535,
       "avgRating": 0.858,
       "avgAcs": 179.44,
       "totalKills": 328,
@@ -3406,6 +3542,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 23,
+      "roundsPlayed": 515,
       "avgRating": 1.1148,
       "avgAcs": 232.5217,
       "totalKills": 445,
@@ -3431,6 +3568,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 23,
+      "roundsPlayed": 515,
       "avgRating": 0.8961,
       "avgAcs": 184.3913,
       "totalKills": 323,
@@ -3456,6 +3594,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 448,
       "avgRating": 0.863,
       "avgAcs": 174.8,
       "totalKills": 279,
@@ -3481,6 +3620,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 448,
       "avgRating": 0.8535,
       "avgAcs": 159.15,
       "totalKills": 231,
@@ -3506,6 +3646,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 23,
+      "roundsPlayed": 515,
       "avgRating": 0.9574,
       "avgAcs": 180.8696,
       "totalKills": 325,
@@ -3531,6 +3672,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 164,
       "avgRating": 0.8675,
       "avgAcs": 163.75,
       "totalKills": 93,
@@ -3556,6 +3698,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 164,
       "avgRating": 0.925,
       "avgAcs": 184.875,
       "totalKills": 108,
@@ -3581,6 +3724,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 164,
       "avgRating": 0.9425,
       "avgAcs": 157.5,
       "totalKills": 92,
@@ -3606,6 +3750,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 164,
       "avgRating": 0.8475,
       "avgAcs": 205.75,
       "totalKills": 115,
@@ -3631,6 +3776,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 164,
       "avgRating": 0.7087,
       "avgAcs": 148.25,
       "totalKills": 84,
@@ -3656,6 +3802,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 37,
+      "roundsPlayed": 747,
       "avgRating": 0.9549,
       "avgAcs": 202.5135,
       "totalKills": 535,
@@ -3681,6 +3828,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 37,
+      "roundsPlayed": 747,
       "avgRating": 1.0278,
       "avgAcs": 198.1351,
       "totalKills": 534,
@@ -3706,6 +3854,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 37,
+      "roundsPlayed": 747,
       "avgRating": 0.9086,
       "avgAcs": 169.0541,
       "totalKills": 435,
@@ -3731,6 +3880,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 37,
+      "roundsPlayed": 747,
       "avgRating": 1.0273,
       "avgAcs": 189.1351,
       "totalKills": 514,
@@ -3756,6 +3906,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 37,
+      "roundsPlayed": 747,
       "avgRating": 0.88,
       "avgAcs": 201.1622,
       "totalKills": 527,
@@ -3781,6 +3932,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 880,
       "avgRating": 1.092,
       "avgAcs": 209.9024,
       "totalKills": 683,
@@ -3806,6 +3958,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 880,
       "avgRating": 1.0976,
       "avgAcs": 188.6341,
       "totalKills": 603,
@@ -3831,6 +3984,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 880,
       "avgRating": 0.9668,
       "avgAcs": 180.0,
       "totalKills": 544,
@@ -3856,6 +4010,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 880,
       "avgRating": 1.0093,
       "avgAcs": 190.0976,
       "totalKills": 568,
@@ -3881,6 +4036,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 880,
       "avgRating": 0.9685,
       "avgAcs": 221.878,
       "totalKills": 668,
@@ -3906,6 +4062,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 5,
+      "roundsPlayed": 104,
       "avgRating": 1.004,
       "avgAcs": 172.6,
       "totalKills": 64,
@@ -3931,6 +4088,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 60,
+      "roundsPlayed": 1225,
       "avgRating": 1.045,
       "avgAcs": 219.75,
       "totalKills": 943,
@@ -3956,6 +4114,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 60,
+      "roundsPlayed": 1225,
       "avgRating": 1.0137,
       "avgAcs": 174.8833,
       "totalKills": 769,
@@ -3981,6 +4140,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 60,
+      "roundsPlayed": 1225,
       "avgRating": 1.0642,
       "avgAcs": 180.1667,
       "totalKills": 769,
@@ -4006,6 +4166,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 60,
+      "roundsPlayed": 1225,
       "avgRating": 0.9898,
       "avgAcs": 221.7333,
       "totalKills": 951,
@@ -4031,6 +4192,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 65,
+      "roundsPlayed": 1381,
       "avgRating": 1.0969,
       "avgAcs": 199.6462,
       "totalKills": 929,
@@ -4056,6 +4218,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 65,
+      "roundsPlayed": 1381,
       "avgRating": 1.1198,
       "avgAcs": 215.4462,
       "totalKills": 1073,
@@ -4081,6 +4244,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 65,
+      "roundsPlayed": 1381,
       "avgRating": 0.9903,
       "avgAcs": 208.1538,
       "totalKills": 1017,
@@ -4106,6 +4270,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 65,
+      "roundsPlayed": 1381,
       "avgRating": 0.9458,
       "avgAcs": 178.0,
       "totalKills": 827,
@@ -4131,6 +4296,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 65,
+      "roundsPlayed": 1381,
       "avgRating": 1.0243,
       "avgAcs": 186.1385,
       "totalKills": 922,
@@ -4156,6 +4322,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 33,
+      "roundsPlayed": 687,
       "avgRating": 1.0315,
       "avgAcs": 203.5152,
       "totalKills": 509,
@@ -4181,6 +4348,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 33,
+      "roundsPlayed": 687,
       "avgRating": 0.9585,
       "avgAcs": 192.2727,
       "totalKills": 456,
@@ -4206,6 +4374,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 33,
+      "roundsPlayed": 687,
       "avgRating": 1.0521,
       "avgAcs": 193.4545,
       "totalKills": 462,
@@ -4231,6 +4400,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 33,
+      "roundsPlayed": 687,
       "avgRating": 0.83,
       "avgAcs": 165.9091,
       "totalKills": 407,
@@ -4256,6 +4426,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 33,
+      "roundsPlayed": 687,
       "avgRating": 1.0273,
       "avgAcs": 214.7273,
       "totalKills": 508,
@@ -4281,6 +4452,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 464,
       "avgRating": 1.0865,
       "avgAcs": 186.9,
       "totalKills": 311,
@@ -4306,6 +4478,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 464,
       "avgRating": 1.014,
       "avgAcs": 195.85,
       "totalKills": 320,
@@ -4331,6 +4504,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 464,
       "avgRating": 1.007,
       "avgAcs": 206.6,
       "totalKills": 342,
@@ -4356,6 +4530,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 190,
       "avgRating": 0.905,
       "avgAcs": 176.75,
       "totalKills": 114,
@@ -4381,6 +4556,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 21,
+      "roundsPlayed": 463,
       "avgRating": 0.8586,
       "avgAcs": 184.5714,
       "totalKills": 283,
@@ -4406,6 +4582,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 62,
+      "roundsPlayed": 1299,
       "avgRating": 1.0231,
       "avgAcs": 202.5161,
       "totalKills": 922,
@@ -4431,6 +4608,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 62,
+      "roundsPlayed": 1299,
       "avgRating": 1.1279,
       "avgAcs": 197.1129,
       "totalKills": 901,
@@ -4456,6 +4634,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 62,
+      "roundsPlayed": 1299,
       "avgRating": 1.0803,
       "avgAcs": 201.2097,
       "totalKills": 935,
@@ -4481,6 +4660,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 62,
+      "roundsPlayed": 1299,
       "avgRating": 1.0223,
       "avgAcs": 204.0806,
       "totalKills": 929,
@@ -4506,6 +4686,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 62,
+      "roundsPlayed": 1299,
       "avgRating": 0.9556,
       "avgAcs": 211.0323,
       "totalKills": 955,
@@ -4531,6 +4712,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 19,
+      "roundsPlayed": 399,
       "avgRating": 1.0337,
       "avgAcs": 210.3684,
       "totalKills": 315,
@@ -4556,6 +4738,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 55,
+      "roundsPlayed": 1121,
       "avgRating": 1.2296,
       "avgAcs": 223.6182,
       "totalKills": 911,
@@ -4581,6 +4764,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 51,
+      "roundsPlayed": 1047,
       "avgRating": 1.1004,
       "avgAcs": 229.2745,
       "totalKills": 861,
@@ -4600,6 +4784,7 @@
     },
     "intlStats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 152,
       "avgRating": 0.955,
       "avgAcs": 205.625,
       "totalKills": 114,
@@ -4625,6 +4810,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 416,
       "avgRating": 0.8789,
       "avgAcs": 182.1,
       "totalKills": 255,
@@ -4644,6 +4830,7 @@
     },
     "intlStats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 152,
       "avgRating": 0.8713,
       "avgAcs": 192.875,
       "totalKills": 97,
@@ -4669,6 +4856,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 51,
+      "roundsPlayed": 1047,
       "avgRating": 1.0091,
       "avgAcs": 207.4314,
       "totalKills": 755,
@@ -4688,6 +4876,7 @@
     },
     "intlStats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 152,
       "avgRating": 0.9387,
       "avgAcs": 193.375,
       "totalKills": 105,
@@ -4713,6 +4902,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 51,
+      "roundsPlayed": 1047,
       "avgRating": 1.0583,
       "avgAcs": 188.8824,
       "totalKills": 711,
@@ -4732,6 +4922,7 @@
     },
     "intlStats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 152,
       "avgRating": 0.8975,
       "avgAcs": 159.125,
       "totalKills": 86,
@@ -4757,6 +4948,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 51,
+      "roundsPlayed": 1047,
       "avgRating": 0.9649,
       "avgAcs": 192.3333,
       "totalKills": 698,
@@ -4776,6 +4968,7 @@
     },
     "intlStats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 152,
       "avgRating": 0.8337,
       "avgAcs": 176.375,
       "totalKills": 90,
@@ -4801,6 +4994,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 19,
+      "roundsPlayed": 396,
       "avgRating": 0.8965,
       "avgAcs": 186.3684,
       "totalKills": 274,
@@ -4826,6 +5020,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 17,
+      "roundsPlayed": 355,
       "avgRating": 0.8087,
       "avgAcs": 180.7647,
       "totalKills": 218,
@@ -4851,6 +5046,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 19,
+      "roundsPlayed": 396,
       "avgRating": 0.9535,
       "avgAcs": 182.0,
       "totalKills": 242,
@@ -4876,6 +5072,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 7,
+      "roundsPlayed": 148,
       "avgRating": 0.768,
       "avgAcs": 157.7143,
       "totalKills": 74,
@@ -4901,6 +5098,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 7,
+      "roundsPlayed": 148,
       "avgRating": 1.0,
       "avgAcs": 171.5714,
       "totalKills": 83,
@@ -4926,6 +5124,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 43,
+      "roundsPlayed": 879,
       "avgRating": 1.0057,
       "avgAcs": 210.4186,
       "totalKills": 652,
@@ -4951,6 +5150,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 795,
       "avgRating": 0.9775,
       "avgAcs": 208.8462,
       "totalKills": 594,
@@ -4976,6 +5176,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 43,
+      "roundsPlayed": 879,
       "avgRating": 0.9163,
       "avgAcs": 181.2558,
       "totalKills": 569,
@@ -5001,6 +5202,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 43,
+      "roundsPlayed": 879,
       "avgRating": 0.9971,
       "avgAcs": 197.6512,
       "totalKills": 590,
@@ -5026,6 +5228,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 45,
+      "roundsPlayed": 917,
       "avgRating": 0.9922,
       "avgAcs": 173.5778,
       "totalKills": 549,
@@ -5051,6 +5254,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 861,
       "avgRating": 1.1008,
       "avgAcs": 205.7692,
       "totalKills": 630,
@@ -5076,6 +5280,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 861,
       "avgRating": 0.9319,
       "avgAcs": 174.8974,
       "totalKills": 538,
@@ -5101,6 +5306,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 31,
+      "roundsPlayed": 661,
       "avgRating": 0.9373,
       "avgAcs": 184.4194,
       "totalKills": 422,
@@ -5126,6 +5332,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 861,
       "avgRating": 1.0594,
       "avgAcs": 202.2564,
       "totalKills": 603,
@@ -5151,6 +5358,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 39,
+      "roundsPlayed": 861,
       "avgRating": 0.9539,
       "avgAcs": 200.4359,
       "totalKills": 595,
@@ -5176,6 +5384,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 36,
+      "roundsPlayed": 756,
       "avgRating": 0.9887,
       "avgAcs": 210.8333,
       "totalKills": 569,
@@ -5201,6 +5410,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 36,
+      "roundsPlayed": 756,
       "avgRating": 1.0742,
       "avgAcs": 207.4722,
       "totalKills": 558,
@@ -5226,6 +5436,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 17,
+      "roundsPlayed": 350,
       "avgRating": 0.8429,
       "avgAcs": 181.2353,
       "totalKills": 224,
@@ -5251,6 +5462,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 17,
+      "roundsPlayed": 350,
       "avgRating": 0.9179,
       "avgAcs": 171.5882,
       "totalKills": 216,
@@ -5276,6 +5488,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 32,
+      "roundsPlayed": 684,
       "avgRating": 0.8733,
       "avgAcs": 166.0625,
       "totalKills": 373,
@@ -5301,6 +5514,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 33,
+      "roundsPlayed": 679,
       "avgRating": 1.0257,
       "avgAcs": 207.4848,
       "totalKills": 482,
@@ -5326,6 +5540,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 26,
+      "roundsPlayed": 540,
       "avgRating": 0.9257,
       "avgAcs": 185.5,
       "totalKills": 336,
@@ -5351,6 +5566,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 33,
+      "roundsPlayed": 672,
       "avgRating": 0.9483,
       "avgAcs": 155.8788,
       "totalKills": 375,
@@ -5376,6 +5592,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 26,
+      "roundsPlayed": 535,
       "avgRating": 0.9665,
       "avgAcs": 190.4615,
       "totalKills": 358,
@@ -5401,6 +5618,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 33,
+      "roundsPlayed": 679,
       "avgRating": 0.9977,
       "avgAcs": 202.4848,
       "totalKills": 482,
@@ -5426,6 +5644,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 48,
+      "roundsPlayed": 980,
       "avgRating": 0.872,
       "avgAcs": 196.8125,
       "totalKills": 662,
@@ -5445,6 +5664,7 @@
     },
     "intlStats": {
       "mapsPlayed": 5,
+      "roundsPlayed": 97,
       "avgRating": 0.768,
       "avgAcs": 174.2,
       "totalKills": 59,
@@ -5470,6 +5690,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 26,
+      "roundsPlayed": 525,
       "avgRating": 0.976,
       "avgAcs": 203.5385,
       "totalKills": 375,
@@ -5495,6 +5716,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 26,
+      "roundsPlayed": 525,
       "avgRating": 1.0705,
       "avgAcs": 202.0769,
       "totalKills": 391,
@@ -5520,6 +5742,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 24,
+      "roundsPlayed": 487,
       "avgRating": 0.8256,
       "avgAcs": 160.8333,
       "totalKills": 267,
@@ -5545,6 +5768,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 7,
+      "roundsPlayed": 141,
       "avgRating": 0.93,
       "avgAcs": 172.8571,
       "totalKills": 77,
@@ -5570,6 +5794,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 48,
+      "roundsPlayed": 997,
       "avgRating": 1.0905,
       "avgAcs": 251.1667,
       "totalKills": 867,
@@ -5595,6 +5820,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 48,
+      "roundsPlayed": 997,
       "avgRating": 1.0961,
       "avgAcs": 207.7292,
       "totalKills": 707,
@@ -5620,6 +5846,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 48,
+      "roundsPlayed": 997,
       "avgRating": 1.1545,
       "avgAcs": 225.3542,
       "totalKills": 802,
@@ -5645,6 +5872,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 865,
       "avgRating": 0.8868,
       "avgAcs": 158.9512,
       "totalKills": 486,
@@ -5670,6 +5898,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 48,
+      "roundsPlayed": 997,
       "avgRating": 1.0214,
       "avgAcs": 199.1042,
       "totalKills": 692,
@@ -5695,6 +5924,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 865,
       "avgRating": 1.0605,
       "avgAcs": 198.2439,
       "totalKills": 595,
@@ -5720,6 +5950,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 865,
       "avgRating": 0.9912,
       "avgAcs": 199.0488,
       "totalKills": 593,
@@ -5745,6 +5976,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 32,
+      "roundsPlayed": 664,
       "avgRating": 1.0491,
       "avgAcs": 188.6562,
       "totalKills": 443,
@@ -5770,6 +6002,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 41,
+      "roundsPlayed": 865,
       "avgRating": 1.0883,
       "avgAcs": 233.6098,
       "totalKills": 708,
@@ -5795,6 +6028,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 435,
       "avgRating": 0.888,
       "avgAcs": 162.8,
       "totalKills": 253,
@@ -5820,6 +6054,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 55,
+      "roundsPlayed": 1130,
       "avgRating": 1.2445,
       "avgAcs": 228.9273,
       "totalKills": 929,
@@ -5839,6 +6074,7 @@
     },
     "intlStats": {
       "mapsPlayed": 5,
+      "roundsPlayed": 97,
       "avgRating": 1.198,
       "avgAcs": 245.4,
       "totalKills": 79,
@@ -5864,6 +6100,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 14,
+      "roundsPlayed": 291,
       "avgRating": 0.7993,
       "avgAcs": 185.7143,
       "totalKills": 185,
@@ -5889,6 +6126,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 55,
+      "roundsPlayed": 1130,
       "avgRating": 0.9556,
       "avgAcs": 220.0182,
       "totalKills": 870,
@@ -5908,6 +6146,7 @@
     },
     "intlStats": {
       "mapsPlayed": 5,
+      "roundsPlayed": 97,
       "avgRating": 0.818,
       "avgAcs": 193.4,
       "totalKills": 64,
@@ -5933,6 +6172,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 55,
+      "roundsPlayed": 1130,
       "avgRating": 1.0195,
       "avgAcs": 184.5273,
       "totalKills": 728,
@@ -5952,6 +6192,7 @@
     },
     "intlStats": {
       "mapsPlayed": 5,
+      "roundsPlayed": 97,
       "avgRating": 1.102,
       "avgAcs": 192.4,
       "totalKills": 69,
@@ -5977,6 +6218,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 48,
+      "roundsPlayed": 969,
       "avgRating": 0.9315,
       "avgAcs": 174.6042,
       "totalKills": 586,
@@ -5996,6 +6238,7 @@
     },
     "intlStats": {
       "mapsPlayed": 5,
+      "roundsPlayed": 97,
       "avgRating": 0.782,
       "avgAcs": 149.4,
       "totalKills": 47,
@@ -6021,6 +6264,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 70,
+      "roundsPlayed": 1447,
       "avgRating": 0.9903,
       "avgAcs": 219.3857,
       "totalKills": 1120,
@@ -6040,6 +6284,7 @@
     },
     "intlStats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 406,
       "avgRating": 0.875,
       "avgAcs": 194.85,
       "totalKills": 278,
@@ -6065,6 +6310,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 70,
+      "roundsPlayed": 1447,
       "avgRating": 1.1537,
       "avgAcs": 226.9429,
       "totalKills": 1154,
@@ -6084,6 +6330,7 @@
     },
     "intlStats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 406,
       "avgRating": 1.0565,
       "avgAcs": 213.4,
       "totalKills": 305,
@@ -6109,6 +6356,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 70,
+      "roundsPlayed": 1447,
       "avgRating": 1.0311,
       "avgAcs": 194.4571,
       "totalKills": 1006,
@@ -6128,6 +6376,7 @@
     },
     "intlStats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 406,
       "avgRating": 0.898,
       "avgAcs": 180.65,
       "totalKills": 267,
@@ -6153,6 +6402,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 70,
+      "roundsPlayed": 1447,
       "avgRating": 0.9787,
       "avgAcs": 186.9714,
       "totalKills": 923,
@@ -6172,6 +6422,7 @@
     },
     "intlStats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 406,
       "avgRating": 0.793,
       "avgAcs": 160.75,
       "totalKills": 214,
@@ -6197,6 +6448,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 70,
+      "roundsPlayed": 1447,
       "avgRating": 0.8859,
       "avgAcs": 177.9571,
       "totalKills": 915,
@@ -6216,6 +6468,7 @@
     },
     "intlStats": {
       "mapsPlayed": 20,
+      "roundsPlayed": 406,
       "avgRating": 0.819,
       "avgAcs": 168.2,
       "totalKills": 242,
@@ -6241,6 +6494,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 66,
+      "roundsPlayed": 1352,
       "avgRating": 1.0633,
       "avgAcs": 207.2121,
       "totalKills": 971,
@@ -6260,6 +6514,7 @@
     },
     "intlStats": {
       "mapsPlayed": 16,
+      "roundsPlayed": 341,
       "avgRating": 0.8762,
       "avgAcs": 185.375,
       "totalKills": 211,
@@ -6285,6 +6540,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 66,
+      "roundsPlayed": 1352,
       "avgRating": 1.1175,
       "avgAcs": 200.197,
       "totalKills": 978,
@@ -6304,6 +6560,7 @@
     },
     "intlStats": {
       "mapsPlayed": 16,
+      "roundsPlayed": 341,
       "avgRating": 0.9662,
       "avgAcs": 177.125,
       "totalKills": 214,
@@ -6329,6 +6586,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 66,
+      "roundsPlayed": 1352,
       "avgRating": 1.0606,
       "avgAcs": 235.303,
       "totalKills": 1129,
@@ -6348,6 +6606,7 @@
     },
     "intlStats": {
       "mapsPlayed": 16,
+      "roundsPlayed": 341,
       "avgRating": 1.01,
       "avgAcs": 215.6875,
       "totalKills": 258,
@@ -6373,6 +6632,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 26,
+      "roundsPlayed": 522,
       "avgRating": 0.937,
       "avgAcs": 192.8846,
       "totalKills": 356,
@@ -6392,6 +6652,7 @@
     },
     "intlStats": {
       "mapsPlayed": 4,
+      "roundsPlayed": 81,
       "avgRating": 0.725,
       "avgAcs": 165.5,
       "totalKills": 50,
@@ -6417,6 +6678,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 66,
+      "roundsPlayed": 1352,
       "avgRating": 0.8965,
       "avgAcs": 174.5758,
       "totalKills": 807,
@@ -6436,6 +6698,7 @@
     },
     "intlStats": {
       "mapsPlayed": 16,
+      "roundsPlayed": 341,
       "avgRating": 0.84,
       "avgAcs": 172.0625,
       "totalKills": 202,
@@ -6461,6 +6724,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 9,
+      "roundsPlayed": 201,
       "avgRating": 0.8444,
       "avgAcs": 158.6667,
       "totalKills": 113,
@@ -6486,6 +6750,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 27,
+      "roundsPlayed": 606,
       "avgRating": 0.8915,
       "avgAcs": 195.3704,
       "totalKills": 406,
@@ -6511,6 +6776,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 5,
+      "roundsPlayed": 106,
       "avgRating": 0.704,
       "avgAcs": 138.8,
       "totalKills": 49,
@@ -6536,6 +6802,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 12,
+      "roundsPlayed": 248,
       "avgRating": 0.9175,
       "avgAcs": 224.4167,
       "totalKills": 194,
@@ -6561,6 +6828,7 @@
     "hasIntlStats": true,
     "stats": {
       "mapsPlayed": 42,
+      "roundsPlayed": 871,
       "avgRating": 0.9138,
       "avgAcs": 181.9762,
       "totalKills": 562,
@@ -6580,6 +6848,7 @@
     },
     "intlStats": {
       "mapsPlayed": 12,
+      "roundsPlayed": 260,
       "avgRating": 0.9133,
       "avgAcs": 178.8333,
       "totalKills": 170,
@@ -6605,6 +6874,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 19,
+      "roundsPlayed": 384,
       "avgRating": 0.9213,
       "avgAcs": 184.4211,
       "totalKills": 253,
@@ -6630,6 +6900,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 13,
+      "roundsPlayed": 262,
       "avgRating": 0.8255,
       "avgAcs": 187.0769,
       "totalKills": 170,
@@ -6655,6 +6926,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 19,
+      "roundsPlayed": 392,
       "avgRating": 0.8411,
       "avgAcs": 199.0,
       "totalKills": 262,
@@ -6680,6 +6952,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 528,
       "avgRating": 0.9968,
       "avgAcs": 211.84,
       "totalKills": 402,
@@ -6705,6 +6978,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 13,
+      "roundsPlayed": 258,
       "avgRating": 0.9885,
       "avgAcs": 215.9231,
       "totalKills": 197,
@@ -6730,6 +7004,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 15,
+      "roundsPlayed": 293,
       "avgRating": 0.7577,
       "avgAcs": 174.7333,
       "totalKills": 174,
@@ -6755,6 +7030,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 5,
+      "roundsPlayed": 103,
       "avgRating": 1.076,
       "avgAcs": 207.0,
       "totalKills": 78,
@@ -6780,6 +7056,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 26,
+      "roundsPlayed": 542,
       "avgRating": 0.8742,
       "avgAcs": 162.7308,
       "totalKills": 298,
@@ -6805,6 +7082,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 6,
+      "roundsPlayed": 141,
       "avgRating": 0.6033,
       "avgAcs": 159.8333,
       "totalKills": 82,
@@ -6830,6 +7108,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 18,
+      "roundsPlayed": 393,
       "avgRating": 0.8717,
       "avgAcs": 184.7778,
       "totalKills": 260,
@@ -6855,6 +7134,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 6,
+      "roundsPlayed": 143,
       "avgRating": 0.745,
       "avgAcs": 156.6667,
       "totalKills": 69,
@@ -6880,6 +7160,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 9,
+      "roundsPlayed": 193,
       "avgRating": 1.0767,
       "avgAcs": 245.2222,
       "totalKills": 163,
@@ -6905,6 +7186,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 537,
       "avgRating": 1.0192,
       "avgAcs": 215.4,
       "totalKills": 416,
@@ -6930,6 +7212,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 25,
+      "roundsPlayed": 537,
       "avgRating": 0.9964,
       "avgAcs": 201.64,
       "totalKills": 383,
@@ -6955,6 +7238,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 38,
+      "roundsPlayed": 794,
       "avgRating": 1.0911,
       "avgAcs": 216.1842,
       "totalKills": 601,
@@ -6980,6 +7264,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 40,
+      "roundsPlayed": 855,
       "avgRating": 1.0008,
       "avgAcs": 223.975,
       "totalKills": 668,
@@ -7005,6 +7290,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 15,
+      "roundsPlayed": 322,
       "avgRating": 0.9313,
       "avgAcs": 168.7333,
       "totalKills": 191,
@@ -7030,6 +7316,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 6,
+      "roundsPlayed": 129,
       "avgRating": 0.65,
       "avgAcs": 156.6667,
       "totalKills": 64,
@@ -7055,6 +7342,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 34,
+      "roundsPlayed": 714,
       "avgRating": 1.0059,
       "avgAcs": 221.5588,
       "totalKills": 536,
@@ -7080,6 +7368,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 3,
+      "roundsPlayed": 58,
       "avgRating": 0.84,
       "avgAcs": 166.0,
       "totalKills": 34,
@@ -7105,6 +7394,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 9,
+      "roundsPlayed": 186,
       "avgRating": 1.0656,
       "avgAcs": 197.7778,
       "totalKills": 124,
@@ -7130,6 +7420,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 2,
+      "roundsPlayed": 43,
       "avgRating": 0.705,
       "avgAcs": 192.0,
       "totalKills": 28,
@@ -7155,6 +7446,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 12,
+      "roundsPlayed": 274,
       "avgRating": 0.8608,
       "avgAcs": 178.5,
       "totalKills": 162,
@@ -7180,6 +7472,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 16,
+      "roundsPlayed": 335,
       "avgRating": 1.1994,
       "avgAcs": 237.4375,
       "totalKills": 287,
@@ -7205,6 +7498,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 16,
+      "roundsPlayed": 335,
       "avgRating": 1.0919,
       "avgAcs": 199.625,
       "totalKills": 232,
@@ -7230,6 +7524,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 16,
+      "roundsPlayed": 335,
       "avgRating": 1.1125,
       "avgAcs": 211.1875,
       "totalKills": 248,
@@ -7255,6 +7550,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 16,
+      "roundsPlayed": 335,
       "avgRating": 0.8794,
       "avgAcs": 170.75,
       "totalKills": 201,
@@ -7280,6 +7576,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 16,
+      "roundsPlayed": 335,
       "avgRating": 0.8094,
       "avgAcs": 185.875,
       "totalKills": 216,
@@ -7305,6 +7602,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 7,
+      "roundsPlayed": 152,
       "avgRating": 0.6986,
       "avgAcs": 140.0,
       "totalKills": 70,
@@ -7330,6 +7628,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 10,
+      "roundsPlayed": 231,
       "avgRating": 0.828,
       "avgAcs": 196.0,
       "totalKills": 157,
@@ -7355,6 +7654,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 159,
       "avgRating": 1.1113,
       "avgAcs": 212.625,
       "totalKills": 121,
@@ -7380,6 +7680,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 5,
+      "roundsPlayed": 100,
       "avgRating": 0.852,
       "avgAcs": 166.4,
       "totalKills": 58,
@@ -7405,6 +7706,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 3,
+      "roundsPlayed": 67,
       "avgRating": 0.97,
       "avgAcs": 183.0,
       "totalKills": 42,
@@ -7430,6 +7732,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 3,
+      "roundsPlayed": 67,
       "avgRating": 0.9533,
       "avgAcs": 218.3333,
       "totalKills": 49,
@@ -7455,6 +7758,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 2,
+      "roundsPlayed": 41,
       "avgRating": 1.0,
       "avgAcs": 196.0,
       "totalKills": 29,
@@ -7480,6 +7784,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 11,
+      "roundsPlayed": 232,
       "avgRating": 0.8818,
       "avgAcs": 188.8182,
       "totalKills": 149,
@@ -7505,6 +7810,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 2,
+      "roundsPlayed": 50,
       "avgRating": 0.915,
       "avgAcs": 159.0,
       "totalKills": 30,
@@ -7530,6 +7836,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 2,
+      "roundsPlayed": 50,
       "avgRating": 0.93,
       "avgAcs": 189.5,
       "totalKills": 31,
@@ -7555,6 +7862,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 3,
+      "roundsPlayed": 65,
       "avgRating": 0.92,
       "avgAcs": 185.3333,
       "totalKills": 38,
@@ -7580,6 +7888,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 3,
+      "roundsPlayed": 65,
       "avgRating": 0.6833,
       "avgAcs": 143.0,
       "totalKills": 34,
@@ -7605,6 +7914,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 7,
+      "roundsPlayed": 139,
       "avgRating": 1.23,
       "avgAcs": 224.4286,
       "totalKills": 114,
@@ -7630,6 +7940,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 7,
+      "roundsPlayed": 139,
       "avgRating": 1.0,
       "avgAcs": 176.7143,
       "totalKills": 86,
@@ -7655,6 +7966,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 7,
+      "roundsPlayed": 161,
       "avgRating": 0.8429,
       "avgAcs": 143.4286,
       "totalKills": 81,
@@ -7680,6 +7992,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 8,
+      "roundsPlayed": 172,
       "avgRating": 0.8462,
       "avgAcs": 168.625,
       "totalKills": 103,
@@ -7705,6 +8018,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 4,
+      "roundsPlayed": 72,
       "avgRating": 0.5975,
       "avgAcs": 131.5,
       "totalKills": 32,
@@ -7730,6 +8044,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 4,
+      "roundsPlayed": 84,
       "avgRating": 0.8033,
       "avgAcs": 162.75,
       "totalKills": 45,
@@ -7755,6 +8070,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 2,
+      "roundsPlayed": 41,
       "avgRating": 1.075,
       "avgAcs": 260.0,
       "totalKills": 37,
@@ -7780,6 +8096,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 2,
+      "roundsPlayed": 34,
       "avgRating": 0.71,
       "avgAcs": 162.0,
       "totalKills": 17,
@@ -7805,6 +8122,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 2,
+      "roundsPlayed": 34,
       "avgRating": 0.495,
       "avgAcs": 114.0,
       "totalKills": 13,
@@ -7830,6 +8148,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 2,
+      "roundsPlayed": 50,
       "avgRating": 0.825,
       "avgAcs": 162.5,
       "totalKills": 27,
@@ -7855,6 +8174,7 @@
     "hasIntlStats": false,
     "stats": {
       "mapsPlayed": 2,
+      "roundsPlayed": 50,
       "avgRating": 0.975,
       "avgAcs": 191.5,
       "totalKills": 33,

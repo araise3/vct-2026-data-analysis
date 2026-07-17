@@ -1,0 +1,143 @@
+{
+  "kpis": {
+    "totalEvents": 15,
+    "totalMatches": 361,
+    "totalMaps": 930,
+    "totalPlayers": 299,
+    "totalTeams": 48
+  },
+  "topPlayersByRating": [
+    {
+      "player": "primmie",
+      "team": "FULL SENSE",
+      "rating": 1.25,
+      "mapsPlayed": 38
+    },
+    {
+      "player": "vo0kashu",
+      "team": "Dragon Ranger Gaming",
+      "rating": 1.2445,
+      "mapsPlayed": 55
+    },
+    {
+      "player": "marteen",
+      "team": "Gentle Mates",
+      "rating": 1.2348,
+      "mapsPlayed": 42
+    },
+    {
+      "player": "Neon",
+      "team": "LEVIAT\u00c1N",
+      "rating": 1.2296,
+      "mapsPlayed": 55
+    },
+    {
+      "player": "Less",
+      "team": "KR\u00dc Esports",
+      "rating": 1.1994,
+      "mapsPlayed": 16
+    },
+    {
+      "player": "hiro",
+      "team": "Natus Vincere",
+      "rating": 1.1915,
+      "mapsPlayed": 27
+    },
+    {
+      "player": "iZu",
+      "team": "T1",
+      "rating": 1.1663,
+      "mapsPlayed": 41
+    },
+    {
+      "player": "Jemkin",
+      "team": "Rex Regum Qeon",
+      "rating": 1.16,
+      "mapsPlayed": 37
+    },
+    {
+      "player": "slowly",
+      "team": "TYLOO",
+      "rating": 1.1545,
+      "mapsPlayed": 48
+    },
+    {
+      "player": "happywei",
+      "team": "Xi Lai Gaming",
+      "rating": 1.1537,
+      "mapsPlayed": 70
+    }
+  ],
+  "topTeamsByMapWinPct": [
+    {
+      "team": "Nongshim RedForce",
+      "region": "Pacific",
+      "mapWinPct": 0.6666666666666666,
+      "mapsPlayed": 39,
+      "mapsWon": 26
+    },
+    {
+      "team": "T1",
+      "region": "Pacific",
+      "mapWinPct": 0.6585365853658537,
+      "mapsPlayed": 41,
+      "mapsWon": 27
+    },
+    {
+      "team": "Paper Rex",
+      "region": "Pacific",
+      "mapWinPct": 0.6385542168674698,
+      "mapsPlayed": 83,
+      "mapsWon": 53
+    },
+    {
+      "team": "G2 Esports",
+      "region": "Americas",
+      "mapWinPct": 0.6290322580645161,
+      "mapsPlayed": 62,
+      "mapsWon": 39
+    },
+    {
+      "team": "TYLOO",
+      "region": "China",
+      "mapWinPct": 0.6041666666666666,
+      "mapsPlayed": 48,
+      "mapsWon": 29
+    },
+    {
+      "team": "LEVIAT\u00c1N",
+      "region": "Americas",
+      "mapWinPct": 0.6,
+      "mapsPlayed": 60,
+      "mapsWon": 36
+    },
+    {
+      "team": "FNATIC",
+      "region": "EMEA",
+      "mapWinPct": 0.5897435897435898,
+      "mapsPlayed": 39,
+      "mapsWon": 23
+    },
+    {
+      "team": "ULF Esports / Eternal Fire",
+      "region": "EMEA",
+      "mapWinPct": 0.5882352941176471,
+      "mapsPlayed": 34,
+      "mapsWon": 20
+    },
+    {
+      "team": "NRG",
+      "region": "Americas",
+      "mapWinPct": 0.5846153846153846,
+      "mapsPlayed": 65,
+      "mapsWon": 38
+    },
+    {
+      "team": "EDward Gaming",
+      "region": "China",
+      "mapWinPct": 0.5757575757575758,
+      "mapsPlayed": 66,
+      "mapsWon": 38
+    }
+  ]
+}

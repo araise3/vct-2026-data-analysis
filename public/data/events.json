@@ -1,0 +1,152 @@
+[
+  {
+    "event_id": 2682,
+    "slug": "vct-2026-americas-kickoff",
+    "name": "Vct 2026 Americas Kickoff",
+    "region": "Americas",
+    "stage": "Kickoff",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2683,
+    "slug": "vct-2026-pacific-kickoff",
+    "name": "Vct 2026 Pacific Kickoff",
+    "region": "Pacific",
+    "stage": "Kickoff",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2684,
+    "slug": "vct-2026-emea-kickoff",
+    "name": "Vct 2026 Emea Kickoff",
+    "region": "EMEA",
+    "stage": "Kickoff",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2685,
+    "slug": "vct-2026-china-kickoff",
+    "name": "Vct 2026 China Kickoff",
+    "region": "China",
+    "stage": "Kickoff",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2760,
+    "slug": "valorant-masters-santiago-2026",
+    "name": "Valorant Masters Santiago 2026",
+    "region": "International",
+    "stage": "Masters",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2765,
+    "slug": "valorant-masters-london-2026",
+    "name": "Valorant Masters London 2026",
+    "region": "International",
+    "stage": "Masters",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2766,
+    "slug": "valorant-champions-2026",
+    "name": "Valorant Champions 2026",
+    "region": "International",
+    "stage": "Champions",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2775,
+    "slug": "vct-2026-pacific-stage-1",
+    "name": "Vct 2026 Pacific Stage 1",
+    "region": "Pacific",
+    "stage": "Stage 1",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2776,
+    "slug": "vct-2026-pacific-stage-2",
+    "name": "Vct 2026 Pacific Stage 2",
+    "region": "Pacific",
+    "stage": "Stage 2",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2860,
+    "slug": "vct-2026-americas-stage-1",
+    "name": "Vct 2026 Americas Stage 1",
+    "region": "Americas",
+    "stage": "Stage 1",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2863,
+    "slug": "vct-2026-emea-stage-1",
+    "name": "Vct 2026 Emea Stage 1",
+    "region": "EMEA",
+    "stage": "Stage 1",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2864,
+    "slug": "vct-2026-china-stage-1",
+    "name": "Vct 2026 China Stage 1",
+    "region": "China",
+    "stage": "Stage 1",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2976,
+    "slug": "vct-2026-emea-stage-2",
+    "name": "Vct 2026 Emea Stage 2",
+    "region": "EMEA",
+    "stage": "Stage 2",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2977,
+    "slug": "vct-2026-americas-stage-2",
+    "name": "Vct 2026 Americas Stage 2",
+    "region": "Americas",
+    "stage": "Stage 2",
+    "dates": null,
+    "prize": null,
+    "location": null
+  },
+  {
+    "event_id": 2978,
+    "slug": "vct-2026-china-stage-2",
+    "name": "Vct 2026 China Stage 2",
+    "region": "China",
+    "stage": "Stage 2",
+    "dates": null,
+    "prize": null,
+    "location": null
+  }
+]

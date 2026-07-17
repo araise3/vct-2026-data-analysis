@@ -1,0 +1,114 @@
+{
+  "overall": {
+    "eco": {
+      "rounds": 4238,
+      "won": 1525,
+      "winPct": 0.3598
+    },
+    "semiEco": {
+      "rounds": 1668,
+      "won": 354,
+      "winPct": 0.2122
+    },
+    "semiBuy": {
+      "rounds": 6369,
+      "won": 3315,
+      "winPct": 0.5205
+    },
+    "fullBuy": {
+      "rounds": 17149,
+      "won": 9518,
+      "winPct": 0.555
+    }
+  },
+  "byRegion": {
+    "Americas": {
+      "eco": {
+        "rounds": 1128,
+        "won": 399,
+        "winPct": 0.3537
+      },
+      "semiEco": {
+        "rounds": 419,
+        "won": 87,
+        "winPct": 0.2076
+      },
+      "semiBuy": {
+        "rounds": 1736,
+        "won": 929,
+        "winPct": 0.5351
+      },
+      "fullBuy": {
+        "rounds": 4423,
+        "won": 2438,
+        "winPct": 0.5512
+      }
+    },
+    "EMEA": {
+      "eco": {
+        "rounds": 1190,
+        "won": 432,
+        "winPct": 0.363
+      },
+      "semiEco": {
+        "rounds": 452,
+        "won": 93,
+        "winPct": 0.2058
+      },
+      "semiBuy": {
+        "rounds": 1802,
+        "won": 929,
+        "winPct": 0.5155
+      },
+      "fullBuy": {
+        "rounds": 4916,
+        "won": 2726,
+        "winPct": 0.5545
+      }
+    },
+    "International": {
+      "eco": {
+        "rounds": 762,
+        "won": 275,
+        "winPct": 0.3609
+      },
+      "semiEco": {
+        "rounds": 287,
+        "won": 56,
+        "winPct": 0.1951
+      },
+      "semiBuy": {
+        "rounds": 1143,
+        "won": 574,
+        "winPct": 0.5022
+      },
+      "fullBuy": {
+        "rounds": 2946,
+        "won": 1664,
+        "winPct": 0.5648
+      }
+    },
+    "Pacific": {
+      "eco": {
+        "rounds": 1158,
+        "won": 419,
+        "winPct": 0.3618
+      },
+      "semiEco": {
+        "rounds": 510,
+        "won": 118,
+        "winPct": 0.2314
+      },
+      "semiBuy": {
+        "rounds": 1688,
+        "won": 883,
+        "winPct": 0.5231
+      },
+      "fullBuy": {
+        "rounds": 4864,
+        "won": 2690,
+        "winPct": 0.553
+      }
+    }
+  }
+}

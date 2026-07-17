@@ -63,6 +63,7 @@ export default function Players() {
     },
     { key: 'team', label: 'Team', align: 'left' },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
+    { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
     { key: 'avgRating', label: 'Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
     { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
     { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },

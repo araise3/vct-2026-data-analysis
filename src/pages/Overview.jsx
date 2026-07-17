@@ -21,10 +21,11 @@ export default function Overview() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         <KpiCard label="Events" value={kpis.totalEvents} />
         <KpiCard label="Matches" value={num(kpis.totalMatches)} />
         <KpiCard label="Maps" value={num(kpis.totalMaps)} />
+        <KpiCard label="Rounds" value={num(kpis.totalRounds)} />
         <KpiCard label="Players" value={num(kpis.totalPlayers)} />
         <KpiCard label="Teams" value={num(kpis.totalTeams)} />
       </div>

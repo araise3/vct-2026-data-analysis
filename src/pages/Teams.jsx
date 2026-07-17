@@ -34,6 +34,7 @@ export default function Teams() {
     { key: 'matchesPlayed', label: 'Matches', align: 'right', format: (v) => num(v) },
     { key: 'matchWinPct', label: 'Match Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
+    { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
     { key: 'mapWinPct', label: 'Map Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'pistolWinPct', label: 'Pistol Win%', align: 'right', colorScale: true, format: (v) => (v === null ? '—' : pct(v)) },
     { key: 'avgRating', label: 'Avg Rating', align: 'right', colorScale: true, format: (v) => rating(v) },

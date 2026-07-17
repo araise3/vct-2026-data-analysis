@@ -20,7 +20,7 @@ export default {
         bad: '#E5484D',
       },
       fontFamily: {
-        display: ['"Space Grotesk"', 'sans-serif'],
+        display: ['Sora', 'sans-serif'],
         body: ['Inter', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },

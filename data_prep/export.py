@@ -85,6 +85,11 @@ def main():
                           np.where(maps_df.team2_score > maps_df.team1_score, maps_df.c2, None))
     maps_df['rounds_total'] = maps_df['team1_score'] + maps_df['team2_score']
 
+    # Give each map_player_stats row the round count for the map it belongs
+    # to, so "rounds played" can be summed per player just like maps played.
+    mps = mps.merge(maps_df[['match_id', 'map_index', 'rounds_total']],
+                     on=['match_id', 'map_index'], how='left')
+
     canonical_teams = sorted(lookup['canonical_name'].unique())
     canonical_teams = [t for t in canonical_teams if t != 'TBD']
 
@@ -103,6 +108,7 @@ def main():
         team_maps = maps_df[(maps_df.c1 == team) | (maps_df.c2 == team)]
         maps_played = len(team_maps)
         maps_won = int((team_maps.winner == team).sum())
+        rounds_played = int(team_maps['rounds_total'].sum())
 
         team_econ = mte[mte.canonical_team == team]
         pistol_won = int(team_econ['pistol_won'].sum()) if len(team_econ) else 0
@@ -120,6 +126,7 @@ def main():
             "mapsPlayed": maps_played,
             "mapsWon": maps_won,
             "mapWinPct": (maps_won / maps_played) if maps_played else None,
+            "roundsPlayed": rounds_played,
             "pistolWon": pistol_won,
             "pistolPlayed": pistol_played,
             "pistolWinPct": (pistol_won / pistol_played) if pistol_played else None,
@@ -147,6 +154,7 @@ def main():
         deaths = sub['deaths'].sum()
         return clean_row({
             "mapsPlayed": len(sub),
+            "roundsPlayed": int(sub['rounds_total'].sum()),
             "avgRating": sub['rating'].mean(),
             "avgAcs": sub['acs'].mean(),
             "totalKills": int(kills),
@@ -215,6 +223,7 @@ def main():
             "totalEvents": int(events['event_id'].nunique()),
             "totalMatches": int(len(completed)),
             "totalMaps": int(len(maps_df.dropna(subset=['winner']))),
+            "totalRounds": int(maps_df['rounds_total'].sum()),
             "totalPlayers": int(len(players_out)),
             "totalTeams": int(len(canonical_teams)),
         },

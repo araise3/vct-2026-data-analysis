@@ -1,7 +1,13 @@
 export function pct(v, digits = 1) {
   if (v === null || v === undefined || Number.isNaN(v)) return '—'
   const d = Number.isInteger(digits) ? digits : 1
-  return `${(v * 100).toFixed(d)}%`
+  // Explicit round-half-up (matches VLR's own display convention -- e.g.
+  // 52.5% displays as "53%", not "52%"). JS's toFixed() uses the
+  // underlying float representation and can round inconsistently on
+  // exact .5 boundaries, so this is done manually rather than relying on it.
+  const factor = 10 ** d
+  const rounded = Math.floor(v * 100 * factor + 0.5) / factor
+  return `${rounded.toFixed(d)}%`
 }
 
 export function num(v, digits = 0) {

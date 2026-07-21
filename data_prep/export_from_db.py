@@ -296,6 +296,88 @@ def main():
         json.dump(events_out, f, indent=2)
     print("events.json written")
 
+    # ------------------------------------------------------------------
+    # agents.json — pick rates and map win% from the (now-fixed)
+    # event_map_summary / event_map_agent_utilization tables
+    # ------------------------------------------------------------------
+    conn2 = sqlite3.connect(DB_PATH)
+    map_summary = pd.read_sql_query("SELECT * FROM event_map_summary", conn2)
+    map_agent_util = pd.read_sql_query("SELECT * FROM event_map_agent_utilization", conn2)
+    conn2.close()
+
+    map_summary = map_summary.merge(events[['event_id', 'region']], on='event_id', how='left')
+    map_agent_util = map_agent_util.merge(events[['event_id', 'region']], on='event_id', how='left')
+
+    def pct_str_to_frac(s):
+        return pd.to_numeric(s.astype(str).str.replace('%', '', regex=False), errors='coerce') / 100
+
+    map_summary['atk_win_frac'] = pct_str_to_frac(map_summary['atk_win_pct'])
+    map_summary['def_win_frac'] = pct_str_to_frac(map_summary['def_win_pct'])
+    map_agent_util['util_frac'] = pct_str_to_frac(map_agent_util['utilization_pct'])
+
+    # Weight each event+map's utilization % by that event+map's round count,
+    # since a pick rate from a 200-round event should count more than one
+    # from a 20-round event, rather than averaging the percentages flatly.
+    util_with_rounds = map_agent_util.merge(
+        map_summary[['event_id', 'map_name', 'rounds_played']],
+        on=['event_id', 'map_name'], how='left'
+    )
+
+    def weighted_agent_table(df):
+        df = df.dropna(subset=['rounds_played', 'util_frac'])
+        if len(df) == 0:
+            return []
+        grouped = df.groupby('agent').apply(
+            lambda g: (g['util_frac'] * g['rounds_played']).sum() / g['rounds_played'].sum()
+            if g['rounds_played'].sum() else None
+        )
+        return [clean_row({"agent": a, "pickRate": v}) for a, v in grouped.items()]
+
+    def map_win_table(df):
+        df = df[df['map_name'] != 'ALL'].dropna(subset=['rounds_played'])
+        out = []
+        for map_name, g in df.groupby('map_name'):
+            total_rounds = g['rounds_played'].sum()
+            if total_rounds == 0:
+                continue
+            atk = (g['atk_win_frac'] * g['rounds_played']).sum() / total_rounds
+            defn = (g['def_win_frac'] * g['rounds_played']).sum() / total_rounds
+            out.append(clean_row({
+                "mapName": map_name, "roundsPlayed": int(total_rounds),
+                "atkWinPct": atk, "defWinPct": defn,
+            }))
+        return sorted(out, key=lambda x: -x['roundsPlayed'])
+
+    def map_agent_matrix(df):
+        df = df[df['map_name'] != 'ALL'].dropna(subset=['rounds_played', 'util_frac'])
+        matrix = {}
+        for map_name, g in df.groupby('map_name'):
+            agent_rates = {}
+            for agent, ga in g.groupby('agent'):
+                total = ga['rounds_played'].sum()
+                if total:
+                    agent_rates[agent] = round(float((ga['util_frac'] * ga['rounds_played']).sum() / total), 4)
+            matrix[map_name] = agent_rates
+        return matrix
+
+    overall_all_row = util_with_rounds[util_with_rounds['map_name'] == 'ALL']
+
+    agents_out = {
+        "overallPickRates": sorted(weighted_agent_table(overall_all_row), key=lambda x: -(x['pickRate'] or 0)),
+        "mapWinRates": map_win_table(map_summary),
+        "mapAgentMatrix": map_agent_matrix(util_with_rounds),
+        "byRegion": {},
+    }
+    for region, sub in util_with_rounds[util_with_rounds['map_name'] == 'ALL'].groupby('region'):
+        agents_out["byRegion"][region] = sorted(
+            weighted_agent_table(sub), key=lambda x: -(x['pickRate'] or 0)
+        )
+
+    with open(f"{OUT}/agents.json", "w") as f:
+        json.dump(agents_out, f, indent=2)
+    print(f"agents.json written: {len(agents_out['overallPickRates'])} agents, "
+          f"{len(agents_out['mapWinRates'])} maps")
+
 
 if __name__ == "__main__":
     import os

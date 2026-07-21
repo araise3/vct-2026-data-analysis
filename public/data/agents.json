@@ -1,0 +1,1160 @@
+{
+  "overallPickRates": [
+    {
+      "agent": "omen",
+      "pickRate": 0.5505572139303482
+    },
+    {
+      "agent": "neon",
+      "pickRate": 0.5465373134328358
+    },
+    {
+      "agent": "viper",
+      "pickRate": 0.47826865671641794
+    },
+    {
+      "agent": "sova",
+      "pickRate": 0.4057810945273632
+    },
+    {
+      "agent": "fade",
+      "pickRate": 0.35416915422885575
+    },
+    {
+      "agent": "astra",
+      "pickRate": 0.29264676616915425
+    },
+    {
+      "agent": "waylay",
+      "pickRate": 0.27982089552238804
+    },
+    {
+      "agent": "yoru",
+      "pickRate": 0.2364477611940299
+    },
+    {
+      "agent": "cypher",
+      "pickRate": 0.22558208955223885
+    },
+    {
+      "agent": "raze",
+      "pickRate": 0.2081990049751244
+    },
+    {
+      "agent": "skye",
+      "pickRate": 0.19694527363184083
+    },
+    {
+      "agent": "jett",
+      "pickRate": 0.176
+    },
+    {
+      "agent": "phoenix",
+      "pickRate": 0.16604975124378107
+    },
+    {
+      "agent": "brimstone",
+      "pickRate": 0.14067661691542288
+    },
+    {
+      "agent": "chamber",
+      "pickRate": 0.12330348258706465
+    },
+    {
+      "agent": "vyse",
+      "pickRate": 0.11638805970149252
+    },
+    {
+      "agent": "killjoy",
+      "pickRate": 0.10930348258706467
+    },
+    {
+      "agent": "kayo",
+      "pickRate": 0.08834825870646769
+    },
+    {
+      "agent": "tejo",
+      "pickRate": 0.08200000000000002
+    },
+    {
+      "agent": "harbor",
+      "pickRate": 0.05849751243781093
+    },
+    {
+      "agent": "sage",
+      "pickRate": 0.045592039800995035
+    },
+    {
+      "agent": "breach",
+      "pickRate": 0.041681592039800985
+    },
+    {
+      "agent": "veto",
+      "pickRate": 0.04036815920398009
+    },
+    {
+      "agent": "deadlock",
+      "pickRate": 0.015681592039800994
+    },
+    {
+      "agent": "iso",
+      "pickRate": 0.009084577114427861
+    },
+    {
+      "agent": "gekko",
+      "pickRate": 0.00881592039800995
+    },
+    {
+      "agent": "reyna",
+      "pickRate": 0.001671641791044776
+    },
+    {
+      "agent": "miks",
+      "pickRate": 0.0016318407960199005
+    },
+    {
+      "agent": "clove",
+      "pickRate": 0.0
+    }
+  ],
+  "mapWinRates": [
+    {
+      "mapName": "Split",
+      "roundsPlayed": 160,
+      "atkWinPct": 0.5008,
+      "defWinPct": 0.4992
+    },
+    {
+      "mapName": "Haven",
+      "roundsPlayed": 149,
+      "atkWinPct": 0.5315,
+      "defWinPct": 0.4685
+    },
+    {
+      "mapName": "Breeze",
+      "roundsPlayed": 134,
+      "atkWinPct": 0.5137,
+      "defWinPct": 0.4863
+    },
+    {
+      "mapName": "Lotus",
+      "roundsPlayed": 116,
+      "atkWinPct": 0.5457,
+      "defWinPct": 0.4543
+    },
+    {
+      "mapName": "Pearl",
+      "roundsPlayed": 112,
+      "atkWinPct": 0.4842,
+      "defWinPct": 0.5158
+    },
+    {
+      "mapName": "Bind",
+      "roundsPlayed": 89,
+      "atkWinPct": 0.5315,
+      "defWinPct": 0.4685
+    },
+    {
+      "mapName": "Abyss",
+      "roundsPlayed": 63,
+      "atkWinPct": 0.5319,
+      "defWinPct": 0.4681
+    },
+    {
+      "mapName": "Fracture",
+      "roundsPlayed": 57,
+      "atkWinPct": 0.5386,
+      "defWinPct": 0.4614
+    },
+    {
+      "mapName": "Corrode",
+      "roundsPlayed": 45,
+      "atkWinPct": 0.5224,
+      "defWinPct": 0.4776
+    },
+    {
+      "mapName": "Ascent",
+      "roundsPlayed": 43,
+      "atkWinPct": 0.4793,
+      "defWinPct": 0.5207
+    },
+    {
+      "mapName": "Sunset",
+      "roundsPlayed": 25,
+      "atkWinPct": 0.4988,
+      "defWinPct": 0.5012
+    },
+    {
+      "mapName": "Summit",
+      "roundsPlayed": 12,
+      "atkWinPct": 0.4008,
+      "defWinPct": 0.5992
+    }
+  ],
+  "mapAgentMatrix": {
+    "Abyss": {
+      "astra": 0.7948,
+      "breach": 0.1827,
+      "brimstone": 0.0806,
+      "chamber": 0.0621,
+      "clove": 0.0,
+      "cypher": 0.1837,
+      "deadlock": 0.0,
+      "fade": 0.0,
+      "gekko": 0.0,
+      "harbor": 0.0559,
+      "iso": 0.0165,
+      "jett": 0.1667,
+      "kayo": 0.1762,
+      "killjoy": 0.0,
+      "miks": 0.0,
+      "neon": 0.0471,
+      "omen": 0.4683,
+      "phoenix": 0.0,
+      "raze": 0.0076,
+      "reyna": 0.0243,
+      "sage": 0.0,
+      "skye": 0.0162,
+      "sova": 0.8322,
+      "tejo": 0.2673,
+      "veto": 0.1981,
+      "viper": 0.0789,
+      "vyse": 0.0492,
+      "waylay": 0.7375,
+      "yoru": 0.5579
+    },
+    "Ascent": {
+      "astra": 0.0819,
+      "breach": 0.0121,
+      "brimstone": 0.0,
+      "chamber": 0.1537,
+      "clove": 0.0,
+      "cypher": 0.5237,
+      "deadlock": 0.0242,
+      "fade": 0.0,
+      "gekko": 0.0,
+      "harbor": 0.0121,
+      "iso": 0.0,
+      "jett": 0.5477,
+      "kayo": 0.1635,
+      "killjoy": 0.0581,
+      "miks": 0.0121,
+      "neon": 0.3977,
+      "omen": 0.9079,
+      "phoenix": 0.5351,
+      "raze": 0.0,
+      "reyna": 0.0,
+      "sage": 0.1286,
+      "skye": 0.0,
+      "sova": 1.0,
+      "tejo": 0.0,
+      "veto": 0.0116,
+      "viper": 0.0,
+      "vyse": 0.2698,
+      "waylay": 0.0481,
+      "yoru": 0.1288
+    },
+    "Bind": {
+      "astra": 0.0797,
+      "breach": 0.0,
+      "brimstone": 0.8989,
+      "chamber": 0.1685,
+      "clove": 0.0055,
+      "cypher": 0.0125,
+      "deadlock": 0.0117,
+      "fade": 0.3719,
+      "gekko": 0.0519,
+      "harbor": 0.0278,
+      "iso": 0.0,
+      "jett": 0.0054,
+      "kayo": 0.0449,
+      "killjoy": 0.0,
+      "miks": 0.0063,
+      "neon": 0.4162,
+      "omen": 0.011,
+      "phoenix": 0.0565,
+      "raze": 0.3445,
+      "reyna": 0.0117,
+      "sage": 0.0175,
+      "skye": 0.6055,
+      "sova": 0.0,
+      "tejo": 0.0688,
+      "veto": 0.0165,
+      "viper": 0.9318,
+      "vyse": 0.0276,
+      "waylay": 0.4997,
+      "yoru": 0.3147
+    },
+    "Breeze": {
+      "astra": 0.3995,
+      "breach": 0.0037,
+      "brimstone": 0.0036,
+      "chamber": 0.0717,
+      "clove": 0.0,
+      "cypher": 0.0604,
+      "deadlock": 0.0,
+      "fade": 0.0036,
+      "gekko": 0.011,
+      "harbor": 0.3334,
+      "iso": 0.0291,
+      "jett": 0.5712,
+      "kayo": 0.2752,
+      "killjoy": 0.0,
+      "miks": 0.0,
+      "neon": 0.5279,
+      "omen": 0.2873,
+      "phoenix": 0.0981,
+      "raze": 0.0,
+      "reyna": 0.0,
+      "sage": 0.0559,
+      "skye": 0.0569,
+      "sova": 0.9511,
+      "tejo": 0.0036,
+      "veto": 0.0153,
+      "viper": 0.862,
+      "vyse": 0.0149,
+      "waylay": 0.0554,
+      "yoru": 0.3136
+    },
+    "Corrode": {
+      "astra": 0.2678,
+      "breach": 0.012,
+      "brimstone": 0.034,
+      "chamber": 0.1,
+      "clove": 0.0,
+      "cypher": 0.0784,
+      "deadlock": 0.0,
+      "fade": 0.632,
+      "gekko": 0.0444,
+      "harbor": 0.0,
+      "iso": 0.044,
+      "jett": 0.012,
+      "kayo": 0.222,
+      "killjoy": 0.0,
+      "miks": 0.0,
+      "neon": 0.2771,
+      "omen": 0.7662,
+      "phoenix": 0.1222,
+      "raze": 0.012,
+      "reyna": 0.0,
+      "sage": 0.1018,
+      "skye": 0.0669,
+      "sova": 0.268,
+      "tejo": 0.0442,
+      "veto": 0.0676,
+      "viper": 0.6329,
+      "vyse": 0.1109,
+      "waylay": 0.6436,
+      "yoru": 0.4444
+    },
+    "Fracture": {
+      "astra": 0.08,
+      "breach": 0.3342,
+      "brimstone": 0.9112,
+      "chamber": 0.0623,
+      "clove": 0.0,
+      "cypher": 0.6916,
+      "deadlock": 0.0098,
+      "fade": 0.3072,
+      "gekko": 0.0,
+      "harbor": 0.0,
+      "iso": 0.0,
+      "jett": 0.0786,
+      "kayo": 0.0175,
+      "killjoy": 0.0626,
+      "miks": 0.0,
+      "neon": 0.7805,
+      "omen": 0.0088,
+      "phoenix": 0.1477,
+      "raze": 0.3251,
+      "reyna": 0.0,
+      "sage": 0.0265,
+      "skye": 0.3521,
+      "sova": 0.0086,
+      "tejo": 0.3163,
+      "veto": 0.0881,
+      "viper": 0.0088,
+      "vyse": 0.0175,
+      "waylay": 0.3695,
+      "yoru": 0.0
+    },
+    "Haven": {
+      "astra": 0.1011,
+      "breach": 0.0266,
+      "brimstone": 0.0,
+      "chamber": 0.1956,
+      "clove": 0.0,
+      "cypher": 0.5,
+      "deadlock": 0.0238,
+      "fade": 0.145,
+      "gekko": 0.0,
+      "harbor": 0.003,
+      "iso": 0.0137,
+      "jett": 0.1414,
+      "kayo": 0.0,
+      "killjoy": 0.2713,
+      "miks": 0.0,
+      "neon": 0.7691,
+      "omen": 0.8994,
+      "phoenix": 0.3599,
+      "raze": 0.007,
+      "reyna": 0.0,
+      "sage": 0.0,
+      "skye": 0.1036,
+      "sova": 0.7517,
+      "tejo": 0.0102,
+      "veto": 0.0202,
+      "viper": 0.2821,
+      "vyse": 0.0161,
+      "waylay": 0.1587,
+      "yoru": 0.2032
+    },
+    "Lotus": {
+      "astra": 0.0052,
+      "breach": 0.0052,
+      "brimstone": 0.0,
+      "chamber": 0.0675,
+      "clove": 0.0,
+      "cypher": 0.2252,
+      "deadlock": 0.0484,
+      "fade": 0.8182,
+      "gekko": 0.0,
+      "harbor": 0.0079,
+      "iso": 0.0052,
+      "jett": 0.0909,
+      "kayo": 0.0,
+      "killjoy": 0.0873,
+      "miks": 0.0047,
+      "neon": 0.6005,
+      "omen": 1.0,
+      "phoenix": 0.0356,
+      "raze": 0.573,
+      "reyna": 0.0,
+      "sage": 0.0491,
+      "skye": 0.1708,
+      "sova": 0.0128,
+      "tejo": 0.0,
+      "veto": 0.0403,
+      "viper": 0.4496,
+      "vyse": 0.5025,
+      "waylay": 0.2016,
+      "yoru": 0.0134
+    },
+    "Pearl": {
+      "astra": 0.974,
+      "breach": 0.0,
+      "brimstone": 0.0217,
+      "chamber": 0.2679,
+      "clove": 0.0,
+      "cypher": 0.1295,
+      "deadlock": 0.0,
+      "fade": 0.487,
+      "gekko": 0.0,
+      "harbor": 0.018,
+      "iso": 0.0,
+      "jett": 0.0724,
+      "kayo": 0.1374,
+      "killjoy": 0.4691,
+      "miks": 0.0,
+      "neon": 0.689,
+      "omen": 0.005,
+      "phoenix": 0.3121,
+      "raze": 0.0227,
+      "reyna": 0.0,
+      "sage": 0.0088,
+      "skye": 0.0674,
+      "sova": 0.3681,
+      "tejo": 0.2729,
+      "veto": 0.0409,
+      "viper": 0.0043,
+      "vyse": 0.1123,
+      "waylay": 0.242,
+      "yoru": 0.2862
+    },
+    "Split": {
+      "astra": 0.2159,
+      "breach": 0.0317,
+      "brimstone": 0.0,
+      "chamber": 0.0292,
+      "clove": 0.0,
+      "cypher": 0.0414,
+      "deadlock": 0.0193,
+      "fade": 0.5716,
+      "gekko": 0.0,
+      "harbor": 0.0064,
+      "iso": 0.0,
+      "jett": 0.1133,
+      "kayo": 0.0065,
+      "killjoy": 0.0,
+      "miks": 0.0,
+      "neon": 0.4669,
+      "omen": 0.7841,
+      "phoenix": 0.0597,
+      "raze": 0.5157,
+      "reyna": 0.0,
+      "sage": 0.0566,
+      "skye": 0.4219,
+      "sova": 0.0,
+      "tejo": 0.0348,
+      "veto": 0.0192,
+      "viper": 0.9091,
+      "vyse": 0.1191,
+      "waylay": 0.3219,
+      "yoru": 0.2624
+    },
+    "Summit": {
+      "astra": 0.2067,
+      "breach": 0.0,
+      "brimstone": 0.0417,
+      "chamber": 0.21,
+      "clove": 0.0,
+      "cypher": 0.5417,
+      "deadlock": 0.0,
+      "fade": 0.5425,
+      "gekko": 0.0425,
+      "harbor": 0.2058,
+      "iso": 0.0,
+      "jett": 0.0817,
+      "kayo": 0.0417,
+      "killjoy": 0.0,
+      "miks": 0.0,
+      "neon": 0.5,
+      "omen": 0.71,
+      "phoenix": 0.2892,
+      "raze": 0.2942,
+      "reyna": 0.0,
+      "sage": 0.1242,
+      "skye": 0.1692,
+      "sova": 0.1667,
+      "tejo": 0.1242,
+      "veto": 0.0425,
+      "viper": 0.2933,
+      "vyse": 0.0417,
+      "waylay": 0.3358,
+      "yoru": 0.0
+    },
+    "Sunset": {
+      "astra": 0.0,
+      "breach": 0.04,
+      "brimstone": 0.0,
+      "chamber": 0.2816,
+      "clove": 0.0,
+      "cypher": 0.5396,
+      "deadlock": 0.0408,
+      "fade": 0.2616,
+      "gekko": 0.02,
+      "harbor": 0.0,
+      "iso": 0.0,
+      "jett": 0.04,
+      "kayo": 0.1012,
+      "killjoy": 0.0,
+      "miks": 0.0,
+      "neon": 0.9008,
+      "omen": 1.0,
+      "phoenix": 0.3412,
+      "raze": 0.102,
+      "reyna": 0.0,
+      "sage": 0.3588,
+      "skye": 0.0208,
+      "sova": 0.662,
+      "tejo": 0.0,
+      "veto": 0.02,
+      "viper": 0.1592,
+      "vyse": 0.0,
+      "waylay": 0.08,
+      "yoru": 0.0396
+    }
+  },
+  "byRegion": {
+    "Americas": [
+      {
+        "agent": "viper",
+        "pickRate": 0.5331658291457286
+      },
+      {
+        "agent": "neon",
+        "pickRate": 0.5303517587939699
+      },
+      {
+        "agent": "omen",
+        "pickRate": 0.46341708542713567
+      },
+      {
+        "agent": "sova",
+        "pickRate": 0.4590954773869347
+      },
+      {
+        "agent": "fade",
+        "pickRate": 0.3598994974874372
+      },
+      {
+        "agent": "astra",
+        "pickRate": 0.352964824120603
+      },
+      {
+        "agent": "waylay",
+        "pickRate": 0.2391457286432161
+      },
+      {
+        "agent": "phoenix",
+        "pickRate": 0.21030150753768848
+      },
+      {
+        "agent": "yoru",
+        "pickRate": 0.1872361809045226
+      },
+      {
+        "agent": "vyse",
+        "pickRate": 0.18165829145728643
+      },
+      {
+        "agent": "chamber",
+        "pickRate": 0.17462311557788945
+      },
+      {
+        "agent": "skye",
+        "pickRate": 0.148643216080402
+      },
+      {
+        "agent": "raze",
+        "pickRate": 0.1478391959798995
+      },
+      {
+        "agent": "jett",
+        "pickRate": 0.1449748743718593
+      },
+      {
+        "agent": "brimstone",
+        "pickRate": 0.1277889447236181
+      },
+      {
+        "agent": "harbor",
+        "pickRate": 0.12733668341708543
+      },
+      {
+        "agent": "kayo",
+        "pickRate": 0.12211055276381907
+      },
+      {
+        "agent": "cypher",
+        "pickRate": 0.11276381909547739
+      },
+      {
+        "agent": "killjoy",
+        "pickRate": 0.10809045226130654
+      },
+      {
+        "agent": "tejo",
+        "pickRate": 0.09603015075376885
+      },
+      {
+        "agent": "sage",
+        "pickRate": 0.04814070351758794
+      },
+      {
+        "agent": "veto",
+        "pickRate": 0.044070351758793966
+      },
+      {
+        "agent": "breach",
+        "pickRate": 0.03376884422110553
+      },
+      {
+        "agent": "iso",
+        "pickRate": 0.02743718592964824
+      },
+      {
+        "agent": "deadlock",
+        "pickRate": 0.0025628140703517588
+      },
+      {
+        "agent": "clove",
+        "pickRate": 0.0
+      },
+      {
+        "agent": "gekko",
+        "pickRate": 0.0
+      },
+      {
+        "agent": "miks",
+        "pickRate": 0.0
+      },
+      {
+        "agent": "reyna",
+        "pickRate": 0.0
+      }
+    ],
+    "China": [
+      {
+        "agent": "omen",
+        "pickRate": 0.6218867924528302
+      },
+      {
+        "agent": "neon",
+        "pickRate": 0.6067547169811321
+      },
+      {
+        "agent": "viper",
+        "pickRate": 0.477245283018868
+      },
+      {
+        "agent": "waylay",
+        "pickRate": 0.4283396226415094
+      },
+      {
+        "agent": "sova",
+        "pickRate": 0.34713207547169805
+      },
+      {
+        "agent": "fade",
+        "pickRate": 0.30743396226415093
+      },
+      {
+        "agent": "cypher",
+        "pickRate": 0.2944150943396227
+      },
+      {
+        "agent": "skye",
+        "pickRate": 0.2726037735849056
+      },
+      {
+        "agent": "astra",
+        "pickRate": 0.23158490566037737
+      },
+      {
+        "agent": "yoru",
+        "pickRate": 0.1990943396226415
+      },
+      {
+        "agent": "raze",
+        "pickRate": 0.1702264150943396
+      },
+      {
+        "agent": "brimstone",
+        "pickRate": 0.15169811320754714
+      },
+      {
+        "agent": "jett",
+        "pickRate": 0.14279245283018868
+      },
+      {
+        "agent": "killjoy",
+        "pickRate": 0.1397735849056604
+      },
+      {
+        "agent": "phoenix",
+        "pickRate": 0.11007547169811321
+      },
+      {
+        "agent": "tejo",
+        "pickRate": 0.0870943396226415
+      },
+      {
+        "agent": "kayo",
+        "pickRate": 0.0868679245283019
+      },
+      {
+        "agent": "chamber",
+        "pickRate": 0.08132075471698114
+      },
+      {
+        "agent": "vyse",
+        "pickRate": 0.05528301886792453
+      },
+      {
+        "agent": "breach",
+        "pickRate": 0.04090566037735849
+      },
+      {
+        "agent": "sage",
+        "pickRate": 0.0400377358490566
+      },
+      {
+        "agent": "harbor",
+        "pickRate": 0.03924528301886793
+      },
+      {
+        "agent": "veto",
+        "pickRate": 0.03139622641509434
+      },
+      {
+        "agent": "gekko",
+        "pickRate": 0.017283018867924528
+      },
+      {
+        "agent": "deadlock",
+        "pickRate": 0.009056603773584906
+      },
+      {
+        "agent": "reyna",
+        "pickRate": 0.006339622641509434
+      },
+      {
+        "agent": "miks",
+        "pickRate": 0.004603773584905661
+      },
+      {
+        "agent": "iso",
+        "pickRate": 0.003169811320754717
+      },
+      {
+        "agent": "clove",
+        "pickRate": 0.0
+      }
+    ],
+    "EMEA": [
+      {
+        "agent": "neon",
+        "pickRate": 0.5753809523809523
+      },
+      {
+        "agent": "omen",
+        "pickRate": 0.5201904761904762
+      },
+      {
+        "agent": "viper",
+        "pickRate": 0.47280952380952385
+      },
+      {
+        "agent": "sova",
+        "pickRate": 0.436047619047619
+      },
+      {
+        "agent": "fade",
+        "pickRate": 0.3757142857142857
+      },
+      {
+        "agent": "astra",
+        "pickRate": 0.337
+      },
+      {
+        "agent": "cypher",
+        "pickRate": 0.2982380952380952
+      },
+      {
+        "agent": "raze",
+        "pickRate": 0.2529047619047619
+      },
+      {
+        "agent": "waylay",
+        "pickRate": 0.22742857142857142
+      },
+      {
+        "agent": "yoru",
+        "pickRate": 0.20523809523809525
+      },
+      {
+        "agent": "phoenix",
+        "pickRate": 0.1742857142857143
+      },
+      {
+        "agent": "skye",
+        "pickRate": 0.168
+      },
+      {
+        "agent": "jett",
+        "pickRate": 0.1619047619047619
+      },
+      {
+        "agent": "brimstone",
+        "pickRate": 0.1427142857142857
+      },
+      {
+        "agent": "kayo",
+        "pickRate": 0.11423809523809525
+      },
+      {
+        "agent": "vyse",
+        "pickRate": 0.09671428571428572
+      },
+      {
+        "agent": "chamber",
+        "pickRate": 0.09666666666666665
+      },
+      {
+        "agent": "tejo",
+        "pickRate": 0.08380952380952382
+      },
+      {
+        "agent": "killjoy",
+        "pickRate": 0.07019047619047619
+      },
+      {
+        "agent": "breach",
+        "pickRate": 0.045428571428571436
+      },
+      {
+        "agent": "sage",
+        "pickRate": 0.04385714285714286
+      },
+      {
+        "agent": "veto",
+        "pickRate": 0.04314285714285714
+      },
+      {
+        "agent": "harbor",
+        "pickRate": 0.03328571428571429
+      },
+      {
+        "agent": "deadlock",
+        "pickRate": 0.010428571428571431
+      },
+      {
+        "agent": "gekko",
+        "pickRate": 0.007523809523809524
+      },
+      {
+        "agent": "clove",
+        "pickRate": 0.0
+      },
+      {
+        "agent": "iso",
+        "pickRate": 0.0
+      },
+      {
+        "agent": "miks",
+        "pickRate": 0.0
+      },
+      {
+        "agent": "reyna",
+        "pickRate": 0.0
+      }
+    ],
+    "International": [
+      {
+        "agent": "omen",
+        "pickRate": 0.6019354838709678
+      },
+      {
+        "agent": "viper",
+        "pickRate": 0.4732258064516129
+      },
+      {
+        "agent": "sova",
+        "pickRate": 0.4318548387096774
+      },
+      {
+        "agent": "fade",
+        "pickRate": 0.385241935483871
+      },
+      {
+        "agent": "neon",
+        "pickRate": 0.38185483870967746
+      },
+      {
+        "agent": "yoru",
+        "pickRate": 0.3054838709677419
+      },
+      {
+        "agent": "jett",
+        "pickRate": 0.2739516129032258
+      },
+      {
+        "agent": "astra",
+        "pickRate": 0.26991935483870966
+      },
+      {
+        "agent": "raze",
+        "pickRate": 0.2658064516129032
+      },
+      {
+        "agent": "waylay",
+        "pickRate": 0.24991935483870967
+      },
+      {
+        "agent": "vyse",
+        "pickRate": 0.2095967741935484
+      },
+      {
+        "agent": "phoenix",
+        "pickRate": 0.20580645161290323
+      },
+      {
+        "agent": "cypher",
+        "pickRate": 0.20338709677419353
+      },
+      {
+        "agent": "skye",
+        "pickRate": 0.1771774193548387
+      },
+      {
+        "agent": "chamber",
+        "pickRate": 0.1214516129032258
+      },
+      {
+        "agent": "brimstone",
+        "pickRate": 0.10145161290322582
+      },
+      {
+        "agent": "killjoy",
+        "pickRate": 0.08282258064516129
+      },
+      {
+        "agent": "sage",
+        "pickRate": 0.06290322580645161
+      },
+      {
+        "agent": "tejo",
+        "pickRate": 0.05903225806451613
+      },
+      {
+        "agent": "harbor",
+        "pickRate": 0.05475806451612903
+      },
+      {
+        "agent": "kayo",
+        "pickRate": 0.03620967741935484
+      },
+      {
+        "agent": "deadlock",
+        "pickRate": 0.02620967741935484
+      },
+      {
+        "agent": "breach",
+        "pickRate": 0.020967741935483872
+      },
+      {
+        "agent": "iso",
+        "pickRate": 0.014274193548387097
+      },
+      {
+        "agent": "gekko",
+        "pickRate": 0.004758064516129032
+      },
+      {
+        "agent": "veto",
+        "pickRate": 0.004758064516129032
+      },
+      {
+        "agent": "clove",
+        "pickRate": 0.0
+      },
+      {
+        "agent": "miks",
+        "pickRate": 0.0
+      },
+      {
+        "agent": "reyna",
+        "pickRate": 0.0
+      }
+    ],
+    "Pacific": [
+      {
+        "agent": "neon",
+        "pickRate": 0.5543961352657004
+      },
+      {
+        "agent": "omen",
+        "pickRate": 0.5430434782608696
+      },
+      {
+        "agent": "viper",
+        "pickRate": 0.4353623188405798
+      },
+      {
+        "agent": "sova",
+        "pickRate": 0.3832850241545893
+      },
+      {
+        "agent": "fade",
+        "pickRate": 0.36801932367149753
+      },
+      {
+        "agent": "yoru",
+        "pickRate": 0.32188405797101455
+      },
+      {
+        "agent": "astra",
+        "pickRate": 0.28144927536231884
+      },
+      {
+        "agent": "raze",
+        "pickRate": 0.23497584541062802
+      },
+      {
+        "agent": "jett",
+        "pickRate": 0.20396135265700485
+      },
+      {
+        "agent": "waylay",
+        "pickRate": 0.19985507246376813
+      },
+      {
+        "agent": "skye",
+        "pickRate": 0.1877294685990338
+      },
+      {
+        "agent": "cypher",
+        "pickRate": 0.18550724637681162
+      },
+      {
+        "agent": "phoenix",
+        "pickRate": 0.1629951690821256
+      },
+      {
+        "agent": "brimstone",
+        "pickRate": 0.16038647342995171
+      },
+      {
+        "agent": "chamber",
+        "pickRate": 0.15584541062801935
+      },
+      {
+        "agent": "killjoy",
+        "pickRate": 0.1270048309178744
+      },
+      {
+        "agent": "vyse",
+        "pickRate": 0.09599033816425122
+      },
+      {
+        "agent": "tejo",
+        "pickRate": 0.07391304347826087
+      },
+      {
+        "agent": "veto",
+        "pickRate": 0.06681159420289855
+      },
+      {
+        "agent": "kayo",
+        "pickRate": 0.0627536231884058
+      },
+      {
+        "agent": "breach",
+        "pickRate": 0.058888888888888886
+      },
+      {
+        "agent": "harbor",
+        "pickRate": 0.04478260869565218
+      },
+      {
+        "agent": "sage",
+        "pickRate": 0.04164251207729469
+      },
+      {
+        "agent": "deadlock",
+        "pickRate": 0.03579710144927536
+      },
+      {
+        "agent": "gekko",
+        "pickRate": 0.010193236714975847
+      },
+      {
+        "agent": "iso",
+        "pickRate": 0.005120772946859904
+      },
+      {
+        "agent": "miks",
+        "pickRate": 0.002028985507246377
+      },
+      {
+        "agent": "clove",
+        "pickRate": 0.0
+      },
+      {
+        "agent": "reyna",
+        "pickRate": 0.0
+      }
+    ]
+  }
+}

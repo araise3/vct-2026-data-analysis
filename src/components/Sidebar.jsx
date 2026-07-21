@@ -4,6 +4,7 @@ const items = [
   { to: '/', label: 'Overview', icon: OverviewIcon },
   { to: '/players', label: 'Players', icon: PlayersIcon },
   { to: '/teams', label: 'Teams', icon: TeamsIcon },
+  { to: '/agents', label: 'Agents', icon: AgentsIcon },
   { to: '/economy', label: 'Economy', icon: EconomyIcon },
 ]
 
@@ -72,6 +73,16 @@ function EconomyIcon(props) {
     <svg viewBox="0 0 16 16" fill="none" {...props}>
       <path d="M2 13.5V7l3-2 3 2 3-4 3 3v7.5" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
       <path d="M1.5 13.5h13" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function AgentsIcon(props) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" {...props}>
+      <circle cx="8" cy="5.2" r="3" stroke="currentColor" strokeWidth="1.3" />
+      <path d="M8 8.2c-2.8 0-4.5 1.6-5 4.2h10c-.5-2.6-2.2-4.2-5-4.2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+      <path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.4" />
     </svg>
   )
 }

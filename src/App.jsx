@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar'
 import Overview from './pages/Overview'
 import Players from './pages/Players'
 import Teams from './pages/Teams'
+import Agents from './pages/Agents'
 import Economy from './pages/Economy'
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
             <Route path="/" element={<Overview />} />
             <Route path="/players" element={<Players />} />
             <Route path="/teams" element={<Teams />} />
+            <Route path="/agents" element={<Agents />} />
             <Route path="/economy" element={<Economy />} />
           </Routes>
         </main>

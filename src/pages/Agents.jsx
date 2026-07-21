@@ -10,12 +10,30 @@ const REGION_OPTIONS = ['All', 'Americas', 'EMEA', 'Pacific', 'China', 'Internat
 export default function Agents() {
   const { data, loading } = useData('agents')
   const [region, setRegion] = useState('All')
+  const [stage, setStage] = useState('All')
+
+  const availableStages = useMemo(() => {
+    if (!data || region === 'All') return []
+    return data.regionStages[region] || []
+  }, [data, region])
 
   const topAgents = useMemo(() => {
     if (!data) return []
-    const source = region === 'All' ? data.overallPickRates : (data.byRegion[region] || [])
+    let source
+    if (region === 'All') {
+      source = data.overallPickRates
+    } else if (stage === 'All' || !availableStages.includes(stage)) {
+      source = data.byRegion[region] || []
+    } else {
+      source = data.byRegionStage[region]?.[stage] || []
+    }
     return source.slice(0, 15)
-  }, [data, region])
+  }, [data, region, stage, availableStages])
+
+  function handleRegionChange(newRegion) {
+    setRegion(newRegion)
+    setStage('All') // reset the dependent filter whenever the region changes
+  }
 
   const matrixRows = useMemo(() => {
     if (!data) return []
@@ -51,13 +69,26 @@ export default function Agents() {
           Pick rates and map performance across the season, weighted by rounds played
           (an event with more rounds counts for more than a small one).
         </p>
+        <p className="text-muted text-xs mt-2 max-w-2xl">
+          Filtering by phase within a stage (Group Stage / Playoffs / Play-ins) isn't available
+          here — VLR's agent-utilization page is scraped as one aggregate per whole event, with
+          no breakdown by phase. That granularity only exists at the individual-match level
+          elsewhere on this site.
+        </p>
       </div>
 
-      <FilterChips options={REGION_OPTIONS} value={region} onChange={setRegion} />
+      <div className="flex flex-col gap-3">
+        <FilterChips options={REGION_OPTIONS} value={region} onChange={handleRegionChange} />
+        {region !== 'All' && availableStages.length > 0 && (
+          <FilterChips options={['All', ...availableStages]} value={stage} onChange={setStage} />
+        )}
+      </div>
 
       <div className="bg-surface border border-hairline rounded-2xl p-5">
         <h3 className="font-display text-sm font-semibold text-ink mb-4">
-          Top 15 agents by pick rate {region !== 'All' && `— ${region}`}
+          Top 15 agents by pick rate
+          {region !== 'All' && ` — ${region}`}
+          {region !== 'All' && stage !== 'All' && ` · ${stage}`}
         </h3>
         <HorizontalBarChart data={topAgents} labelKey="agent" valueKey="pickRate" formatValue={(v) => pct(v)} />
       </div>

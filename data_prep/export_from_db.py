@@ -305,8 +305,8 @@ def main():
     map_agent_util = pd.read_sql_query("SELECT * FROM event_map_agent_utilization", conn2)
     conn2.close()
 
-    map_summary = map_summary.merge(events[['event_id', 'region']], on='event_id', how='left')
-    map_agent_util = map_agent_util.merge(events[['event_id', 'region']], on='event_id', how='left')
+    map_summary = map_summary.merge(events[['event_id', 'region', 'stage']], on='event_id', how='left')
+    map_agent_util = map_agent_util.merge(events[['event_id', 'region', 'stage']], on='event_id', how='left')
 
     def pct_str_to_frac(s):
         return pd.to_numeric(s.astype(str).str.replace('%', '', regex=False), errors='coerce') / 100
@@ -362,16 +362,30 @@ def main():
 
     overall_all_row = util_with_rounds[util_with_rounds['map_name'] == 'ALL']
 
+    # Region -> Stage -> list of stages that actually exist (for the
+    # cascading filter; "if they exist" per region, not hardcoded)
+    region_stages = {}
+    for region, sub in events.groupby('region'):
+        region_stages[region] = sorted(sub['stage'].dropna().unique().tolist())
+
+    by_region = {}
+    by_region_stage = {}
+    for region, sub in overall_all_row.groupby('region'):
+        by_region[region] = sorted(weighted_agent_table(sub), key=lambda x: -(x['pickRate'] or 0))
+        by_region_stage[region] = {}
+        for stage, sub2 in sub.groupby('stage'):
+            by_region_stage[region][stage] = sorted(
+                weighted_agent_table(sub2), key=lambda x: -(x['pickRate'] or 0)
+            )
+
     agents_out = {
         "overallPickRates": sorted(weighted_agent_table(overall_all_row), key=lambda x: -(x['pickRate'] or 0)),
         "mapWinRates": map_win_table(map_summary),
         "mapAgentMatrix": map_agent_matrix(util_with_rounds),
-        "byRegion": {},
+        "regionStages": region_stages,
+        "byRegion": by_region,
+        "byRegionStage": by_region_stage,
     }
-    for region, sub in util_with_rounds[util_with_rounds['map_name'] == 'ALL'].groupby('region'):
-        agents_out["byRegion"][region] = sorted(
-            weighted_agent_table(sub), key=lambda x: -(x['pickRate'] or 0)
-        )
 
     with open(f"{OUT}/agents.json", "w") as f:
         json.dump(agents_out, f, indent=2)

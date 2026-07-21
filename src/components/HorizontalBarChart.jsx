@@ -13,7 +13,7 @@ export default function HorizontalBarChart({ data, labelKey, valueKey, formatVal
                 className="h-full rounded-lg bg-accent/70 flex items-center justify-end pr-2 transition-all"
                 style={{ width: `${widthPct}%` }}
               >
-                <span className="font-mono text-[11px] text-base font-medium">
+                <span className="font-body text-[11px] text-base font-medium">
                   {formatValue ? formatValue(value) : value}
                 </span>
               </div>

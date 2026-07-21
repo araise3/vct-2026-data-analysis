@@ -40,7 +40,7 @@ export default function Overview() {
                 <div className="text-sm text-ink font-medium truncate">{p.player}</div>
                 <div className="text-xs text-muted truncate">{p.team}</div>
               </div>
-              <span className="font-mono text-sm text-good font-medium">{rating(p.rating)}</span>
+              <span className="font-body text-sm text-good font-medium">{rating(p.rating)}</span>
             </>
           )}
         />
@@ -53,7 +53,7 @@ export default function Overview() {
                 <div className="text-sm text-ink font-medium truncate">{t.team}</div>
                 <div className="text-xs text-muted truncate">{t.region} · {t.mapsWon}/{t.mapsPlayed} maps</div>
               </div>
-              <span className="font-mono text-sm text-good font-medium">{pct(t.mapWinPct)}</span>
+              <span className="font-body text-sm text-good font-medium">{pct(t.mapWinPct)}</span>
             </>
           )}
         />

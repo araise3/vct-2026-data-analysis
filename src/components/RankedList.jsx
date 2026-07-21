@@ -8,7 +8,7 @@ export default function RankedList({ title, rows, renderRow }) {
             key={i}
             className="flex items-center gap-3 py-2 px-2 rounded-xl hover:bg-surface2 transition-colors"
           >
-            <span className="font-mono text-xs text-muted w-5 text-right shrink-0">{i + 1}</span>
+            <span className="font-body text-xs text-muted w-5 text-right shrink-0">{i + 1}</span>
             {renderRow(row)}
           </div>
         ))}

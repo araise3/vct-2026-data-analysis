@@ -13,7 +13,7 @@ export default function RoundSquares({ results, size = 7 }) {
           style={{
             width: size,
             height: size,
-            backgroundColor: won ? '#30A46C' : '#3A2426',
+            backgroundColor: won ? '#4ac97e' : '#4a2b28',
             opacity: won ? 1 : 0.7,
           }}
           title={won ? 'Round won' : 'Round lost'}

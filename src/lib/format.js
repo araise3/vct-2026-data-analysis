@@ -21,18 +21,18 @@ export function compact(v) {
   return new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(v)
 }
 
-// Maps a value's rank within [min, max] to a red -> amber -> green color,
-// matching the same diverging scale used in the Excel workbook.
+// Maps a value's rank within [min, max] to a red -> gold -> green color,
+// using rft.gg's exact destructive/legendary/success token values.
 export function scaleColor(value, min, max) {
   if (value === null || value === undefined || Number.isNaN(value) || min === max) {
     return 'transparent'
   }
   const t = Math.max(0, Math.min(1, (value - min) / (max - min)))
-  // red (229,72,77) -> amber (245,166,35) -> green (48,164,108)
+  // destructive (247,102,94) -> legendary (255,212,125) -> success (74,201,126)
   const stops = [
-    [229, 72, 77],
-    [245, 166, 35],
-    [48, 164, 108],
+    [247, 102, 94],
+    [255, 212, 125],
+    [74, 201, 126],
   ]
   const seg = t < 0.5 ? 0 : 1
   const localT = t < 0.5 ? t / 0.5 : (t - 0.5) / 0.5

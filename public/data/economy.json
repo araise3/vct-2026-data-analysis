@@ -1,69 +1,69 @@
 {
   "overall": {
     "eco": {
-      "rounds": 4238,
-      "won": 1525,
-      "winPct": 0.3598
+      "rounds": 4534,
+      "won": 1629,
+      "winPct": 0.3593
     },
     "semiEco": {
-      "rounds": 1668,
-      "won": 354,
-      "winPct": 0.2122
+      "rounds": 1789,
+      "won": 378,
+      "winPct": 0.2113
     },
     "semiBuy": {
-      "rounds": 6369,
-      "won": 3315,
-      "winPct": 0.5205
+      "rounds": 6838,
+      "won": 3544,
+      "winPct": 0.5183
     },
     "fullBuy": {
-      "rounds": 17149,
-      "won": 9518,
-      "winPct": 0.555
+      "rounds": 18405,
+      "won": 10232,
+      "winPct": 0.5559
     }
   },
   "byRegion": {
     "Americas": {
       "eco": {
-        "rounds": 1128,
-        "won": 399,
-        "winPct": 0.3537
+        "rounds": 1235,
+        "won": 434,
+        "winPct": 0.3514
       },
       "semiEco": {
-        "rounds": 419,
-        "won": 87,
-        "winPct": 0.2076
+        "rounds": 456,
+        "won": 94,
+        "winPct": 0.2061
       },
       "semiBuy": {
-        "rounds": 1736,
-        "won": 929,
-        "winPct": 0.5351
+        "rounds": 1921,
+        "won": 1017,
+        "winPct": 0.5294
       },
       "fullBuy": {
-        "rounds": 4423,
-        "won": 2438,
-        "winPct": 0.5512
+        "rounds": 4832,
+        "won": 2677,
+        "winPct": 0.554
       }
     },
     "EMEA": {
       "eco": {
-        "rounds": 1190,
-        "won": 432,
-        "winPct": 0.363
+        "rounds": 1286,
+        "won": 468,
+        "winPct": 0.3639
       },
       "semiEco": {
-        "rounds": 452,
-        "won": 93,
-        "winPct": 0.2058
+        "rounds": 492,
+        "won": 99,
+        "winPct": 0.2012
       },
       "semiBuy": {
-        "rounds": 1802,
-        "won": 929,
-        "winPct": 0.5155
+        "rounds": 1946,
+        "won": 998,
+        "winPct": 0.5128
       },
       "fullBuy": {
-        "rounds": 4916,
-        "won": 2726,
-        "winPct": 0.5545
+        "rounds": 5328,
+        "won": 2961,
+        "winPct": 0.5557
       }
     },
     "International": {
@@ -90,24 +90,24 @@
     },
     "Pacific": {
       "eco": {
-        "rounds": 1158,
-        "won": 419,
-        "winPct": 0.3618
+        "rounds": 1251,
+        "won": 452,
+        "winPct": 0.3613
       },
       "semiEco": {
-        "rounds": 510,
-        "won": 118,
-        "winPct": 0.2314
+        "rounds": 554,
+        "won": 129,
+        "winPct": 0.2329
       },
       "semiBuy": {
-        "rounds": 1688,
-        "won": 883,
-        "winPct": 0.5231
+        "rounds": 1828,
+        "won": 955,
+        "winPct": 0.5224
       },
       "fullBuy": {
-        "rounds": 4864,
-        "won": 2690,
-        "winPct": 0.553
+        "rounds": 5299,
+        "won": 2930,
+        "winPct": 0.5529
       }
     }
   }

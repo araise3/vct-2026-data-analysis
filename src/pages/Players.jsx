@@ -10,6 +10,7 @@ export default function Players() {
   const { data, loading } = useData('players')
   const [scope, setScope] = useState('Non-China only')
   const [useIntlStatsForChina, setUseIntlStatsForChina] = useState(true)
+  const [ratedOnlyForChina, setRatedOnlyForChina] = useState(false)
   const [search, setSearch] = useState('')
 
   const rows = useMemo(() => {
@@ -27,19 +28,24 @@ export default function Players() {
 
     return filtered
       .map((p) => {
+        // Intl-only takes priority when both are applicable: those rows are
+        // already guaranteed to have full data, so "rated-only" would be a
+        // no-op on top of it anyway.
         const useIntl = p.isChina && useIntlStatsForChina && p.hasIntlStats
-        const s = useIntl ? p.intlStats : p.stats
+        const useRatedOnly = !useIntl && p.isChina && ratedOnlyForChina && p.ratedOnlyStats
+        const s = useIntl ? p.intlStats : useRatedOnly ? p.ratedOnlyStats : p.stats
         if (!s) return null
         return {
           player: p.player,
           team: p.team,
           isChina: p.isChina,
           usingIntlStats: useIntl,
+          usingRatedOnlyStats: useRatedOnly,
           ...s,
         }
       })
       .filter(Boolean)
-  }, [data, scope, search, useIntlStatsForChina])
+  }, [data, scope, search, useIntlStatsForChina, ratedOnlyForChina])
 
   if (loading || !data) {
     return <div className="text-muted text-sm">Loading…</div>
@@ -56,6 +62,11 @@ export default function Players() {
           {row.usingIntlStats && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent-bright font-body">
               Intl-only
+            </span>
+          )}
+          {row.usingRatedOnlyStats && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent-bright font-body">
+              Rated maps only
             </span>
           )}
         </div>
@@ -98,21 +109,35 @@ export default function Players() {
       </div>
 
       {(scope !== 'Non-China only') && (
-        <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
-          <input
-            type="checkbox"
-            checked={useIntlStatsForChina}
-            onChange={(e) => setUseIntlStatsForChina(e.target.checked)}
-            className="accent-accent w-4 h-4"
-          />
-          Use International-only stats for China players who also played Masters/EWC
-        </label>
+        <div className="flex flex-col gap-2">
+          <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
+            <input
+              type="checkbox"
+              checked={useIntlStatsForChina}
+              onChange={(e) => setUseIntlStatsForChina(e.target.checked)}
+              className="accent-accent w-4 h-4"
+            />
+            Use International-only stats for China players who also played Masters/EWC
+          </label>
+          <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
+            <input
+              type="checkbox"
+              checked={ratedOnlyForChina}
+              onChange={(e) => setRatedOnlyForChina(e.target.checked)}
+              className="accent-accent w-4 h-4"
+            />
+            Only include maps that came with a Rating 2.0 value (excludes ~21 China matches missing it)
+          </label>
+        </div>
       )}
 
       <div className="bg-surface2/40 border border-hairline rounded-xl px-4 py-3 text-xs text-muted leading-relaxed">
         China-region matches don't publish multi-kill, clutch, or economy data on VLR — those columns
         will read 0 for China players unless "Intl-only stats" is checked above and that player also
-        competed internationally.
+        competed internationally. Separately, ~21 China matches are missing Rating 2.0 specifically;
+        by default those maps still count toward a player's other stats (kills, ACS, etc.), which can
+        make a player's rating average reflect fewer maps than their other averages — check "Rated
+        maps only" above to make every stat consistent by excluding those maps entirely.
       </div>
 
       <DataTable columns={columns} rows={rows} defaultSortKey="avgRating" />

@@ -208,6 +208,19 @@ def main():
         if player in players_with_intl:
             intl_sub = sub[sub['region'] == 'International']
             entry["intlStats"] = player_stats(intl_sub)
+
+        # For China players specifically: a variant that excludes any map
+        # missing Rating 2.0 entirely (not just averaging around the gap),
+        # so every stat in this variant is drawn from the exact same set
+        # of maps -- consistent, rather than avgRating quietly covering
+        # fewer maps than avgAcs/avgKast/etc. Only meaningfully differs
+        # from "stats" for the ~9 China matches missing rating; harmless
+        # (identical) for everyone else.
+        if is_china:
+            rated_sub = sub[sub['rating'].notna()]
+            if len(rated_sub) < len(sub):
+                entry["ratedOnlyStats"] = player_stats(rated_sub)
+
         players_out.append(entry)
 
     with open(f"{OUT}/players.json", "w") as f:

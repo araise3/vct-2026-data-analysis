@@ -72,9 +72,9 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                 return (
                   <td
                     key={col.key}
-                    className={`px-4 py-2.5 font-mono text-[13px] whitespace-nowrap ${
-                      col.align === 'right' ? 'text-right' : 'text-left'
-                    } ${col.key === columns[0].key ? 'font-body text-ink' : 'text-ink/90'}`}
+                    className={`px-4 py-2.5 text-[13px] whitespace-nowrap ${
+                      col.align === 'right' ? 'text-right font-mono' : 'text-left font-body'
+                    } ${col.key === columns[0].key ? 'text-ink' : 'text-ink/90'}`}
                     style={bg ? { backgroundColor: bg } : undefined}
                   >
                     {col.format ? col.format(value, row) : value ?? '—'}

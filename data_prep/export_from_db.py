@@ -297,100 +297,135 @@ def main():
     print("events.json written")
 
     # ------------------------------------------------------------------
-    # agents.json — pick rates and map win% from the (now-fixed)
-    # event_map_summary / event_map_agent_utilization tables
+    # agents.json — pick rates and map win% computed directly from
+    # map_player_stats + maps + matches, rather than VLR's own
+    # /event/agents/ aggregate page. This is deliberately NOT the
+    # event_map_summary / event_map_agent_utilization tables: those are
+    # scraped as one aggregate per whole event with no way to filter by
+    # phase (Group Stage / Playoffs / etc). Every player's agent pick is
+    # already recorded per map in map_player_stats, and matches.stage has
+    # real per-match phase text ("Group Stage: Week 2", "Playoffs: Upper
+    # Quarterfinals") -- combining these gives full Region -> Stage ->
+    # Phase filterability for free, computed from data already scraped.
     # ------------------------------------------------------------------
-    conn2 = sqlite3.connect(DB_PATH)
-    map_summary = pd.read_sql_query("SELECT * FROM event_map_summary", conn2)
-    map_agent_util = pd.read_sql_query("SELECT * FROM event_map_agent_utilization", conn2)
-    conn2.close()
+    matches_tagged = matches.merge(
+        events[['event_id', 'stage']].rename(columns={'stage': 'event_stage'}),
+        on='event_id', how='left'
+    )
+    matches_tagged['phase'] = matches_tagged['stage'].str.split(':').str[0].str.strip()
 
-    map_summary = map_summary.merge(events[['event_id', 'region', 'stage']], on='event_id', how='left')
-    map_agent_util = map_agent_util.merge(events[['event_id', 'region', 'stage']], on='event_id', how='left')
-
-    def pct_str_to_frac(s):
-        return pd.to_numeric(s.astype(str).str.replace('%', '', regex=False), errors='coerce') / 100
-
-    map_summary['atk_win_frac'] = pct_str_to_frac(map_summary['atk_win_pct'])
-    map_summary['def_win_frac'] = pct_str_to_frac(map_summary['def_win_pct'])
-    map_agent_util['util_frac'] = pct_str_to_frac(map_agent_util['utilization_pct'])
-
-    # Weight each event+map's utilization % by that event+map's round count,
-    # since a pick rate from a 200-round event should count more than one
-    # from a 20-round event, rather than averaging the percentages flatly.
-    util_with_rounds = map_agent_util.merge(
-        map_summary[['event_id', 'map_name', 'rounds_played']],
-        on=['event_id', 'map_name'], how='left'
+    # Per-player-per-map rows, tagged with region/event-stage/phase/map name.
+    # Note: mps already has a 'region' column merged in earlier in this
+    # script (for players.json) -- only bring in event_stage/phase here to
+    # avoid a duplicate-column collision that silently suffixes both to
+    # region_x/region_y instead of a single clean 'region' column.
+    players_long = mps.merge(
+        matches_tagged[['match_id', 'event_stage', 'phase']], on='match_id', how='left'
+    )
+    maps_named = maps_df.merge(
+        matches_tagged[['match_id', 'region', 'event_stage', 'phase']], on='match_id', how='left'
+    )
+    players_long = players_long.merge(
+        maps_named[['match_id', 'map_index', 'map_name']], on=['match_id', 'map_index'], how='left'
     )
 
-    def weighted_agent_table(df):
-        df = df.dropna(subset=['rounds_played', 'util_frac'])
+    # Per-map rows (one per map, not per player) for ATK/DEF win rates --
+    # derived the same way VLR itself defines it: team1_atk_score +
+    # team2_atk_score = rounds won by whichever side was attacking that
+    # round, regardless of which named team, divided by total rounds.
+    maps_long = maps_named.dropna(subset=['winner']).copy()
+    maps_long['atk_win_rounds'] = maps_long['team1_atk_score'].fillna(0) + maps_long['team2_atk_score'].fillna(0)
+    maps_long['def_win_rounds'] = maps_long['team1_def_score'].fillna(0) + maps_long['team2_def_score'].fillna(0)
+
+    def pick_rate_table(df):
+        # Denominator is (maps * 2 teams), not (maps * 10 players) --
+        # confirmed every (map, team, agent) combo has exactly 1 player, so
+        # "pick rate" means "how often did a TEAM use this agent on this
+        # map", not "how often did an individual player." Dividing by the
+        # raw row count instead would undercount by exactly 5x.
         if len(df) == 0:
             return []
-        grouped = df.groupby('agent').apply(
-            lambda g: (g['util_frac'] * g['rounds_played']).sum() / g['rounds_played'].sum()
-            if g['rounds_played'].sum() else None
+        team_slots = len(df) / 5
+        counts = df['agent'].value_counts()
+        return sorted(
+            [clean_row({"agent": a, "pickRate": c / team_slots}) for a, c in counts.items()],
+            key=lambda x: -x['pickRate']
         )
-        return [clean_row({"agent": a, "pickRate": v}) for a, v in grouped.items()]
 
     def map_win_table(df):
-        df = df[df['map_name'] != 'ALL'].dropna(subset=['rounds_played'])
         out = []
         for map_name, g in df.groupby('map_name'):
-            total_rounds = g['rounds_played'].sum()
-            if total_rounds == 0:
+            total_rounds = g['rounds_total'].sum()
+            if not total_rounds:
                 continue
-            atk = (g['atk_win_frac'] * g['rounds_played']).sum() / total_rounds
-            defn = (g['def_win_frac'] * g['rounds_played']).sum() / total_rounds
             out.append(clean_row({
-                "mapName": map_name, "roundsPlayed": int(total_rounds),
-                "atkWinPct": atk, "defWinPct": defn,
+                "mapName": map_name,
+                "roundsPlayed": int(total_rounds),
+                "atkWinPct": g['atk_win_rounds'].sum() / total_rounds,
+                "defWinPct": g['def_win_rounds'].sum() / total_rounds,
             }))
         return sorted(out, key=lambda x: -x['roundsPlayed'])
 
     def map_agent_matrix(df):
-        df = df[df['map_name'] != 'ALL'].dropna(subset=['rounds_played', 'util_frac'])
         matrix = {}
         for map_name, g in df.groupby('map_name'):
-            agent_rates = {}
-            for agent, ga in g.groupby('agent'):
-                total = ga['rounds_played'].sum()
-                if total:
-                    agent_rates[agent] = round(float((ga['util_frac'] * ga['rounds_played']).sum() / total), 4)
-            matrix[map_name] = agent_rates
+            team_slots = len(g) / 5
+            if not team_slots:
+                continue
+            counts = g['agent'].value_counts()
+            matrix[map_name] = {a: round(float(c / team_slots), 4) for a, c in counts.items()}
         return matrix
 
-    overall_all_row = util_with_rounds[util_with_rounds['map_name'] == 'ALL']
-
-    # Region -> Stage -> list of stages that actually exist (for the
-    # cascading filter; "if they exist" per region, not hardcoded)
-    region_stages = {}
-    for region, sub in events.groupby('region'):
-        region_stages[region] = sorted(sub['stage'].dropna().unique().tolist())
-
-    by_region = {}
-    by_region_stage = {}
-    for region, sub in overall_all_row.groupby('region'):
-        by_region[region] = sorted(weighted_agent_table(sub), key=lambda x: -(x['pickRate'] or 0))
-        by_region_stage[region] = {}
-        for stage, sub2 in sub.groupby('stage'):
-            by_region_stage[region][stage] = sorted(
-                weighted_agent_table(sub2), key=lambda x: -(x['pickRate'] or 0)
-            )
-
-    agents_out = {
-        "overallPickRates": sorted(weighted_agent_table(overall_all_row), key=lambda x: -(x['pickRate'] or 0)),
-        "mapWinRates": map_win_table(map_summary),
-        "mapAgentMatrix": map_agent_matrix(util_with_rounds),
-        "regionStages": region_stages,
-        "byRegion": by_region,
-        "byRegionStage": by_region_stage,
+    # Cascade options: only stages/phases that actually exist per region
+    # (and per region+stage), not hardcoded -- an "if they exist" filter.
+    region_stages = {
+        region: sorted(sub['stage'].dropna().unique().tolist())
+        for region, sub in events.groupby('region')
     }
+    region_stage_phases = {}
+    for region, sub in matches_tagged.groupby('region'):
+        region_stage_phases[region] = {
+            stage: sorted(g['phase'].dropna().unique().tolist())
+            for stage, g in sub.groupby('event_stage')
+        }
+
+    def build_cascade(players_df, maps_df_):
+        cascade = {
+            "overall": {"pickRates": pick_rate_table(players_df), "mapWinRates": map_win_table(maps_df_)},
+            "byRegion": {},
+            "byRegionStage": {},
+            "byRegionStagePhase": {},
+        }
+        for region, sub_p in players_df.groupby('region'):
+            sub_m = maps_df_[maps_df_['region'] == region]
+            cascade["byRegion"][region] = {
+                "pickRates": pick_rate_table(sub_p), "mapWinRates": map_win_table(sub_m)
+            }
+            cascade["byRegionStage"][region] = {}
+            cascade["byRegionStagePhase"][region] = {}
+            for stage, sub_p2 in sub_p.groupby('event_stage'):
+                sub_m2 = sub_m[sub_m['event_stage'] == stage]
+                cascade["byRegionStage"][region][stage] = {
+                    "pickRates": pick_rate_table(sub_p2), "mapWinRates": map_win_table(sub_m2)
+                }
+                cascade["byRegionStagePhase"][region][stage] = {}
+                for phase, sub_p3 in sub_p2.groupby('phase'):
+                    sub_m3 = sub_m2[sub_m2['phase'] == phase]
+                    cascade["byRegionStagePhase"][region][stage][phase] = {
+                        "pickRates": pick_rate_table(sub_p3), "mapWinRates": map_win_table(sub_m3)
+                    }
+        return cascade
+
+    agents_out = build_cascade(players_long, maps_long)
+    agents_out["mapAgentMatrix"] = map_agent_matrix(players_long)
+    agents_out["regionStages"] = region_stages
+    agents_out["regionStagePhases"] = region_stage_phases
 
     with open(f"{OUT}/agents.json", "w") as f:
         json.dump(agents_out, f, indent=2)
-    print(f"agents.json written: {len(agents_out['overallPickRates'])} agents, "
-          f"{len(agents_out['mapWinRates'])} maps")
+    print(f"agents.json written: {len(agents_out['overall']['pickRates'])} agents, "
+          f"{len(agents_out['overall']['mapWinRates'])} maps, "
+          f"regions: {list(agents_out['regionStages'].keys())}")
 
 
 if __name__ == "__main__":

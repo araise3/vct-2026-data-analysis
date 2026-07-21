@@ -11,34 +11,38 @@ export default function Agents() {
   const { data, loading } = useData('agents')
   const [region, setRegion] = useState('All')
   const [stage, setStage] = useState('All')
+  const [phase, setPhase] = useState('All')
 
   const availableStages = useMemo(() => {
     if (!data || region === 'All') return []
     return data.regionStages[region] || []
   }, [data, region])
 
-  const topAgents = useMemo(() => {
-    if (!data) return []
-    let source
-    if (region === 'All') {
-      source = data.overallPickRates
-    } else if (stage === 'All' || !availableStages.includes(stage)) {
-      source = data.byRegion[region] || []
-    } else {
-      source = data.byRegionStage[region]?.[stage] || []
-    }
-    return source.slice(0, 15)
-  }, [data, region, stage, availableStages])
+  const availablePhases = useMemo(() => {
+    if (!data || region === 'All' || stage === 'All') return []
+    return data.regionStagePhases[region]?.[stage] || []
+  }, [data, region, stage])
 
-  function handleRegionChange(newRegion) {
-    setRegion(newRegion)
-    setStage('All') // reset the dependent filter whenever the region changes
-  }
+  // Picks the most specific scope currently selected, falling back to
+  // whatever is available -- e.g. selecting a region but leaving stage on
+  // "All" shows the region-wide numbers, not an error.
+  const scoped = useMemo(() => {
+    if (!data) return { pickRates: [], mapWinRates: [] }
+    if (region === 'All') return data.overall
+    if (stage === 'All') return data.byRegion[region] || data.overall
+    if (phase === 'All') return data.byRegionStage[region]?.[stage] || data.byRegion[region] || data.overall
+    return (
+      data.byRegionStagePhase[region]?.[stage]?.[phase] ||
+      data.byRegionStage[region]?.[stage] ||
+      data.byRegion[region] ||
+      data.overall
+    )
+  }, [data, region, stage, phase])
 
   const matrixRows = useMemo(() => {
     if (!data) return []
     const maps = Object.keys(data.mapAgentMatrix)
-    const agents = data.overallPickRates.map((a) => a.agent)
+    const agents = data.overall.pickRates.map((a) => a.agent)
     return agents.map((agent) => {
       const row = { agent }
       maps.forEach((mapName) => {
@@ -47,6 +51,17 @@ export default function Agents() {
       return row
     })
   }, [data])
+
+  function handleRegionChange(newRegion) {
+    setRegion(newRegion)
+    setStage('All')
+    setPhase('All')
+  }
+
+  function handleStageChange(newStage) {
+    setStage(newStage)
+    setPhase('All')
+  }
 
   if (loading || !data) {
     return <div className="text-muted text-sm">Loading…</div>
@@ -61,43 +76,46 @@ export default function Agents() {
     })),
   ]
 
+  const scopeLabel = [region !== 'All' && region, stage !== 'All' && stage, phase !== 'All' && phase]
+    .filter(Boolean)
+    .join(' · ')
+
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="font-display text-2xl font-semibold text-ink">Agents</h1>
         <p className="text-muted text-sm mt-1">
-          Pick rates and map performance across the season, weighted by rounds played
-          (an event with more rounds counts for more than a small one).
-        </p>
-        <p className="text-muted text-xs mt-2 max-w-2xl">
-          Filtering by phase within a stage (Group Stage / Playoffs / Play-ins) isn't available
-          here — VLR's agent-utilization page is scraped as one aggregate per whole event, with
-          no breakdown by phase. That granularity only exists at the individual-match level
-          elsewhere on this site.
+          Pick rates and map performance, computed directly from per-map player data (not VLR's
+          own aggregate page), so every stat here is filterable down to a specific phase.
         </p>
       </div>
 
       <div className="flex flex-col gap-3">
         <FilterChips options={REGION_OPTIONS} value={region} onChange={handleRegionChange} />
         {region !== 'All' && availableStages.length > 0 && (
-          <FilterChips options={['All', ...availableStages]} value={stage} onChange={setStage} />
+          <FilterChips options={['All', ...availableStages]} value={stage} onChange={handleStageChange} />
+        )}
+        {region !== 'All' && stage !== 'All' && availablePhases.length > 0 && (
+          <FilterChips options={['All', ...availablePhases]} value={phase} onChange={setPhase} />
         )}
       </div>
 
       <div className="bg-surface border border-hairline rounded-2xl p-5">
         <h3 className="font-display text-sm font-semibold text-ink mb-4">
-          Top 15 agents by pick rate
-          {region !== 'All' && ` — ${region}`}
-          {region !== 'All' && stage !== 'All' && ` · ${stage}`}
+          Top 15 agents by pick rate{scopeLabel && ` — ${scopeLabel}`}
         </h3>
-        <HorizontalBarChart data={topAgents} labelKey="agent" valueKey="pickRate" formatValue={(v) => pct(v)} />
+        <HorizontalBarChart
+          data={scoped.pickRates.slice(0, 15)}
+          labelKey="agent" valueKey="pickRate" formatValue={(v) => pct(v)}
+        />
       </div>
 
       <div className="bg-surface border border-hairline rounded-2xl p-5">
-        <h3 className="font-display text-sm font-semibold text-ink mb-2">Map win rates (attack vs. defense)</h3>
-        <p className="text-muted text-xs mb-4">Season-wide, all regions combined.</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {data.mapWinRates.map((m) => (
+        <h3 className="font-display text-sm font-semibold text-ink mb-2">
+          Map win rates (attack vs. defense){scopeLabel && ` — ${scopeLabel}`}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
+          {scoped.mapWinRates.map((m) => (
             <div key={m.mapName} className="bg-surface2/50 border border-hairline rounded-xl px-4 py-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-ink">{m.mapName}</span>
@@ -113,13 +131,16 @@ export default function Agents() {
               </div>
             </div>
           ))}
+          {scoped.mapWinRates.length === 0 && (
+            <p className="text-muted text-xs col-span-full">No maps played in this scope yet.</p>
+          )}
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
         <h3 className="font-display text-sm font-semibold text-ink">Pick rate by map</h3>
         <p className="text-muted text-xs">
-          Season-wide, all regions combined — sorted by overall pick rate.
+          Season-wide, all regions/stages combined — sorted by overall pick rate.
         </p>
         <DataTable columns={matrixColumns} rows={matrixRows} defaultSortKey={mapNames[0]} />
       </div>

@@ -3,6 +3,7 @@ import { useData } from '../lib/useData'
 import HorizontalBarChart from '../components/HorizontalBarChart'
 import DataTable from '../components/DataTable'
 import FilterChips from '../components/FilterChips'
+import AgentIcon from '../components/AgentIcon'
 import { pct } from '../lib/format'
 
 const REGION_OPTIONS = ['All', 'Americas', 'EMEA', 'Pacific', 'China', 'International']
@@ -69,7 +70,7 @@ export default function Agents() {
 
   const mapNames = Object.keys(data.mapAgentMatrix)
   const matrixColumns = [
-    { key: 'agent', label: 'Agent', align: 'left' },
+    { key: 'agent', label: 'Agent', align: 'left', format: (v) => <AgentIcon agent={v} size={20} /> },
     ...mapNames.map((m) => ({
       key: m, label: m, align: 'right', colorScale: true,
       format: (v) => (v === null || v === undefined ? '—' : pct(v, 0)),
@@ -107,6 +108,7 @@ export default function Agents() {
         <HorizontalBarChart
           data={scoped.pickRates.slice(0, 15)}
           labelKey="agent" valueKey="pickRate" formatValue={(v) => pct(v)}
+          renderLabel={(d) => <AgentIcon agent={d.agent} size={18} />}
         />
       </div>
 

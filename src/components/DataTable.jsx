@@ -7,6 +7,7 @@ import { scaleColor } from '../lib/format'
 export default function DataTable({ columns, rows, defaultSortKey, defaultSortDir = 'desc' }) {
   const [sortKey, setSortKey] = useState(defaultSortKey)
   const [sortDir, setSortDir] = useState(defaultSortDir)
+  const hasFixedWidths = columns.some((c) => c.width)
 
   const colorRanges = useMemo(() => {
     const ranges = {}
@@ -44,14 +45,18 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
 
   return (
     <div className="overflow-auto rounded-2xl border border-hairline">
-      <table className="w-full border-collapse text-sm">
+      <table
+        className="w-full border-collapse text-sm"
+        style={hasFixedWidths ? { tableLayout: 'fixed' } : undefined}
+      >
         <thead>
           <tr className="bg-surface2 sticky top-0 z-10">
             {columns.map((col) => (
               <th
                 key={col.key}
                 onClick={() => toggleSort(col.key)}
-                className={`px-4 py-3 font-medium text-xs uppercase tracking-wide text-muted cursor-pointer select-none whitespace-nowrap hover:text-ink transition-colors ${
+                style={col.width ? { width: col.width } : undefined}
+                className={`px-4 py-3 font-medium text-xs uppercase tracking-wide text-muted cursor-pointer select-none whitespace-nowrap hover:text-ink transition-colors overflow-hidden text-ellipsis ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 }`}
               >
@@ -72,10 +77,10 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                 return (
                   <td
                     key={col.key}
-                    className={`px-4 py-2.5 font-body text-[13px] whitespace-nowrap ${
+                    style={{ ...(col.width ? { width: col.width } : {}), ...(bg ? { backgroundColor: bg } : {}) }}
+                    className={`px-4 py-2.5 font-body text-[13px] whitespace-nowrap overflow-hidden text-ellipsis ${
                       col.align === 'right' ? 'text-right' : 'text-left'
                     } ${col.key === columns[0].key ? 'text-ink' : 'text-ink/90'}`}
-                    style={bg ? { backgroundColor: bg } : undefined}
                   >
                     {col.format ? col.format(value, row) : value ?? '—'}
                   </td>

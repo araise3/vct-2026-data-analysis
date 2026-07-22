@@ -70,9 +70,9 @@ export default function Agents() {
 
   const mapNames = Object.keys(data.mapAgentMatrix)
   const matrixColumns = [
-    { key: 'agent', label: 'Agent', align: 'left', format: (v) => <AgentIcon agent={v} size={20} /> },
+    { key: 'agent', label: 'Agent', align: 'left', width: 220, format: (v) => <AgentIcon agent={v} size={20} /> },
     ...mapNames.map((m) => ({
-      key: m, label: m, align: 'right', colorScale: true,
+      key: m, label: m, align: 'right', colorScale: true, width: 100,
       format: (v) => (v === null || v === undefined ? '—' : pct(v, 0)),
     })),
   ]

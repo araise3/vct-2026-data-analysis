@@ -15,19 +15,7 @@ export default function AgentIcon({ agent, size = 20, showName = true }) {
   const textColor = luminance(color) > 0.5 ? '#131619' : '#ffffff'
 
   return (
-    <span className="inline-flex items-center gap-2">
-      {entry ? (
-        <img
-          src={entry.icon}
-          alt={entry.displayName}
-          width={size}
-          height={size}
-          className="rounded-md shrink-0 bg-surface2"
-          loading="lazy"
-        />
-      ) : (
-        <span className="rounded-md shrink-0 bg-surface2" style={{ width: size, height: size }} />
-      )}
+    <span className="inline-flex items-center gap-1.5">
       {showName && (
         <span
           className="h-6 rounded-lg px-2.5 flex items-center text-sm font-semibold whitespace-nowrap"
@@ -36,6 +24,21 @@ export default function AgentIcon({ agent, size = 20, showName = true }) {
           {entry?.displayName || agent}
         </span>
       )}
+      <span
+        className="h-6 w-6 rounded-lg flex items-center justify-center shrink-0"
+        style={{ backgroundColor: color }}
+      >
+        {entry ? (
+          <img
+            src={entry.icon}
+            alt={entry.displayName}
+            width={size}
+            height={size}
+            className="object-contain"
+            loading="lazy"
+          />
+        ) : null}
+      </span>
     </span>
   )
 }

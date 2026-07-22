@@ -53,11 +53,11 @@ def main():
     # (0.73 -> 0.0073). Verified directly against the raw values before
     # skipping this step.
 
-    # Apply the ULF Esports / Eternal Fire merge (confirmed distinct orgs
+    # Apply the Eternal Fire merge (confirmed distinct orgs
     # that held the same EMEA slot sequentially, never played each other)
     lookup = lookup.copy()
     lookup.loc[lookup['canonical_name'].isin(['ULF Esports', 'Eternal Fire']),
-               'canonical_name'] = 'ULF Esports / Eternal Fire'
+               'canonical_name'] = 'Eternal Fire'
     name_to_canon = lookup.set_index('raw_name')['canonical_name'].to_dict()
 
     matches['c1'] = matches['team1'].map(name_to_canon).fillna(matches['team1'])

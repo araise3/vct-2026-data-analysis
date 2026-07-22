@@ -44,7 +44,7 @@ export default function TeamProfile() {
           <TeamLogo team={team.team} size={36} showName={false} />
           {team.team}
         </h1>
-        <p className="text-muted text-sm">{team.region}</p>
+        <p className="text-muted text-sm pl-12">{team.region}</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

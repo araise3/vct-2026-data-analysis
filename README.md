@@ -41,7 +41,7 @@ vct-site/
 The JSON in `public/data/` was computed by `data_prep/export.py` from the
 same pickled dataframes used to build the Excel workbook — same team-name
 canonicalization (tags → full names, the 3 China sponsor-name merges, the
-ULF Esports / Eternal Fire merge), same region tagging, same "2 pistols per
+Eternal Fire merge), same region tagging, same "2 pistols per
 map, none in overtime" rule.
 
 If you re-scrape and want to refresh the site's data:
@@ -101,7 +101,7 @@ without it, refreshing on any page but `/` would 404.
 - **Pistol win rate** assumes exactly 2 pistol rounds per map (rounds 1 and
   13) — there are none in overtime, and VLR's economy data doesn't
   separately tally pistol-round totals, only wins.
-- **"ULF Esports / Eternal Fire"** is one merged team in the Teams data —
+- **"Eternal Fire"** is one merged team in the Teams data —
   they held the same EMEA franchise slot sequentially (Riot Games removed
   ULF Esports on March 20, 2026; Eternal Fire filled the vacancy), never
   played each other.

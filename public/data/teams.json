@@ -135,6 +135,21 @@
     "avgRating": 0.9359
   },
   {
+    "team": "Eternal Fire",
+    "region": "EMEA",
+    "matchesPlayed": 15,
+    "matchesWon": 8,
+    "matchWinPct": 0.5333333333333333,
+    "mapsPlayed": 36,
+    "mapsWon": 20,
+    "mapWinPct": 0.5555555555555556,
+    "roundsPlayed": 759,
+    "pistolWon": 37,
+    "pistolPlayed": 72,
+    "pistolWinPct": 0.5138888888888888,
+    "avgRating": 0.9718
+  },
+  {
     "team": "Evil Geniuses",
     "region": "Americas",
     "matchesPlayed": 11,
@@ -643,21 +658,6 @@
     "pistolPlayed": 86,
     "pistolWinPct": 0.0,
     "avgRating": 0.9499
-  },
-  {
-    "team": "ULF Esports / Eternal Fire",
-    "region": "EMEA",
-    "matchesPlayed": 15,
-    "matchesWon": 8,
-    "matchWinPct": 0.5333333333333333,
-    "mapsPlayed": 36,
-    "mapsWon": 20,
-    "mapWinPct": 0.5555555555555556,
-    "roundsPlayed": 759,
-    "pistolWon": 37,
-    "pistolPlayed": 72,
-    "pistolWinPct": 0.5138888888888888,
-    "avgRating": 0.9718
   },
   {
     "team": "VARREL",

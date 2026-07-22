@@ -71,7 +71,7 @@ export default function Teams() {
       <p className="text-xs text-muted leading-relaxed">
         Pistol win rate assumes 2 pistol rounds per map (rounds 1 and 13 — there are none in overtime).
         China teams show — for pistol stats since VLR doesn't publish economy data for that region.
-        "ULF Esports / Eternal Fire" reflects one EMEA franchise slot held sequentially by two orgs.
+        "Eternal Fire" reflects one EMEA franchise slot held sequentially by two orgs (ULF Esports, then Eternal Fire).
       </p>
     </div>
   )

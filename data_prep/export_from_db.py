@@ -78,10 +78,11 @@ def main():
         name_to_canon[tag] = canon
 
     # ULF Esports / Eternal Fire merge (confirmed: same EMEA slot held
-    # sequentially, never played each other)
+    # sequentially, never played each other) -- canonical name is just
+    # "Eternal Fire" (the current, active org), not the combined form.
     for k, v in list(name_to_canon.items()):
         if v in ('ULF Esports', 'Eternal Fire'):
-            name_to_canon[k] = 'ULF Esports / Eternal Fire'
+            name_to_canon[k] = 'Eternal Fire'
 
     matches['c1'] = matches['team1'].map(name_to_canon).fillna(matches['team1'])
     matches['c2'] = matches['team2'].map(name_to_canon).fillna(matches['team2'])

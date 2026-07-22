@@ -13,6 +13,7 @@ export default function Players() {
   const [scope, setScope] = useState('Non-China only')
   const [useIntlStatsForChina, setUseIntlStatsForChina] = useState(true)
   const [ratedOnlyForChina, setRatedOnlyForChina] = useState(false)
+  const [includeEwc, setIncludeEwc] = useState(false)
   const [search, setSearch] = useState('')
 
   const rows = useMemo(() => {
@@ -30,12 +31,14 @@ export default function Players() {
 
     return filtered
       .map((p) => {
-        // Intl-only takes priority when both are applicable: those rows are
-        // already guaranteed to have full data, so "rated-only" would be a
-        // no-op on top of it anyway.
+        // Precedence: the China-specific toggles (Intl-only, Rated-only)
+        // take priority since they address a data-quality gap, not a
+        // scope choice -- EWC inclusion only applies to the plain
+        // default stats, not on top of either China variant.
         const useIntl = p.isChina && useIntlStatsForChina && p.hasIntlStats
         const useRatedOnly = !useIntl && p.isChina && ratedOnlyForChina && p.ratedOnlyStats
-        const s = useIntl ? p.intlStats : useRatedOnly ? p.ratedOnlyStats : p.stats
+        const base = includeEwc && p.statsWithEwc ? p.statsWithEwc : p.stats
+        const s = useIntl ? p.intlStats : useRatedOnly ? p.ratedOnlyStats : base
         if (!s) return null
         return {
           player: p.player,
@@ -47,7 +50,7 @@ export default function Players() {
         }
       })
       .filter(Boolean)
-  }, [data, scope, search, useIntlStatsForChina, ratedOnlyForChina])
+  }, [data, scope, search, useIntlStatsForChina, ratedOnlyForChina, includeEwc])
 
   if (loading || !data) {
     return <div className="text-muted text-sm">Loading…</div>
@@ -122,6 +125,16 @@ export default function Players() {
           className="bg-surface border border-hairline rounded-xl px-4 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:border-accent/50 w-full md:w-64"
         />
       </div>
+
+      <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
+        <input
+          type="checkbox"
+          checked={includeEwc}
+          onChange={(e) => setIncludeEwc(e.target.checked)}
+          className="accent-accent w-4 h-4"
+        />
+        Include Esports World Cup (EWC) 2026
+      </label>
 
       {(scope !== 'Non-China only') && (
         <div className="flex flex-col gap-2">

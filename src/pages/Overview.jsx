@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import KpiCard from '../components/KpiCard'
@@ -7,12 +8,15 @@ import { rating, pct, num } from '../lib/format'
 
 export default function Overview() {
   const { data, loading } = useData('overview')
+  const [includeEwc, setIncludeEwc] = useState(false)
 
   if (loading || !data) {
     return <div className="text-muted text-sm">Loading…</div>
   }
 
-  const { kpis, topPlayersByRating, topTeamsByMapWinPct } = data
+  const kpis = includeEwc ? data.kpisWithEwc : data.kpis
+  const topPlayersByRating = includeEwc ? data.topPlayersByRatingWithEwc : data.topPlayersByRating
+  const topTeamsByMapWinPct = includeEwc ? data.topTeamsByMapWinPctWithEwc : data.topTeamsByMapWinPct
 
   return (
     <div className="flex flex-col gap-8">
@@ -22,6 +26,16 @@ export default function Overview() {
           Every tier-1 VCT 2026 international event — Kickoffs, Stage 1s, Stage 2s, Masters, Champions.
         </p>
       </div>
+
+      <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
+        <input
+          type="checkbox"
+          checked={includeEwc}
+          onChange={(e) => setIncludeEwc(e.target.checked)}
+          className="accent-accent w-4 h-4"
+        />
+        Include Esports World Cup (EWC) 2026
+      </label>
 
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         <KpiCard label="Events" value={kpis.totalEvents} />

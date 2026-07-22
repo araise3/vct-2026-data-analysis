@@ -12,12 +12,15 @@ const REGIONS = ['All', 'Americas', 'EMEA', 'Pacific', 'China', 'International']
 export default function Teams() {
   const { data, loading } = useData('teams')
   const [region, setRegion] = useState('All')
+  const [includeEwc, setIncludeEwc] = useState(false)
 
   const rows = useMemo(() => {
     if (!data) return []
-    if (region === 'All') return data
-    return data.filter((t) => t.region === region)
-  }, [data, region])
+    let filtered = data
+    if (region !== 'All') filtered = filtered.filter((t) => t.region === region)
+    if (includeEwc) filtered = filtered.map((t) => ({ ...t, ...t.withEwc }))
+    return filtered
+  }, [data, region, includeEwc])
 
   const topByMapWin = useMemo(() => {
     return [...rows]
@@ -57,6 +60,16 @@ export default function Teams() {
       </div>
 
       <FilterChips options={REGIONS} value={region} onChange={setRegion} />
+
+      <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
+        <input
+          type="checkbox"
+          checked={includeEwc}
+          onChange={(e) => setIncludeEwc(e.target.checked)}
+          className="accent-accent w-4 h-4"
+        />
+        Include Esports World Cup (EWC) 2026
+      </label>
 
       <div className="bg-surface border border-hairline rounded-2xl p-5">
         <h3 className="font-display text-sm font-semibold text-ink mb-4">Map win rate (min. 10 maps played)</h3>

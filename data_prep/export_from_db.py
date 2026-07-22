@@ -12,18 +12,22 @@ import numpy as np
 import pandas as pd
 
 DB_PATH = "/mnt/user-data/uploads/vlr_vct_2026.db"
+EWC_DB_PATH = "/mnt/user-data/uploads/vlr_ewc_2026.db"
 OUT = "/home/claude/vct-site/public/data"
 
 CHINA_TEAMS = ['All Gamers', 'Bilibili Gaming', 'Dragon Ranger Gaming', 'EDward Gaming',
                'FunPlus Phoenix', 'JDG Esports', 'Nova Esports', 'TYLOO',
                'Titan Esports Club', 'Trace Esports', 'Wolves Esports', 'Xi Lai Gaming']
 
-# The 3 China sponsor-prefixed long names that are really the same org as
-# their short form (mechanically obvious: the short form is in parens)
+# The China sponsor-prefixed long names and EWC sub-branded rosters that
+# are really the same org as their short/parent form (mechanically
+# obvious: the parent name is in parens).
 CANONICAL_OVERRIDES = {
     "Guangzhou Huadu Bilibili Gaming (Bilibili Gaming)": "Bilibili Gaming",
     "JD Mall JDG Esports (JDG Esports)": "JDG Esports",
     "Wuxi Titan Esports Club (Titan Esports Club)": "Titan Esports Club",
+    "AG.AL (All Gamers)": "All Gamers",
+    "MIBR.LOS (MIBR)": "MIBR",
 }
 
 
@@ -47,14 +51,31 @@ def pct_to_float(s):
     return pd.to_numeric(s.astype(str).str.replace('%', '', regex=False), errors='coerce') / 100
 
 
-def main():
-    conn = sqlite3.connect(DB_PATH)
-    matches = pd.read_sql_query("SELECT * FROM matches", conn)
-    maps_df = pd.read_sql_query("SELECT * FROM maps", conn)
-    mps = pd.read_sql_query("SELECT * FROM map_player_stats", conn)
-    mte = pd.read_sql_query("SELECT * FROM map_team_economy", conn)
-    events = pd.read_sql_query("SELECT * FROM events", conn)
+def load_db(path, competition):
+    conn = sqlite3.connect(path)
+    tables = {}
+    for name in ["matches", "maps", "map_player_stats", "map_team_economy", "events"]:
+        df = pd.read_sql_query(f"SELECT * FROM {name}", conn)
+        df["competition"] = competition
+        tables[name] = df
     conn.close()
+    return tables
+
+
+def main():
+    vct = load_db(DB_PATH, "VCT")
+    ewc = load_db(EWC_DB_PATH, "EWC")
+
+    # Combined universe: every downstream computation runs on this, then
+    # gets filtered back down to competition=='VCT' for the default
+    # (today's) output, or left unfiltered for the "+EWC" variant. This
+    # keeps the two code paths identical except for which rows are in
+    # scope, rather than maintaining two separate pipelines.
+    matches = pd.concat([vct["matches"], ewc["matches"]], ignore_index=True)
+    maps_df = pd.concat([vct["maps"], ewc["maps"]], ignore_index=True)
+    mps = pd.concat([vct["map_player_stats"], ewc["map_player_stats"]], ignore_index=True)
+    mte = pd.concat([vct["map_team_economy"], ewc["map_team_economy"]], ignore_index=True)
+    events = pd.concat([vct["events"], ewc["events"]], ignore_index=True)
 
     # Raw scrape has kast/hs_pct as "73%" strings -- convert to fractions
     for col in ['kast', 'hs_pct']:
@@ -115,30 +136,27 @@ def main():
     # ------------------------------------------------------------------
     # teams.json
     # ------------------------------------------------------------------
-    teams_out = []
-    for team in canonical_teams:
-        team_matches = completed[(completed.c1 == team) | (completed.c2 == team)]
+    def team_stats(completed_sub, maps_df_sub, mps_sub, mte_sub, team):
+        team_matches = completed_sub[(completed_sub.c1 == team) | (completed_sub.c2 == team)]
         matches_played = len(team_matches)
         matches_won = int((
             ((team_matches.c1 == team) & (team_matches.score1 > team_matches.score2)) |
             ((team_matches.c2 == team) & (team_matches.score2 > team_matches.score1))
         ).sum())
 
-        team_maps = maps_df[(maps_df.c1 == team) | (maps_df.c2 == team)]
+        team_maps = maps_df_sub[(maps_df_sub.c1 == team) | (maps_df_sub.c2 == team)]
         maps_played = len(team_maps)
         maps_won = int((team_maps.winner == team).sum())
         rounds_played = int(team_maps['rounds_total'].sum())
 
-        team_econ = mte[mte.canonical_team == team]
+        team_econ = mte_sub[mte_sub.canonical_team == team]
         pistol_won = int(team_econ['pistol_won'].sum()) if len(team_econ) else 0
         pistol_played = maps_played * 2
 
-        team_players = mps[mps.canonical_team == team]
+        team_players = mps_sub[mps_sub.canonical_team == team]
         avg_rating = team_players['rating'].mean()
 
-        teams_out.append(clean_row({
-            "team": team,
-            "region": team_primary_region.get(team, "International"),
+        return clean_row({
             "matchesPlayed": matches_played,
             "matchesWon": matches_won,
             "matchWinPct": (matches_won / matches_played) if matches_played else None,
@@ -150,7 +168,20 @@ def main():
             "pistolPlayed": pistol_played,
             "pistolWinPct": (pistol_won / pistol_played) if pistol_played else None,
             "avgRating": avg_rating,
-        }))
+        })
+
+    completed_vct = completed[completed.competition == 'VCT']
+    maps_df_vct = maps_df[maps_df.competition == 'VCT']
+    mps_vct = mps[mps.competition == 'VCT']
+    mte_vct = mte[mte.competition == 'VCT']
+
+    teams_out = []
+    for team in canonical_teams:
+        base = team_stats(completed_vct, maps_df_vct, mps_vct, mte_vct, team)
+        base["team"] = team
+        base["region"] = team_primary_region.get(team, "International")
+        base["withEwc"] = team_stats(completed, maps_df, mps, mte, team)
+        teams_out.append(base)
 
     with open(f"{OUT}/teams.json", "w") as f:
         json.dump(teams_out, f, indent=2)
@@ -159,11 +190,16 @@ def main():
     # ------------------------------------------------------------------
     # players.json
     # ------------------------------------------------------------------
-    china_players_set = set(mps[mps['canonical_team'].isin(CHINA_TEAMS)]['player'].unique())
-    intl_rows = mps[(mps['player'].isin(china_players_set)) & (mps['region'] == 'International')]
+    # Roster, team assignment, and China/Intl detection are all based on
+    # VCT-only data -- this keeps the default (today's) output stable
+    # regardless of EWC being folded in below. A player who only ever
+    # played EWC (never VCT) simply won't appear here even with the EWC
+    # toggle on; that's a deliberate scope limit, not a bug.
+    china_players_set = set(mps_vct[mps_vct['canonical_team'].isin(CHINA_TEAMS)]['player'].unique())
+    intl_rows = mps_vct[(mps_vct['player'].isin(china_players_set)) & (mps_vct['region'] == 'International')]
     players_with_intl = set(intl_rows['player'].unique())
 
-    players_first = mps.sort_values(['match_id', 'map_index'])[['player', 'canonical_team']] \
+    players_first = mps_vct.sort_values(['match_id', 'map_index'])[['player', 'canonical_team']] \
         .drop_duplicates(subset='player', keep='first')
 
     def player_stats(sub):
@@ -197,7 +233,8 @@ def main():
         player = row['player']
         team = row['canonical_team']
         is_china = player in china_players_set
-        sub = mps[mps['player'] == player]
+        sub_all = mps[mps['player'] == player]
+        sub = sub_all[sub_all['competition'] == 'VCT']
         stats = player_stats(sub)
         entry = {
             "player": player,
@@ -205,6 +242,7 @@ def main():
             "isChina": is_china,
             "hasIntlStats": player in players_with_intl,
             "stats": stats,
+            "statsWithEwc": player_stats(sub_all),
         }
         if player in players_with_intl:
             intl_sub = sub[sub['region'] == 'International']
@@ -235,41 +273,72 @@ def main():
     # overview.json
     # ------------------------------------------------------------------
     MIN_MAPS_FOR_RANKING = 10
-    ranked_players = [p for p in players_out if p['stats'] and p['stats']['mapsPlayed'] >= MIN_MAPS_FOR_RANKING
-                       and p['stats']['avgRating'] is not None]
-    top_players = sorted(ranked_players, key=lambda p: p['stats']['avgRating'], reverse=True)[:10]
-    top_players_out = [clean_row({
-        "player": p['player'], "team": p['team'],
-        "rating": p['stats']['avgRating'], "mapsPlayed": p['stats']['mapsPlayed']
-    }) for p in top_players]
 
-    ranked_teams = [t for t in teams_out if t['mapsPlayed'] and t['mapsPlayed'] >= 10 and t['mapWinPct'] is not None]
-    top_teams = sorted(ranked_teams, key=lambda t: t['mapWinPct'], reverse=True)[:10]
-    top_teams_out = [clean_row({
-        "team": t['team'], "region": t['region'],
-        "mapWinPct": t['mapWinPct'], "mapsPlayed": t['mapsPlayed'], "mapsWon": t['mapsWon']
-    }) for t in top_teams]
+    def compute_top_lists(player_field, team_field):
+        ranked_players = [p for p in players_out if p[player_field]
+                           and p[player_field]['mapsPlayed'] >= MIN_MAPS_FOR_RANKING
+                           and p[player_field]['avgRating'] is not None]
+        top_players = sorted(ranked_players, key=lambda p: p[player_field]['avgRating'], reverse=True)[:10]
+        top_players_out = [clean_row({
+            "player": p['player'], "team": p['team'],
+            "rating": p[player_field]['avgRating'], "mapsPlayed": p[player_field]['mapsPlayed']
+        }) for p in top_players]
+
+        ranked_teams = [t for t in teams_out if t[team_field]['mapsPlayed'] and t[team_field]['mapsPlayed'] >= 10
+                         and t[team_field]['mapWinPct'] is not None]
+        top_teams = sorted(ranked_teams, key=lambda t: t[team_field]['mapWinPct'], reverse=True)[:10]
+        top_teams_out = [clean_row({
+            "team": t['team'], "region": t['region'],
+            "mapWinPct": t[team_field]['mapWinPct'],
+            "mapsPlayed": t[team_field]['mapsPlayed'], "mapsWon": t[team_field]['mapsWon']
+        }) for t in top_teams]
+        return top_players_out, top_teams_out
+
+    # For VCT-only, team_field needs to read the team's top-level fields
+    # rather than a nested dict -- wrap each team once so both branches can
+    # use the same dict-key access pattern uniformly.
+    for t in teams_out:
+        t['_self'] = {k: v for k, v in t.items() if k not in ('team', 'region', 'withEwc', '_self')}
+
+    top_players_out, top_teams_out = compute_top_lists('stats', '_self')
+    top_players_out_ewc, top_teams_out_ewc = compute_top_lists('statsWithEwc', 'withEwc')
+
+    for t in teams_out:
+        del t['_self']
+
+    events_vct = events[events.competition == 'VCT']
 
     overview_out = {
         "kpis": {
+            "totalEvents": int(events_vct['event_id'].nunique()),
+            "totalMatches": int(len(completed_vct)),
+            "totalMaps": int(len(maps_df_vct.dropna(subset=['winner']))),
+            "totalRounds": int(maps_df_vct['rounds_total'].sum()),
+            "totalPlayers": int(sum(1 for p in players_out if p['stats'])),
+            "totalTeams": int(len(canonical_teams)),
+        },
+        "kpisWithEwc": {
             "totalEvents": int(events['event_id'].nunique()),
             "totalMatches": int(len(completed)),
             "totalMaps": int(len(maps_df.dropna(subset=['winner']))),
             "totalRounds": int(maps_df['rounds_total'].sum()),
-            "totalPlayers": int(len(players_out)),
+            "totalPlayers": int(sum(1 for p in players_out if p['statsWithEwc'])),
             "totalTeams": int(len(canonical_teams)),
         },
         "topPlayersByRating": top_players_out,
         "topTeamsByMapWinPct": top_teams_out,
+        "topPlayersByRatingWithEwc": top_players_out_ewc,
+        "topTeamsByMapWinPctWithEwc": top_teams_out_ewc,
     }
     with open(f"{OUT}/overview.json", "w") as f:
         json.dump(overview_out, f, indent=2)
     print("overview.json written")
 
     # ------------------------------------------------------------------
-    # economy.json
+    # economy.json -- deliberately VCT-only for now (EWC toggle isn't
+    # wired up here yet; scoped to Players/Teams/Overview for this pass)
     # ------------------------------------------------------------------
-    mte_r = mte.merge(matches[['match_id', 'region']], on='match_id', how='left')
+    mte_r = mte_vct.merge(matches[['match_id', 'region']], on='match_id', how='left')
 
     def buy_tier_summary(sub):
         tiers = {
@@ -292,7 +361,7 @@ def main():
         json.dump(economy_out, f, indent=2)
     print("economy.json written")
 
-    events_out = [clean_row(r) for r in events.to_dict(orient='records')]
+    events_out = [clean_row(r) for r in events_vct.to_dict(orient='records')]
     with open(f"{OUT}/events.json", "w") as f:
         json.dump(events_out, f, indent=2)
     print("events.json written")
@@ -308,9 +377,15 @@ def main():
     # real per-match phase text ("Group Stage: Week 2", "Playoffs: Upper
     # Quarterfinals") -- combining these gives full Region -> Stage ->
     # Phase filterability for free, computed from data already scraped.
+    #
+    # Deliberately VCT-only for now, same as economy.json -- the EWC
+    # toggle isn't wired up here yet.
     # ------------------------------------------------------------------
+    matches = matches[matches.competition == 'VCT']
+    maps_df = maps_df_vct
+    mps = mps_vct
     matches_tagged = matches.merge(
-        events[['event_id', 'stage']].rename(columns={'stage': 'event_stage'}),
+        events_vct[['event_id', 'stage']].rename(columns={'stage': 'event_stage'}),
         on='event_id', how='left'
     )
     matches_tagged['phase'] = matches_tagged['stage'].str.split(':').str[0].str.strip()
@@ -343,7 +418,7 @@ def main():
     # exist" filter at every tier.
     region_stages = {
         region: sorted(sub['stage'].dropna().unique().tolist())
-        for region, sub in events.groupby('region')
+        for region, sub in events_vct.groupby('region')
     }
     region_stage_phases = {}
     region_stage_phase_weeks = {}

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import KpiCard from '../components/KpiCard'
@@ -10,19 +10,23 @@ export default function TeamProfile() {
   const decodedName = decodeURIComponent(name)
   const { data: teams, loading: teamsLoading } = useData('teams')
   const { data: players, loading: playersLoading } = useData('players')
+  const [includeEwc, setIncludeEwc] = useState(false)
 
   const team = useMemo(() => {
     if (!teams) return null
-    return teams.find((t) => t.team === decodedName) || null
-  }, [teams, decodedName])
+    const found = teams.find((t) => t.team === decodedName) || null
+    if (!found) return null
+    return includeEwc ? { ...found, ...found.withEwc } : found
+  }, [teams, decodedName, includeEwc])
 
   const roster = useMemo(() => {
     if (!players) return []
     return players
       .filter((p) => p.team === decodedName)
-      .filter((p) => p.stats)
-      .sort((a, b) => (b.stats.avgRating || 0) - (a.stats.avgRating || 0))
-  }, [players, decodedName])
+      .map((p) => ({ ...p, _stats: includeEwc && p.statsWithEwc ? p.statsWithEwc : p.stats }))
+      .filter((p) => p._stats)
+      .sort((a, b) => (b._stats.avgRating || 0) - (a._stats.avgRating || 0))
+  }, [players, decodedName, includeEwc])
 
   if (teamsLoading || playersLoading) return <div className="text-muted text-sm">Loading…</div>
 
@@ -49,6 +53,16 @@ export default function TeamProfile() {
         </div>
       </div>
 
+      <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
+        <input
+          type="checkbox"
+          checked={includeEwc}
+          onChange={(e) => setIncludeEwc(e.target.checked)}
+          className="accent-accent w-4 h-4"
+        />
+        Include Esports World Cup (EWC) 2026
+      </label>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KpiCard label="Matches" value={`${team.matchesWon}-${team.matchesPlayed - team.matchesWon}`} sub={pct(team.matchWinPct)} />
         <KpiCard label="Maps" value={`${team.mapsWon}-${team.mapsPlayed - team.mapsWon}`} sub={pct(team.mapWinPct)} />
@@ -73,8 +87,8 @@ export default function TeamProfile() {
             >
               <span className="text-sm text-ink font-medium">{p.player}</span>
               <div className="flex items-center gap-6 text-xs text-muted">
-                <span>{p.stats.mapsPlayed} maps</span>
-                <span className="text-good font-mono font-medium">{rating(p.stats.avgRating)}</span>
+                <span>{p._stats.mapsPlayed} maps</span>
+                <span className="text-good font-mono font-medium">{rating(p._stats.avgRating)}</span>
               </div>
             </Link>
           ))}

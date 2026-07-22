@@ -7,7 +7,8 @@
     "stage": "Kickoff",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2683,
@@ -17,7 +18,8 @@
     "stage": "Kickoff",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2684,
@@ -27,7 +29,8 @@
     "stage": "Kickoff",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2685,
@@ -37,7 +40,8 @@
     "stage": "Kickoff",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2760,
@@ -47,7 +51,8 @@
     "stage": "Masters",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2765,
@@ -57,7 +62,8 @@
     "stage": "Masters",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2766,
@@ -67,7 +73,8 @@
     "stage": "Champions",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2775,
@@ -77,7 +84,8 @@
     "stage": "Stage 1",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2776,
@@ -87,7 +95,8 @@
     "stage": "Stage 2",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2860,
@@ -97,7 +106,8 @@
     "stage": "Stage 1",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2863,
@@ -107,7 +117,8 @@
     "stage": "Stage 1",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2864,
@@ -117,7 +128,8 @@
     "stage": "Stage 1",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2976,
@@ -127,7 +139,8 @@
     "stage": "Stage 2",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2977,
@@ -137,7 +150,8 @@
     "stage": "Stage 2",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   },
   {
     "event_id": 2978,
@@ -147,6 +161,7 @@
     "stage": "Stage 2",
     "dates": null,
     "prize": null,
-    "location": null
+    "location": null,
+    "competition": "VCT"
   }
 ]

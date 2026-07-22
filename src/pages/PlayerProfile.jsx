@@ -11,6 +11,7 @@ export default function PlayerProfile() {
   const { data, loading } = useData('players')
   const [useIntlStats, setUseIntlStats] = useState(true)
   const [ratedOnly, setRatedOnly] = useState(false)
+  const [includeEwc, setIncludeEwc] = useState(false)
 
   const player = useMemo(() => {
     if (!data) return null
@@ -30,7 +31,8 @@ export default function PlayerProfile() {
 
   const useIntl = player.isChina && useIntlStats && player.hasIntlStats
   const useRated = !useIntl && player.isChina && ratedOnly && player.ratedOnlyStats
-  const stats = useIntl ? player.intlStats : useRated ? player.ratedOnlyStats : player.stats
+  const base = includeEwc && player.statsWithEwc ? player.statsWithEwc : player.stats
+  const stats = useIntl ? player.intlStats : useRated ? player.ratedOnlyStats : base
 
   return (
     <div className="flex flex-col gap-6">
@@ -42,6 +44,16 @@ export default function PlayerProfile() {
           <TeamLogo team={player.team} size={18} />
         </Link>
       </div>
+
+      <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
+        <input
+          type="checkbox"
+          checked={includeEwc}
+          onChange={(e) => setIncludeEwc(e.target.checked)}
+          className="accent-accent w-4 h-4"
+        />
+        Include Esports World Cup (EWC) 2026
+      </label>
 
       {player.isChina && (
         <div className="flex flex-col gap-2">

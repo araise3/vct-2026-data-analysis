@@ -7,6 +7,14 @@
     "totalPlayers": 313,
     "totalTeams": 48
   },
+  "kpisWithEwc": {
+    "totalEvents": 20,
+    "totalMatches": 489,
+    "totalMaps": 1269,
+    "totalRounds": 26998,
+    "totalPlayers": 313,
+    "totalTeams": 48
+  },
   "topPlayersByRating": [
     {
       "player": "vo0kashu",
@@ -139,6 +147,140 @@
       "mapWinPct": 0.5733333333333334,
       "mapsPlayed": 75,
       "mapsWon": 43
+    }
+  ],
+  "topPlayersByRatingWithEwc": [
+    {
+      "player": "marteen",
+      "team": "Gentle Mates",
+      "rating": 1.2597,
+      "mapsPlayed": 61
+    },
+    {
+      "player": "vo0kashu",
+      "team": "Dragon Ranger Gaming",
+      "rating": 1.2445,
+      "mapsPlayed": 58
+    },
+    {
+      "player": "Deryeon",
+      "team": "Wolves Esports",
+      "rating": 1.23,
+      "mapsPlayed": 10
+    },
+    {
+      "player": "Neon",
+      "team": "LEVIAT\u00c1N",
+      "rating": 1.1967,
+      "mapsPlayed": 66
+    },
+    {
+      "player": "primmie",
+      "team": "FULL SENSE",
+      "rating": 1.1764,
+      "mapsPlayed": 47
+    },
+    {
+      "player": "t3xture",
+      "team": "Gen.G",
+      "rating": 1.1654,
+      "mapsPlayed": 52
+    },
+    {
+      "player": "slowly",
+      "team": "TYLOO",
+      "rating": 1.1545,
+      "mapsPlayed": 60
+    },
+    {
+      "player": "Ruxic",
+      "team": "Natus Vincere",
+      "rating": 1.1516,
+      "mapsPlayed": 45
+    },
+    {
+      "player": "Zeus",
+      "team": "Team Secret",
+      "rating": 1.1458,
+      "mapsPlayed": 19
+    },
+    {
+      "player": "iZu",
+      "team": "T1",
+      "rating": 1.1382,
+      "mapsPlayed": 51
+    }
+  ],
+  "topTeamsByMapWinPctWithEwc": [
+    {
+      "team": "Nongshim RedForce",
+      "region": "Pacific",
+      "mapWinPct": 0.6266666666666667,
+      "mapsPlayed": 75,
+      "mapsWon": 47
+    },
+    {
+      "team": "100 Thieves",
+      "region": "Americas",
+      "mapWinPct": 0.625,
+      "mapsPlayed": 64,
+      "mapsWon": 40
+    },
+    {
+      "team": "Paper Rex",
+      "region": "Pacific",
+      "mapWinPct": 0.6086956521739131,
+      "mapsPlayed": 92,
+      "mapsWon": 56
+    },
+    {
+      "team": "T1",
+      "region": "Pacific",
+      "mapWinPct": 0.6078431372549019,
+      "mapsPlayed": 51,
+      "mapsWon": 31
+    },
+    {
+      "team": "G2 Esports",
+      "region": "Americas",
+      "mapWinPct": 0.6027397260273972,
+      "mapsPlayed": 73,
+      "mapsWon": 44
+    },
+    {
+      "team": "NRG",
+      "region": "Americas",
+      "mapWinPct": 0.59375,
+      "mapsPlayed": 96,
+      "mapsWon": 57
+    },
+    {
+      "team": "TYLOO",
+      "region": "China",
+      "mapWinPct": 0.5833333333333334,
+      "mapsPlayed": 60,
+      "mapsWon": 35
+    },
+    {
+      "team": "All Gamers",
+      "region": "China",
+      "mapWinPct": 0.5789473684210527,
+      "mapsPlayed": 76,
+      "mapsWon": 44
+    },
+    {
+      "team": "Gentle Mates",
+      "region": "EMEA",
+      "mapWinPct": 0.5737704918032787,
+      "mapsPlayed": 61,
+      "mapsWon": 35
+    },
+    {
+      "team": "Xi Lai Gaming",
+      "region": "China",
+      "mapWinPct": 0.5730337078651685,
+      "mapsPlayed": 89,
+      "mapsWon": 51
     }
   ]
 }

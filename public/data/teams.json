@@ -1,7 +1,5 @@
 [
   {
-    "team": "100 Thieves",
-    "region": "Americas",
     "matchesPlayed": 18,
     "matchesWon": 11,
     "matchWinPct": 0.6111111111111112,
@@ -12,11 +10,24 @@
     "pistolWon": 41,
     "pistolPlayed": 88,
     "pistolWinPct": 0.4659090909090909,
-    "avgRating": 1.0304
+    "avgRating": 1.0304,
+    "team": "100 Thieves",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 25,
+      "matchesWon": 18,
+      "matchWinPct": 0.72,
+      "mapsPlayed": 64,
+      "mapsWon": 40,
+      "mapWinPct": 0.625,
+      "roundsPlayed": 1354,
+      "pistolWon": 65,
+      "pistolPlayed": 128,
+      "pistolWinPct": 0.5078125,
+      "avgRating": 1.0382
+    }
   },
   {
-    "team": "All Gamers",
-    "region": "China",
     "matchesPlayed": 21,
     "matchesWon": 12,
     "matchWinPct": 0.5714285714285714,
@@ -27,11 +38,24 @@
     "pistolWon": 7,
     "pistolPlayed": 110,
     "pistolWinPct": 0.06363636363636363,
-    "avgRating": 0.992
+    "avgRating": 0.992,
+    "team": "All Gamers",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 29,
+      "matchesWon": 17,
+      "matchWinPct": 0.5862068965517241,
+      "mapsPlayed": 76,
+      "mapsWon": 44,
+      "mapWinPct": 0.5789473684210527,
+      "roundsPlayed": 1566,
+      "pistolWon": 14,
+      "pistolPlayed": 152,
+      "pistolWinPct": 0.09210526315789473,
+      "avgRating": 0.985
+    }
   },
   {
-    "team": "BBL Esports",
-    "region": "EMEA",
     "matchesPlayed": 14,
     "matchesWon": 8,
     "matchWinPct": 0.5714285714285714,
@@ -42,11 +66,24 @@
     "pistolWon": 33,
     "pistolPlayed": 72,
     "pistolWinPct": 0.4583333333333333,
-    "avgRating": 0.9514
+    "avgRating": 0.9514,
+    "team": "BBL Esports",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 24,
+      "matchesWon": 14,
+      "matchWinPct": 0.5833333333333334,
+      "mapsPlayed": 62,
+      "mapsWon": 34,
+      "mapWinPct": 0.5483870967741935,
+      "roundsPlayed": 1349,
+      "pistolWon": 60,
+      "pistolPlayed": 124,
+      "pistolWinPct": 0.4838709677419355,
+      "avgRating": 0.9997
+    }
   },
   {
-    "team": "Bilibili Gaming",
-    "region": "China",
     "matchesPlayed": 17,
     "matchesWon": 10,
     "matchWinPct": 0.5882352941176471,
@@ -57,11 +94,24 @@
     "pistolWon": 0,
     "pistolPlayed": 94,
     "pistolWinPct": 0.0,
-    "avgRating": 1.0112
+    "avgRating": 1.0112,
+    "team": "Bilibili Gaming",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 20,
+      "matchesWon": 11,
+      "matchWinPct": 0.55,
+      "mapsPlayed": 55,
+      "mapsWon": 29,
+      "mapWinPct": 0.5272727272727272,
+      "roundsPlayed": 1155,
+      "pistolWon": 0,
+      "pistolPlayed": 110,
+      "pistolWinPct": 0.0,
+      "avgRating": 1.0112
+    }
   },
   {
-    "team": "Cloud9",
-    "region": "Americas",
     "matchesPlayed": 13,
     "matchesWon": 5,
     "matchWinPct": 0.38461538461538464,
@@ -72,11 +122,24 @@
     "pistolWon": 21,
     "pistolPlayed": 62,
     "pistolWinPct": 0.3387096774193548,
-    "avgRating": 0.9479
+    "avgRating": 0.9479,
+    "team": "Cloud9",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 15,
+      "matchesWon": 5,
+      "matchWinPct": 0.3333333333333333,
+      "mapsPlayed": 36,
+      "mapsWon": 15,
+      "mapWinPct": 0.4166666666666667,
+      "roundsPlayed": 785,
+      "pistolWon": 24,
+      "pistolPlayed": 72,
+      "pistolWinPct": 0.3333333333333333,
+      "avgRating": 0.9391
+    }
   },
   {
-    "team": "DetonatioN FocusMe",
-    "region": "Pacific",
     "matchesPlayed": 14,
     "matchesWon": 6,
     "matchWinPct": 0.42857142857142855,
@@ -87,11 +150,24 @@
     "pistolWon": 42,
     "pistolPlayed": 70,
     "pistolWinPct": 0.6,
-    "avgRating": 0.9537
+    "avgRating": 0.9537,
+    "team": "DetonatioN FocusMe",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 16,
+      "matchesWon": 6,
+      "matchWinPct": 0.375,
+      "mapsPlayed": 40,
+      "mapsWon": 16,
+      "mapWinPct": 0.4,
+      "roundsPlayed": 851,
+      "pistolWon": 46,
+      "pistolPlayed": 80,
+      "pistolWinPct": 0.575,
+      "avgRating": 0.9499
+    }
   },
   {
-    "team": "Dragon Ranger Gaming",
-    "region": "China",
     "matchesPlayed": 22,
     "matchesWon": 10,
     "matchWinPct": 0.45454545454545453,
@@ -102,11 +178,24 @@
     "pistolWon": 5,
     "pistolPlayed": 116,
     "pistolWinPct": 0.04310344827586207,
-    "avgRating": 1.0025
+    "avgRating": 1.0025,
+    "team": "Dragon Ranger Gaming",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 24,
+      "matchesWon": 10,
+      "matchWinPct": 0.4166666666666667,
+      "mapsPlayed": 62,
+      "mapsWon": 27,
+      "mapWinPct": 0.43548387096774194,
+      "roundsPlayed": 1288,
+      "pistolWon": 5,
+      "pistolPlayed": 124,
+      "pistolWinPct": 0.04032258064516129,
+      "avgRating": 1.0025
+    }
   },
   {
-    "team": "EDward Gaming",
-    "region": "China",
     "matchesPlayed": 27,
     "matchesWon": 18,
     "matchWinPct": 0.6666666666666666,
@@ -117,11 +206,24 @@
     "pistolWon": 12,
     "pistolPlayed": 144,
     "pistolWinPct": 0.08333333333333333,
-    "avgRating": 1.0106
+    "avgRating": 1.0106,
+    "team": "EDward Gaming",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 30,
+      "matchesWon": 19,
+      "matchWinPct": 0.6333333333333333,
+      "mapsPlayed": 79,
+      "mapsWon": 45,
+      "mapWinPct": 0.569620253164557,
+      "roundsPlayed": 1633,
+      "pistolWon": 17,
+      "pistolPlayed": 158,
+      "pistolWinPct": 0.10759493670886076,
+      "avgRating": 0.9965
+    }
   },
   {
-    "team": "ENVY",
-    "region": "Americas",
     "matchesPlayed": 11,
     "matchesWon": 4,
     "matchWinPct": 0.36363636363636365,
@@ -132,11 +234,24 @@
     "pistolWon": 31,
     "pistolPlayed": 54,
     "pistolWinPct": 0.5740740740740741,
-    "avgRating": 0.9359
+    "avgRating": 0.9359,
+    "team": "ENVY",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 14,
+      "matchesWon": 5,
+      "matchWinPct": 0.35714285714285715,
+      "mapsPlayed": 35,
+      "mapsWon": 13,
+      "mapWinPct": 0.37142857142857144,
+      "roundsPlayed": 759,
+      "pistolWon": 37,
+      "pistolPlayed": 70,
+      "pistolWinPct": 0.5285714285714286,
+      "avgRating": 0.9356
+    }
   },
   {
-    "team": "Eternal Fire",
-    "region": "EMEA",
     "matchesPlayed": 15,
     "matchesWon": 8,
     "matchWinPct": 0.5333333333333333,
@@ -147,11 +262,24 @@
     "pistolWon": 37,
     "pistolPlayed": 72,
     "pistolWinPct": 0.5138888888888888,
-    "avgRating": 0.9718
+    "avgRating": 0.9718,
+    "team": "Eternal Fire",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 17,
+      "matchesWon": 8,
+      "matchWinPct": 0.47058823529411764,
+      "mapsPlayed": 41,
+      "mapsWon": 21,
+      "mapWinPct": 0.5121951219512195,
+      "roundsPlayed": 882,
+      "pistolWon": 43,
+      "pistolPlayed": 82,
+      "pistolWinPct": 0.524390243902439,
+      "avgRating": 0.9689
+    }
   },
   {
-    "team": "Evil Geniuses",
-    "region": "Americas",
     "matchesPlayed": 11,
     "matchesWon": 3,
     "matchWinPct": 0.2727272727272727,
@@ -162,11 +290,24 @@
     "pistolWon": 25,
     "pistolPlayed": 50,
     "pistolWinPct": 0.5,
-    "avgRating": 0.959
+    "avgRating": 0.959,
+    "team": "Evil Geniuses",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 14,
+      "matchesWon": 5,
+      "matchWinPct": 0.35714285714285715,
+      "mapsPlayed": 34,
+      "mapsWon": 14,
+      "mapWinPct": 0.4117647058823529,
+      "roundsPlayed": 743,
+      "pistolWon": 32,
+      "pistolPlayed": 68,
+      "pistolWinPct": 0.47058823529411764,
+      "avgRating": 0.9528
+    }
   },
   {
-    "team": "FNATIC",
-    "region": "EMEA",
     "matchesPlayed": 15,
     "matchesWon": 10,
     "matchWinPct": 0.6666666666666666,
@@ -177,11 +318,24 @@
     "pistolWon": 44,
     "pistolPlayed": 78,
     "pistolWinPct": 0.5641025641025641,
-    "avgRating": 1.0264
+    "avgRating": 1.0264,
+    "team": "FNATIC",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 18,
+      "matchesWon": 11,
+      "matchWinPct": 0.6111111111111112,
+      "mapsPlayed": 49,
+      "mapsWon": 28,
+      "mapWinPct": 0.5714285714285714,
+      "roundsPlayed": 1106,
+      "pistolWon": 55,
+      "pistolPlayed": 98,
+      "pistolWinPct": 0.5612244897959183,
+      "avgRating": 1.023
+    }
   },
   {
-    "team": "FULL SENSE",
-    "region": "Pacific",
     "matchesPlayed": 17,
     "matchesWon": 9,
     "matchWinPct": 0.5294117647058824,
@@ -192,11 +346,24 @@
     "pistolWon": 38,
     "pistolPlayed": 82,
     "pistolWinPct": 0.4634146341463415,
-    "avgRating": 0.9933
+    "avgRating": 0.9933,
+    "team": "FULL SENSE",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 19,
+      "matchesWon": 9,
+      "matchWinPct": 0.47368421052631576,
+      "mapsPlayed": 47,
+      "mapsWon": 24,
+      "mapWinPct": 0.5106382978723404,
+      "roundsPlayed": 975,
+      "pistolWon": 45,
+      "pistolPlayed": 94,
+      "pistolWinPct": 0.4787234042553192,
+      "avgRating": 0.9788
+    }
   },
   {
-    "team": "FURIA",
-    "region": "Americas",
     "matchesPlayed": 14,
     "matchesWon": 7,
     "matchWinPct": 0.5,
@@ -207,11 +374,24 @@
     "pistolWon": 34,
     "pistolPlayed": 80,
     "pistolWinPct": 0.425,
-    "avgRating": 0.9646
+    "avgRating": 0.9646,
+    "team": "FURIA",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 16,
+      "matchesWon": 7,
+      "matchWinPct": 0.4375,
+      "mapsPlayed": 44,
+      "mapsWon": 20,
+      "mapWinPct": 0.45454545454545453,
+      "roundsPlayed": 890,
+      "pistolWon": 36,
+      "pistolPlayed": 88,
+      "pistolWinPct": 0.4090909090909091,
+      "avgRating": 0.9555
+    }
   },
   {
-    "team": "FUT Esports",
-    "region": "EMEA",
     "matchesPlayed": 19,
     "matchesWon": 9,
     "matchWinPct": 0.47368421052631576,
@@ -222,11 +402,24 @@
     "pistolWon": 53,
     "pistolPlayed": 100,
     "pistolWinPct": 0.53,
-    "avgRating": 0.9648
+    "avgRating": 0.9648,
+    "team": "FUT Esports",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 22,
+      "matchesWon": 10,
+      "matchWinPct": 0.45454545454545453,
+      "mapsPlayed": 58,
+      "mapsWon": 27,
+      "mapWinPct": 0.46551724137931033,
+      "roundsPlayed": 1263,
+      "pistolWon": 63,
+      "pistolPlayed": 116,
+      "pistolWinPct": 0.5431034482758621,
+      "avgRating": 0.9658
+    }
   },
   {
-    "team": "FunPlus Phoenix",
-    "region": "China",
     "matchesPlayed": 12,
     "matchesWon": 4,
     "matchWinPct": 0.3333333333333333,
@@ -237,11 +430,24 @@
     "pistolWon": 0,
     "pistolPlayed": 58,
     "pistolWinPct": 0.0,
-    "avgRating": 0.9486
+    "avgRating": 0.9486,
+    "team": "FunPlus Phoenix",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 20,
+      "matchesWon": 9,
+      "matchWinPct": 0.45,
+      "mapsPlayed": 51,
+      "mapsWon": 24,
+      "mapWinPct": 0.47058823529411764,
+      "roundsPlayed": 1064,
+      "pistolWon": 0,
+      "pistolPlayed": 102,
+      "pistolWinPct": 0.0,
+      "avgRating": 0.9486
+    }
   },
   {
-    "team": "G2 Esports",
-    "region": "Americas",
     "matchesPlayed": 25,
     "matchesWon": 15,
     "matchWinPct": 0.6,
@@ -252,11 +458,24 @@
     "pistolWon": 66,
     "pistolPlayed": 130,
     "pistolWinPct": 0.5076923076923077,
-    "avgRating": 1.0383
+    "avgRating": 1.0383,
+    "team": "G2 Esports",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 28,
+      "matchesWon": 16,
+      "matchWinPct": 0.5714285714285714,
+      "mapsPlayed": 73,
+      "mapsWon": 44,
+      "mapWinPct": 0.6027397260273972,
+      "roundsPlayed": 1540,
+      "pistolWon": 76,
+      "pistolPlayed": 146,
+      "pistolWinPct": 0.5205479452054794,
+      "avgRating": 1.0367
+    }
   },
   {
-    "team": "GIANTX",
-    "region": "EMEA",
     "matchesPlayed": 12,
     "matchesWon": 4,
     "matchWinPct": 0.3333333333333333,
@@ -267,11 +486,24 @@
     "pistolWon": 36,
     "pistolPlayed": 58,
     "pistolWinPct": 0.6206896551724138,
-    "avgRating": 0.9388
+    "avgRating": 0.9388,
+    "team": "GIANTX",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 15,
+      "matchesWon": 5,
+      "matchWinPct": 0.3333333333333333,
+      "mapsPlayed": 36,
+      "mapsWon": 12,
+      "mapWinPct": 0.3333333333333333,
+      "roundsPlayed": 763,
+      "pistolWon": 43,
+      "pistolPlayed": 72,
+      "pistolWinPct": 0.5972222222222222,
+      "avgRating": 0.9216
+    }
   },
   {
-    "team": "Gen.G",
-    "region": "Pacific",
     "matchesPlayed": 11,
     "matchesWon": 4,
     "matchWinPct": 0.36363636363636365,
@@ -282,11 +514,24 @@
     "pistolWon": 24,
     "pistolPlayed": 58,
     "pistolWinPct": 0.41379310344827586,
-    "avgRating": 0.9777
+    "avgRating": 0.9777,
+    "team": "Gen.G",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 19,
+      "matchesWon": 9,
+      "matchWinPct": 0.47368421052631576,
+      "mapsPlayed": 52,
+      "mapsWon": 26,
+      "mapWinPct": 0.5,
+      "roundsPlayed": 1154,
+      "pistolWon": 49,
+      "pistolPlayed": 104,
+      "pistolWinPct": 0.47115384615384615,
+      "avgRating": 1.012
+    }
   },
   {
-    "team": "Gentle Mates",
-    "region": "EMEA",
     "matchesPlayed": 18,
     "matchesWon": 10,
     "matchWinPct": 0.5555555555555556,
@@ -297,11 +542,24 @@
     "pistolWon": 46,
     "pistolPlayed": 94,
     "pistolWinPct": 0.48936170212765956,
-    "avgRating": 1.0107
+    "avgRating": 1.0107,
+    "team": "Gentle Mates",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 23,
+      "matchesWon": 14,
+      "matchWinPct": 0.6086956521739131,
+      "mapsPlayed": 61,
+      "mapsWon": 35,
+      "mapWinPct": 0.5737704918032787,
+      "roundsPlayed": 1315,
+      "pistolWon": 64,
+      "pistolPlayed": 122,
+      "pistolWinPct": 0.5245901639344263,
+      "avgRating": 1.0265
+    }
   },
   {
-    "team": "Global Esports",
-    "region": "Pacific",
     "matchesPlayed": 19,
     "matchesWon": 10,
     "matchWinPct": 0.5263157894736842,
@@ -312,11 +570,24 @@
     "pistolWon": 53,
     "pistolPlayed": 96,
     "pistolWinPct": 0.5520833333333334,
-    "avgRating": 1.0061
+    "avgRating": 1.0061,
+    "team": "Global Esports",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 23,
+      "matchesWon": 12,
+      "matchWinPct": 0.5217391304347826,
+      "mapsPlayed": 59,
+      "mapsWon": 30,
+      "mapWinPct": 0.5084745762711864,
+      "roundsPlayed": 1272,
+      "pistolWon": 68,
+      "pistolPlayed": 118,
+      "pistolWinPct": 0.576271186440678,
+      "avgRating": 1.0073
+    }
   },
   {
-    "team": "JDG Esports",
-    "region": "China",
     "matchesPlayed": 20,
     "matchesWon": 8,
     "matchWinPct": 0.4,
@@ -327,11 +598,24 @@
     "pistolWon": 0,
     "pistolPlayed": 100,
     "pistolWinPct": 0.0,
-    "avgRating": 0.9585
+    "avgRating": 0.9585,
+    "team": "JDG Esports",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 22,
+      "matchesWon": 8,
+      "matchWinPct": 0.36363636363636365,
+      "mapsPlayed": 56,
+      "mapsWon": 23,
+      "mapWinPct": 0.4107142857142857,
+      "roundsPlayed": 1169,
+      "pistolWon": 0,
+      "pistolPlayed": 112,
+      "pistolWinPct": 0.0,
+      "avgRating": 0.9585
+    }
   },
   {
-    "team": "KIWOOM DRX",
-    "region": "Pacific",
     "matchesPlayed": 16,
     "matchesWon": 9,
     "matchWinPct": 0.5625,
@@ -342,11 +626,24 @@
     "pistolWon": 44,
     "pistolPlayed": 82,
     "pistolWinPct": 0.5365853658536586,
-    "avgRating": 0.9818
+    "avgRating": 0.9818,
+    "team": "KIWOOM DRX",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 19,
+      "matchesWon": 10,
+      "matchWinPct": 0.5263157894736842,
+      "mapsPlayed": 48,
+      "mapsWon": 23,
+      "mapWinPct": 0.4791666666666667,
+      "roundsPlayed": 1019,
+      "pistolWon": 48,
+      "pistolPlayed": 96,
+      "pistolWinPct": 0.5,
+      "avgRating": 0.9798
+    }
   },
   {
-    "team": "KR\u00dc Esports",
-    "region": "Americas",
     "matchesPlayed": 11,
     "matchesWon": 4,
     "matchWinPct": 0.36363636363636365,
@@ -357,11 +654,24 @@
     "pistolWon": 24,
     "pistolPlayed": 54,
     "pistolWinPct": 0.4444444444444444,
-    "avgRating": 0.9544
+    "avgRating": 0.9544,
+    "team": "KR\u00dc Esports",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 13,
+      "matchesWon": 4,
+      "matchWinPct": 0.3076923076923077,
+      "mapsPlayed": 32,
+      "mapsWon": 13,
+      "mapWinPct": 0.40625,
+      "roundsPlayed": 673,
+      "pistolWon": 29,
+      "pistolPlayed": 64,
+      "pistolWinPct": 0.453125,
+      "avgRating": 0.9459
+    }
   },
   {
-    "team": "Karmine Corp",
-    "region": "EMEA",
     "matchesPlayed": 11,
     "matchesWon": 3,
     "matchWinPct": 0.2727272727272727,
@@ -372,11 +682,24 @@
     "pistolWon": 28,
     "pistolPlayed": 56,
     "pistolWinPct": 0.5,
-    "avgRating": 0.9821
+    "avgRating": 0.9821,
+    "team": "Karmine Corp",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 19,
+      "matchesWon": 8,
+      "matchWinPct": 0.42105263157894735,
+      "mapsPlayed": 50,
+      "mapsWon": 23,
+      "mapWinPct": 0.46,
+      "roundsPlayed": 1032,
+      "pistolWon": 50,
+      "pistolPlayed": 100,
+      "pistolWinPct": 0.5,
+      "avgRating": 0.9968
+    }
   },
   {
-    "team": "LEVIAT\u00c1N",
-    "region": "Americas",
     "matchesPlayed": 23,
     "matchesWon": 16,
     "matchWinPct": 0.6956521739130435,
@@ -387,11 +710,24 @@
     "pistolWon": 70,
     "pistolPlayed": 126,
     "pistolWinPct": 0.5555555555555556,
-    "avgRating": 1.0602
+    "avgRating": 1.0602,
+    "team": "LEVIAT\u00c1N",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 26,
+      "matchesWon": 17,
+      "matchWinPct": 0.6538461538461539,
+      "mapsPlayed": 71,
+      "mapsWon": 40,
+      "mapWinPct": 0.5633802816901409,
+      "roundsPlayed": 1459,
+      "pistolWon": 76,
+      "pistolPlayed": 142,
+      "pistolWinPct": 0.5352112676056338,
+      "avgRating": 1.0492
+    }
   },
   {
-    "team": "LOUD",
-    "region": "Americas",
     "matchesPlayed": 10,
     "matchesWon": 4,
     "matchWinPct": 0.4,
@@ -402,11 +738,24 @@
     "pistolWon": 27,
     "pistolPlayed": 50,
     "pistolWinPct": 0.54,
-    "avgRating": 0.9387
+    "avgRating": 0.9387,
+    "team": "LOUD",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 14,
+      "matchesWon": 6,
+      "matchWinPct": 0.42857142857142855,
+      "mapsPlayed": 36,
+      "mapsWon": 13,
+      "mapWinPct": 0.3611111111111111,
+      "roundsPlayed": 758,
+      "pistolWon": 37,
+      "pistolPlayed": 72,
+      "pistolWinPct": 0.5138888888888888,
+      "avgRating": 0.9463
+    }
   },
   {
-    "team": "MIBR",
-    "region": "Americas",
     "matchesPlayed": 13,
     "matchesWon": 5,
     "matchWinPct": 0.38461538461538464,
@@ -417,11 +766,24 @@
     "pistolWon": 28,
     "pistolPlayed": 72,
     "pistolWinPct": 0.3888888888888889,
-    "avgRating": 0.9773
+    "avgRating": 0.9773,
+    "team": "MIBR",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 19,
+      "matchesWon": 9,
+      "matchWinPct": 0.47368421052631576,
+      "mapsPlayed": 51,
+      "mapsWon": 26,
+      "mapWinPct": 0.5098039215686274,
+      "roundsPlayed": 1054,
+      "pistolWon": 42,
+      "pistolPlayed": 102,
+      "pistolWinPct": 0.4117647058823529,
+      "avgRating": 1.0057
+    }
   },
   {
-    "team": "NRG",
-    "region": "Americas",
     "matchesPlayed": 26,
     "matchesWon": 16,
     "matchWinPct": 0.6153846153846154,
@@ -432,11 +794,24 @@
     "pistolWon": 76,
     "pistolPlayed": 136,
     "pistolWinPct": 0.5588235294117647,
-    "avgRating": 1.0378
+    "avgRating": 1.0378,
+    "team": "NRG",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 36,
+      "matchesWon": 23,
+      "matchWinPct": 0.6388888888888888,
+      "mapsPlayed": 96,
+      "mapsWon": 57,
+      "mapWinPct": 0.59375,
+      "roundsPlayed": 2053,
+      "pistolWon": 108,
+      "pistolPlayed": 192,
+      "pistolWinPct": 0.5625,
+      "avgRating": 1.0433
+    }
   },
   {
-    "team": "Natus Vincere",
-    "region": "EMEA",
     "matchesPlayed": 12,
     "matchesWon": 5,
     "matchWinPct": 0.4166666666666667,
@@ -447,11 +822,24 @@
     "pistolWon": 30,
     "pistolPlayed": 60,
     "pistolWinPct": 0.5,
-    "avgRating": 0.9861
+    "avgRating": 0.9861,
+    "team": "Natus Vincere",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 18,
+      "matchesWon": 9,
+      "matchWinPct": 0.5,
+      "mapsPlayed": 45,
+      "mapsWon": 22,
+      "mapWinPct": 0.4888888888888889,
+      "roundsPlayed": 993,
+      "pistolWon": 45,
+      "pistolPlayed": 90,
+      "pistolWinPct": 0.5,
+      "avgRating": 0.9947
+    }
   },
   {
-    "team": "Nongshim RedForce",
-    "region": "Pacific",
     "matchesPlayed": 16,
     "matchesWon": 10,
     "matchWinPct": 0.625,
@@ -462,11 +850,24 @@
     "pistolWon": 51,
     "pistolPlayed": 90,
     "pistolWinPct": 0.5666666666666667,
-    "avgRating": 1.0196
+    "avgRating": 1.0196,
+    "team": "Nongshim RedForce",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 26,
+      "matchesWon": 17,
+      "matchWinPct": 0.6538461538461539,
+      "mapsPlayed": 75,
+      "mapsWon": 47,
+      "mapWinPct": 0.6266666666666667,
+      "roundsPlayed": 1622,
+      "pistolWon": 75,
+      "pistolPlayed": 150,
+      "pistolWinPct": 0.5,
+      "avgRating": 1.0218
+    }
   },
   {
-    "team": "Nova Esports",
-    "region": "China",
     "matchesPlayed": 12,
     "matchesWon": 5,
     "matchWinPct": 0.4166666666666667,
@@ -477,11 +878,24 @@
     "pistolWon": 0,
     "pistolPlayed": 54,
     "pistolWinPct": 0.0,
-    "avgRating": 0.936
+    "avgRating": 0.936,
+    "team": "Nova Esports",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 15,
+      "matchesWon": 7,
+      "matchWinPct": 0.4666666666666667,
+      "mapsPlayed": 36,
+      "mapsWon": 16,
+      "mapWinPct": 0.4444444444444444,
+      "roundsPlayed": 762,
+      "pistolWon": 0,
+      "pistolPlayed": 72,
+      "pistolWinPct": 0.0,
+      "avgRating": 0.936
+    }
   },
   {
-    "team": "PCIFIC Esports",
-    "region": "EMEA",
     "matchesPlayed": 9,
     "matchesWon": 0,
     "matchWinPct": 0.0,
@@ -492,11 +906,24 @@
     "pistolWon": 18,
     "pistolPlayed": 46,
     "pistolWinPct": 0.391304347826087,
-    "avgRating": 0.9074
+    "avgRating": 0.9074,
+    "team": "PCIFIC Esports",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 11,
+      "matchesWon": 0,
+      "matchWinPct": 0.0,
+      "mapsPlayed": 29,
+      "mapsWon": 7,
+      "mapWinPct": 0.2413793103448276,
+      "roundsPlayed": 622,
+      "pistolWon": 21,
+      "pistolPlayed": 58,
+      "pistolWinPct": 0.3620689655172414,
+      "avgRating": 0.9123
+    }
   },
   {
-    "team": "Paper Rex",
-    "region": "Pacific",
     "matchesPlayed": 30,
     "matchesWon": 22,
     "matchWinPct": 0.7333333333333333,
@@ -507,11 +934,24 @@
     "pistolWon": 90,
     "pistolPlayed": 172,
     "pistolWinPct": 0.5232558139534884,
-    "avgRating": 1.0665
+    "avgRating": 1.0665,
+    "team": "Paper Rex",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 32,
+      "matchesWon": 22,
+      "matchWinPct": 0.6875,
+      "mapsPlayed": 92,
+      "mapsWon": 56,
+      "mapWinPct": 0.6086956521739131,
+      "roundsPlayed": 1951,
+      "pistolWon": 96,
+      "pistolPlayed": 184,
+      "pistolWinPct": 0.5217391304347826,
+      "avgRating": 1.057
+    }
   },
   {
-    "team": "Rex Regum Qeon",
-    "region": "Pacific",
     "matchesPlayed": 14,
     "matchesWon": 7,
     "matchWinPct": 0.5,
@@ -522,11 +962,24 @@
     "pistolWon": 32,
     "pistolPlayed": 78,
     "pistolWinPct": 0.41025641025641024,
-    "avgRating": 0.9926
+    "avgRating": 0.9926,
+    "team": "Rex Regum Qeon",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 18,
+      "matchesWon": 9,
+      "matchWinPct": 0.5,
+      "mapsPlayed": 50,
+      "mapsWon": 23,
+      "mapWinPct": 0.46,
+      "roundsPlayed": 1095,
+      "pistolWon": 44,
+      "pistolPlayed": 100,
+      "pistolWinPct": 0.44,
+      "avgRating": 0.9924
+    }
   },
   {
-    "team": "Sentinels",
-    "region": "Americas",
     "matchesPlayed": 10,
     "matchesWon": 4,
     "matchWinPct": 0.4,
@@ -537,11 +990,24 @@
     "pistolWon": 29,
     "pistolPlayed": 46,
     "pistolWinPct": 0.6304347826086957,
-    "avgRating": 0.9741
+    "avgRating": 0.9741,
+    "team": "Sentinels",
+    "region": "Americas",
+    "withEwc": {
+      "matchesPlayed": 17,
+      "matchesWon": 8,
+      "matchWinPct": 0.47058823529411764,
+      "mapsPlayed": 42,
+      "mapsWon": 21,
+      "mapWinPct": 0.5,
+      "roundsPlayed": 915,
+      "pistolWon": 55,
+      "pistolPlayed": 84,
+      "pistolWinPct": 0.6547619047619048,
+      "avgRating": 1.0078
+    }
   },
   {
-    "team": "T1",
-    "region": "Pacific",
     "matchesPlayed": 18,
     "matchesWon": 13,
     "matchWinPct": 0.7222222222222222,
@@ -552,11 +1018,24 @@
     "pistolWon": 47,
     "pistolPlayed": 88,
     "pistolWinPct": 0.5340909090909091,
-    "avgRating": 1.0373
+    "avgRating": 1.0373,
+    "team": "T1",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 21,
+      "matchesWon": 14,
+      "matchWinPct": 0.6666666666666666,
+      "mapsPlayed": 51,
+      "mapsWon": 31,
+      "mapWinPct": 0.6078431372549019,
+      "roundsPlayed": 1124,
+      "pistolWon": 56,
+      "pistolPlayed": 102,
+      "pistolWinPct": 0.5490196078431373,
+      "avgRating": 1.0245
+    }
   },
   {
-    "team": "TYLOO",
-    "region": "China",
     "matchesPlayed": 20,
     "matchesWon": 13,
     "matchWinPct": 0.65,
@@ -567,11 +1046,24 @@
     "pistolWon": 0,
     "pistolPlayed": 102,
     "pistolWinPct": 0.0,
-    "avgRating": 1.0571
+    "avgRating": 1.0571,
+    "team": "TYLOO",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 23,
+      "matchesWon": 14,
+      "matchWinPct": 0.6086956521739131,
+      "mapsPlayed": 60,
+      "mapsWon": 35,
+      "mapWinPct": 0.5833333333333334,
+      "roundsPlayed": 1251,
+      "pistolWon": 0,
+      "pistolPlayed": 120,
+      "pistolWinPct": 0.0,
+      "avgRating": 1.0571
+    }
   },
   {
-    "team": "Team Heretics",
-    "region": "EMEA",
     "matchesPlayed": 20,
     "matchesWon": 11,
     "matchWinPct": 0.55,
@@ -582,11 +1074,24 @@
     "pistolWon": 48,
     "pistolPlayed": 106,
     "pistolWinPct": 0.4528301886792453,
-    "avgRating": 1.0155
+    "avgRating": 1.0155,
+    "team": "Team Heretics",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 23,
+      "matchesWon": 13,
+      "matchWinPct": 0.5652173913043478,
+      "mapsPlayed": 61,
+      "mapsWon": 33,
+      "mapWinPct": 0.5409836065573771,
+      "roundsPlayed": 1292,
+      "pistolWon": 56,
+      "pistolPlayed": 122,
+      "pistolWinPct": 0.45901639344262296,
+      "avgRating": 1.0197
+    }
   },
   {
-    "team": "Team Liquid",
-    "region": "EMEA",
     "matchesPlayed": 20,
     "matchesWon": 12,
     "matchWinPct": 0.6,
@@ -597,11 +1102,24 @@
     "pistolWon": 48,
     "pistolPlayed": 98,
     "pistolWinPct": 0.4897959183673469,
-    "avgRating": 0.9859
+    "avgRating": 0.9859,
+    "team": "Team Liquid",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 22,
+      "matchesWon": 12,
+      "matchWinPct": 0.5454545454545454,
+      "mapsPlayed": 53,
+      "mapsWon": 28,
+      "mapWinPct": 0.5283018867924528,
+      "roundsPlayed": 1143,
+      "pistolWon": 51,
+      "pistolPlayed": 106,
+      "pistolWinPct": 0.4811320754716981,
+      "avgRating": 0.9799
+    }
   },
   {
-    "team": "Team Secret",
-    "region": "Pacific",
     "matchesPlayed": 10,
     "matchesWon": 2,
     "matchWinPct": 0.2,
@@ -612,11 +1130,24 @@
     "pistolWon": 23,
     "pistolPlayed": 48,
     "pistolWinPct": 0.4791666666666667,
-    "avgRating": 0.9383
+    "avgRating": 0.9383,
+    "team": "Team Secret",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 13,
+      "matchesWon": 3,
+      "matchWinPct": 0.23076923076923078,
+      "mapsPlayed": 32,
+      "mapsWon": 10,
+      "mapWinPct": 0.3125,
+      "roundsPlayed": 690,
+      "pistolWon": 31,
+      "pistolPlayed": 64,
+      "pistolWinPct": 0.484375,
+      "avgRating": 0.9516
+    }
   },
   {
-    "team": "Team Vitality",
-    "region": "EMEA",
     "matchesPlayed": 23,
     "matchesWon": 13,
     "matchWinPct": 0.5652173913043478,
@@ -627,11 +1158,24 @@
     "pistolWon": 53,
     "pistolPlayed": 114,
     "pistolWinPct": 0.4649122807017544,
-    "avgRating": 1.0451
+    "avgRating": 1.0451,
+    "team": "Team Vitality",
+    "region": "EMEA",
+    "withEwc": {
+      "matchesPlayed": 26,
+      "matchesWon": 15,
+      "matchWinPct": 0.5769230769230769,
+      "mapsPlayed": 65,
+      "mapsWon": 36,
+      "mapWinPct": 0.5538461538461539,
+      "roundsPlayed": 1360,
+      "pistolWon": 60,
+      "pistolPlayed": 130,
+      "pistolWinPct": 0.46153846153846156,
+      "avgRating": 1.0314
+    }
   },
   {
-    "team": "Titan Esports Club",
-    "region": "China",
     "matchesPlayed": 17,
     "matchesWon": 4,
     "matchWinPct": 0.23529411764705882,
@@ -642,11 +1186,24 @@
     "pistolWon": 0,
     "pistolPlayed": 88,
     "pistolWinPct": 0.0,
-    "avgRating": 0.9893
+    "avgRating": 0.9893,
+    "team": "Titan Esports Club",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 21,
+      "matchesWon": 6,
+      "matchWinPct": 0.2857142857142857,
+      "mapsPlayed": 54,
+      "mapsWon": 20,
+      "mapWinPct": 0.37037037037037035,
+      "roundsPlayed": 1185,
+      "pistolWon": 0,
+      "pistolPlayed": 108,
+      "pistolWinPct": 0.0,
+      "avgRating": 0.9893
+    }
   },
   {
-    "team": "Trace Esports",
-    "region": "China",
     "matchesPlayed": 18,
     "matchesWon": 5,
     "matchWinPct": 0.2777777777777778,
@@ -657,11 +1214,24 @@
     "pistolWon": 0,
     "pistolPlayed": 86,
     "pistolWinPct": 0.0,
-    "avgRating": 0.9499
+    "avgRating": 0.9499,
+    "team": "Trace Esports",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 21,
+      "matchesWon": 6,
+      "matchWinPct": 0.2857142857142857,
+      "mapsPlayed": 50,
+      "mapsWon": 16,
+      "mapWinPct": 0.32,
+      "roundsPlayed": 1058,
+      "pistolWon": 0,
+      "pistolPlayed": 100,
+      "pistolWinPct": 0.0,
+      "avgRating": 0.9499
+    }
   },
   {
-    "team": "VARREL",
-    "region": "Pacific",
     "matchesPlayed": 9,
     "matchesWon": 1,
     "matchWinPct": 0.1111111111111111,
@@ -672,11 +1242,24 @@
     "pistolWon": 19,
     "pistolPlayed": 46,
     "pistolWinPct": 0.41304347826086957,
-    "avgRating": 0.919
+    "avgRating": 0.919,
+    "team": "VARREL",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 12,
+      "matchesWon": 3,
+      "matchWinPct": 0.25,
+      "mapsPlayed": 30,
+      "mapsWon": 10,
+      "mapWinPct": 0.3333333333333333,
+      "roundsPlayed": 710,
+      "pistolWon": 24,
+      "pistolPlayed": 60,
+      "pistolWinPct": 0.4,
+      "avgRating": 0.9196
+    }
   },
   {
-    "team": "Wolves Esports",
-    "region": "China",
     "matchesPlayed": 14,
     "matchesWon": 4,
     "matchWinPct": 0.2857142857142857,
@@ -687,11 +1270,24 @@
     "pistolWon": 0,
     "pistolPlayed": 72,
     "pistolWinPct": 0.0,
-    "avgRating": 0.9659
+    "avgRating": 0.9659,
+    "team": "Wolves Esports",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 16,
+      "matchesWon": 4,
+      "matchWinPct": 0.25,
+      "mapsPlayed": 41,
+      "mapsWon": 14,
+      "mapWinPct": 0.34146341463414637,
+      "roundsPlayed": 853,
+      "pistolWon": 0,
+      "pistolPlayed": 82,
+      "pistolWinPct": 0.0,
+      "avgRating": 0.9659
+    }
   },
   {
-    "team": "Xi Lai Gaming",
-    "region": "China",
     "matchesPlayed": 27,
     "matchesWon": 17,
     "matchWinPct": 0.6296296296296297,
@@ -702,11 +1298,24 @@
     "pistolWon": 21,
     "pistolPlayed": 150,
     "pistolWinPct": 0.14,
-    "avgRating": 1.0079
+    "avgRating": 1.0079,
+    "team": "Xi Lai Gaming",
+    "region": "China",
+    "withEwc": {
+      "matchesPlayed": 32,
+      "matchesWon": 20,
+      "matchWinPct": 0.625,
+      "mapsPlayed": 89,
+      "mapsWon": 51,
+      "mapWinPct": 0.5730337078651685,
+      "roundsPlayed": 1826,
+      "pistolWon": 23,
+      "pistolPlayed": 178,
+      "pistolWinPct": 0.12921348314606743,
+      "avgRating": 0.9957
+    }
   },
   {
-    "team": "ZETA DIVISION",
-    "region": "Pacific",
     "matchesPlayed": 10,
     "matchesWon": 2,
     "matchWinPct": 0.2,
@@ -717,6 +1326,21 @@
     "pistolWon": 26,
     "pistolPlayed": 50,
     "pistolWinPct": 0.52,
-    "avgRating": 0.8988
+    "avgRating": 0.8988,
+    "team": "ZETA DIVISION",
+    "region": "Pacific",
+    "withEwc": {
+      "matchesPlayed": 12,
+      "matchesWon": 2,
+      "matchWinPct": 0.16666666666666666,
+      "mapsPlayed": 29,
+      "mapsWon": 7,
+      "mapWinPct": 0.2413793103448276,
+      "roundsPlayed": 620,
+      "pistolWon": 29,
+      "pistolPlayed": 58,
+      "pistolWinPct": 0.5,
+      "avgRating": 0.9025
+    }
   }
 ]

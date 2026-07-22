@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import DataTable from '../components/DataTable'
 import HorizontalBarChart from '../components/HorizontalBarChart'
@@ -29,7 +30,14 @@ export default function Teams() {
   }
 
   const columns = [
-    { key: 'team', label: 'Team', align: 'left' },
+    {
+      key: 'team', label: 'Team', align: 'left',
+      format: (v) => (
+        <Link to={`/teams/${encodeURIComponent(v)}`} className="font-medium hover:text-accent-bright transition-colors">
+          {v}
+        </Link>
+      ),
+    },
     { key: 'region', label: 'Region', align: 'left' },
     { key: 'matchesPlayed', label: 'Matches', align: 'right', format: (v) => num(v) },
     { key: 'matchWinPct', label: 'Match Win%', align: 'right', colorScale: true, format: (v) => pct(v) },

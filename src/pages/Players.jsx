@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import DataTable from '../components/DataTable'
 import FilterChips from '../components/FilterChips'
@@ -58,7 +59,13 @@ export default function Players() {
       align: 'left',
       format: (v, row) => (
         <div className="flex items-center gap-2">
-          <span className="font-body font-medium">{v}</span>
+          <Link
+            to={`/players/${encodeURIComponent(v)}`}
+            className="font-body font-medium hover:text-accent-bright transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {v}
+          </Link>
           {row.usingIntlStats && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent-bright font-body">
               Intl-only

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import KpiCard from '../components/KpiCard'
 import RankedList from '../components/RankedList'
@@ -37,8 +38,12 @@ export default function Overview() {
           renderRow={(p) => (
             <>
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-ink font-medium truncate">{p.player}</div>
-                <div className="text-xs text-muted truncate">{p.team}</div>
+                <Link to={`/players/${encodeURIComponent(p.player)}`} className="block text-sm text-ink font-medium truncate hover:text-accent-bright transition-colors">
+                  {p.player}
+                </Link>
+                <Link to={`/teams/${encodeURIComponent(p.team)}`} className="block text-xs text-muted truncate hover:text-accent-bright transition-colors">
+                  {p.team}
+                </Link>
               </div>
               <span className="font-body text-sm text-good font-medium">{rating(p.rating)}</span>
             </>
@@ -50,7 +55,9 @@ export default function Overview() {
           renderRow={(t) => (
             <>
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-ink font-medium truncate">{t.team}</div>
+                <Link to={`/teams/${encodeURIComponent(t.team)}`} className="block text-sm text-ink font-medium truncate hover:text-accent-bright transition-colors">
+                  {t.team}
+                </Link>
                 <div className="text-xs text-muted truncate">{t.region} · {t.mapsWon}/{t.mapsPlayed} maps</div>
               </div>
               <span className="font-body text-sm text-good font-medium">{pct(t.mapWinPct)}</span>

@@ -1,56 +1,91 @@
-# VCT 2026 — Season Stats Site
+# VCT 2026 — Season Stats
 
-A static dashboard for VCT 2026 tier-1 player and team statistics, built from
-the vlr.gg scrape data. Dark theme, four views (Overview, Players, Teams,
-Economy), fully static — no backend, just JSON baked in at build time.
+A static stats dashboard for VCT 2026 tier-1 Valorant esports, built from
+scraped [vlr.gg](https://vlr.gg) data. No backend — everything is a JSON
+file baked in at build time, served as a static site.
 
-## Design
+**Live at:** deployed via Cloudflare Pages, connected to this repo's `main` branch.
 
-- **Colors**: graphite background (`#0B0D10`), brass/gold accent (`#C9A227`),
-  and a red-amber-green diverging scale for rating/win-rate cells — the same
-  scale used in the Excel workbook, so both deliverables read consistently.
-- **Type**: Space Grotesk (headings), Inter (body), JetBrains Mono (every
-  stat/number, so columns align).
-- **Signature motif**: the small round-by-round win/loss squares strip
-  (`src/components/RoundSquares.jsx`) — grounded in how VALORANT actually
-  works, round-based, not decorative.
-- Rounded corners throughout (`rounded-xl`/`rounded-2xl` — see
-  `tailwind.config.js`), no shadows, no gradients, minimal borders.
+## What's here
+
+Six views, plus per-player and per-team profile pages:
+
+| View | What it shows |
+|---|---|
+| **Overview** | Season KPIs (events, matches, maps, rounds, players, teams) and top-10 leaderboards |
+| **Players** | Every player's Rating, ACS, K/D, KAST, ADR, HS%, kills/deaths/multi-kills/clutches, sortable and searchable |
+| **Teams** | Match/map records, win rates, pistol win rate, average player rating |
+| **Agents** | Pick rates and map win rates, filterable by Region → Stage → Phase → Week/Round (the last one is multi-select) |
+| **Economy** | Buy-tier distribution (eco/semi-eco/semi-buy/full-buy) and win rates by tier |
+| **Player / Team profiles** | Click any name anywhere on the site to open a full breakdown |
+
+Most pages that touch China have an explicit toggle for known VLR data gaps
+(see [Data caveats](#data-caveats) below), and most also have a toggle to
+fold in **Esports World Cup (EWC) 2026** results alongside the main VCT season.
+
+## Tech stack
+
+- **Vite + React** (function components, hooks — no class components)
+- **React Router** for client-side routing (`/players/:name`, `/teams/:name`, etc.)
+- **Tailwind CSS**, design tokens in `tailwind.config.js` — colors and
+  spacing pulled from a real reference site's stylesheet, with the accent
+  color overridden to Valorant's official brand red (`#FF4655`)
+- **Plus Jakarta Sans** as the sole font family (headings, body, and data —
+  no separate monospace for numbers)
+- Team logos and agent icons are real assets (VLR.gg team logos, Riot's
+  official agent icons via `valorant-api.com`), not placeholders
 
 ## Project structure
 
 ```
 vct-site/
 ├── public/
-│   ├── data/           JSON data files (generated — see below)
-│   └── _redirects      Cloudflare Pages SPA routing config
+│   ├── data/            JSON data files (generated -- see below)
+│   ├── logos/           A few team logos re-hosted locally after
+│   │                    pixel-level fixes (contrast/visibility), rather
+│   │                    than pointing back at the original CDN
+│   └── _redirects       Cloudflare Pages SPA routing config
 ├── src/
-│   ├── components/      Sidebar, DataTable, KpiCard, RankedList,
-│   │                    HorizontalBarChart, StackedBar, RoundSquares, FilterChips
-│   ├── pages/            Overview.jsx, Players.jsx, Teams.jsx, Economy.jsx
-│   ├── lib/              useData.js (fetch+cache), format.js (number/color helpers)
-│   ├── App.jsx           Routing shell
+│   ├── components/      DataTable, HorizontalBarChart, StackedBar,
+│   │                    RoundSquares, TeamLogo, AgentIcon, FilterChips,
+│   │                    MultiFilterChips, KpiCard, RankedList, Sidebar
+│   ├── pages/            Overview, Players, Teams, Agents, Economy,
+│   │                    PlayerProfile, TeamProfile
+│   ├── lib/              useData.js (fetch+cache hook), format.js
+│   │                    (number/percent/color-scale helpers),
+│   │                    agentIcons.json, teamLogos.json
+│   ├── App.jsx           Route definitions
 │   └── index.css         Tailwind + base styles
 ├── data_prep/
-│   └── export.py         Regenerates public/data/*.json from the raw scrape
-└── tailwind.config.js    Design tokens (colors, fonts, radius)
+│   └── export_from_db.py  Regenerates public/data/*.json directly from
+│                          the scraper's SQLite output (see below)
+└── tailwind.config.js     Design tokens (colors, fonts, radius)
 ```
 
 ## Regenerating the data
 
-The JSON in `public/data/` was computed by `data_prep/export.py` from the
-same pickled dataframes used to build the Excel workbook — same team-name
-canonicalization (tags → full names, the 3 China sponsor-name merges, the
-Eternal Fire merge), same region tagging, same "2 pistols per
-map, none in overtime" rule.
+`data_prep/export_from_db.py` reads directly from the scraper's `.db` files
+(no CSV export step needed) and writes every file in `public/data/`:
 
-If you re-scrape and want to refresh the site's data:
+```bash
+python3 data_prep/export_from_db.py
+```
 
-1. Re-run the export logic against your new CSVs (adapt `data_prep/export.py`
-   to read directly from your scraper's output CSVs instead of the pickles
-   — the pickles were just this session's intermediate cache)
-2. Confirm the printed counts look right (teams, players, matches)
-3. `npm run build` again
+It expects `vlr_vct_2026.db` and `vlr_ewc_2026.db` (paths are constants near
+the top of the script — update them to point at your fresh scrape). It
+handles:
+
+- **Team-name canonicalization** — tags (e.g. "PRX") → full names, China's
+  sponsor-prefixed long names → their short form, EWC's sub-branded rosters
+  (e.g. "AG.AL (All Gamers)") → their parent org, and the ULF Esports →
+  Eternal Fire merge (same EMEA slot, held sequentially, never played each
+  other)
+- **Region/stage/phase/week tagging** for the Agents page's cascading filter
+- **VCT + EWC merging** — every match is tagged by competition; the default
+  (VCT-only) output is unaffected, with a parallel `withEwc` /
+  `statsWithEwc` field added per team/player for the toggle
+
+After running it, `npm run build` picks up the fresh JSON automatically.
 
 ## Local development
 
@@ -59,59 +94,24 @@ npm install
 npm run dev        # http://localhost:5173, hot reload
 ```
 
-## Build
+## Data caveats
 
-```bash
-npm run build       # outputs to dist/
-npm run preview     # serve the production build locally to sanity-check
-```
+A few known gaps in what VLR.gg publishes, surfaced directly in the UI
+rather than silently producing misleading numbers:
 
-## Deploying to Cloudflare Pages
-
-**Option A — Git integration (recommended):**
-
-1. Push this project to a GitHub/GitLab repo
-2. In the Cloudflare dashboard: **Workers & Pages → Create → Pages → Connect to Git**
-3. Select the repo. Build settings:
-   - **Framework preset**: Vite
-   - **Build command**: `npm run build`
-   - **Build output directory**: `dist`
-4. Deploy. Every push to your main branch redeploys automatically.
-
-**Option B — Direct upload (no Git needed):**
-
-```bash
-npm run build
-npx wrangler pages deploy dist --project-name=vct-2026-stats
-```
-
-(First run will prompt you to log in to Cloudflare via browser.)
-
-The `public/_redirects` file is already set up so client-side routing
-(`/players`, `/teams`, `/economy`) works correctly on Cloudflare Pages —
-without it, refreshing on any page but `/` would 404.
-
-## Known data-coverage caveats (surfaced in the UI itself, not just here)
-
-- **China region**: VLR doesn't publish Performance-tab (multi-kills,
-  clutches) or Economy-tab data for China matches. Rating 2.0 is also
-  missing for ~8% of China rows. The Players page has a toggle to use
-  International-only stats for the 21 China players who also competed in
-  Masters/EWC (where full data does exist).
+- **China-region matches** don't publish multi-kill, clutch, or economy
+  data — those columns read 0 for China players unless a player also
+  competed internationally (in which case an "Intl-only stats" toggle uses
+  their complete data instead).
+- **~21 China matches are missing Rating 2.0** specifically. By default
+  those maps still count toward a player's other stats (kills, ACS, etc.),
+  which can make a player's rating average reflect fewer maps than their
+  other averages — a "Rated maps only" toggle makes every stat consistent
+  by excluding those maps entirely.
 - **Pistol win rate** assumes exactly 2 pistol rounds per map (rounds 1 and
-  13) — there are none in overtime, and VLR's economy data doesn't
-  separately tally pistol-round totals, only wins.
-- **"Eternal Fire"** is one merged team in the Teams data —
-  they held the same EMEA franchise slot sequentially (Riot Games removed
-  ULF Esports on March 20, 2026; Eternal Fire filled the vacancy), never
-  played each other.
-
-## Extending
-
-- **Add a 5th view**: create `src/pages/NewView.jsx`, add a route in
-  `App.jsx`, add a nav item + icon in `src/components/Sidebar.jsx`.
-- **Add a new stat column**: it needs to exist in the relevant JSON file
-  first (extend `data_prep/export.py`), then add a column definition to the
-  relevant page's `columns` array.
-- **Change the accent color**: edit `accent` in `tailwind.config.js` —
-  everything else derives from it.
+  13 — none in overtime), and reads `—` for China teams since no economy
+  data exists for that region.
+- The **Agents** page's pick rates and map win rates are computed directly
+  from per-map player data, not VLR's own aggregate page — verified to
+  match VLR's own published percentages exactly (once accounting for a
+  rounding-convention difference) everywhere a fair comparison was possible.

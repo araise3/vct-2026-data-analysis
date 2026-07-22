@@ -1,4 +1,4 @@
-export default function MultiFilterChips({ options, selected, onChange }) {
+export default function MultiFilterChips({ options, selected, onChange, renderLabel }) {
   function toggle(opt) {
     if (selected.includes(opt)) {
       onChange(selected.filter((o) => o !== opt))
@@ -31,7 +31,7 @@ export default function MultiFilterChips({ options, selected, onChange }) {
                 : 'bg-surface text-muted border-hairline hover:text-ink hover:border-muted'
             }`}
           >
-            {opt}
+            {renderLabel ? renderLabel(opt) : opt}
           </button>
         )
       })}

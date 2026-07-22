@@ -171,7 +171,12 @@ export default function Agents() {
         {region !== 'All' && stage !== 'All' && phase !== 'All' && availableWeeks.length > 0 && (
           <div className="flex flex-col gap-1.5">
             <span className="text-xs text-muted">Week / round (select multiple)</span>
-            <MultiFilterChips options={availableWeeks} selected={weeks} onChange={setWeeks} />
+            <MultiFilterChips
+              options={availableWeeks}
+              selected={weeks}
+              onChange={setWeeks}
+              renderLabel={(week) => week.includes(': ') ? week.split(': ').slice(1).join(': ') : week}
+            />
           </div>
         )}
       </div>

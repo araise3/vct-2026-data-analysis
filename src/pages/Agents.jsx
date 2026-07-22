@@ -3,16 +3,58 @@ import { useData } from '../lib/useData'
 import HorizontalBarChart from '../components/HorizontalBarChart'
 import DataTable from '../components/DataTable'
 import FilterChips from '../components/FilterChips'
+import MultiFilterChips from '../components/MultiFilterChips'
 import AgentIcon from '../components/AgentIcon'
 import { pct } from '../lib/format'
 
 const REGION_OPTIONS = ['All', 'Americas', 'EMEA', 'Pacific', 'China', 'International']
+
+// Aggregates a list of raw buckets into pick rates + map win rates, summing
+// counts first and computing percentages last -- this is what makes
+// arbitrary multi-select combinations correct (rather than averaging
+// pre-computed percentages, which would weight a 10-round week the same as
+// a 200-round week).
+function aggregateBuckets(buckets) {
+  const agentCounts = {}
+  let totalRows = 0
+  const mapStats = {}
+
+  for (const b of buckets) {
+    totalRows += b.playerRows
+    for (const [agent, count] of Object.entries(b.agentCounts)) {
+      agentCounts[agent] = (agentCounts[agent] || 0) + count
+    }
+    for (const [mapName, stats] of Object.entries(b.mapStats)) {
+      if (!mapStats[mapName]) mapStats[mapName] = { rounds: 0, atkWinRounds: 0, defWinRounds: 0 }
+      mapStats[mapName].rounds += stats.rounds
+      mapStats[mapName].atkWinRounds += stats.atkWinRounds
+      mapStats[mapName].defWinRounds += stats.defWinRounds
+    }
+  }
+
+  const teamSlots = totalRows / 5
+  const pickRates = Object.entries(agentCounts)
+    .map(([agent, count]) => ({ agent, pickRate: teamSlots ? count / teamSlots : 0 }))
+    .sort((a, b) => b.pickRate - a.pickRate)
+
+  const mapWinRates = Object.entries(mapStats)
+    .map(([mapName, s]) => ({
+      mapName,
+      roundsPlayed: s.rounds,
+      atkWinPct: s.rounds ? s.atkWinRounds / s.rounds : 0,
+      defWinPct: s.rounds ? s.defWinRounds / s.rounds : 0,
+    }))
+    .sort((a, b) => b.roundsPlayed - a.roundsPlayed)
+
+  return { pickRates, mapWinRates }
+}
 
 export default function Agents() {
   const { data, loading } = useData('agents')
   const [region, setRegion] = useState('All')
   const [stage, setStage] = useState('All')
   const [phase, setPhase] = useState('All')
+  const [weeks, setWeeks] = useState([]) // multi-select; empty = no filter
 
   const availableStages = useMemo(() => {
     if (!data || region === 'All') return []
@@ -24,31 +66,48 @@ export default function Agents() {
     return data.regionStagePhases[region]?.[stage] || []
   }, [data, region, stage])
 
-  // Picks the most specific scope currently selected, falling back to
-  // whatever is available -- e.g. selecting a region but leaving stage on
-  // "All" shows the region-wide numbers, not an error.
-  const scoped = useMemo(() => {
-    if (!data) return { pickRates: [], mapWinRates: [] }
-    if (region === 'All') return data.overall
-    if (stage === 'All') return data.byRegion[region] || data.overall
-    if (phase === 'All') return data.byRegionStage[region]?.[stage] || data.byRegion[region] || data.overall
-    return (
-      data.byRegionStagePhase[region]?.[stage]?.[phase] ||
-      data.byRegionStage[region]?.[stage] ||
-      data.byRegion[region] ||
-      data.overall
-    )
+  const availableWeeks = useMemo(() => {
+    if (!data || region === 'All' || stage === 'All' || phase === 'All') return []
+    return data.regionStagePhaseWeeks[region]?.[stage]?.[phase] || []
   }, [data, region, stage, phase])
+
+  const filteredBuckets = useMemo(() => {
+    if (!data) return []
+    return data.buckets.filter((b) =>
+      (region === 'All' || b.region === region) &&
+      (stage === 'All' || b.stage === stage) &&
+      (phase === 'All' || b.phase === phase) &&
+      (weeks.length === 0 || weeks.includes(b.week))
+    )
+  }, [data, region, stage, phase, weeks])
+
+  const scoped = useMemo(() => aggregateBuckets(filteredBuckets), [filteredBuckets])
 
   const matrixRows = useMemo(() => {
     if (!data) return []
-    const maps = Object.keys(data.mapAgentMatrix)
-    const agents = data.overall.pickRates.map((a) => a.agent)
-    return agents.map((agent) => {
+    // Season-wide (all buckets), regardless of the filters above -- this
+    // table is a reference, not tied to the current scope.
+    const { pickRates } = aggregateBuckets(data.buckets)
+
+    const mapAgentCounts = {} // { mapName: { agent: count } }
+    const mapTotalRows = {}   // { mapName: totalPlayerRows }
+    for (const b of data.buckets) {
+      for (const [mapName, agentCounts] of Object.entries(b.mapAgentCounts || {})) {
+        if (!mapAgentCounts[mapName]) mapAgentCounts[mapName] = {}
+        for (const [agent, count] of Object.entries(agentCounts)) {
+          mapAgentCounts[mapName][agent] = (mapAgentCounts[mapName][agent] || 0) + count
+          mapTotalRows[mapName] = (mapTotalRows[mapName] || 0) + count
+        }
+      }
+    }
+
+    return pickRates.map(({ agent }) => {
       const row = { agent }
-      maps.forEach((mapName) => {
-        row[mapName] = data.mapAgentMatrix[mapName][agent] ?? null
-      })
+      for (const mapName of data.mapNames) {
+        const teamSlots = (mapTotalRows[mapName] || 0) / 5
+        const count = mapAgentCounts[mapName]?.[agent]
+        row[mapName] = teamSlots && count ? count / teamSlots : (count ? 0 : null)
+      }
       return row
     })
   }, [data])
@@ -57,24 +116,26 @@ export default function Agents() {
     setRegion(newRegion)
     setStage('All')
     setPhase('All')
+    setWeeks([])
   }
 
   function handleStageChange(newStage) {
     setStage(newStage)
     setPhase('All')
+    setWeeks([])
+  }
+
+  function handlePhaseChange(newPhase) {
+    setPhase(newPhase)
+    setWeeks([])
   }
 
   if (loading || !data) {
     return <div className="text-muted text-sm">Loading…</div>
   }
 
-  const mapNames = Object.keys(data.mapAgentMatrix)
+  const mapNames = data.mapNames
   const matrixColumns = [
-    // Width sized to fit "Brimstone" (9 chars, the longest agent name) plus
-    // the icon pill, not a flat guess -- map columns below intentionally
-    // have no width set, so table-layout:fixed divides whatever space
-    // remains evenly between them, guaranteeing everything fits within
-    // 100% regardless of how many maps exist (no horizontal scrollbar).
     { key: 'agent', label: 'Agent', align: 'left', width: 172, format: (v) => <AgentIcon agent={v} size={20} /> },
     ...mapNames.map((m) => ({
       key: m, label: m, align: 'right', colorScale: true,
@@ -82,9 +143,12 @@ export default function Agents() {
     })),
   ]
 
-  const scopeLabel = [region !== 'All' && region, stage !== 'All' && stage, phase !== 'All' && phase]
-    .filter(Boolean)
-    .join(' · ')
+  const scopeLabel = [
+    region !== 'All' && region,
+    stage !== 'All' && stage,
+    phase !== 'All' && phase,
+    weeks.length > 0 && `${weeks.length} week${weeks.length > 1 ? 's' : ''} selected`,
+  ].filter(Boolean).join(' · ')
 
   return (
     <div className="flex flex-col gap-6">
@@ -92,7 +156,7 @@ export default function Agents() {
         <h1 className="font-display text-2xl font-semibold text-ink">Agents</h1>
         <p className="text-muted text-sm mt-1">
           Pick rates and map performance, computed directly from per-map player data (not VLR's
-          own aggregate page), so every stat here is filterable down to a specific phase.
+          own aggregate page), so every stat here is filterable down to a specific week or round.
         </p>
       </div>
 
@@ -102,7 +166,13 @@ export default function Agents() {
           <FilterChips options={['All', ...availableStages]} value={stage} onChange={handleStageChange} />
         )}
         {region !== 'All' && stage !== 'All' && availablePhases.length > 0 && (
-          <FilterChips options={['All', ...availablePhases]} value={phase} onChange={setPhase} />
+          <FilterChips options={['All', ...availablePhases]} value={phase} onChange={handlePhaseChange} />
+        )}
+        {region !== 'All' && stage !== 'All' && phase !== 'All' && availableWeeks.length > 0 && (
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs text-muted">Week / round (select multiple)</span>
+            <MultiFilterChips options={availableWeeks} selected={weeks} onChange={setWeeks} />
+          </div>
         )}
       </div>
 
@@ -115,6 +185,9 @@ export default function Agents() {
           labelKey="agent" valueKey="pickRate" formatValue={(v) => pct(v)}
           renderLabel={(d) => <AgentIcon agent={d.agent} size={18} />}
         />
+        {scoped.pickRates.length === 0 && (
+          <p className="text-muted text-xs">No data in this scope yet.</p>
+        )}
       </div>
 
       <div className="bg-surface border border-hairline rounded-2xl p-5">
@@ -147,7 +220,7 @@ export default function Agents() {
       <div className="flex flex-col gap-2">
         <h3 className="font-display text-sm font-semibold text-ink">Pick rate by map</h3>
         <p className="text-muted text-xs">
-          Season-wide, all regions/stages combined — sorted by overall pick rate.
+          Season-wide, all regions/stages/weeks combined — sorted by overall pick rate.
         </p>
         <DataTable columns={matrixColumns} rows={matrixRows} defaultSortKey={mapNames[0]} />
       </div>

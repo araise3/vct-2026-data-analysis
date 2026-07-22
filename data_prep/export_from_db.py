@@ -320,10 +320,10 @@ def main():
     # avoid a duplicate-column collision that silently suffixes both to
     # region_x/region_y instead of a single clean 'region' column.
     players_long = mps.merge(
-        matches_tagged[['match_id', 'event_stage', 'phase']], on='match_id', how='left'
+        matches_tagged[['match_id', 'event_stage', 'phase', 'stage']], on='match_id', how='left'
     )
     maps_named = maps_df.merge(
-        matches_tagged[['match_id', 'region', 'event_stage', 'phase']], on='match_id', how='left'
+        matches_tagged[['match_id', 'region', 'event_stage', 'phase', 'stage']], on='match_id', how='left'
     )
     players_long = players_long.merge(
         maps_named[['match_id', 'map_index', 'map_name']], on=['match_id', 'map_index'], how='left'
@@ -337,94 +337,75 @@ def main():
     maps_long['atk_win_rounds'] = maps_long['team1_atk_score'].fillna(0) + maps_long['team2_atk_score'].fillna(0)
     maps_long['def_win_rounds'] = maps_long['team1_def_score'].fillna(0) + maps_long['team2_def_score'].fillna(0)
 
-    def pick_rate_table(df):
-        # Denominator is (maps * 2 teams), not (maps * 10 players) --
-        # confirmed every (map, team, agent) combo has exactly 1 player, so
-        # "pick rate" means "how often did a TEAM use this agent on this
-        # map", not "how often did an individual player." Dividing by the
-        # raw row count instead would undercount by exactly 5x.
-        if len(df) == 0:
-            return []
-        team_slots = len(df) / 5
-        counts = df['agent'].value_counts()
-        return sorted(
-            [clean_row({"agent": a, "pickRate": c / team_slots}) for a, c in counts.items()],
-            key=lambda x: -x['pickRate']
-        )
-
-    def map_win_table(df):
-        out = []
-        for map_name, g in df.groupby('map_name'):
-            total_rounds = g['rounds_total'].sum()
-            if not total_rounds:
-                continue
-            out.append(clean_row({
-                "mapName": map_name,
-                "roundsPlayed": int(total_rounds),
-                "atkWinPct": g['atk_win_rounds'].sum() / total_rounds,
-                "defWinPct": g['def_win_rounds'].sum() / total_rounds,
-            }))
-        return sorted(out, key=lambda x: -x['roundsPlayed'])
-
-    def map_agent_matrix(df):
-        matrix = {}
-        for map_name, g in df.groupby('map_name'):
-            team_slots = len(g) / 5
-            if not team_slots:
-                continue
-            counts = g['agent'].value_counts()
-            matrix[map_name] = {a: round(float(c / team_slots), 4) for a, c in counts.items()}
-        return matrix
-
-    # Cascade options: only stages/phases that actually exist per region
-    # (and per region+stage), not hardcoded -- an "if they exist" filter.
+    # Cascade options: only stages/phases/weeks that actually exist per
+    # region (and per region+stage, etc), not hardcoded -- an "if they
+    # exist" filter at every tier.
     region_stages = {
         region: sorted(sub['stage'].dropna().unique().tolist())
         for region, sub in events.groupby('region')
     }
     region_stage_phases = {}
+    region_stage_phase_weeks = {}
     for region, sub in matches_tagged.groupby('region'):
-        region_stage_phases[region] = {
-            stage: sorted(g['phase'].dropna().unique().tolist())
-            for stage, g in sub.groupby('event_stage')
-        }
+        region_stage_phases[region] = {}
+        region_stage_phase_weeks[region] = {}
+        for stage, sub2 in sub.groupby('event_stage'):
+            region_stage_phases[region][stage] = sorted(sub2['phase'].dropna().unique().tolist())
+            region_stage_phase_weeks[region][stage] = {}
+            for phase, sub3 in sub2.groupby('phase'):
+                region_stage_phase_weeks[region][stage][phase] = sorted(sub3['stage'].dropna().unique().tolist())
 
-    def build_cascade(players_df, maps_df_):
-        cascade = {
-            "overall": {"pickRates": pick_rate_table(players_df), "mapWinRates": map_win_table(maps_df_)},
-            "byRegion": {},
-            "byRegionStage": {},
-            "byRegionStagePhase": {},
-        }
-        for region, sub_p in players_df.groupby('region'):
-            sub_m = maps_df_[maps_df_['region'] == region]
-            cascade["byRegion"][region] = {
-                "pickRates": pick_rate_table(sub_p), "mapWinRates": map_win_table(sub_m)
+    # Raw, granular buckets -- one per (region, event_stage, phase, week)
+    # combination -- carrying counts, not pre-computed percentages. The
+    # site sums these client-side for whatever filter combination is
+    # active, which is what makes the 4th tier (week/round) a genuine
+    # multi-select: pre-computing every possible subset of weeks up front
+    # would blow up combinatorially, but summing raw counts on demand
+    # handles any combination for free.
+    buckets = []
+    group_cols = ['region', 'event_stage', 'phase', 'stage']  # 'stage' here = full week/round text
+    for (region, event_stage, phase, week), g in players_long.groupby(group_cols, dropna=True):
+        agent_counts = g['agent'].value_counts().to_dict()
+        map_g = maps_long[
+            (maps_long.region == region) & (maps_long.event_stage == event_stage) &
+            (maps_long.phase == phase) & (maps_long.stage == week)
+        ]
+        map_stats = {}
+        for map_name, mg in map_g.groupby('map_name'):
+            map_stats[map_name] = {
+                "rounds": int(mg['rounds_total'].sum()),
+                "atkWinRounds": int(mg['atk_win_rounds'].sum()),
+                "defWinRounds": int(mg['def_win_rounds'].sum()),
             }
-            cascade["byRegionStage"][region] = {}
-            cascade["byRegionStagePhase"][region] = {}
-            for stage, sub_p2 in sub_p.groupby('event_stage'):
-                sub_m2 = sub_m[sub_m['event_stage'] == stage]
-                cascade["byRegionStage"][region][stage] = {
-                    "pickRates": pick_rate_table(sub_p2), "mapWinRates": map_win_table(sub_m2)
-                }
-                cascade["byRegionStagePhase"][region][stage] = {}
-                for phase, sub_p3 in sub_p2.groupby('phase'):
-                    sub_m3 = sub_m2[sub_m2['phase'] == phase]
-                    cascade["byRegionStagePhase"][region][stage][phase] = {
-                        "pickRates": pick_rate_table(sub_p3), "mapWinRates": map_win_table(sub_m3)
-                    }
-        return cascade
+        # Per-map agent breakdown too (not just per-bucket totals) -- needed
+        # for the map x agent matrix, which cross-references both dimensions
+        # at once.
+        map_agent_counts = {}
+        for map_name, mg in g.groupby('map_name'):
+            if pd.isna(map_name):
+                continue
+            map_agent_counts[map_name] = {k: int(v) for k, v in mg['agent'].value_counts().items()}
 
-    agents_out = build_cascade(players_long, maps_long)
-    agents_out["mapAgentMatrix"] = map_agent_matrix(players_long)
-    agents_out["regionStages"] = region_stages
-    agents_out["regionStagePhases"] = region_stage_phases
+        buckets.append({
+            "region": region, "stage": event_stage, "phase": phase, "week": week,
+            "playerRows": int(len(g)),
+            "agentCounts": {k: int(v) for k, v in agent_counts.items()},
+            "mapStats": map_stats,
+            "mapAgentCounts": map_agent_counts,
+        })
+
+    agents_out = {
+        "buckets": buckets,
+        "mapNames": sorted(maps_long['map_name'].dropna().unique().tolist()),
+        "regionStages": region_stages,
+        "regionStagePhases": region_stage_phases,
+        "regionStagePhaseWeeks": region_stage_phase_weeks,
+    }
 
     with open(f"{OUT}/agents.json", "w") as f:
         json.dump(agents_out, f, indent=2)
-    print(f"agents.json written: {len(agents_out['overall']['pickRates'])} agents, "
-          f"{len(agents_out['overall']['mapWinRates'])} maps, "
+    print(f"agents.json written: {len(buckets)} buckets, "
+          f"{len(agents_out['mapNames'])} maps, "
           f"regions: {list(agents_out['regionStages'].keys())}")
 
 

@@ -85,13 +85,11 @@ export default function Agents() {
 
   const matrixRows = useMemo(() => {
     if (!data) return []
-    // Season-wide (all buckets), regardless of the filters above -- this
-    // table is a reference, not tied to the current scope.
-    const { pickRates } = aggregateBuckets(data.buckets)
+    const { pickRates } = aggregateBuckets(filteredBuckets)
 
     const mapAgentCounts = {} // { mapName: { agent: count } }
     const mapTotalRows = {}   // { mapName: totalPlayerRows }
-    for (const b of data.buckets) {
+    for (const b of filteredBuckets) {
       for (const [mapName, agentCounts] of Object.entries(b.mapAgentCounts || {})) {
         if (!mapAgentCounts[mapName]) mapAgentCounts[mapName] = {}
         for (const [agent, count] of Object.entries(agentCounts)) {
@@ -110,7 +108,7 @@ export default function Agents() {
       }
       return row
     })
-  }, [data])
+  }, [data, filteredBuckets])
 
   function handleRegionChange(newRegion) {
     setRegion(newRegion)
@@ -223,9 +221,11 @@ export default function Agents() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <h3 className="font-display text-sm font-semibold text-ink">Pick rate by map</h3>
+        <h3 className="font-display text-sm font-semibold text-ink">
+          Pick rate by map{scopeLabel && ` — ${scopeLabel}`}
+        </h3>
         <p className="text-muted text-xs">
-          Season-wide, all regions/stages/weeks combined — sorted by overall pick rate.
+          {scopeLabel ? 'Matches the filters above' : 'Season-wide, all regions/stages/weeks combined'} — sorted by overall pick rate.
         </p>
         <DataTable columns={matrixColumns} rows={matrixRows} defaultSortKey={mapNames[0]} />
       </div>

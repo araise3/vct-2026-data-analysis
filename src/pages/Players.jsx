@@ -81,7 +81,7 @@ export default function Players() {
       ),
     },
     {
-      key: 'team', label: 'Team', align: 'left', width: 190,
+      key: 'team', label: 'Team', align: 'left',
       format: (v) => (
         <Link to={`/teams/${encodeURIComponent(v)}`} className="hover:text-accent-bright transition-colors">
           <TeamLogo team={v} size={18} />

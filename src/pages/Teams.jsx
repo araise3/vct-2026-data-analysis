@@ -32,7 +32,7 @@ export default function Teams() {
 
   const columns = [
     {
-      key: 'team', label: 'Team', align: 'left', width: 220,
+      key: 'team', label: 'Team', align: 'left',
       format: (v) => (
         <Link to={`/teams/${encodeURIComponent(v)}`} className="font-medium hover:text-accent-bright transition-colors">
           <TeamLogo team={v} size={20} />

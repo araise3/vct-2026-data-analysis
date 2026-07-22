@@ -13,7 +13,7 @@ export default function App() {
     <BrowserRouter>
       <div className="flex min-h-screen bg-base">
         <Sidebar />
-        <main className="flex-1 px-8 py-8 max-w-[1400px]">
+        <main className="flex-1 px-8 py-8 max-w-[2400px]">
           <Routes>
             <Route path="/" element={<Overview />} />
             <Route path="/players" element={<Players />} />

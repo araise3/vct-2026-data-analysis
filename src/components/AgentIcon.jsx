@@ -11,7 +11,7 @@ function luminance(hex) {
 export default function AgentIcon({ agent, size = 20, showName = true }) {
   const key = agent?.toLowerCase().replace(/[^a-z0-9]/g, '')
   const entry = agentIcons[key]
-  const color = entry?.sampledColor || entry?.outlineColor || entry?.color || '#8A8F98'
+  const color = entry?.visualColor || entry?.sampledColor || entry?.outlineColor || entry?.color || '#8A8F98'
   const textColor = luminance(color) > 0.5 ? '#131619' : '#ffffff'
 
   return (

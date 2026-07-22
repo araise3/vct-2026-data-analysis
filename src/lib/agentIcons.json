@@ -4,202 +4,231 @@
     "icon": "https://media.valorant-api.com/agents/e370fa57-4757-3604-3648-499e1f642d3f/displayicon.png",
     "color": "#371c5c",
     "outlineColor": "#732dd2",
-    "sampledColor": "#b4996c"
+    "sampledColor": "#b4996c",
+    "visualColor": "#8BC34A"
   },
   "fade": {
     "displayName": "Fade",
     "icon": "https://media.valorant-api.com/agents/dade69b4-4f5a-8528-247b-219e5a1facd6/displayicon.png",
     "color": "#1d2846",
     "outlineColor": "#2d59d2",
-    "sampledColor": "#2f2f39"
+    "sampledColor": "#2f2f39",
+    "visualColor": "#6B21A8"
   },
   "breach": {
     "displayName": "Breach",
     "icon": "https://media.valorant-api.com/agents/5f8d3a7f-467b-97f3-062c-13acf203c006/displayicon.png",
     "color": "#81331a",
     "outlineColor": "#d4542b",
-    "sampledColor": "#4b2a21"
+    "sampledColor": "#4b2a21",
+    "visualColor": "#E8862E"
   },
   "deadlock": {
     "displayName": "Deadlock",
     "icon": "https://media.valorant-api.com/agents/cc8b64c8-4b25-4ff9-6e7f-37b4da43d235/displayicon.png",
     "color": "#425495",
     "outlineColor": "#2d51d2",
-    "sampledColor": "#c7aa96"
+    "sampledColor": "#c7aa96",
+    "visualColor": "#3FC1C9"
   },
   "tejo": {
     "displayName": "Tejo",
     "icon": "https://media.valorant-api.com/agents/b444168c-4e35-8076-db47-ef9bf368f384/displayicon.png",
     "color": "#80451b",
     "outlineColor": "#d3722c",
-    "sampledColor": "#91643f"
+    "sampledColor": "#91643f",
+    "visualColor": "#C2703D"
   },
   "raze": {
     "displayName": "Raze",
     "icon": "https://media.valorant-api.com/agents/f94c3b30-42be-e959-889c-5aa313dba261/displayicon.png",
     "color": "#742e1e",
     "outlineColor": "#d24b2d",
-    "sampledColor": "#b27a5c"
+    "sampledColor": "#b27a5c",
+    "visualColor": "#7CB342"
   },
   "chamber": {
     "displayName": "Chamber",
     "icon": "https://media.valorant-api.com/agents/22697a3d-45bf-8dd7-4fec-84a9e28c69d7/displayicon.png",
     "color": "#20435b",
     "outlineColor": "#2d8fd2",
-    "sampledColor": "#b39586"
+    "sampledColor": "#b39586",
+    "visualColor": "#C9A227"
   },
   "kayo": {
     "displayName": "KAY/O",
     "icon": "https://media.valorant-api.com/agents/601dbbe7-43ce-be57-2a40-4abd24953621/displayicon.png",
     "color": "#1c2a69",
     "outlineColor": "#2d4bd2",
-    "sampledColor": "#3c435d"
+    "sampledColor": "#3c435d",
+    "visualColor": "#F5A623"
   },
   "skye": {
     "displayName": "Skye",
     "icon": "https://media.valorant-api.com/agents/6f2a04ca-43e0-be17-7f36-b3908627744d/displayicon.png",
     "color": "#436a51",
     "outlineColor": "#2dd268",
-    "sampledColor": "#6c2d19"
+    "sampledColor": "#6c2d19",
+    "visualColor": "#65A30D"
   },
   "cypher": {
     "displayName": "Cypher",
     "icon": "https://media.valorant-api.com/agents/117ed9e3-49f3-6512-3ccf-0cada7e3823b/displayicon.png",
     "color": "#2f5078",
     "outlineColor": "#2d78d2",
-    "sampledColor": "#5c4f4b"
+    "sampledColor": "#5c4f4b",
+    "visualColor": "#D4A017"
   },
   "sova": {
     "displayName": "Sova",
     "icon": "https://media.valorant-api.com/agents/320b2a48-4d9b-a075-30f1-1f93a9b638fa/displayicon.png",
     "color": "#355285",
     "outlineColor": "#2d69d2",
-    "sampledColor": "#9e887d"
+    "sampledColor": "#9e887d",
+    "visualColor": "#2563EB"
   },
   "miks": {
     "displayName": "Miks",
     "icon": "https://media.valorant-api.com/agents/7c8a4701-4de6-9355-b254-e09bc2a34b72/displayicon.png",
     "color": "#462b75",
     "outlineColor": "#692dd2",
-    "sampledColor": "#c9966b"
+    "sampledColor": "#c9966b",
+    "visualColor": "#6D5BD0"
   },
   "killjoy": {
     "displayName": "Killjoy",
     "icon": "https://media.valorant-api.com/agents/1e58de9c-4950-5125-93e9-a0aee9f98746/displayicon.png",
     "color": "#522162",
     "outlineColor": "#aa2dd2",
-    "sampledColor": "#23271b"
+    "sampledColor": "#23271b",
+    "visualColor": "#9B2FAE"
   },
   "harbor": {
     "displayName": "Harbor",
     "icon": "https://media.valorant-api.com/agents/95b78ed7-4637-86d9-7e41-71ba8c293152/displayicon.png",
     "color": "#275146",
     "outlineColor": "#2dd2a7",
-    "sampledColor": "#372d31"
+    "sampledColor": "#372d31",
+    "visualColor": "#14B8A6"
   },
   "vyse": {
     "displayName": "Vyse",
     "icon": "https://media.valorant-api.com/agents/efba5359-4016-a1e5-7626-b1ae76895940/displayicon.png",
     "color": "#492280",
     "outlineColor": "#712dd2",
-    "sampledColor": "#2b2c40"
+    "sampledColor": "#2b2c40",
+    "visualColor": "#7E22CE"
   },
   "viper": {
     "displayName": "Viper",
     "icon": "https://media.valorant-api.com/agents/707eab51-4836-f488-046a-cda6bf494859/displayicon.png",
     "color": "#1a5f46",
     "outlineColor": "#2dd296",
-    "sampledColor": "#1b1922"
+    "sampledColor": "#1b1922",
+    "visualColor": "#22C55E"
   },
   "phoenix": {
     "displayName": "Phoenix",
     "icon": "https://media.valorant-api.com/agents/eb93336a-449b-9c1b-0a54-a891f7921d69/displayicon.png",
     "color": "#74321c",
     "outlineColor": "#d2562d",
-    "sampledColor": "#825f55"
+    "sampledColor": "#825f55",
+    "visualColor": "#F97316"
   },
   "veto": {
     "displayName": "Veto",
     "icon": "https://media.valorant-api.com/agents/92eeef5d-43b5-1d4a-8d03-b3927a09034b/displayicon.png",
     "color": "#1a5d65",
     "outlineColor": "#2dc1d2",
-    "sampledColor": "#2a191a"
+    "sampledColor": "#2a191a",
+    "visualColor": "#0D9488"
   },
   "astra": {
     "displayName": "Astra",
     "icon": "https://media.valorant-api.com/agents/41fb69c1-4189-7b37-f117-bcaf1e96f1bf/displayicon.png",
     "color": "#26146c",
     "outlineColor": "#4c28d7",
-    "sampledColor": "#704e44"
+    "sampledColor": "#704e44",
+    "visualColor": "#7B2FF7"
   },
   "brimstone": {
     "displayName": "Brimstone",
     "icon": "https://media.valorant-api.com/agents/9f0d8ba9-4140-b941-57d3-a7ad57c6b417/displayicon.png",
     "color": "#363c4f",
     "outlineColor": "#2d54d2",
-    "sampledColor": "#b46537"
+    "sampledColor": "#b46537",
+    "visualColor": "#D4622A"
   },
   "iso": {
     "displayName": "Iso",
     "icon": "https://media.valorant-api.com/agents/0e38b510-41a8-5780-5e8f-568b2a4f2d6c/displayicon.png",
     "color": "#30336e",
     "outlineColor": "#2d35d2",
-    "sampledColor": "#25232a"
+    "sampledColor": "#25232a",
+    "visualColor": "#4C3BCF"
   },
   "clove": {
     "displayName": "Clove",
     "icon": "https://media.valorant-api.com/agents/1dbf2edd-4729-0984-3115-daa5eed44993/displayicon.png",
     "color": "#4b1d80",
     "outlineColor": "#7a2dd2",
-    "sampledColor": "#b39090"
+    "sampledColor": "#b39090",
+    "visualColor": "#C837AB"
   },
   "neon": {
     "displayName": "Neon",
     "icon": "https://media.valorant-api.com/agents/bb2a4828-46eb-8cd1-e765-15848195d751/displayicon.png",
     "color": "#413476",
     "outlineColor": "#4d2dd2",
-    "sampledColor": "#1f2f5b"
+    "sampledColor": "#1f2f5b",
+    "visualColor": "#3B82F6"
   },
   "yoru": {
     "displayName": "Yoru",
     "icon": "https://media.valorant-api.com/agents/7f94d92c-4234-0a36-9646-3a87eb8b5c89/displayicon.png",
     "color": "#222b67",
     "outlineColor": "#2d42d2",
-    "sampledColor": "#1c2042"
+    "sampledColor": "#1c2042",
+    "visualColor": "#4338CA"
   },
   "waylay": {
     "displayName": "Waylay",
     "icon": "https://media.valorant-api.com/agents/df1cb487-4902-002e-5c17-d28e83e78588/displayicon.png",
     "color": "#482e61",
     "outlineColor": "#812dd2",
-    "sampledColor": "#36393f"
+    "sampledColor": "#36393f",
+    "visualColor": "#D946EF"
   },
   "sage": {
     "displayName": "Sage",
     "icon": "https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/displayicon.png",
     "color": "#1f5148",
     "outlineColor": "#2dd2b5",
-    "sampledColor": "#1e1d1e"
+    "sampledColor": "#1e1d1e",
+    "visualColor": "#06B6D4"
   },
   "reyna": {
     "displayName": "Reyna",
     "icon": "https://media.valorant-api.com/agents/a3bfb853-43b2-7238-a4f1-ad90e9e46bcc/displayicon.png",
     "color": "#662d62",
     "outlineColor": "#d22dc7",
-    "sampledColor": "#5e3d49"
+    "sampledColor": "#5e3d49",
+    "visualColor": "#9333EA"
   },
   "omen": {
     "displayName": "Omen",
     "icon": "https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-968525494517/displayicon.png",
     "color": "#433178",
     "outlineColor": "#572dd2",
-    "sampledColor": "#6269bd"
+    "sampledColor": "#6269bd",
+    "visualColor": "#5B21B6"
   },
   "jett": {
     "displayName": "Jett",
     "icon": "https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png",
     "color": "#25607a",
     "outlineColor": "#2da0d2",
-    "sampledColor": "#d9dce3"
+    "sampledColor": "#d9dce3",
+    "visualColor": "#38BDF8"
   }
 }

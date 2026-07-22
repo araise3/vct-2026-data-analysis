@@ -6,17 +6,28 @@ export default function TeamLogo({ team, size = 20, showName = true, showTag = f
   return (
     <span className="inline-flex items-center gap-2 min-w-0">
       {entry?.logo ? (
-        <span
-          className="rounded-md shrink-0 flex items-center justify-center bg-white/90 p-0.5"
-          style={{ width: size, height: size }}
-        >
+        entry.recolored ? (
           <img
             src={entry.logo}
             alt={team}
-            className="object-contain w-full h-full"
+            width={size}
+            height={size}
+            className="object-contain shrink-0"
             loading="lazy"
           />
-        </span>
+        ) : (
+          <span
+            className="rounded-md shrink-0 flex items-center justify-center bg-white/90 p-0.5"
+            style={{ width: size, height: size }}
+          >
+            <img
+              src={entry.logo}
+              alt={team}
+              className="object-contain w-full h-full"
+              loading="lazy"
+            />
+          </span>
+        )
       ) : (
         <span className="rounded-md shrink-0 bg-surface2" style={{ width: size, height: size }} />
       )}

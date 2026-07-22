@@ -12,8 +12,9 @@
     "tag": "EG"
   },
   "FURIA": {
-    "logo": "https://owcdn.net/img/632be843b7d51.png",
-    "tag": "FUR"
+    "logo": "/logos/furia.png",
+    "tag": "FUR",
+    "recolored": true
   },
   "KRÜ Esports": {
     "logo": "https://owcdn.net/img/63976677069e1.png",
@@ -28,8 +29,9 @@
     "tag": "LOUD"
   },
   "MIBR": {
-    "logo": "https://owcdn.net/img/632be7626d6d9.png",
-    "tag": "MIBR"
+    "logo": "/logos/mibr.png",
+    "tag": "MIBR",
+    "recolored": true
   },
   "NRG": {
     "logo": "https://owcdn.net/img/6610f026c1a9e.png",
@@ -44,8 +46,9 @@
     "tag": "G2"
   },
   "ENVY": {
-    "logo": "https://owcdn.net/img/5f3ca822464a3.png",
-    "tag": "ENVY"
+    "logo": "/logos/envy.png",
+    "tag": "ENVY",
+    "recolored": true
   },
   "BBL Esports": {
     "logo": "https://owcdn.net/img/65b8ccef5e273.png",
@@ -56,20 +59,23 @@
     "tag": "FNC"
   },
   "FUT Esports": {
-    "logo": "https://owcdn.net/img/632be9976b8fe.png",
-    "tag": "FUT"
+    "logo": "/logos/fut-esports.png",
+    "tag": "FUT",
+    "recolored": true
   },
   "Gentle Mates": {
     "logo": "https://owcdn.net/img/6670153fa9120.png",
     "tag": "M8"
   },
   "GIANTX": {
-    "logo": "https://owcdn.net/img/657b2f3fcd199.png",
-    "tag": "GX"
+    "logo": "/logos/giantx.png",
+    "tag": "GX",
+    "recolored": true
   },
   "Karmine Corp": {
-    "logo": "https://owcdn.net/img/627403a0d9e48.png",
-    "tag": "KC"
+    "logo": "/logos/karmine-corp.png",
+    "tag": "KC",
+    "recolored": true
   },
   "Natus Vincere": {
     "logo": "https://owcdn.net/img/62a4109ddbd7f.png",
@@ -84,8 +90,9 @@
     "tag": "TL"
   },
   "Team Vitality": {
-    "logo": "https://owcdn.net/img/6466d79e1ed40.png",
-    "tag": "VIT"
+    "logo": "/logos/team-vitality.png",
+    "tag": "VIT",
+    "recolored": true
   },
   "PCIFIC Esports": {
     "logo": "https://owcdn.net/img/656e2ae2b8a48.png",
@@ -116,8 +123,9 @@
     "tag": "GE"
   },
   "Paper Rex": {
-    "logo": "https://owcdn.net/img/62bbeba74d5cb.png",
-    "tag": "PRX"
+    "logo": "/logos/paper-rex.png",
+    "tag": "PRX",
+    "recolored": true
   },
   "Rex Regum Qeon": {
     "logo": "https://owcdn.net/img/629f17f51e7a3.png",
@@ -128,16 +136,19 @@
     "tag": "T1"
   },
   "Team Secret": {
-    "logo": "https://owcdn.net/img/629f13085ead6.png",
-    "tag": "TS"
+    "logo": "/logos/team-secret.png",
+    "tag": "TS",
+    "recolored": true
   },
   "ZETA DIVISION": {
-    "logo": "https://owcdn.net/img/62a411783d94d.png",
-    "tag": "ZETA"
+    "logo": "/logos/zeta-division.png",
+    "tag": "ZETA",
+    "recolored": true
   },
   "VARREL": {
-    "logo": "https://owcdn.net/img/63a74624cc76a.png",
-    "tag": "VL"
+    "logo": "/logos/varrel.png",
+    "tag": "VL",
+    "recolored": true
   },
   "Nongshim RedForce": {
     "logo": "https://owcdn.net/img/6399bb707aacb.png",

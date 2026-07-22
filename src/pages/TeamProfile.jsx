@@ -39,12 +39,14 @@ export default function TeamProfile() {
     <div className="flex flex-col gap-6">
       <Link to="/teams" className="text-sm text-muted hover:text-ink w-fit">← Back to Teams</Link>
 
-      <div>
-        <h1 className="font-display text-2xl font-semibold text-ink flex items-center gap-3">
-          <TeamLogo team={team.team} size={36} showName={false} />
-          {team.team}
-        </h1>
-        <p className="text-muted text-sm pl-12">{team.region}</p>
+      <div className="flex items-stretch gap-4">
+        <div className="w-16 rounded-xl bg-surface2 border border-hairline flex items-center justify-center shrink-0">
+          <TeamLogo team={team.team} size={40} showName={false} />
+        </div>
+        <div className="flex flex-col justify-center">
+          <h1 className="font-display text-2xl font-semibold text-ink">{team.team}</h1>
+          <p className="text-muted text-sm">{team.region}</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

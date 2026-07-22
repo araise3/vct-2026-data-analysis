@@ -21,9 +21,8 @@ export default function AgentIcon({ agent, size = 20, showName = true }) {
       )}
       {showName && (
         <span
-          style={{
-            textShadow: `-1px -1px 0 ${color}, 1px -1px 0 ${color}, -1px 1px 0 ${color}, 1px 1px 0 ${color}`,
-          }}
+          className="rounded-full px-2.5 py-0.5 text-xs font-medium text-white whitespace-nowrap"
+          style={{ backgroundColor: color }}
         >
           {entry?.displayName || agent}
         </span>

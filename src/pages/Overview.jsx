@@ -52,12 +52,15 @@ export default function Overview() {
           rows={topPlayersByRating}
           renderRow={(p) => (
             <>
+              <Link to={`/teams/${encodeURIComponent(p.team)}`} className="shrink-0">
+                <TeamLogo team={p.team} size={32} showName={false} />
+              </Link>
               <div className="flex-1 min-w-0">
                 <Link to={`/players/${encodeURIComponent(p.player)}`} className="block text-sm text-ink font-medium truncate hover:text-accent-bright transition-colors">
                   {p.player}
                 </Link>
                 <Link to={`/teams/${encodeURIComponent(p.team)}`} className="block text-xs text-muted truncate hover:text-accent-bright transition-colors">
-                  <TeamLogo team={p.team} size={14} />
+                  {p.team}
                 </Link>
               </div>
               <span className="font-body text-sm text-good font-medium">{rating(p.rating)}</span>
@@ -69,9 +72,12 @@ export default function Overview() {
           rows={topTeamsByMapWinPct}
           renderRow={(t) => (
             <>
+              <Link to={`/teams/${encodeURIComponent(t.team)}`} className="shrink-0">
+                <TeamLogo team={t.team} size={32} showName={false} />
+              </Link>
               <div className="flex-1 min-w-0">
                 <Link to={`/teams/${encodeURIComponent(t.team)}`} className="block text-sm text-ink font-medium truncate hover:text-accent-bright transition-colors">
-                  <TeamLogo team={t.team} size={16} />
+                  {t.team}
                 </Link>
                 <div className="text-xs text-muted truncate">{t.region} · {t.mapsWon}/{t.mapsPlayed} maps</div>
               </div>

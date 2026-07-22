@@ -1,21 +1,12 @@
 import teamLogos from '../lib/teamLogos.json'
 
-export default function TeamLogo({ team, size = 20, showName = true, showTag = false }) {
+export default function TeamLogo({ team, size = 20, showName = true, showTag = false, showBg = true }) {
   const entry = teamLogos[team]
 
   return (
     <span className="inline-flex items-center gap-2 min-w-0">
       {entry?.logo ? (
-        entry.recolored ? (
-          <img
-            src={entry.logo}
-            alt={team}
-            width={size}
-            height={size}
-            className="object-contain shrink-0"
-            loading="lazy"
-          />
-        ) : (
+        showBg ? (
           <span
             className="rounded-md shrink-0 flex items-center justify-center bg-white/90 p-0.5"
             style={{ width: size, height: size }}
@@ -27,6 +18,15 @@ export default function TeamLogo({ team, size = 20, showName = true, showTag = f
               loading="lazy"
             />
           </span>
+        ) : (
+          <img
+            src={entry.logo}
+            alt={team}
+            width={size}
+            height={size}
+            className="object-contain shrink-0"
+            loading="lazy"
+          />
         )
       ) : (
         <span className="rounded-md shrink-0 bg-surface2" style={{ width: size, height: size }} />

@@ -41,7 +41,7 @@ export default function TeamProfile() {
 
       <div className="flex items-stretch gap-4">
         <div className="w-16 rounded-xl bg-surface2 border border-hairline flex items-center justify-center shrink-0">
-          <TeamLogo team={team.team} size={40} showName={false} />
+          <TeamLogo team={team.team} size={40} showName={false} showBg={false} />
         </div>
         <div className="flex flex-col justify-center">
           <h1 className="font-display text-2xl font-semibold text-ink">{team.team}</h1>

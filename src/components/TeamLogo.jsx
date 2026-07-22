@@ -8,7 +8,7 @@ export default function TeamLogo({ team, size = 20, showName = true, showTag = f
       {entry?.logo ? (
         showBg ? (
           <span
-            className="rounded-md shrink-0 flex items-center justify-center bg-white/90 p-0.5"
+            className="rounded shrink-0 flex items-center justify-center bg-white/90 p-0.5"
             style={{ width: size, height: size }}
           >
             <img
@@ -29,7 +29,7 @@ export default function TeamLogo({ team, size = 20, showName = true, showTag = f
           />
         )
       ) : (
-        <span className="rounded-md shrink-0 bg-surface2" style={{ width: size, height: size }} />
+        <span className="rounded shrink-0 bg-surface2" style={{ width: size, height: size }} />
       )}
       {showName && <span className="truncate">{team}</span>}
       {showTag && entry?.tag && <span className="text-muted text-xs shrink-0">{entry.tag}</span>}

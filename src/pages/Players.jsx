@@ -61,6 +61,7 @@ export default function Players() {
       key: 'player',
       label: 'Player',
       align: 'left',
+      width: 160,
       format: (v, row) => (
         <div className="flex items-center gap-2">
           <Link
@@ -84,7 +85,7 @@ export default function Players() {
       ),
     },
     {
-      key: 'team', label: 'Team', align: 'left',
+      key: 'team', label: 'Team', align: 'left', width: 200,
       format: (v) => (
         <Link to={`/teams/${encodeURIComponent(v)}`} className="hover:text-accent-bright transition-colors">
           <TeamLogo team={v} size={18} />

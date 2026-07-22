@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import KpiCard from '../components/KpiCard'
+import TeamLogo from '../components/TeamLogo'
 import { rating, pct, num } from '../lib/format'
 
 export default function TeamProfile() {
@@ -39,7 +40,10 @@ export default function TeamProfile() {
       <Link to="/teams" className="text-sm text-muted hover:text-ink w-fit">← Back to Teams</Link>
 
       <div>
-        <h1 className="font-display text-2xl font-semibold text-ink">{team.team}</h1>
+        <h1 className="font-display text-2xl font-semibold text-ink flex items-center gap-3">
+          <TeamLogo team={team.team} size={36} showName={false} />
+          {team.team}
+        </h1>
         <p className="text-muted text-sm">{team.region}</p>
       </div>
 

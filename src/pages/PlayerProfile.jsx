@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import KpiCard from '../components/KpiCard'
+import TeamLogo from '../components/TeamLogo'
 import { rating, pct, num } from '../lib/format'
 
 export default function PlayerProfile() {
@@ -37,8 +38,8 @@ export default function PlayerProfile() {
 
       <div>
         <h1 className="font-display text-2xl font-semibold text-ink">{player.player}</h1>
-        <Link to={`/teams/${encodeURIComponent(player.team)}`} className="text-muted text-sm hover:text-accent-bright">
-          {player.team}
+        <Link to={`/teams/${encodeURIComponent(player.team)}`} className="text-muted text-sm hover:text-accent-bright inline-block mt-1">
+          <TeamLogo team={player.team} size={18} />
         </Link>
       </div>
 

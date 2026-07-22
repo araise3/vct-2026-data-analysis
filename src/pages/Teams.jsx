@@ -4,6 +4,7 @@ import { useData } from '../lib/useData'
 import DataTable from '../components/DataTable'
 import HorizontalBarChart from '../components/HorizontalBarChart'
 import FilterChips from '../components/FilterChips'
+import TeamLogo from '../components/TeamLogo'
 import { pct, num, rating } from '../lib/format'
 
 const REGIONS = ['All', 'Americas', 'EMEA', 'Pacific', 'China', 'International']
@@ -31,10 +32,10 @@ export default function Teams() {
 
   const columns = [
     {
-      key: 'team', label: 'Team', align: 'left',
+      key: 'team', label: 'Team', align: 'left', width: 220,
       format: (v) => (
         <Link to={`/teams/${encodeURIComponent(v)}`} className="font-medium hover:text-accent-bright transition-colors">
-          {v}
+          <TeamLogo team={v} size={20} />
         </Link>
       ),
     },
@@ -59,7 +60,10 @@ export default function Teams() {
 
       <div className="bg-surface border border-hairline rounded-2xl p-5">
         <h3 className="font-display text-sm font-semibold text-ink mb-4">Map win rate (min. 10 maps played)</h3>
-        <HorizontalBarChart data={topByMapWin} labelKey="team" valueKey="mapWinPct" formatValue={pct} max={1} />
+        <HorizontalBarChart
+          data={topByMapWin} labelKey="team" valueKey="mapWinPct" formatValue={pct} max={1}
+          renderLabel={(d) => <TeamLogo team={d.team} size={16} />}
+        />
       </div>
 
       <DataTable columns={columns} rows={rows} defaultSortKey="mapWinPct" />

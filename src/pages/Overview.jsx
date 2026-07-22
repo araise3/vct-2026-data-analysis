@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import KpiCard from '../components/KpiCard'
 import RankedList from '../components/RankedList'
+import TeamLogo from '../components/TeamLogo'
 import { rating, pct, num } from '../lib/format'
 
 export default function Overview() {
@@ -42,7 +43,7 @@ export default function Overview() {
                   {p.player}
                 </Link>
                 <Link to={`/teams/${encodeURIComponent(p.team)}`} className="block text-xs text-muted truncate hover:text-accent-bright transition-colors">
-                  {p.team}
+                  <TeamLogo team={p.team} size={14} />
                 </Link>
               </div>
               <span className="font-body text-sm text-good font-medium">{rating(p.rating)}</span>
@@ -56,7 +57,7 @@ export default function Overview() {
             <>
               <div className="flex-1 min-w-0">
                 <Link to={`/teams/${encodeURIComponent(t.team)}`} className="block text-sm text-ink font-medium truncate hover:text-accent-bright transition-colors">
-                  {t.team}
+                  <TeamLogo team={t.team} size={16} />
                 </Link>
                 <div className="text-xs text-muted truncate">{t.region} · {t.mapsWon}/{t.mapsPlayed} maps</div>
               </div>

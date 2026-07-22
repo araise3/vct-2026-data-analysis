@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import DataTable from '../components/DataTable'
 import FilterChips from '../components/FilterChips'
+import TeamLogo from '../components/TeamLogo'
 import { rating, pct, num } from '../lib/format'
 
 const SCOPE_OPTIONS = ['All players', 'Non-China only', 'China only']
@@ -79,7 +80,14 @@ export default function Players() {
         </div>
       ),
     },
-    { key: 'team', label: 'Team', align: 'left' },
+    {
+      key: 'team', label: 'Team', align: 'left', width: 190,
+      format: (v) => (
+        <Link to={`/teams/${encodeURIComponent(v)}`} className="hover:text-accent-bright transition-colors">
+          <TeamLogo team={v} size={18} />
+        </Link>
+      ),
+    },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
     { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
     { key: 'avgRating', label: 'Rating', align: 'right', colorScale: true, format: (v) => rating(v) },

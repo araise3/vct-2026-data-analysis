@@ -70,9 +70,14 @@ export default function Agents() {
 
   const mapNames = Object.keys(data.mapAgentMatrix)
   const matrixColumns = [
-    { key: 'agent', label: 'Agent', align: 'left', width: 220, format: (v) => <AgentIcon agent={v} size={20} /> },
+    // Width sized to fit "Brimstone" (9 chars, the longest agent name) plus
+    // the icon pill, not a flat guess -- map columns below intentionally
+    // have no width set, so table-layout:fixed divides whatever space
+    // remains evenly between them, guaranteeing everything fits within
+    // 100% regardless of how many maps exist (no horizontal scrollbar).
+    { key: 'agent', label: 'Agent', align: 'left', width: 172, format: (v) => <AgentIcon agent={v} size={20} /> },
     ...mapNames.map((m) => ({
-      key: m, label: m, align: 'right', colorScale: true, width: 100,
+      key: m, label: m, align: 'right', colorScale: true,
       format: (v) => (v === null || v === undefined ? '—' : pct(v, 0)),
     })),
   ]

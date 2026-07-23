@@ -4,6 +4,7 @@ import { useData } from '../lib/useData'
 import KpiCard from '../components/KpiCard'
 import RankedList from '../components/RankedList'
 import TeamLogo from '../components/TeamLogo'
+import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
 
 export default function Overview() {
@@ -56,8 +57,9 @@ export default function Overview() {
                 <TeamLogo team={p.team} size={32} showName={false} />
               </Link>
               <div className="flex-1 min-w-0 self-center">
-                <Link to={`/players/${encodeURIComponent(p.player)}`} className="block text-sm text-ink font-medium truncate leading-tight hover:text-accent-bright transition-colors">
-                  {p.player}
+                <Link to={`/players/${encodeURIComponent(p.player)}`} className="flex items-center gap-1.5 text-sm text-ink font-medium truncate leading-tight hover:text-accent-bright transition-colors">
+                  <span className="truncate">{p.player}</span>
+                  <Flag countryCode={p.countryCode} countryName={p.countryName} size={14} />
                 </Link>
                 <Link to={`/teams/${encodeURIComponent(p.team)}`} className="block text-xs text-muted truncate leading-tight hover:text-accent-bright transition-colors">
                   {p.team}

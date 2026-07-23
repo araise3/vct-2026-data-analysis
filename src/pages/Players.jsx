@@ -4,6 +4,7 @@ import { useData } from '../lib/useData'
 import DataTable from '../components/DataTable'
 import FilterChips from '../components/FilterChips'
 import TeamLogo from '../components/TeamLogo'
+import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
 
 const SCOPE_OPTIONS = ['All players', 'Non-China only', 'China only']
@@ -44,6 +45,8 @@ export default function Players() {
           player: p.player,
           team: p.team,
           isChina: p.isChina,
+          countryCode: p.countryCode,
+          countryName: p.countryName,
           usingIntlStats: useIntl,
           usingRatedOnlyStats: useRatedOnly,
           ...s,
@@ -71,6 +74,7 @@ export default function Players() {
           >
             {v}
           </Link>
+          <Flag countryCode={row.countryCode} countryName={row.countryName} size={14} />
           {row.usingIntlStats && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent-bright font-body">
               Intl-only

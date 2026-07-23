@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import KpiCard from '../components/KpiCard'
 import TeamLogo from '../components/TeamLogo'
+import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
 
 export default function TeamProfile() {
@@ -85,10 +86,13 @@ export default function TeamProfile() {
               to={`/players/${encodeURIComponent(p.player)}`}
               className="flex items-center justify-between px-5 py-3 hover:bg-surface2/50 transition-colors"
             >
-              <span className="text-sm text-ink font-medium">{p.player}</span>
+              <span className="text-sm text-ink font-medium flex items-center gap-2">
+                {p.player}
+                <Flag countryCode={p.countryCode} countryName={p.countryName} size={16} />
+              </span>
               <div className="flex items-center gap-6 text-xs text-muted">
                 <span>{p._stats.mapsPlayed} maps</span>
-                <span className="text-good font-mono font-medium">{rating(p._stats.avgRating)}</span>
+                <span className="text-good font-body font-medium">{rating(p._stats.avgRating)}</span>
               </div>
             </Link>
           ))}

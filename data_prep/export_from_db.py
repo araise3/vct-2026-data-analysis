@@ -318,6 +318,7 @@ def main():
         top_players = sorted(ranked_players, key=lambda p: p[player_field]['avgRating'], reverse=True)[:10]
         top_players_out = [clean_row({
             "player": p['player'], "team": p['team'],
+            "countryCode": p.get('countryCode'), "countryName": p.get('countryName'),
             "rating": p[player_field]['avgRating'], "mapsPlayed": p[player_field]['mapsPlayed']
         }) for p in top_players]
 

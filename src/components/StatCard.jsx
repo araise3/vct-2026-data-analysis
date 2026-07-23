@@ -226,10 +226,10 @@ const StatCard = forwardRef(function StatCard(
                 fontWeight: 800,
                 fontSize: top ? 72 : 62,
                 color: top ? C.valueTop : C.value,
-                width: 250,
                 textAlign: 'right',
                 flexShrink: 0,
                 letterSpacing: -1,
+                minWidth: '3ch',
               }}
             >
               {valueFormat(r.value)}

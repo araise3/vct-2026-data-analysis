@@ -116,3 +116,55 @@ export function groupByEntity(records) {
   }
   return out
 }
+
+const BUY_TIERS = [
+  { key: 'eco', label: 'Eco', r: 'ecoR', w: 'ecoW' },
+  { key: 'semiEco', label: 'Semi-eco', r: 'secR', w: 'secW' },
+  { key: 'semiBuy', label: 'Semi-buy', r: 'sebR', w: 'sebW' },
+  { key: 'fullBuy', label: 'Full buy', r: 'fubR', w: 'fubW' },
+]
+
+/** Buy-type distribution and win rates, summed from team buckets. */
+export function aggregateEconomyBuckets(buckets) {
+  const tiers = BUY_TIERS.map(({ key, label, r, w }) => {
+    let rounds = 0
+    let won = 0
+    for (const b of buckets) {
+      rounds += b[r] || 0
+      won += b[w] || 0
+    }
+    return { key, label, rounds, won, winPct: rounds ? won / rounds : null }
+  })
+  const totalRounds = tiers.reduce((n, t) => n + t.rounds, 0)
+  return {
+    tiers: tiers.map((t) => ({ ...t, share: totalRounds ? t.rounds / totalRounds : 0 })),
+    totalRounds,
+  }
+}
+
+/** Season-level counts for the Overview KPIs. */
+export function aggregateOverview(teamRecords, playerRecords) {
+  let matches = 0
+  let maps = 0
+  let rounds = 0
+  const events = new Set()
+  const teams = new Set()
+  for (const b of teamRecords) {
+    matches += b.mP || 0
+    maps += b.mapP || 0
+    rounds += b.rnd || 0
+    events.add(b.e)
+    teams.add(b.id)
+  }
+  const players = new Set(playerRecords.map((b) => b.id))
+  // Every match/map/round appears once per team in these buckets, so the
+  // raw sums double-count at the competition level.
+  return {
+    totalEvents: events.size,
+    totalMatches: Math.round(matches / 2),
+    totalMaps: Math.round(maps / 2),
+    totalRounds: Math.round(rounds / 2),
+    totalPlayers: players.size,
+    totalTeams: teams.size,
+  }
+}

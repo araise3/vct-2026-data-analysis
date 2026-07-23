@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
+import { useFacetedFilter } from '../lib/useFacetedFilter'
+import { expandBuckets, aggregatePlayerBuckets } from '../lib/entityBuckets'
+import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
@@ -9,19 +12,28 @@ import { rating, pct, num } from '../lib/format'
 export default function PlayerProfile() {
   const { name } = useParams()
   const decodedName = decodeURIComponent(name)
-  const { data, loading } = useData('players')
-  const [useIntlStats, setUseIntlStats] = useState(true)
+  const { data, loading } = useData('player_buckets')
   const [ratedOnly, setRatedOnly] = useState(false)
-  const [includeEwc, setIncludeEwc] = useState(false)
 
-  const player = useMemo(() => {
-    if (!data) return null
-    return data.find((p) => p.player === decodedName) || null
+  // Scope to this player first, so the facet options only ever show
+  // events/weeks this player actually appeared in.
+  const records = useMemo(() => {
+    if (!data) return []
+    return expandBuckets(data, 'p').filter((r) => r.id === decodedName)
   }, [data, decodedName])
+
+  const { selections, setFacet, clearAll, filtered, options, activeCount } =
+    useFacetedFilter(records, FACETS, { competition: ['VCT'] })
+
+  const stats = useMemo(
+    () => aggregatePlayerBuckets(filtered, { ratedOnly }),
+    [filtered, ratedOnly]
+  )
 
   if (loading) return <div className="text-muted text-sm">Loading…</div>
 
-  if (!player) {
+  const meta = data?.meta?.[decodedName]
+  if (!meta) {
     return (
       <div className="flex flex-col gap-4">
         <Link to="/players" className="text-sm text-accent-bright hover:underline">← Back to Players</Link>
@@ -30,68 +42,50 @@ export default function PlayerProfile() {
     )
   }
 
-  const useIntl = player.isChina && useIntlStats && player.hasIntlStats
-  const useRated = !useIntl && player.isChina && ratedOnly && player.ratedOnlyStats
-  const base = includeEwc && player.statsWithEwc ? player.statsWithEwc : player.stats
-  const stats = useIntl ? player.intlStats : useRated ? player.ratedOnlyStats : base
-
   return (
     <div className="flex flex-col gap-6">
       <Link to="/players" className="text-sm text-muted hover:text-ink w-fit">← Back to Players</Link>
 
-      <div>
-        <h1 className="font-display text-2xl font-semibold text-ink flex items-center gap-3">
-          <Flag countryCode={player.countryCode} countryName={player.countryName} size={32} />
-          {player.player}
-        </h1>
-        <Link to={`/teams/${encodeURIComponent(player.team)}`} className="text-muted text-sm hover:text-accent-bright inline-block mt-1">
-          <TeamLogo team={player.team} size={18} />
-        </Link>
+      <div className="flex items-stretch gap-4">
+        <div className="w-16 rounded-xl bg-surface2 border border-hairline flex items-center justify-center shrink-0">
+          <Flag countryCode={meta.countryCode} countryName={meta.countryName} size={34} />
+        </div>
+        <div className="flex flex-col justify-center">
+          <h1 className="font-display text-2xl font-semibold text-ink">{decodedName}</h1>
+          <Link
+            to={`/teams/${encodeURIComponent(meta.team)}`}
+            className="text-muted text-sm hover:text-accent-bright w-fit"
+          >
+            <TeamLogo team={meta.team} size={18} />
+          </Link>
+        </div>
       </div>
 
-      <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
-        <input
-          type="checkbox"
-          checked={includeEwc}
-          onChange={(e) => setIncludeEwc(e.target.checked)}
-          className="accent-accent w-4 h-4"
-        />
-        Include Esports World Cup (EWC) 2026
-      </label>
-
-      {player.isChina && (
-        <div className="flex flex-col gap-2">
-          {player.hasIntlStats && (
-            <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
-              <input
-                type="checkbox"
-                checked={useIntlStats}
-                onChange={(e) => setUseIntlStats(e.target.checked)}
-                className="accent-accent w-4 h-4"
-              />
-              Use International-only stats (this player also played Masters/EWC)
-            </label>
-          )}
-          {!useIntl && player.ratedOnlyStats && (
-            <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
-              <input
-                type="checkbox"
-                checked={ratedOnly}
-                onChange={(e) => setRatedOnly(e.target.checked)}
-                className="accent-accent w-4 h-4"
-              />
-              Only include maps with Rating 2.0
-            </label>
-          )}
-          <div className="bg-surface2/40 border border-hairline rounded-xl px-4 py-3 text-xs text-muted leading-relaxed">
-            China-region matches don't publish multi-kill, clutch, or economy data on VLR — Total 2K/3K/4K/Ace
-            and Total Clutches will read 0 unless a toggle above applies.
-          </div>
-        </div>
-      )}
+      <FilterPanel
+        options={options}
+        selections={selections}
+        setFacet={setFacet}
+        clearAll={clearAll}
+        activeCount={activeCount}
+      >
+        <label className="flex items-center gap-2 text-xs text-muted">
+          <input
+            type="checkbox"
+            checked={ratedOnly}
+            onChange={(e) => setRatedOnly(e.target.checked)}
+            className="accent-accent w-4 h-4"
+          />
+          Only maps with a Rating 2.0
+        </label>
+      </FilterPanel>
 
       {!stats ? (
-        <p className="text-muted text-sm">No stats available for this scope.</p>
+        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
+          <p className="text-muted text-sm">No maps in this scope.</p>
+          <button onClick={clearAll} className="text-accent-bright text-sm hover:underline mt-2">
+            Clear filters
+          </button>
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -120,6 +114,14 @@ export default function PlayerProfile() {
               <Stat label="Clutches Won" value={num(stats.totalClutches)} />
             </div>
           </div>
+
+          {meta.isChina && (
+            <div className="bg-surface2/40 border border-hairline rounded-xl px-4 py-3 text-xs text-muted leading-relaxed">
+              China-region matches don't publish multi-kill, clutch, or economy data on VLR, so those
+              totals read 0 here unless this player also competed internationally — filter to
+              Region: International above to see their complete numbers.
+            </div>
+          )}
         </>
       )}
     </div>

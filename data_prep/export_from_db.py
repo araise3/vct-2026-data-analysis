@@ -207,21 +207,24 @@ def main():
         })
 
     completed_vct = completed[completed.competition == 'VCT']
+    events_vct = events[events.competition == 'VCT']
     maps_df_vct = maps_df[maps_df.competition == 'VCT']
     mps_vct = mps[mps.competition == 'VCT']
     mte_vct = mte[mte.competition == 'VCT']
 
-    teams_out = []
-    for team in canonical_teams:
-        base = team_stats(completed_vct, maps_df_vct, mps_vct, mte_vct, team)
-        base["team"] = team
-        base["region"] = team_primary_region.get(team, "International")
-        base["withEwc"] = team_stats(completed, maps_df, mps, mte, team)
-        teams_out.append(base)
+    # Identity/meta only -- every stat is derived from buckets at read
+    # time, so there is nothing to precompute per competition here.
+    teams_out = [
+        {"team": team, "region": team_primary_region.get(team, "International")}
+        for team in canonical_teams
+    ]
 
-    with open(f"{OUT}/teams.json", "w") as f:
-        json.dump(teams_out, f, indent=2)
-    print(f"teams.json: {len(teams_out)} teams")
+    # teams_out / players_out are kept in memory only -- they feed the
+    # bucket meta blocks below. Nothing writes a pre-aggregated season
+    # file any more: every view derives its numbers from buckets, so
+    # there is exactly one source of truth and no per-variant
+    # precomputation to keep in sync.
+    print(f"teams: {len(teams_out)} (in-memory, feeds bucket meta)")
 
     # ------------------------------------------------------------------
     # players.json
@@ -288,139 +291,27 @@ def main():
         player = row['player']
         team = row['canonical_team']
         is_china = player in china_players_set
-        sub_all = mps[mps['player'] == player]
-        sub = sub_all[sub_all['competition'] == 'VCT']
-        stats = player_stats(sub)
         nat = nationality_map.get(player)
-        entry = {
+        # Identity/meta only. The old precomputed variants here
+        # (season stats, International-only, rated-maps-only, +EWC) are
+        # all now expressible as facet selections or a toggle over the
+        # bucket data, so none of them are precomputed.
+        players_out.append({
             "player": player,
             "team": team,
             "region": team_primary_region.get(team, "International"),
             "isChina": is_china,
-            "hasIntlStats": player in players_with_intl,
             "countryCode": nat['country_code'] if nat and nat['country_code'] != 'un' else None,
             "countryName": nat['country_name'] if nat and nat['country_code'] != 'un' else None,
-            "stats": stats,
-            "statsWithEwc": player_stats(sub_all),
-        }
-        if player in players_with_intl:
-            intl_sub = sub[sub['region'] == 'International']
-            entry["intlStats"] = player_stats(intl_sub)
+        })
 
-        # For China players specifically: a variant that excludes any map
-        # missing Rating 2.0 entirely (not just averaging around the gap),
-        # so every stat in this variant is drawn from the exact same set
-        # of maps -- consistent, rather than avgRating quietly covering
-        # fewer maps than avgAcs/avgKast/etc. Only meaningfully differs
-        # from "stats" for the ~9 China matches missing rating; harmless
-        # (identical) for everyone else.
-        if is_china:
-            rated_sub = sub[sub['rating'].notna()]
-            if len(rated_sub) < len(sub):
-                entry["ratedOnlyStats"] = player_stats(rated_sub)
-
-        players_out.append(entry)
-
-    with open(f"{OUT}/players.json", "w") as f:
-        json.dump(players_out, f, indent=2)
-    print(f"players.json: {len(players_out)} players "
+    print(f"players: {len(players_out)} (in-memory, feeds bucket meta) "
           f"({sum(1 for p in players_out if not p['isChina'])} non-China, "
-          f"{sum(1 for p in players_out if p['isChina'])} China, "
-          f"{sum(1 for p in players_out if p['hasIntlStats'])} with Intl stats)")
+          f"{sum(1 for p in players_out if p['isChina'])} China)")
 
     # ------------------------------------------------------------------
     # overview.json
     # ------------------------------------------------------------------
-    MIN_MAPS_FOR_RANKING = 10
-
-    def compute_top_lists(player_field, team_field):
-        ranked_players = [p for p in players_out if p[player_field]
-                           and p[player_field]['mapsPlayed'] >= MIN_MAPS_FOR_RANKING
-                           and p[player_field]['avgRating'] is not None]
-        top_players = sorted(ranked_players, key=lambda p: p[player_field]['avgRating'], reverse=True)[:10]
-        top_players_out = [clean_row({
-            "player": p['player'], "team": p['team'],
-            "countryCode": p.get('countryCode'), "countryName": p.get('countryName'),
-            "rating": p[player_field]['avgRating'], "mapsPlayed": p[player_field]['mapsPlayed']
-        }) for p in top_players]
-
-        ranked_teams = [t for t in teams_out if t[team_field]['mapsPlayed'] and t[team_field]['mapsPlayed'] >= 10
-                         and t[team_field]['mapWinPct'] is not None]
-        top_teams = sorted(ranked_teams, key=lambda t: t[team_field]['mapWinPct'], reverse=True)[:10]
-        top_teams_out = [clean_row({
-            "team": t['team'], "region": t['region'],
-            "mapWinPct": t[team_field]['mapWinPct'],
-            "mapsPlayed": t[team_field]['mapsPlayed'], "mapsWon": t[team_field]['mapsWon']
-        }) for t in top_teams]
-        return top_players_out, top_teams_out
-
-    # For VCT-only, team_field needs to read the team's top-level fields
-    # rather than a nested dict -- wrap each team once so both branches can
-    # use the same dict-key access pattern uniformly.
-    for t in teams_out:
-        t['_self'] = {k: v for k, v in t.items() if k not in ('team', 'region', 'withEwc', '_self')}
-
-    top_players_out, top_teams_out = compute_top_lists('stats', '_self')
-    top_players_out_ewc, top_teams_out_ewc = compute_top_lists('statsWithEwc', 'withEwc')
-
-    for t in teams_out:
-        del t['_self']
-
-    events_vct = events[events.competition == 'VCT']
-
-    overview_out = {
-        "kpis": {
-            "totalEvents": int(events_vct['event_id'].nunique()),
-            "totalMatches": int(len(completed_vct)),
-            "totalMaps": int(len(maps_df_vct.dropna(subset=['winner']))),
-            "totalRounds": int(maps_df_vct['rounds_total'].sum()),
-            "totalPlayers": int(sum(1 for p in players_out if p['stats'])),
-            "totalTeams": int(len(canonical_teams)),
-        },
-        "kpisWithEwc": {
-            "totalEvents": int(events['event_id'].nunique()),
-            "totalMatches": int(len(completed)),
-            "totalMaps": int(len(maps_df.dropna(subset=['winner']))),
-            "totalRounds": int(maps_df['rounds_total'].sum()),
-            "totalPlayers": int(sum(1 for p in players_out if p['statsWithEwc'])),
-            "totalTeams": int(len(canonical_teams)),
-        },
-        "topPlayersByRating": top_players_out,
-        "topTeamsByMapWinPct": top_teams_out,
-        "topPlayersByRatingWithEwc": top_players_out_ewc,
-        "topTeamsByMapWinPctWithEwc": top_teams_out_ewc,
-    }
-    with open(f"{OUT}/overview.json", "w") as f:
-        json.dump(overview_out, f, indent=2)
-    print("overview.json written")
-
-    # ------------------------------------------------------------------
-    # economy.json -- deliberately VCT-only for now (EWC toggle isn't
-    # wired up here yet; scoped to Players/Teams/Overview for this pass)
-    # ------------------------------------------------------------------
-    mte_r = mte_vct.merge(matches[['match_id', 'region']], on='match_id', how='left')
-
-    def buy_tier_summary(sub):
-        tiers = {
-            "eco": (sub['eco_rounds'].sum(), sub['eco_won'].sum()),
-            "semiEco": (sub['semi_eco_rounds'].sum(), sub['semi_eco_won'].sum()),
-            "semiBuy": (sub['semi_buy_rounds'].sum(), sub['semi_buy_won'].sum()),
-            "fullBuy": (sub['full_buy_rounds'].sum(), sub['full_buy_won'].sum()),
-        }
-        out = {}
-        for name, (rounds, won) in tiers.items():
-            out[name] = clean_row({"rounds": int(rounds), "won": int(won),
-                                    "winPct": (won / rounds) if rounds else None})
-        return out
-
-    economy_out = {
-        "overall": buy_tier_summary(mte_r),
-        "byRegion": {region: buy_tier_summary(sub) for region, sub in mte_r.groupby('region')},
-    }
-    with open(f"{OUT}/economy.json", "w") as f:
-        json.dump(economy_out, f, indent=2)
-    print("economy.json written")
-
     # ------------------------------------------------------------------
     # player_buckets.json / team_buckets.json
     # ------------------------------------------------------------------
@@ -570,6 +461,17 @@ def main():
     for (team, eid, wk), g in mte_ctx.groupby(['canonical_team', 'event_id', 'stage'], dropna=True):
         d = agg.setdefault((team, int(eid), wk), {})
         d["pisW"] = int(g['pistol_won'].fillna(0).sum())
+        # Buy-type counts live here rather than in a separate economy file:
+        # they're per-team-per-map like everything else in this bucket, so
+        # folding them in means the Economy view inherits the same facets
+        # (region/event/stage/phase/week) with no extra plumbing.
+        for short, col in (("eco", "eco"), ("sec", "semi_eco"),
+                           ("seb", "semi_buy"), ("fub", "full_buy")):
+            rounds = int(g[f'{col}_rounds'].fillna(0).sum())
+            won = int(g[f'{col}_won'].fillna(0).sum())
+            if rounds or won:
+                d[f"{short}R"] = rounds
+                d[f"{short}W"] = won
     for (team, eid, wk), g in mps_team.groupby(['canonical_team', 'event_id', 'stage'], dropna=True):
         d = agg.setdefault((team, int(eid), wk), {})
         r_sum, r_rnd = wsum(g, 'rating')

@@ -55,11 +55,11 @@ export default function Overview() {
               <Link to={`/teams/${encodeURIComponent(p.team)}`} className="shrink-0 self-center h-8 flex items-center justify-center">
                 <TeamLogo team={p.team} size={32} showName={false} />
               </Link>
-              <div className="flex-1 min-w-0">
-                <Link to={`/players/${encodeURIComponent(p.player)}`} className="block text-sm text-ink font-medium truncate hover:text-accent-bright transition-colors">
+              <div className="flex-1 min-w-0 self-center">
+                <Link to={`/players/${encodeURIComponent(p.player)}`} className="block text-sm text-ink font-medium truncate leading-tight hover:text-accent-bright transition-colors">
                   {p.player}
                 </Link>
-                <Link to={`/teams/${encodeURIComponent(p.team)}`} className="block text-xs text-muted truncate hover:text-accent-bright transition-colors">
+                <Link to={`/teams/${encodeURIComponent(p.team)}`} className="block text-xs text-muted truncate leading-tight hover:text-accent-bright transition-colors">
                   {p.team}
                 </Link>
               </div>
@@ -75,11 +75,11 @@ export default function Overview() {
               <Link to={`/teams/${encodeURIComponent(t.team)}`} className="shrink-0 self-center h-8 flex items-center justify-center">
                 <TeamLogo team={t.team} size={32} showName={false} />
               </Link>
-              <div className="flex-1 min-w-0">
-                <Link to={`/teams/${encodeURIComponent(t.team)}`} className="block text-sm text-ink font-medium truncate hover:text-accent-bright transition-colors">
+              <div className="flex-1 min-w-0 self-center">
+                <Link to={`/teams/${encodeURIComponent(t.team)}`} className="block text-sm text-ink font-medium truncate leading-tight hover:text-accent-bright transition-colors">
                   {t.team}
                 </Link>
-                <div className="text-xs text-muted truncate">{t.region} · {t.mapsWon}/{t.mapsPlayed} maps</div>
+                <div className="text-xs text-muted truncate leading-tight">{t.region} · {t.mapsWon}/{t.mapsPlayed} maps</div>
               </div>
               <span className="font-body text-sm text-good font-medium">{pct(t.mapWinPct)}</span>
             </>

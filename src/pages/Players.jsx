@@ -64,7 +64,7 @@ export default function Players() {
       key: 'player',
       label: 'Player',
       align: 'left',
-      width: 160,
+      width: 190,
       format: (v, row) => (
         <div className="flex items-center gap-2">
           <Flag countryCode={row.countryCode} countryName={row.countryName} size={20} />

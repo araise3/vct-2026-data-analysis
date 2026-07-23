@@ -3,24 +3,24 @@ import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import DataTable from '../components/DataTable'
 import HorizontalBarChart from '../components/HorizontalBarChart'
-import FilterChips from '../components/FilterChips'
+import FacetGroup from '../components/FacetGroup'
 import TeamLogo from '../components/TeamLogo'
 import { pct, num, rating } from '../lib/format'
 
-const REGIONS = ['All', 'Americas', 'EMEA', 'Pacific', 'China', 'International']
+const REGIONS = ['Americas', 'EMEA', 'Pacific', 'China', 'International']
 
 export default function Teams() {
   const { data, loading } = useData('teams')
-  const [region, setRegion] = useState('All')
+  const [regions, setRegions] = useState([])
   const [includeEwc, setIncludeEwc] = useState(false)
 
   const rows = useMemo(() => {
     if (!data) return []
     let filtered = data
-    if (region !== 'All') filtered = filtered.filter((t) => t.region === region)
+    if (regions.length > 0) filtered = filtered.filter((t) => regions.includes(t.region))
     if (includeEwc) filtered = filtered.map((t) => ({ ...t, ...t.withEwc }))
     return filtered
-  }, [data, region, includeEwc])
+  }, [data, regions, includeEwc])
 
   const topByMapWin = useMemo(() => {
     return [...rows]
@@ -59,7 +59,12 @@ export default function Teams() {
         <p className="text-muted text-sm mt-1">{rows.length} teams shown</p>
       </div>
 
-      <FilterChips options={REGIONS} value={region} onChange={setRegion} />
+      <FacetGroup
+        label="Region"
+        options={REGIONS.map((r) => ({ value: r, available: true }))}
+        selected={regions}
+        onChange={setRegions}
+      />
 
       <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
         <input

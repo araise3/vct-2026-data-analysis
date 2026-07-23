@@ -2,6 +2,7 @@
   {
     "player": "hiro",
     "team": "Natus Vincere",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -50,6 +51,7 @@
   {
     "player": "Shao",
     "team": "Natus Vincere",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -98,6 +100,7 @@
   {
     "player": "Filu",
     "team": "Natus Vincere",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pl",
@@ -146,6 +149,7 @@
   {
     "player": "Ruxic",
     "team": "Natus Vincere",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -194,6 +198,7 @@
   {
     "player": "sociablEE",
     "team": "Natus Vincere",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -242,6 +247,7 @@
   {
     "player": "Avez",
     "team": "Karmine Corp",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "eg",
@@ -290,6 +296,7 @@
   {
     "player": "SUYGETSU",
     "team": "Karmine Corp",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -338,6 +345,7 @@
   {
     "player": "LewN",
     "team": "Karmine Corp",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -386,6 +394,7 @@
   {
     "player": "dos9",
     "team": "Karmine Corp",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kz",
@@ -434,6 +443,7 @@
   {
     "player": "sheydos",
     "team": "Karmine Corp",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -482,6 +492,7 @@
   {
     "player": "xeus",
     "team": "FUT Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -530,6 +541,7 @@
   {
     "player": "yetujey",
     "team": "FUT Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -578,6 +590,7 @@
   {
     "player": "MrFaliN",
     "team": "FUT Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -626,6 +639,7 @@
   {
     "player": "KROSTALY",
     "team": "FUT Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -674,6 +688,7 @@
   {
     "player": "baha",
     "team": "FUT Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -722,6 +737,7 @@
   {
     "player": "Minny",
     "team": "Gentle Mates",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "cz",
@@ -770,6 +786,7 @@
   {
     "player": "bipo",
     "team": "Gentle Mates",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "it",
@@ -818,6 +835,7 @@
   {
     "player": "marteen",
     "team": "Gentle Mates",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "cz",
@@ -866,6 +884,7 @@
   {
     "player": "starxo",
     "team": "Gentle Mates",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pl",
@@ -914,6 +933,7 @@
   {
     "player": "GLYPH",
     "team": "Gentle Mates",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ph",
@@ -962,6 +982,7 @@
   {
     "player": "seven",
     "team": "PCIFIC Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "mx",
@@ -1010,6 +1031,7 @@
   {
     "player": "al0rante",
     "team": "PCIFIC Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "de",
@@ -1058,6 +1080,7 @@
   {
     "player": "qpert",
     "team": "PCIFIC Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "rs",
@@ -1106,6 +1129,7 @@
   {
     "player": "cNed",
     "team": "PCIFIC Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1154,6 +1178,7 @@
   {
     "player": "NINJA",
     "team": "PCIFIC Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pl",
@@ -1202,6 +1227,7 @@
   {
     "player": "Ros\u00e9",
     "team": "BBL Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1250,6 +1276,7 @@
   {
     "player": "Loita",
     "team": "BBL Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1298,6 +1325,7 @@
   {
     "player": "Lar0k",
     "team": "BBL Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1346,6 +1374,7 @@
   {
     "player": "lovers rock",
     "team": "BBL Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1394,6 +1423,7 @@
   {
     "player": "Crewen",
     "team": "BBL Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1442,6 +1472,7 @@
   {
     "player": "Favian",
     "team": "Eternal Fire",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1490,6 +1521,7 @@
   {
     "player": "audaz",
     "team": "Eternal Fire",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1538,6 +1570,7 @@
   {
     "player": "nekky",
     "team": "Eternal Fire",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1586,6 +1619,7 @@
   {
     "player": "sturNN",
     "team": "Eternal Fire",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1634,6 +1668,7 @@
   {
     "player": "d3mur",
     "team": "Eternal Fire",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1682,6 +1717,7 @@
   {
     "player": "Derke",
     "team": "Team Vitality",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "fi",
@@ -1730,6 +1766,7 @@
   {
     "player": "Chronicle",
     "team": "Team Vitality",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -1778,6 +1815,7 @@
   {
     "player": "Jamppi",
     "team": "Team Vitality",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "fi",
@@ -1826,6 +1864,7 @@
   {
     "player": "PROFEK",
     "team": "Team Vitality",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pl",
@@ -1874,6 +1913,7 @@
   {
     "player": "UNFAKE",
     "team": "Team Vitality",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pl",
@@ -1922,6 +1962,7 @@
   {
     "player": "RieNs",
     "team": "Team Heretics",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -1970,6 +2011,7 @@
   {
     "player": "Boo",
     "team": "Team Heretics",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "lt",
@@ -2018,6 +2060,7 @@
   {
     "player": "Wo0t",
     "team": "Team Heretics",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -2066,6 +2109,7 @@
   {
     "player": "benjyfishy",
     "team": "Team Heretics",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "gb",
@@ -2114,6 +2158,7 @@
   {
     "player": "ComeBack",
     "team": "Team Heretics",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -2162,6 +2207,7 @@
   {
     "player": "grubinho",
     "team": "GIANTX",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pl",
@@ -2210,6 +2256,7 @@
   {
     "player": "Flickless",
     "team": "GIANTX",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "be",
@@ -2258,6 +2305,7 @@
   {
     "player": "westside",
     "team": "GIANTX",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pl",
@@ -2306,6 +2354,7 @@
   {
     "player": "Cloud",
     "team": "GIANTX",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -2354,6 +2403,7 @@
   {
     "player": "ara",
     "team": "GIANTX",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ro",
@@ -2402,6 +2452,7 @@
   {
     "player": "crashies",
     "team": "FNATIC",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -2450,6 +2501,7 @@
   {
     "player": "kaajak",
     "team": "FNATIC",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pl",
@@ -2498,6 +2550,7 @@
   {
     "player": "Alfajer",
     "team": "FNATIC",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -2546,6 +2599,7 @@
   {
     "player": "Boaster",
     "team": "FNATIC",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "gb",
@@ -2594,6 +2648,7 @@
   {
     "player": "Veqaj",
     "team": "FNATIC",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "fr",
@@ -2642,6 +2697,7 @@
   {
     "player": "nAts",
     "team": "Team Liquid",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -2690,6 +2746,7 @@
   {
     "player": "kamo",
     "team": "Team Liquid",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pl",
@@ -2738,6 +2795,7 @@
   {
     "player": "purp0",
     "team": "Team Liquid",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -2786,6 +2844,7 @@
   {
     "player": "Kicks",
     "team": "Team Liquid",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ee",
@@ -2834,6 +2893,7 @@
   {
     "player": "MiniBoo",
     "team": "Team Liquid",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "lt",
@@ -2882,6 +2942,7 @@
   {
     "player": "wayne",
     "team": "Team Liquid",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "sg",
@@ -2930,6 +2991,7 @@
   {
     "player": "Dambi",
     "team": "Nongshim RedForce",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -2978,6 +3040,7 @@
   {
     "player": "Xross",
     "team": "Nongshim RedForce",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -3026,6 +3089,7 @@
   {
     "player": "Francis",
     "team": "Nongshim RedForce",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -3074,6 +3138,7 @@
   {
     "player": "Rb",
     "team": "Nongshim RedForce",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -3122,6 +3187,7 @@
   {
     "player": "Ivy",
     "team": "Nongshim RedForce",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -3170,6 +3236,7 @@
   {
     "player": "kellyS",
     "team": "Team Secret",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ph",
@@ -3218,6 +3285,7 @@
   {
     "player": "Sylvan",
     "team": "Team Secret",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -3266,6 +3334,7 @@
   {
     "player": "JessieVash",
     "team": "Team Secret",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ph",
@@ -3314,6 +3383,7 @@
   {
     "player": "BerserX",
     "team": "Team Secret",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "id",
@@ -3362,6 +3432,7 @@
   {
     "player": "TenTen",
     "team": "Team Secret",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -3410,6 +3481,7 @@
   {
     "player": "eKo",
     "team": "ZETA DIVISION",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -3458,6 +3530,7 @@
   {
     "player": "Absol",
     "team": "ZETA DIVISION",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "jp",
@@ -3506,6 +3579,7 @@
   {
     "player": "SugarZ3ro",
     "team": "ZETA DIVISION",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "jp",
@@ -3554,6 +3628,7 @@
   {
     "player": "SyouTa",
     "team": "ZETA DIVISION",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "jp",
@@ -3602,6 +3677,7 @@
   {
     "player": "Xdll",
     "team": "ZETA DIVISION",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "jp",
@@ -3650,6 +3726,7 @@
   {
     "player": "primmie",
     "team": "FULL SENSE",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "th",
@@ -3698,6 +3775,7 @@
   {
     "player": "Killua",
     "team": "FULL SENSE",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "th",
@@ -3746,6 +3824,7 @@
   {
     "player": "thyy",
     "team": "FULL SENSE",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "th",
@@ -3794,6 +3873,7 @@
   {
     "player": "JitBoyS",
     "team": "FULL SENSE",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "th",
@@ -3842,6 +3922,7 @@
   {
     "player": "Leviathan",
     "team": "FULL SENSE",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "th",
@@ -3890,6 +3971,7 @@
   {
     "player": "Zexy",
     "team": "VARREL",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -3938,6 +4020,7 @@
   {
     "player": "Klaus",
     "team": "VARREL",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -3986,6 +4069,7 @@
   {
     "player": "XuNa",
     "team": "VARREL",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4034,6 +4118,7 @@
   {
     "player": "oonzmlp",
     "team": "VARREL",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4082,6 +4167,7 @@
   {
     "player": "C1ndeR",
     "team": "VARREL",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4130,6 +4216,7 @@
   {
     "player": "xavi8k",
     "team": "Global Esports",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ph",
@@ -4178,6 +4265,7 @@
   {
     "player": "UdoTan",
     "team": "Global Esports",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4226,6 +4314,7 @@
   {
     "player": "Kr1stal",
     "team": "Global Esports",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -4274,6 +4363,7 @@
   {
     "player": "Autumn",
     "team": "Global Esports",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "au",
@@ -4322,6 +4412,7 @@
   {
     "player": "PatMen",
     "team": "Global Esports",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ph",
@@ -4370,6 +4461,7 @@
   {
     "player": "Caedye",
     "team": "DetonatioN FocusMe",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "jp",
@@ -4418,6 +4510,7 @@
   {
     "player": "SSeeS",
     "team": "DetonatioN FocusMe",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "jp",
@@ -4466,6 +4559,7 @@
   {
     "player": "yatsuka",
     "team": "DetonatioN FocusMe",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "jp",
@@ -4514,6 +4608,7 @@
   {
     "player": "Akame",
     "team": "DetonatioN FocusMe",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4562,6 +4657,7 @@
   {
     "player": "Meiy",
     "team": "DetonatioN FocusMe",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "jp",
@@ -4610,6 +4706,7 @@
   {
     "player": "Ash",
     "team": "Gen.G",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4658,6 +4755,7 @@
   {
     "player": "t3xture",
     "team": "Gen.G",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4706,6 +4804,7 @@
   {
     "player": "Karon",
     "team": "Gen.G",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4754,6 +4853,7 @@
   {
     "player": "ZynX",
     "team": "Gen.G",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4802,6 +4902,7 @@
   {
     "player": "Lakia",
     "team": "Gen.G",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4850,6 +4951,7 @@
   {
     "player": "BuZz",
     "team": "T1",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4898,6 +5000,7 @@
   {
     "player": "Munchkin",
     "team": "T1",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4946,6 +5049,7 @@
   {
     "player": "stax",
     "team": "T1",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -4994,6 +5098,7 @@
   {
     "player": "Meteor",
     "team": "T1",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -5042,6 +5147,7 @@
   {
     "player": "iZu",
     "team": "T1",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -5090,6 +5196,7 @@
   {
     "player": "MaKo",
     "team": "KIWOOM DRX",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -5138,6 +5245,7 @@
   {
     "player": "free1ng",
     "team": "KIWOOM DRX",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -5186,6 +5294,7 @@
   {
     "player": "BeYN",
     "team": "KIWOOM DRX",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -5234,6 +5343,7 @@
   {
     "player": "Hermes",
     "team": "KIWOOM DRX",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -5282,6 +5392,7 @@
   {
     "player": "HYUNMIN",
     "team": "KIWOOM DRX",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -5330,6 +5441,7 @@
   {
     "player": "Jinggg",
     "team": "Paper Rex",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "sg",
@@ -5378,6 +5490,7 @@
   {
     "player": "invy",
     "team": "Paper Rex",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ph",
@@ -5426,6 +5539,7 @@
   {
     "player": "f0rsakeN",
     "team": "Paper Rex",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "id",
@@ -5474,6 +5588,7 @@
   {
     "player": "something",
     "team": "Paper Rex",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -5522,6 +5637,7 @@
   {
     "player": "d4v41",
     "team": "Paper Rex",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "my",
@@ -5570,6 +5686,7 @@
   {
     "player": "xffero",
     "team": "Rex Regum Qeon",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "id",
@@ -5618,6 +5735,7 @@
   {
     "player": "Kushy",
     "team": "Rex Regum Qeon",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "id",
@@ -5666,6 +5784,7 @@
   {
     "player": "Jemkin",
     "team": "Rex Regum Qeon",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -5714,6 +5833,7 @@
   {
     "player": "crazyguy",
     "team": "Rex Regum Qeon",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "vn",
@@ -5762,6 +5882,7 @@
   {
     "player": "Monyet",
     "team": "Rex Regum Qeon",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "id",
@@ -5810,6 +5931,7 @@
   {
     "player": "Darker",
     "team": "LOUD",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "co",
@@ -5858,6 +5980,7 @@
   {
     "player": "cauanzin",
     "team": "LOUD",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -5906,6 +6029,7 @@
   {
     "player": "Virtyy",
     "team": "LOUD",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "do",
@@ -5954,6 +6078,7 @@
   {
     "player": "pANcada",
     "team": "LOUD",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -6002,6 +6127,7 @@
   {
     "player": "lukxo",
     "team": "LOUD",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -6050,6 +6176,7 @@
   {
     "player": "OXY",
     "team": "Cloud9",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -6098,6 +6225,7 @@
   {
     "player": "penny",
     "team": "Cloud9",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ca",
@@ -6146,6 +6274,7 @@
   {
     "player": "v1c",
     "team": "Cloud9",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -6194,6 +6323,7 @@
   {
     "player": "Xeppaa",
     "team": "Cloud9",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -6242,6 +6372,7 @@
   {
     "player": "Zellsis",
     "team": "Cloud9",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -6290,6 +6421,7 @@
   {
     "player": "Rossy",
     "team": "ENVY",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -6338,6 +6470,7 @@
   {
     "player": "Inspire",
     "team": "ENVY",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -6386,6 +6519,7 @@
   {
     "player": "keznit",
     "team": "ENVY",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "cl",
@@ -6434,6 +6568,7 @@
   {
     "player": "Eggsterr",
     "team": "ENVY",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -6482,6 +6617,7 @@
   {
     "player": "P0PPIN",
     "team": "ENVY",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -6530,6 +6666,7 @@
   {
     "player": "dgzin",
     "team": "Evil Geniuses",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -6578,6 +6715,7 @@
   {
     "player": "bao",
     "team": "Evil Geniuses",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "vn",
@@ -6626,6 +6764,7 @@
   {
     "player": "Okeanos",
     "team": "Evil Geniuses",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "vn",
@@ -6674,6 +6813,7 @@
   {
     "player": "C0M",
     "team": "Evil Geniuses",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -6722,6 +6862,7 @@
   {
     "player": "supamen",
     "team": "Evil Geniuses",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -6770,6 +6911,7 @@
   {
     "player": "benG",
     "team": "KR\u00dc Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "cl",
@@ -6818,6 +6960,7 @@
   {
     "player": "mta",
     "team": "KR\u00dc Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "cl",
@@ -6866,6 +7009,7 @@
   {
     "player": "NagZ",
     "team": "KR\u00dc Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "cl",
@@ -6914,6 +7058,7 @@
   {
     "player": "infiltrator",
     "team": "KR\u00dc Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "vn",
@@ -6962,6 +7107,7 @@
   {
     "player": "Governor",
     "team": "KR\u00dc Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -7010,6 +7156,7 @@
   {
     "player": "koalanoob",
     "team": "FURIA",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ca",
@@ -7058,6 +7205,7 @@
   {
     "player": "artzin",
     "team": "FURIA",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -7106,6 +7254,7 @@
   {
     "player": "nerve",
     "team": "FURIA",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -7154,6 +7303,7 @@
   {
     "player": "eeiu",
     "team": "FURIA",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ca",
@@ -7202,6 +7352,7 @@
   {
     "player": "alym",
     "team": "FURIA",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kg",
@@ -7250,6 +7401,7 @@
   {
     "player": "Cryocells",
     "team": "100 Thieves",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -7298,6 +7450,7 @@
   {
     "player": "bang",
     "team": "100 Thieves",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -7346,6 +7499,7 @@
   {
     "player": "vora",
     "team": "100 Thieves",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ca",
@@ -7394,6 +7548,7 @@
   {
     "player": "Asuna",
     "team": "100 Thieves",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -7442,6 +7597,7 @@
   {
     "player": "Timotino",
     "team": "100 Thieves",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ca",
@@ -7490,6 +7646,7 @@
   {
     "player": "PxS",
     "team": "LEVIAT\u00c1N",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -7538,6 +7695,7 @@
   {
     "player": "Sato",
     "team": "LEVIAT\u00c1N",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -7586,6 +7744,7 @@
   {
     "player": "kiNgg",
     "team": "LEVIAT\u00c1N",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "cl",
@@ -7634,6 +7793,7 @@
   {
     "player": "blowz",
     "team": "LEVIAT\u00c1N",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -7682,6 +7842,7 @@
   {
     "player": "spike",
     "team": "LEVIAT\u00c1N",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -7730,6 +7891,7 @@
   {
     "player": "brawk",
     "team": "NRG",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -7778,6 +7940,7 @@
   {
     "player": "keiko",
     "team": "NRG",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "gb",
@@ -7826,6 +7989,7 @@
   {
     "player": "mada",
     "team": "NRG",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ca",
@@ -7874,6 +8038,7 @@
   {
     "player": "Ethan",
     "team": "NRG",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -7922,6 +8087,7 @@
   {
     "player": "skuba",
     "team": "NRG",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -7970,6 +8136,7 @@
   {
     "player": "aspas",
     "team": "MIBR",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -8018,6 +8185,7 @@
   {
     "player": "Mazino",
     "team": "MIBR",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "cl",
@@ -8066,6 +8234,7 @@
   {
     "player": "Verno",
     "team": "MIBR",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -8114,6 +8283,7 @@
   {
     "player": "tex",
     "team": "MIBR",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "de",
@@ -8162,6 +8332,7 @@
   {
     "player": "zekken",
     "team": "MIBR",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -8210,6 +8381,7 @@
   {
     "player": "johnqt",
     "team": "Sentinels",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ma",
@@ -8258,6 +8430,7 @@
   {
     "player": "cortezia",
     "team": "Sentinels",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -8306,6 +8479,7 @@
   {
     "player": "Reduxx",
     "team": "Sentinels",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -8354,6 +8528,7 @@
   {
     "player": "Kyu",
     "team": "Sentinels",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ca",
@@ -8402,6 +8577,7 @@
   {
     "player": "N4RRATE",
     "team": "Sentinels",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -8450,6 +8626,7 @@
   {
     "player": "BABYBAY",
     "team": "G2 Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -8498,6 +8675,7 @@
   {
     "player": "trent",
     "team": "G2 Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -8546,6 +8724,7 @@
   {
     "player": "valyn",
     "team": "G2 Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -8594,6 +8773,7 @@
   {
     "player": "leaf",
     "team": "G2 Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -8642,6 +8822,7 @@
   {
     "player": "jawgemo",
     "team": "G2 Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kh",
@@ -8690,6 +8871,7 @@
   {
     "player": "Demon1",
     "team": "Cloud9",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -8738,6 +8920,7 @@
   {
     "player": "Neon",
     "team": "LEVIAT\u00c1N",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ar",
@@ -8786,6 +8969,7 @@
   {
     "player": "f4ngeer",
     "team": "All Gamers",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "ru",
@@ -8874,6 +9058,7 @@
   {
     "player": "Au1",
     "team": "All Gamers",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -8962,6 +9147,7 @@
   {
     "player": "K1ra",
     "team": "All Gamers",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -9050,6 +9236,7 @@
   {
     "player": "Shr1mp",
     "team": "All Gamers",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -9138,6 +9325,7 @@
   {
     "player": "iamgrq",
     "team": "All Gamers",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -9226,6 +9414,7 @@
   {
     "player": "GuanG",
     "team": "Nova Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -9294,6 +9483,7 @@
   {
     "player": "GREEN",
     "team": "Nova Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "tw",
@@ -9362,6 +9552,7 @@
   {
     "player": "Ezeir",
     "team": "Nova Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -9430,6 +9621,7 @@
   {
     "player": "heybay",
     "team": "Nova Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "hk",
@@ -9498,6 +9690,7 @@
   {
     "player": "OBONE",
     "team": "Nova Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -9566,6 +9759,7 @@
   {
     "player": "zhe",
     "team": "JDG Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -9634,6 +9828,7 @@
   {
     "player": "stew",
     "team": "JDG Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -9702,6 +9897,7 @@
   {
     "player": "jkuro",
     "team": "JDG Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -9770,6 +9966,7 @@
   {
     "player": "Yuicaw",
     "team": "JDG Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "tw",
@@ -9838,6 +10035,7 @@
   {
     "player": "coconut",
     "team": "JDG Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "hk",
@@ -9906,6 +10104,7 @@
   {
     "player": "lucas",
     "team": "Titan Esports Club",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -9974,6 +10173,7 @@
   {
     "player": "Haodong",
     "team": "Titan Esports Club",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -10042,6 +10242,7 @@
   {
     "player": "Abo",
     "team": "Titan Esports Club",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -10110,6 +10311,7 @@
   {
     "player": "Coco",
     "team": "Titan Esports Club",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -10178,6 +10380,7 @@
   {
     "player": "Dynamite",
     "team": "Titan Esports Club",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -10246,6 +10449,7 @@
   {
     "player": "Kai",
     "team": "Trace Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -10314,6 +10518,7 @@
   {
     "player": "deLb",
     "team": "Trace Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "id",
@@ -10382,6 +10587,7 @@
   {
     "player": "FengF",
     "team": "Trace Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -10450,6 +10656,7 @@
   {
     "player": "LuoK1ng",
     "team": "Trace Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -10518,6 +10725,7 @@
   {
     "player": "Viva",
     "team": "Trace Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -10586,6 +10794,7 @@
   {
     "player": "Spring",
     "team": "Wolves Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "tw",
@@ -10654,6 +10863,7 @@
   {
     "player": "jowa",
     "team": "Wolves Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -10722,6 +10932,7 @@
   {
     "player": "SiuFatBB",
     "team": "Wolves Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "hk",
@@ -10790,6 +11001,7 @@
   {
     "player": "qiutiaN",
     "team": "Wolves Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "tw",
@@ -10858,6 +11070,7 @@
   {
     "player": "yosemite",
     "team": "Wolves Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -10926,6 +11139,7 @@
   {
     "player": "Life",
     "team": "FunPlus Phoenix",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -11014,6 +11228,7 @@
   {
     "player": "Setrod",
     "team": "FunPlus Phoenix",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "tw",
@@ -11082,6 +11297,7 @@
   {
     "player": "AAAAY",
     "team": "FunPlus Phoenix",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -11150,6 +11366,7 @@
   {
     "player": "BerLIN",
     "team": "FunPlus Phoenix",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "tw",
@@ -11218,6 +11435,7 @@
   {
     "player": "sScary",
     "team": "FunPlus Phoenix",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "th",
@@ -11286,6 +11504,7 @@
   {
     "player": "splash",
     "team": "TYLOO",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "id",
@@ -11354,6 +11573,7 @@
   {
     "player": "Erv",
     "team": "TYLOO",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -11422,6 +11642,7 @@
   {
     "player": "slowly",
     "team": "TYLOO",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -11490,6 +11711,7 @@
   {
     "player": "sword9",
     "team": "TYLOO",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -11558,6 +11780,7 @@
   {
     "player": "Scales",
     "team": "TYLOO",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -11626,6 +11849,7 @@
   {
     "player": "nephh",
     "team": "Bilibili Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "sg",
@@ -11694,6 +11918,7 @@
   {
     "player": "rushia",
     "team": "Bilibili Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -11762,6 +11987,7 @@
   {
     "player": "Knight",
     "team": "Bilibili Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -11830,6 +12056,7 @@
   {
     "player": "whzy",
     "team": "Bilibili Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -11898,6 +12125,7 @@
   {
     "player": "bud",
     "team": "Bilibili Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -11946,6 +12174,7 @@
   {
     "player": "vo0kashu",
     "team": "Dragon Ranger Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "ru",
@@ -12034,6 +12263,7 @@
   {
     "player": "Akeman",
     "team": "Dragon Ranger Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -12082,6 +12312,7 @@
   {
     "player": "SpiritZ1",
     "team": "Dragon Ranger Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "tw",
@@ -12170,6 +12401,7 @@
   {
     "player": "Nicc",
     "team": "Dragon Ranger Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "tw",
@@ -12258,6 +12490,7 @@
   {
     "player": "Flex1n",
     "team": "Dragon Ranger Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -12326,6 +12559,7 @@
   {
     "player": "Rarga",
     "team": "Xi Lai Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "ru",
@@ -12414,6 +12648,7 @@
   {
     "player": "happywei",
     "team": "Xi Lai Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "tw",
@@ -12502,6 +12737,7 @@
   {
     "player": "Lysoar",
     "team": "Xi Lai Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -12590,6 +12826,7 @@
   {
     "player": "WsLeo",
     "team": "Xi Lai Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "tw",
@@ -12678,6 +12915,7 @@
   {
     "player": "NoMan",
     "team": "Xi Lai Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "hk",
@@ -12766,6 +13004,7 @@
   {
     "player": "Smoggy",
     "team": "EDward Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -12854,6 +13093,7 @@
   {
     "player": "CHICHOO",
     "team": "EDward Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -12942,6 +13182,7 @@
   {
     "player": "ZmjjKK",
     "team": "EDward Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -13030,6 +13271,7 @@
   {
     "player": "cb",
     "team": "EDward Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -13118,6 +13360,7 @@
   {
     "player": "nobody",
     "team": "EDward Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -13206,6 +13449,7 @@
   {
     "player": "Biank",
     "team": "Bilibili Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -13254,6 +13498,7 @@
   {
     "player": "Spitfires",
     "team": "Titan Esports Club",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -13322,6 +13567,7 @@
   {
     "player": "Septem7",
     "team": "All Gamers",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -13370,6 +13616,7 @@
   {
     "player": "swagzor",
     "team": "Nova Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -13438,6 +13685,7 @@
   {
     "player": "Jieni7",
     "team": "EDward Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": true,
     "countryCode": "cn",
@@ -13526,6 +13774,7 @@
   {
     "player": "KovaQ",
     "team": "FunPlus Phoenix",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "ch",
@@ -13594,6 +13843,7 @@
   {
     "player": "Ben1Ley",
     "team": "FunPlus Phoenix",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -13662,6 +13912,7 @@
   {
     "player": "glacier",
     "team": "Wolves Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "tw",
@@ -13730,6 +13981,7 @@
   {
     "player": "Xlele",
     "team": "Trace Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -13798,6 +14050,7 @@
   {
     "player": "yilai",
     "team": "Bilibili Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -13846,6 +14099,7 @@
   {
     "player": "Youze",
     "team": "All Gamers",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "tw",
@@ -13914,6 +14168,7 @@
   {
     "player": "Foxy9",
     "team": "Gen.G",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -13962,6 +14217,7 @@
   {
     "player": "Crws",
     "team": "FULL SENSE",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "th",
@@ -14010,6 +14266,7 @@
   {
     "player": "Rimuru",
     "team": "Team Secret",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ph",
@@ -14058,6 +14315,7 @@
   {
     "player": "yong",
     "team": "KIWOOM DRX",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -14106,6 +14364,7 @@
   {
     "player": "KiTae",
     "team": "Gen.G",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -14154,6 +14413,7 @@
   {
     "player": "Zeus",
     "team": "Team Secret",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ph",
@@ -14202,6 +14462,7 @@
   {
     "player": "echo",
     "team": "Eternal Fire",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -14250,6 +14511,7 @@
   {
     "player": "Izzy",
     "team": "Eternal Fire",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -14298,6 +14560,7 @@
   {
     "player": "Sayonara",
     "team": "Team Vitality",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "md",
@@ -14346,6 +14609,7 @@
   {
     "player": "s0pp",
     "team": "FUT Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",
@@ -14394,6 +14658,7 @@
   {
     "player": "chloric",
     "team": "Natus Vincere",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -14442,6 +14707,7 @@
   {
     "player": "Kolosha",
     "team": "Natus Vincere",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ua",
@@ -14490,6 +14756,7 @@
   {
     "player": "koshmaras",
     "team": "Team Heretics",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "lt",
@@ -14538,6 +14805,7 @@
   {
     "player": "Desmo",
     "team": "FNATIC",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "dk",
@@ -14586,6 +14854,7 @@
   {
     "player": "CyvOph",
     "team": "FNATIC",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "fr",
@@ -14634,6 +14903,7 @@
   {
     "player": "Victor",
     "team": "Sentinels",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -14682,6 +14952,7 @@
   {
     "player": "JonahP",
     "team": "Sentinels",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ca",
@@ -14730,6 +15001,7 @@
   {
     "player": "Less",
     "team": "KR\u00dc Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -14778,6 +15050,7 @@
   {
     "player": "mwzera",
     "team": "KR\u00dc Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -14826,6 +15099,7 @@
   {
     "player": "saadhak",
     "team": "KR\u00dc Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ar",
@@ -14874,6 +15148,7 @@
   {
     "player": "silentzz",
     "team": "KR\u00dc Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -14922,6 +15197,7 @@
   {
     "player": "Dantedeu5",
     "team": "KR\u00dc Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ar",
@@ -14970,6 +15246,7 @@
   {
     "player": "Bati",
     "team": "LOUD",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pt",
@@ -15018,6 +15295,7 @@
   {
     "player": "Jerrwin",
     "team": "Sentinels",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "in",
@@ -15066,6 +15344,7 @@
   {
     "player": "erde",
     "team": "LOUD",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "cl",
@@ -15114,6 +15393,7 @@
   {
     "player": "Jackk",
     "team": "Cloud9",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -15162,6 +15442,7 @@
   {
     "player": "Paincakes",
     "team": "Evil Geniuses",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -15210,6 +15491,7 @@
   {
     "player": "zerona",
     "team": "Evil Geniuses",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -15258,6 +15540,7 @@
   {
     "player": "Notexxd",
     "team": "Cloud9",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "bm",
@@ -15306,6 +15589,7 @@
   {
     "player": "Bai",
     "team": "All Gamers",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -15374,6 +15658,7 @@
   {
     "player": "Efina",
     "team": "Gen.G",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -15422,6 +15707,7 @@
   {
     "player": "Raxcal",
     "team": "Gen.G",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -15470,6 +15756,7 @@
   {
     "player": "STYRON",
     "team": "Team Secret",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "sg",
@@ -15518,6 +15805,7 @@
   {
     "player": "natz",
     "team": "Team Secret",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "id",
@@ -15566,6 +15854,7 @@
   {
     "player": "seph1roth",
     "team": "FULL SENSE",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "th",
@@ -15614,6 +15903,7 @@
   {
     "player": "Flicker",
     "team": "KIWOOM DRX",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -15662,6 +15952,7 @@
   {
     "player": "DH",
     "team": "T1",
+    "region": "Pacific",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "kr",
@@ -15710,6 +16001,7 @@
   {
     "player": "Deryeon",
     "team": "Wolves Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "sg",
@@ -15778,6 +16070,7 @@
   {
     "player": "aluba",
     "team": "Wolves Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -15846,6 +16139,7 @@
   {
     "player": "Verse",
     "team": "Dragon Ranger Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -15914,6 +16208,7 @@
   {
     "player": "FT",
     "team": "Bilibili Gaming",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -15982,6 +16277,7 @@
   {
     "player": "FKEY",
     "team": "Trace Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -16050,6 +16346,7 @@
   {
     "player": "crownfisher",
     "team": "JDG Esports",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -16118,6 +16415,7 @@
   {
     "player": "ra1ny",
     "team": "Titan Esports Club",
+    "region": "China",
     "isChina": true,
     "hasIntlStats": false,
     "countryCode": "cn",
@@ -16167,6 +16465,7 @@
   {
     "player": "basic",
     "team": "FURIA",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -16215,6 +16514,7 @@
   {
     "player": "Shyy",
     "team": "FURIA",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "cl",
@@ -16263,6 +16563,7 @@
   {
     "player": "Marved",
     "team": "Sentinels",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ca",
@@ -16311,6 +16612,7 @@
   {
     "player": "FireBallOps",
     "team": "Cloud9",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -16359,6 +16661,7 @@
   {
     "player": "nightz",
     "team": "ENVY",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -16407,6 +16710,7 @@
   {
     "player": "heat",
     "team": "KR\u00dc Esports",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -16455,6 +16759,7 @@
   {
     "player": "tkzin",
     "team": "LOUD",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "br",
@@ -16503,6 +16808,7 @@
   {
     "player": "DaviH",
     "team": "LOUD",
+    "region": "Americas",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pt",
@@ -16551,6 +16857,7 @@
   {
     "player": "ExiT",
     "team": "Natus Vincere",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "sa",
@@ -16599,6 +16906,7 @@
   {
     "player": "trexx",
     "team": "Team Liquid",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "ru",
@@ -16647,6 +16955,7 @@
   {
     "player": "LohaN",
     "team": "Team Liquid",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "pt",
@@ -16695,6 +17004,7 @@
   {
     "player": "neT",
     "team": "GIANTX",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "us",
@@ -16743,6 +17053,7 @@
   {
     "player": "Jesse",
     "team": "GIANTX",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "cz",
@@ -16791,6 +17102,7 @@
   {
     "player": "waddle",
     "team": "PCIFIC Esports",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "gb",
@@ -16839,6 +17151,7 @@
   {
     "player": "Proxh",
     "team": "Gentle Mates",
+    "region": "EMEA",
     "isChina": false,
     "hasIntlStats": false,
     "countryCode": "tr",

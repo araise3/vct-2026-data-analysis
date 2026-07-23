@@ -2,6 +2,7 @@
   "buckets": [
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Final",
@@ -100,6 +101,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 1",
@@ -184,6 +186,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 2",
@@ -251,6 +254,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 3",
@@ -322,6 +326,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 4",
@@ -395,6 +400,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 5",
@@ -449,6 +455,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Final",
@@ -522,6 +529,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 1",
@@ -630,6 +638,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 2",
@@ -718,6 +727,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 3",
@@ -792,6 +802,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 4",
@@ -846,6 +857,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Final",
@@ -937,6 +949,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 1",
@@ -1074,6 +1087,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 2",
@@ -1198,6 +1212,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 3",
@@ -1291,6 +1306,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 1",
@@ -1409,6 +1425,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 2",
@@ -1540,6 +1557,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 3",
@@ -1688,6 +1706,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 4",
@@ -1832,6 +1851,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 5",
@@ -1978,6 +1998,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Grand Final",
@@ -2079,6 +2100,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Final",
@@ -2183,6 +2205,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 1",
@@ -2265,6 +2288,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 2",
@@ -2336,6 +2360,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 3",
@@ -2390,6 +2415,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Final",
@@ -2458,6 +2484,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Round 1",
@@ -2542,6 +2569,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Semifinals",
@@ -2647,6 +2675,7 @@
     },
     {
       "region": "Americas",
+      "event": "Vct 2026 Americas Stage 2",
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 1",
@@ -2797,6 +2826,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Final",
@@ -2881,6 +2911,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 1",
@@ -2966,6 +2997,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 2",
@@ -3053,6 +3085,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 3",
@@ -3128,6 +3161,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 4",
@@ -3197,6 +3231,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 5",
@@ -3268,6 +3303,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Final",
@@ -3366,6 +3402,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 1",
@@ -3485,6 +3522,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 2",
@@ -3568,6 +3606,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 3",
@@ -3684,6 +3723,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 4",
@@ -3740,6 +3780,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Final",
@@ -3834,6 +3875,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 1",
@@ -3951,6 +3993,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 2",
@@ -4061,6 +4104,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 3",
@@ -4164,6 +4208,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Seeding",
@@ -4284,6 +4329,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 1",
@@ -4437,6 +4483,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 2",
@@ -4587,6 +4634,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 3",
@@ -4731,6 +4779,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Grand Final",
@@ -4835,6 +4884,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Final",
@@ -4921,6 +4971,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 1",
@@ -5017,6 +5068,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 2",
@@ -5101,6 +5153,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 3",
@@ -5168,6 +5221,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Final",
@@ -5217,6 +5271,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Quarterfinals",
@@ -5343,6 +5398,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Semifinals",
@@ -5418,6 +5474,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 2",
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 1",
@@ -5561,6 +5618,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 2",
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 2",
@@ -5723,6 +5781,7 @@
     },
     {
       "region": "China",
+      "event": "Vct 2026 China Stage 2",
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 3",
@@ -5850,6 +5909,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Final",
@@ -5926,6 +5986,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 1",
@@ -6020,6 +6081,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 2",
@@ -6137,6 +6199,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 3",
@@ -6229,6 +6292,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 4",
@@ -6283,6 +6347,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 5",
@@ -6355,6 +6420,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Final",
@@ -6454,6 +6520,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 1",
@@ -6589,6 +6656,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 2",
@@ -6674,6 +6742,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 3",
@@ -6763,6 +6832,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 4",
@@ -6819,6 +6889,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Final",
@@ -6910,6 +6981,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 1",
@@ -7036,6 +7108,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 2",
@@ -7163,6 +7236,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 3",
@@ -7239,6 +7313,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 1",
@@ -7378,6 +7453,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 2",
@@ -7516,6 +7592,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 3",
@@ -7658,6 +7735,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 4",
@@ -7791,6 +7869,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 5",
@@ -7902,6 +7981,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Grand Final",
@@ -8000,6 +8080,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Final",
@@ -8080,6 +8161,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 1",
@@ -8167,6 +8249,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 2",
@@ -8239,6 +8322,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 3",
@@ -8303,6 +8387,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Final",
@@ -8370,6 +8455,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Round 1",
@@ -8459,6 +8545,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Semifinals",
@@ -8550,6 +8637,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 2",
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 1",
@@ -8690,6 +8778,7 @@
     },
     {
       "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 2",
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 2",
@@ -8781,38 +8870,33 @@
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Playoffs",
       "week": "Playoffs: Grand Final",
-      "playerRows": 80,
+      "playerRows": 50,
       "agentCounts": {
-        "Omen": 14,
-        "Viper": 7,
-        "Neon": 7,
-        "Yoru": 6,
-        "Sova": 6,
-        "Fade": 5,
-        "Vyse": 5,
-        "Raze": 5,
+        "Omen": 8,
+        "Neon": 5,
         "Jett": 5,
-        "Waylay": 4,
+        "Raze": 4,
         "Skye": 4,
+        "Sova": 4,
+        "Viper": 3,
+        "Vyse": 3,
         "Brimstone": 2,
         "Breach": 2,
         "Phoenix": 2,
-        "Cypher": 1,
         "Killjoy": 1,
+        "Waylay": 1,
         "Tejo": 1,
+        "Fade": 1,
         "Harbor": 1,
         "Sage": 1,
+        "Yoru": 1,
         "Chamber": 1
       },
       "mapStats": {
-        "Abyss": {
-          "rounds": 16,
-          "atkWinRounds": 5,
-          "defWinRounds": 11
-        },
         "Ascent": {
           "rounds": 23,
           "atkWinRounds": 8,
@@ -8822,11 +8906,6 @@
           "rounds": 24,
           "atkWinRounds": 17,
           "defWinRounds": 7
-        },
-        "Corrode": {
-          "rounds": 24,
-          "atkWinRounds": 7,
-          "defWinRounds": 17
         },
         "Fracture": {
           "rounds": 15,
@@ -8839,20 +8918,12 @@
           "defWinRounds": 3
         },
         "Split": {
-          "rounds": 36,
-          "atkWinRounds": 13,
-          "defWinRounds": 23
+          "rounds": 19,
+          "atkWinRounds": 6,
+          "defWinRounds": 13
         }
       },
       "mapAgentCounts": {
-        "Abyss": {
-          "Sova": 2,
-          "Yoru": 2,
-          "Waylay": 2,
-          "Omen": 2,
-          "Cypher": 1,
-          "Vyse": 1
-        },
         "Ascent": {
           "Sova": 2,
           "Omen": 2,
@@ -8870,15 +8941,6 @@
           "Neon": 2,
           "Viper": 1,
           "Harbor": 1
-        },
-        "Corrode": {
-          "Fade": 2,
-          "Viper": 2,
-          "Omen": 2,
-          "Neon": 1,
-          "Yoru": 1,
-          "Waylay": 1,
-          "Vyse": 1
         },
         "Fracture": {
           "Brimstone": 2,
@@ -8898,87 +8960,57 @@
           "Omen": 2
         },
         "Split": {
-          "Viper": 4,
-          "Omen": 4,
-          "Fade": 3,
-          "Yoru": 2,
-          "Neon": 2,
-          "Raze": 2,
+          "Omen": 2,
+          "Viper": 2,
           "Jett": 1,
           "Skye": 1,
-          "Phoenix": 1
+          "Raze": 1,
+          "Phoenix": 1,
+          "Fade": 1,
+          "Neon": 1
         }
       }
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Final",
-      "playerRows": 70,
+      "playerRows": 30,
       "agentCounts": {
-        "Omen": 9,
-        "Viper": 8,
-        "Sova": 7,
-        "Neon": 6,
-        "Astra": 5,
-        "Yoru": 4,
-        "Vyse": 4,
-        "Skye": 4,
-        "Fade": 4,
-        "Jett": 4,
+        "Neon": 4,
         "Phoenix": 4,
-        "Waylay": 3,
-        "Raze": 3,
+        "Omen": 3,
+        "Astra": 3,
+        "Raze": 2,
+        "Skye": 2,
         "Chamber": 2,
-        "Killjoy": 1,
-        "Tejo": 1,
-        "Cypher": 1
+        "Sova": 2,
+        "Fade": 2,
+        "Jett": 2,
+        "Viper": 2,
+        "Cypher": 1,
+        "Vyse": 1
       },
       "mapStats": {
-        "Breeze": {
-          "rounds": 22,
-          "atkWinRounds": 15,
-          "defWinRounds": 7
-        },
-        "Corrode": {
-          "rounds": 19,
-          "atkWinRounds": 11,
-          "defWinRounds": 8
-        },
         "Haven": {
           "rounds": 18,
           "atkWinRounds": 5,
           "defWinRounds": 13
         },
         "Pearl": {
-          "rounds": 43,
-          "atkWinRounds": 23,
-          "defWinRounds": 20
+          "rounds": 22,
+          "atkWinRounds": 15,
+          "defWinRounds": 7
         },
         "Split": {
-          "rounds": 44,
-          "atkWinRounds": 22,
-          "defWinRounds": 22
+          "rounds": 24,
+          "atkWinRounds": 13,
+          "defWinRounds": 11
         }
       },
       "mapAgentCounts": {
-        "Breeze": {
-          "Viper": 2,
-          "Yoru": 2,
-          "Omen": 2,
-          "Sova": 2,
-          "Jett": 2
-        },
-        "Corrode": {
-          "Viper": 2,
-          "Omen": 2,
-          "Waylay": 2,
-          "Sova": 1,
-          "Skye": 1,
-          "Vyse": 1,
-          "Fade": 1
-        },
         "Haven": {
           "Neon": 2,
           "Cypher": 1,
@@ -8991,112 +9023,69 @@
           "Sova": 1
         },
         "Pearl": {
-          "Astra": 4,
-          "Sova": 3,
-          "Vyse": 2,
-          "Neon": 2,
           "Phoenix": 2,
-          "Killjoy": 1,
-          "Waylay": 1,
-          "Tejo": 1,
-          "Yoru": 1,
+          "Astra": 2,
           "Fade": 1,
           "Jett": 1,
-          "Chamber": 1
+          "Vyse": 1,
+          "Chamber": 1,
+          "Neon": 1,
+          "Sova": 1
         },
         "Split": {
-          "Viper": 4,
-          "Omen": 4,
-          "Neon": 2,
-          "Skye": 2,
-          "Fade": 2,
-          "Raze": 2,
-          "Vyse": 1,
-          "Yoru": 1,
+          "Viper": 2,
+          "Omen": 2,
+          "Skye": 1,
           "Jett": 1,
+          "Raze": 1,
+          "Neon": 1,
+          "Fade": 1,
           "Phoenix": 1
         }
       }
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 1",
-      "playerRows": 110,
+      "playerRows": 50,
       "agentCounts": {
-        "Omen": 15,
-        "Sova": 10,
-        "Neon": 10,
-        "Fade": 10,
-        "Viper": 9,
-        "Yoru": 9,
-        "Raze": 8,
-        "Cypher": 6,
-        "Astra": 6,
-        "Waylay": 6,
+        "Omen": 9,
+        "Neon": 6,
         "Vyse": 6,
-        "Jett": 4,
+        "Fade": 5,
+        "Raze": 5,
+        "Sova": 4,
         "Phoenix": 3,
-        "Killjoy": 2,
-        "Skye": 2,
-        "Tejo": 1,
-        "Brimstone": 1,
+        "Jett": 3,
+        "Viper": 2,
+        "Cypher": 2,
+        "Astra": 1,
+        "Skye": 1,
         "Chamber": 1,
+        "Waylay": 1,
         "Sage": 1
       },
       "mapStats": {
-        "Abyss": {
-          "rounds": 24,
-          "atkWinRounds": 7,
-          "defWinRounds": 17
-        },
         "Ascent": {
           "rounds": 38,
           "atkWinRounds": 21,
           "defWinRounds": 17
-        },
-        "Bind": {
-          "rounds": 21,
-          "atkWinRounds": 17,
-          "defWinRounds": 4
-        },
-        "Breeze": {
-          "rounds": 23,
-          "atkWinRounds": 11,
-          "defWinRounds": 12
-        },
-        "Haven": {
-          "rounds": 20,
-          "atkWinRounds": 7,
-          "defWinRounds": 13
         },
         "Lotus": {
           "rounds": 52,
           "atkWinRounds": 25,
           "defWinRounds": 23
         },
-        "Pearl": {
-          "rounds": 18,
-          "atkWinRounds": 9,
-          "defWinRounds": 9
-        },
         "Split": {
-          "rounds": 33,
-          "atkWinRounds": 16,
-          "defWinRounds": 17
+          "rounds": 16,
+          "atkWinRounds": 7,
+          "defWinRounds": 9
         }
       },
       "mapAgentCounts": {
-        "Abyss": {
-          "Sova": 2,
-          "Waylay": 2,
-          "Omen": 2,
-          "Astra": 1,
-          "Tejo": 1,
-          "Cypher": 1,
-          "Yoru": 1
-        },
         "Ascent": {
           "Sova": 4,
           "Omen": 4,
@@ -9109,33 +9098,6 @@
           "Waylay": 1,
           "Sage": 1
         },
-        "Bind": {
-          "Yoru": 2,
-          "Viper": 2,
-          "Fade": 2,
-          "Waylay": 1,
-          "Astra": 1,
-          "Raze": 1,
-          "Brimstone": 1
-        },
-        "Breeze": {
-          "Sova": 2,
-          "Yoru": 2,
-          "Viper": 2,
-          "Neon": 1,
-          "Omen": 1,
-          "Jett": 1,
-          "Cypher": 1
-        },
-        "Haven": {
-          "Sova": 2,
-          "Omen": 2,
-          "Neon": 2,
-          "Viper": 1,
-          "Killjoy": 1,
-          "Yoru": 1,
-          "Cypher": 1
-        },
         "Lotus": {
           "Raze": 4,
           "Omen": 4,
@@ -9146,55 +9108,41 @@
           "Skye": 1,
           "Viper": 1
         },
-        "Pearl": {
-          "Yoru": 2,
-          "Fade": 2,
-          "Astra": 2,
-          "Neon": 1,
-          "Cypher": 1,
-          "Killjoy": 1,
-          "Waylay": 1
-        },
         "Split": {
-          "Fade": 3,
-          "Viper": 3,
-          "Raze": 3,
-          "Astra": 2,
-          "Omen": 2,
           "Neon": 2,
-          "Yoru": 1,
-          "Skye": 1,
-          "Waylay": 1,
+          "Fade": 2,
           "Phoenix": 1,
-          "Vyse": 1
+          "Omen": 1,
+          "Viper": 1,
+          "Vyse": 1,
+          "Astra": 1,
+          "Raze": 1
         }
       }
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 2",
-      "playerRows": 90,
+      "playerRows": 40,
       "agentCounts": {
-        "Omen": 12,
-        "Fade": 8,
-        "Sova": 8,
-        "Yoru": 7,
-        "Neon": 7,
-        "Viper": 7,
-        "Vyse": 6,
-        "Astra": 5,
-        "Cypher": 5,
-        "Jett": 5,
-        "Raze": 5,
-        "Phoenix": 4,
-        "Chamber": 3,
-        "Waylay": 2,
-        "Skye": 2,
+        "Omen": 7,
+        "Jett": 4,
+        "Sova": 4,
+        "Vyse": 4,
+        "Phoenix": 3,
+        "Cypher": 3,
+        "Fade": 3,
+        "Raze": 3,
+        "Neon": 2,
         "Sage": 2,
-        "Killjoy": 1,
-        "Deadlock": 1
+        "Astra": 1,
+        "Chamber": 1,
+        "Deadlock": 1,
+        "Skye": 1,
+        "Viper": 1
       },
       "mapStats": {
         "Ascent": {
@@ -9202,35 +9150,15 @@
           "atkWinRounds": 5,
           "defWinRounds": 10
         },
-        "Breeze": {
-          "rounds": 21,
-          "atkWinRounds": 8,
-          "defWinRounds": 13
-        },
-        "Corrode": {
-          "rounds": 23,
-          "atkWinRounds": 16,
-          "defWinRounds": 7
-        },
         "Haven": {
-          "rounds": 38,
-          "atkWinRounds": 24,
-          "defWinRounds": 14
+          "rounds": 20,
+          "atkWinRounds": 9,
+          "defWinRounds": 11
         },
         "Lotus": {
           "rounds": 36,
           "atkWinRounds": 22,
           "defWinRounds": 14
-        },
-        "Pearl": {
-          "rounds": 20,
-          "atkWinRounds": 7,
-          "defWinRounds": 13
-        },
-        "Split": {
-          "rounds": 17,
-          "atkWinRounds": 10,
-          "defWinRounds": 7
         }
       },
       "mapAgentCounts": {
@@ -9243,35 +9171,15 @@
           "Cypher": 1,
           "Sage": 1
         },
-        "Breeze": {
-          "Sova": 2,
-          "Yoru": 2,
-          "Viper": 2,
-          "Astra": 1,
-          "Neon": 1,
-          "Jett": 1,
-          "Cypher": 1
-        },
-        "Corrode": {
-          "Fade": 2,
-          "Omen": 2,
-          "Viper": 2,
-          "Waylay": 1,
-          "Vyse": 1,
-          "Chamber": 1,
-          "Neon": 1
-        },
         "Haven": {
-          "Phoenix": 3,
-          "Sova": 3,
-          "Astra": 2,
-          "Yoru": 2,
-          "Chamber": 2,
-          "Omen": 2,
-          "Cypher": 2,
-          "Neon": 2,
-          "Fade": 1,
-          "Jett": 1
+          "Sova": 2,
+          "Phoenix": 2,
+          "Jett": 1,
+          "Cypher": 1,
+          "Omen": 1,
+          "Neon": 1,
+          "Astra": 1,
+          "Chamber": 1
         },
         "Lotus": {
           "Omen": 4,
@@ -9285,65 +9193,28 @@
           "Skye": 1,
           "Viper": 1,
           "Neon": 1
-        },
-        "Pearl": {
-          "Yoru": 2,
-          "Neon": 2,
-          "Astra": 2,
-          "Vyse": 1,
-          "Sova": 1,
-          "Fade": 1,
-          "Killjoy": 1
-        },
-        "Split": {
-          "Raze": 2,
-          "Viper": 2,
-          "Omen": 2,
-          "Yoru": 1,
-          "Fade": 1,
-          "Skye": 1,
-          "Waylay": 1
         }
       }
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 3",
-      "playerRows": 50,
+      "playerRows": 20,
       "agentCounts": {
-        "Omen": 7,
-        "Fade": 6,
-        "Viper": 6,
-        "Yoru": 5,
-        "Vyse": 4,
-        "Phoenix": 3,
-        "Astra": 3,
-        "Jett": 3,
-        "Neon": 3,
+        "Omen": 4,
         "Raze": 3,
-        "Chamber": 2,
-        "Sova": 2,
+        "Viper": 3,
+        "Fade": 2,
+        "Vyse": 2,
+        "Jett": 2,
         "Skye": 2,
-        "Waylay": 1
+        "Phoenix": 1,
+        "Neon": 1
       },
       "mapStats": {
-        "Breeze": {
-          "rounds": 22,
-          "atkWinRounds": 9,
-          "defWinRounds": 13
-        },
-        "Corrode": {
-          "rounds": 17,
-          "atkWinRounds": 5,
-          "defWinRounds": 12
-        },
-        "Haven": {
-          "rounds": 24,
-          "atkWinRounds": 11,
-          "defWinRounds": 13
-        },
         "Lotus": {
           "rounds": 17,
           "atkWinRounds": 8,
@@ -9356,33 +9227,6 @@
         }
       },
       "mapAgentCounts": {
-        "Breeze": {
-          "Yoru": 2,
-          "Sova": 2,
-          "Viper": 2,
-          "Jett": 1,
-          "Omen": 1,
-          "Neon": 1,
-          "Astra": 1
-        },
-        "Corrode": {
-          "Vyse": 2,
-          "Fade": 2,
-          "Waylay": 1,
-          "Omen": 1,
-          "Viper": 1,
-          "Neon": 1,
-          "Yoru": 1,
-          "Astra": 1
-        },
-        "Haven": {
-          "Chamber": 2,
-          "Phoenix": 2,
-          "Yoru": 2,
-          "Fade": 2,
-          "Omen": 1,
-          "Astra": 1
-        },
         "Lotus": {
           "Raze": 2,
           "Vyse": 2,
@@ -9406,41 +9250,29 @@
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Final",
-      "playerRows": 50,
+      "playerRows": 30,
       "agentCounts": {
-        "Viper": 7,
-        "Omen": 5,
-        "Brimstone": 4,
-        "Raze": 4,
-        "Sova": 4,
+        "Viper": 4,
         "Jett": 4,
-        "Yoru": 3,
-        "Neon": 3,
-        "Fade": 3,
+        "Omen": 3,
+        "Raze": 3,
         "Skye": 3,
-        "Cypher": 2,
-        "Waylay": 2,
-        "Tejo": 1,
+        "Sova": 2,
+        "Neon": 2,
+        "Brimstone": 2,
         "Kayo": 1,
         "Harbor": 1,
         "Phoenix": 1,
+        "Cypher": 1,
+        "Fade": 1,
         "Breach": 1,
         "Killjoy": 1
       },
       "mapStats": {
-        "Abyss": {
-          "rounds": 24,
-          "atkWinRounds": 17,
-          "defWinRounds": 7
-        },
-        "Bind": {
-          "rounds": 22,
-          "atkWinRounds": 11,
-          "defWinRounds": 11
-        },
         "Breeze": {
           "rounds": 28,
           "atkWinRounds": 14,
@@ -9458,23 +9290,6 @@
         }
       },
       "mapAgentCounts": {
-        "Abyss": {
-          "Sova": 2,
-          "Omen": 2,
-          "Waylay": 2,
-          "Yoru": 1,
-          "Cypher": 1,
-          "Viper": 1,
-          "Tejo": 1
-        },
-        "Bind": {
-          "Yoru": 2,
-          "Brimstone": 2,
-          "Fade": 2,
-          "Viper": 2,
-          "Neon": 1,
-          "Raze": 1
-        },
         "Breeze": {
           "Viper": 2,
           "Jett": 2,
@@ -9506,54 +9321,43 @@
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Quarterfinals",
-      "playerRows": 200,
+      "playerRows": 100,
       "agentCounts": {
-        "Omen": 26,
-        "Sova": 19,
-        "Viper": 17,
-        "Neon": 16,
-        "Fade": 15,
-        "Yoru": 13,
-        "Waylay": 11,
-        "Raze": 11,
-        "Astra": 10,
-        "Vyse": 10,
-        "Jett": 9,
-        "Cypher": 9,
-        "Phoenix": 7,
-        "Skye": 6,
-        "Chamber": 4,
-        "Killjoy": 3,
-        "Kayo": 3,
-        "Harbor": 3,
+        "Omen": 13,
+        "Vyse": 9,
+        "Raze": 9,
+        "Fade": 9,
+        "Jett": 8,
+        "Sova": 7,
+        "Viper": 6,
+        "Cypher": 6,
+        "Phoenix": 5,
+        "Neon": 5,
+        "Skye": 4,
         "Sage": 3,
-        "Tejo": 2,
+        "Chamber": 3,
+        "Waylay": 3,
+        "Astra": 3,
+        "Kayo": 2,
         "Brimstone": 2,
+        "Yoru": 1,
+        "Harbor": 1,
         "Deadlock": 1
       },
       "mapStats": {
-        "Abyss": {
-          "rounds": 36,
-          "atkWinRounds": 19,
-          "defWinRounds": 17
-        },
         "Ascent": {
           "rounds": 31,
           "atkWinRounds": 12,
           "defWinRounds": 19
         },
         "Breeze": {
-          "rounds": 36,
-          "atkWinRounds": 17,
-          "defWinRounds": 19
-        },
-        "Corrode": {
-          "rounds": 23,
-          "atkWinRounds": 15,
-          "defWinRounds": 8
+          "rounds": 19,
+          "atkWinRounds": 10,
+          "defWinRounds": 9
         },
         "Fracture": {
           "rounds": 18,
@@ -9561,9 +9365,9 @@
           "defWinRounds": 11
         },
         "Haven": {
-          "rounds": 62,
-          "atkWinRounds": 36,
-          "defWinRounds": 26
+          "rounds": 17,
+          "atkWinRounds": 12,
+          "defWinRounds": 5
         },
         "Lotus": {
           "rounds": 63,
@@ -9571,29 +9375,17 @@
           "defWinRounds": 26
         },
         "Pearl": {
-          "rounds": 45,
-          "atkWinRounds": 20,
-          "defWinRounds": 23
+          "rounds": 26,
+          "atkWinRounds": 8,
+          "defWinRounds": 16
         },
         "Split": {
-          "rounds": 93,
-          "atkWinRounds": 46,
-          "defWinRounds": 39
+          "rounds": 22,
+          "atkWinRounds": 11,
+          "defWinRounds": 11
         }
       },
       "mapAgentCounts": {
-        "Abyss": {
-          "Waylay": 4,
-          "Sova": 4,
-          "Omen": 2,
-          "Yoru": 2,
-          "Astra": 2,
-          "Harbor": 2,
-          "Cypher": 1,
-          "Tejo": 1,
-          "Viper": 1,
-          "Neon": 1
-        },
         "Ascent": {
           "Sova": 4,
           "Omen": 4,
@@ -9607,26 +9399,13 @@
           "Jett": 1
         },
         "Breeze": {
-          "Sova": 4,
-          "Viper": 4,
-          "Yoru": 2,
-          "Neon": 2,
-          "Omen": 2,
-          "Jett": 2,
+          "Sova": 2,
+          "Viper": 2,
           "Sage": 1,
           "Chamber": 1,
+          "Neon": 1,
+          "Jett": 1,
           "Harbor": 1,
-          "Kayo": 1
-        },
-        "Corrode": {
-          "Neon": 2,
-          "Yoru": 1,
-          "Fade": 1,
-          "Viper": 1,
-          "Omen": 1,
-          "Astra": 1,
-          "Phoenix": 1,
-          "Sova": 1,
           "Kayo": 1
         },
         "Fracture": {
@@ -9639,21 +9418,13 @@
           "Raze": 1
         },
         "Haven": {
-          "Omen": 5,
-          "Sova": 4,
-          "Neon": 3,
-          "Yoru": 3,
-          "Cypher": 3,
-          "Killjoy": 2,
           "Waylay": 2,
-          "Viper": 1,
-          "Chamber": 1,
-          "Phoenix": 1,
-          "Fade": 1,
-          "Astra": 1,
+          "Omen": 2,
+          "Cypher": 2,
           "Raze": 1,
           "Skye": 1,
-          "Jett": 1
+          "Jett": 1,
+          "Sova": 1
         },
         "Lotus": {
           "Omen": 6,
@@ -9669,87 +9440,59 @@
           "Deadlock": 1
         },
         "Pearl": {
-          "Astra": 4,
-          "Sova": 2,
+          "Astra": 2,
           "Jett": 2,
           "Fade": 2,
-          "Yoru": 1,
-          "Cypher": 1,
-          "Neon": 1,
-          "Killjoy": 1,
-          "Tejo": 1,
-          "Waylay": 1,
           "Phoenix": 1,
           "Vyse": 1,
           "Kayo": 1,
           "Chamber": 1
         },
         "Split": {
-          "Viper": 8,
-          "Omen": 6,
-          "Fade": 5,
-          "Waylay": 4,
-          "Raze": 4,
-          "Yoru": 3,
-          "Neon": 3,
-          "Skye": 3,
-          "Vyse": 2,
-          "Astra": 2
+          "Raze": 2,
+          "Viper": 2,
+          "Vyse": 1,
+          "Fade": 1,
+          "Astra": 1,
+          "Skye": 1,
+          "Omen": 1,
+          "Waylay": 1
         }
       }
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Semifinals",
-      "playerRows": 110,
+      "playerRows": 60,
       "agentCounts": {
-        "Viper": 13,
-        "Omen": 11,
-        "Raze": 9,
-        "Skye": 8,
-        "Sova": 8,
+        "Omen": 8,
         "Jett": 8,
-        "Fade": 6,
-        "Astra": 6,
-        "Waylay": 6,
-        "Neon": 5,
-        "Yoru": 5,
-        "Harbor": 4,
-        "Brimstone": 4,
-        "Phoenix": 3,
-        "Vyse": 2,
-        "Killjoy": 2,
+        "Viper": 8,
+        "Raze": 7,
+        "Skye": 6,
+        "Sova": 4,
         "Cypher": 2,
+        "Fade": 2,
+        "Phoenix": 2,
         "Kayo": 2,
-        "Iso": 1,
-        "Tejo": 1,
-        "Gekko": 1,
+        "Harbor": 2,
+        "Brimstone": 2,
         "Sage": 1,
         "Deadlock": 1,
-        "Breach": 1
+        "Vyse": 1,
+        "Waylay": 1,
+        "Neon": 1,
+        "Breach": 1,
+        "Killjoy": 1
       },
       "mapStats": {
-        "Abyss": {
-          "rounds": 20,
-          "atkWinRounds": 9,
-          "defWinRounds": 11
-        },
-        "Bind": {
-          "rounds": 24,
-          "atkWinRounds": 15,
-          "defWinRounds": 9
-        },
         "Breeze": {
           "rounds": 39,
           "atkWinRounds": 15,
           "defWinRounds": 24
-        },
-        "Corrode": {
-          "rounds": 20,
-          "atkWinRounds": 15,
-          "defWinRounds": 5
         },
         "Fracture": {
           "rounds": 19,
@@ -9761,37 +9504,13 @@
           "atkWinRounds": 14,
           "defWinRounds": 9
         },
-        "Pearl": {
-          "rounds": 26,
-          "atkWinRounds": 14,
-          "defWinRounds": 10
-        },
         "Split": {
-          "rounds": 61,
-          "atkWinRounds": 27,
-          "defWinRounds": 32
+          "rounds": 35,
+          "atkWinRounds": 19,
+          "defWinRounds": 16
         }
       },
       "mapAgentCounts": {
-        "Abyss": {
-          "Waylay": 2,
-          "Sova": 2,
-          "Astra": 2,
-          "Omen": 1,
-          "Yoru": 1,
-          "Harbor": 1,
-          "Neon": 1
-        },
-        "Bind": {
-          "Brimstone": 2,
-          "Raze": 2,
-          "Skye": 1,
-          "Gekko": 1,
-          "Harbor": 1,
-          "Viper": 1,
-          "Yoru": 1,
-          "Fade": 1
-        },
         "Breeze": {
           "Viper": 4,
           "Jett": 4,
@@ -9801,17 +9520,6 @@
           "Harbor": 2,
           "Phoenix": 1,
           "Neon": 1
-        },
-        "Corrode": {
-          "Viper": 2,
-          "Neon": 1,
-          "Yoru": 1,
-          "Omen": 1,
-          "Fade": 1,
-          "Skye": 1,
-          "Iso": 1,
-          "Astra": 1,
-          "Waylay": 1
         },
         "Fracture": {
           "Brimstone": 2,
@@ -9834,76 +9542,51 @@
           "Jett": 1,
           "Skye": 1
         },
-        "Pearl": {
-          "Astra": 2,
-          "Sova": 2,
-          "Yoru": 1,
-          "Vyse": 1,
-          "Phoenix": 1,
-          "Waylay": 1,
-          "Killjoy": 1,
-          "Tejo": 1
-        },
         "Split": {
-          "Viper": 6,
-          "Omen": 5,
+          "Viper": 4,
+          "Omen": 4,
           "Raze": 4,
           "Skye": 4,
           "Jett": 3,
-          "Fade": 2,
-          "Neon": 2,
-          "Waylay": 2,
-          "Yoru": 1,
-          "Astra": 1
+          "Waylay": 1
         }
       }
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Swiss Stage",
       "week": "Swiss Stage: Round 1",
-      "playerRows": 170,
+      "playerRows": 90,
       "agentCounts": {
-        "Omen": 18,
-        "Viper": 18,
-        "Fade": 16,
-        "Neon": 15,
-        "Sova": 14,
-        "Astra": 13,
-        "Waylay": 11,
-        "Yoru": 8,
-        "Cypher": 7,
+        "Fade": 11,
+        "Omen": 8,
         "Phoenix": 7,
-        "Chamber": 6,
-        "Raze": 6,
-        "Jett": 6,
-        "Vyse": 5,
-        "Killjoy": 4,
-        "Tejo": 3,
-        "Skye": 3,
+        "Astra": 6,
+        "Viper": 6,
+        "Neon": 6,
+        "Jett": 5,
+        "Sova": 5,
+        "Waylay": 5,
+        "Cypher": 5,
+        "Chamber": 5,
+        "Vyse": 4,
+        "Raze": 4,
         "Brimstone": 3,
+        "Tejo": 2,
         "Sage": 2,
-        "Iso": 1,
         "Deadlock": 1,
+        "Skye": 1,
         "Harbor": 1,
         "Kayo": 1,
+        "Killjoy": 1,
         "Breach": 1
       },
       "mapStats": {
-        "Abyss": {
-          "rounds": 23,
-          "atkWinRounds": 16,
-          "defWinRounds": 7
-        },
         "Breeze": {
-          "rounds": 37,
-          "atkWinRounds": 18,
-          "defWinRounds": 19
-        },
-        "Corrode": {
-          "rounds": 18,
-          "atkWinRounds": 11,
+          "rounds": 16,
+          "atkWinRounds": 9,
           "defWinRounds": 7
         },
         "Fracture": {
@@ -9912,9 +9595,9 @@
           "defWinRounds": 20
         },
         "Haven": {
-          "rounds": 59,
-          "atkWinRounds": 30,
-          "defWinRounds": 29
+          "rounds": 20,
+          "atkWinRounds": 5,
+          "defWinRounds": 15
         },
         "Lotus": {
           "rounds": 42,
@@ -9922,47 +9605,25 @@
           "defWinRounds": 24
         },
         "Pearl": {
-          "rounds": 56,
-          "atkWinRounds": 25,
-          "defWinRounds": 31
+          "rounds": 36,
+          "atkWinRounds": 18,
+          "defWinRounds": 18
         },
         "Split": {
-          "rounds": 72,
-          "atkWinRounds": 36,
-          "defWinRounds": 32
+          "rounds": 22,
+          "atkWinRounds": 17,
+          "defWinRounds": 5
         }
       },
       "mapAgentCounts": {
-        "Abyss": {
-          "Omen": 2,
-          "Sova": 2,
-          "Waylay": 2,
-          "Astra": 1,
-          "Yoru": 1,
-          "Tejo": 1,
-          "Viper": 1
-        },
         "Breeze": {
-          "Sova": 4,
-          "Viper": 4,
-          "Jett": 3,
-          "Yoru": 2,
-          "Astra": 2,
-          "Neon": 1,
-          "Omen": 1,
+          "Viper": 2,
+          "Jett": 2,
+          "Sova": 2,
           "Harbor": 1,
           "Kayo": 1,
-          "Chamber": 1
-        },
-        "Corrode": {
-          "Viper": 2,
-          "Waylay": 2,
-          "Astra": 1,
-          "Skye": 1,
-          "Iso": 1,
-          "Vyse": 1,
-          "Fade": 1,
-          "Omen": 1
+          "Chamber": 1,
+          "Astra": 1
         },
         "Fracture": {
           "Brimstone": 3,
@@ -9979,19 +9640,15 @@
           "Astra": 1
         },
         "Haven": {
-          "Sova": 5,
-          "Neon": 5,
-          "Omen": 5,
-          "Viper": 3,
-          "Cypher": 2,
-          "Chamber": 2,
-          "Killjoy": 2,
-          "Yoru": 1,
-          "Astra": 1,
+          "Omen": 2,
           "Phoenix": 1,
           "Fade": 1,
+          "Chamber": 1,
+          "Neon": 1,
           "Waylay": 1,
-          "Jett": 1
+          "Sova": 1,
+          "Jett": 1,
+          "Cypher": 1
         },
         "Lotus": {
           "Omen": 4,
@@ -10007,74 +9664,57 @@
           "Waylay": 1
         },
         "Pearl": {
-          "Astra": 6,
-          "Neon": 4,
-          "Fade": 3,
-          "Sova": 3,
+          "Astra": 4,
           "Phoenix": 3,
-          "Yoru": 2,
-          "Killjoy": 2,
           "Vyse": 2,
-          "Cypher": 1,
+          "Fade": 2,
+          "Sova": 2,
+          "Neon": 2,
           "Jett": 1,
           "Waylay": 1,
           "Tejo": 1,
-          "Chamber": 1
+          "Chamber": 1,
+          "Killjoy": 1
         },
         "Split": {
-          "Viper": 6,
-          "Fade": 5,
-          "Omen": 5,
-          "Neon": 3,
-          "Raze": 3,
-          "Waylay": 2,
-          "Yoru": 2,
-          "Astra": 1,
-          "Skye": 1,
+          "Viper": 2,
+          "Omen": 2,
+          "Fade": 2,
           "Phoenix": 1,
+          "Neon": 1,
+          "Raze": 1,
           "Sage": 1
         }
       }
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Swiss Stage",
       "week": "Swiss Stage: Round 2 (0-1)",
-      "playerRows": 100,
+      "playerRows": 60,
       "agentCounts": {
-        "Viper": 10,
-        "Omen": 10,
-        "Neon": 8,
-        "Fade": 8,
-        "Sova": 8,
-        "Waylay": 7,
-        "Astra": 6,
-        "Phoenix": 6,
+        "Omen": 6,
+        "Fade": 6,
+        "Phoenix": 5,
         "Jett": 5,
-        "Chamber": 4,
-        "Brimstone": 4,
-        "Skye": 4,
+        "Viper": 5,
         "Cypher": 4,
+        "Waylay": 4,
         "Sage": 4,
-        "Yoru": 3,
-        "Killjoy": 3,
+        "Skye": 3,
+        "Neon": 3,
+        "Sova": 3,
+        "Astra": 3,
+        "Brimstone": 2,
         "Vyse": 2,
         "Raze": 2,
-        "Harbor": 1,
-        "Tejo": 1
+        "Tejo": 1,
+        "Chamber": 1,
+        "Killjoy": 1
       },
       "mapStats": {
-        "Abyss": {
-          "rounds": 21,
-          "atkWinRounds": 8,
-          "defWinRounds": 13
-        },
-        "Bind": {
-          "rounds": 14,
-          "atkWinRounds": 11,
-          "defWinRounds": 3
-        },
         "Breeze": {
           "rounds": 21,
           "atkWinRounds": 10,
@@ -10086,9 +9726,9 @@
           "defWinRounds": 11
         },
         "Haven": {
-          "rounds": 56,
-          "atkWinRounds": 23,
-          "defWinRounds": 33
+          "rounds": 17,
+          "atkWinRounds": 7,
+          "defWinRounds": 10
         },
         "Pearl": {
           "rounds": 21,
@@ -10102,25 +9742,6 @@
         }
       },
       "mapAgentCounts": {
-        "Abyss": {
-          "Astra": 2,
-          "Waylay": 2,
-          "Sova": 2,
-          "Omen": 1,
-          "Yoru": 1,
-          "Harbor": 1,
-          "Neon": 1
-        },
-        "Bind": {
-          "Brimstone": 2,
-          "Viper": 2,
-          "Chamber": 1,
-          "Neon": 1,
-          "Skye": 1,
-          "Fade": 1,
-          "Waylay": 1,
-          "Yoru": 1
-        },
         "Breeze": {
           "Sova": 2,
           "Sage": 2,
@@ -10140,19 +9761,13 @@
           "Skye": 1
         },
         "Haven": {
-          "Omen": 5,
-          "Sova": 4,
-          "Neon": 4,
-          "Viper": 3,
-          "Chamber": 2,
-          "Killjoy": 2,
-          "Phoenix": 2,
           "Cypher": 2,
-          "Yoru": 1,
-          "Fade": 1,
-          "Astra": 1,
+          "Omen": 2,
           "Skye": 1,
           "Waylay": 1,
+          "Neon": 1,
+          "Sova": 1,
+          "Phoenix": 1,
           "Jett": 1
         },
         "Pearl": {
@@ -10181,32 +9796,29 @@
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Swiss Stage",
       "week": "Swiss Stage: Round 2 (1-0)",
-      "playerRows": 110,
+      "playerRows": 60,
       "agentCounts": {
-        "Fade": 9,
-        "Omen": 9,
-        "Astra": 9,
-        "Sova": 9,
-        "Neon": 8,
-        "Viper": 7,
-        "Raze": 6,
-        "Waylay": 6,
-        "Phoenix": 6,
+        "Sova": 7,
         "Jett": 6,
-        "Yoru": 5,
-        "Vyse": 5,
-        "Chamber": 5,
-        "Cypher": 5,
-        "Skye": 4,
-        "Brimstone": 3,
-        "Killjoy": 2,
-        "Tejo": 2,
+        "Astra": 5,
+        "Phoenix": 5,
+        "Omen": 5,
+        "Chamber": 4,
+        "Fade": 4,
+        "Cypher": 4,
+        "Raze": 4,
+        "Vyse": 4,
+        "Neon": 3,
         "Kayo": 2,
-        "Veto": 1,
-        "Harbor": 1
+        "Waylay": 2,
+        "Brimstone": 2,
+        "Viper": 1,
+        "Skye": 1,
+        "Tejo": 1
       },
       "mapStats": {
         "Ascent": {
@@ -10214,20 +9826,15 @@
           "atkWinRounds": 9,
           "defWinRounds": 11
         },
-        "Bind": {
-          "rounds": 16,
-          "atkWinRounds": 11,
-          "defWinRounds": 5
-        },
         "Fracture": {
           "rounds": 23,
           "atkWinRounds": 14,
           "defWinRounds": 9
         },
         "Haven": {
-          "rounds": 41,
-          "atkWinRounds": 27,
-          "defWinRounds": 14
+          "rounds": 17,
+          "atkWinRounds": 12,
+          "defWinRounds": 5
         },
         "Lotus": {
           "rounds": 18,
@@ -10235,14 +9842,9 @@
           "defWinRounds": 9
         },
         "Pearl": {
-          "rounds": 92,
-          "atkWinRounds": 49,
-          "defWinRounds": 43
-        },
-        "Split": {
-          "rounds": 23,
-          "atkWinRounds": 13,
-          "defWinRounds": 10
+          "rounds": 45,
+          "atkWinRounds": 24,
+          "defWinRounds": 21
         }
       },
       "mapAgentCounts": {
@@ -10256,16 +9858,6 @@
           "Omen": 1,
           "Neon": 1
         },
-        "Bind": {
-          "Viper": 2,
-          "Waylay": 2,
-          "Yoru": 1,
-          "Fade": 1,
-          "Astra": 1,
-          "Brimstone": 1,
-          "Skye": 1,
-          "Neon": 1
-        },
         "Fracture": {
           "Brimstone": 2,
           "Raze": 2,
@@ -10275,17 +9867,11 @@
           "Jett": 1
         },
         "Haven": {
-          "Omen": 4,
-          "Sova": 3,
-          "Phoenix": 2,
+          "Sova": 2,
           "Jett": 2,
           "Cypher": 2,
-          "Chamber": 1,
-          "Fade": 1,
-          "Yoru": 1,
-          "Viper": 1,
-          "Neon": 1,
-          "Killjoy": 1,
+          "Omen": 2,
+          "Phoenix": 1,
           "Waylay": 1
         },
         "Lotus": {
@@ -10298,116 +9884,23 @@
           "Jett": 1
         },
         "Pearl": {
-          "Astra": 7,
-          "Sova": 4,
-          "Neon": 4,
-          "Fade": 3,
-          "Waylay": 3,
+          "Astra": 4,
           "Chamber": 3,
-          "Yoru": 2,
-          "Tejo": 2,
+          "Sova": 3,
           "Kayo": 2,
-          "Raze": 1,
-          "Veto": 1,
-          "Killjoy": 1,
-          "Cypher": 1,
-          "Viper": 1,
-          "Skye": 1,
-          "Harbor": 1,
-          "Jett": 1,
-          "Vyse": 1,
-          "Phoenix": 1
-        },
-        "Split": {
-          "Omen": 2,
-          "Viper": 2,
-          "Fade": 1,
-          "Raze": 1,
-          "Yoru": 1,
-          "Skye": 1,
-          "Vyse": 1,
-          "Neon": 1
-        }
-      }
-    },
-    {
-      "region": "International",
-      "stage": "Masters",
-      "phase": "Swiss Stage",
-      "week": "Swiss Stage: Round 3",
-      "playerRows": 40,
-      "agentCounts": {
-        "Yoru": 7,
-        "Sova": 6,
-        "Viper": 5,
-        "Omen": 4,
-        "Astra": 4,
-        "Neon": 3,
-        "Jett": 2,
-        "Tejo": 1,
-        "Waylay": 1,
-        "Harbor": 1,
-        "Skye": 1,
-        "Fade": 1,
-        "Phoenix": 1,
-        "Chamber": 1,
-        "Cypher": 1,
-        "Iso": 1
-      },
-      "mapStats": {
-        "Abyss": {
-          "rounds": 17,
-          "atkWinRounds": 9,
-          "defWinRounds": 8
-        },
-        "Breeze": {
-          "rounds": 43,
-          "atkWinRounds": 23,
-          "defWinRounds": 20
-        },
-        "Haven": {
-          "rounds": 30,
-          "atkWinRounds": 20,
-          "defWinRounds": 4
-        }
-      },
-      "mapAgentCounts": {
-        "Abyss": {
-          "Omen": 1,
-          "Viper": 1,
-          "Tejo": 1,
-          "Sova": 1,
-          "Waylay": 1,
-          "Yoru": 1,
-          "Astra": 1,
-          "Harbor": 1,
-          "Neon": 1,
-          "Skye": 1
-        },
-        "Breeze": {
-          "Yoru": 4,
-          "Sova": 4,
-          "Viper": 4,
-          "Jett": 2,
-          "Omen": 2,
           "Neon": 2,
-          "Astra": 2
-        },
-        "Haven": {
-          "Yoru": 2,
+          "Jett": 1,
           "Fade": 1,
-          "Phoenix": 1,
-          "Astra": 1,
-          "Chamber": 1,
-          "Cypher": 1,
-          "Omen": 1,
-          "Iso": 1,
-          "Sova": 1
+          "Vyse": 1,
+          "Tejo": 1,
+          "Waylay": 1,
+          "Phoenix": 1
         }
       }
     },
     {
       "region": "International",
+      "event": "Valorant Masters London 2026",
       "stage": "Masters",
       "phase": "Swiss Stage",
       "week": "Swiss Stage: Round 3 (1-1)",
@@ -10498,7 +9991,1098 @@
       }
     },
     {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Grand Final",
+      "playerRows": 30,
+      "agentCounts": {
+        "Omen": 6,
+        "Yoru": 5,
+        "Fade": 4,
+        "Viper": 4,
+        "Waylay": 3,
+        "Neon": 2,
+        "Vyse": 2,
+        "Sova": 2,
+        "Raze": 1,
+        "Cypher": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 16,
+          "atkWinRounds": 5,
+          "defWinRounds": 11
+        },
+        "Corrode": {
+          "rounds": 24,
+          "atkWinRounds": 7,
+          "defWinRounds": 17
+        },
+        "Split": {
+          "rounds": 17,
+          "atkWinRounds": 7,
+          "defWinRounds": 10
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Sova": 2,
+          "Yoru": 2,
+          "Waylay": 2,
+          "Omen": 2,
+          "Cypher": 1,
+          "Vyse": 1
+        },
+        "Corrode": {
+          "Fade": 2,
+          "Viper": 2,
+          "Omen": 2,
+          "Neon": 1,
+          "Yoru": 1,
+          "Waylay": 1,
+          "Vyse": 1
+        },
+        "Split": {
+          "Viper": 2,
+          "Fade": 2,
+          "Yoru": 2,
+          "Omen": 2,
+          "Neon": 1,
+          "Raze": 1
+        }
+      }
+    },
+    {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Lower Final",
+      "playerRows": 40,
+      "agentCounts": {
+        "Viper": 6,
+        "Omen": 6,
+        "Sova": 5,
+        "Yoru": 4,
+        "Waylay": 3,
+        "Vyse": 3,
+        "Astra": 2,
+        "Neon": 2,
+        "Skye": 2,
+        "Fade": 2,
+        "Jett": 2,
+        "Killjoy": 1,
+        "Tejo": 1,
+        "Raze": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 22,
+          "atkWinRounds": 15,
+          "defWinRounds": 7
+        },
+        "Corrode": {
+          "rounds": 19,
+          "atkWinRounds": 11,
+          "defWinRounds": 8
+        },
+        "Pearl": {
+          "rounds": 21,
+          "atkWinRounds": 8,
+          "defWinRounds": 13
+        },
+        "Split": {
+          "rounds": 20,
+          "atkWinRounds": 9,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Viper": 2,
+          "Yoru": 2,
+          "Omen": 2,
+          "Sova": 2,
+          "Jett": 2
+        },
+        "Corrode": {
+          "Viper": 2,
+          "Omen": 2,
+          "Waylay": 2,
+          "Sova": 1,
+          "Skye": 1,
+          "Vyse": 1,
+          "Fade": 1
+        },
+        "Pearl": {
+          "Sova": 2,
+          "Astra": 2,
+          "Killjoy": 1,
+          "Waylay": 1,
+          "Tejo": 1,
+          "Yoru": 1,
+          "Vyse": 1,
+          "Neon": 1
+        },
+        "Split": {
+          "Viper": 2,
+          "Omen": 2,
+          "Neon": 1,
+          "Skye": 1,
+          "Vyse": 1,
+          "Yoru": 1,
+          "Fade": 1,
+          "Raze": 1
+        }
+      }
+    },
+    {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Lower Round 1",
+      "playerRows": 60,
+      "agentCounts": {
+        "Yoru": 9,
+        "Viper": 7,
+        "Sova": 6,
+        "Omen": 6,
+        "Astra": 5,
+        "Waylay": 5,
+        "Fade": 5,
+        "Neon": 4,
+        "Cypher": 4,
+        "Raze": 3,
+        "Killjoy": 2,
+        "Jett": 1,
+        "Tejo": 1,
+        "Skye": 1,
+        "Brimstone": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 24,
+          "atkWinRounds": 7,
+          "defWinRounds": 17
+        },
+        "Bind": {
+          "rounds": 21,
+          "atkWinRounds": 17,
+          "defWinRounds": 4
+        },
+        "Breeze": {
+          "rounds": 23,
+          "atkWinRounds": 11,
+          "defWinRounds": 12
+        },
+        "Haven": {
+          "rounds": 20,
+          "atkWinRounds": 7,
+          "defWinRounds": 13
+        },
+        "Pearl": {
+          "rounds": 18,
+          "atkWinRounds": 9,
+          "defWinRounds": 9
+        },
+        "Split": {
+          "rounds": 17,
+          "atkWinRounds": 9,
+          "defWinRounds": 8
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Sova": 2,
+          "Waylay": 2,
+          "Omen": 2,
+          "Astra": 1,
+          "Tejo": 1,
+          "Cypher": 1,
+          "Yoru": 1
+        },
+        "Bind": {
+          "Yoru": 2,
+          "Viper": 2,
+          "Fade": 2,
+          "Waylay": 1,
+          "Astra": 1,
+          "Raze": 1,
+          "Brimstone": 1
+        },
+        "Breeze": {
+          "Sova": 2,
+          "Yoru": 2,
+          "Viper": 2,
+          "Neon": 1,
+          "Omen": 1,
+          "Jett": 1,
+          "Cypher": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Omen": 2,
+          "Neon": 2,
+          "Viper": 1,
+          "Killjoy": 1,
+          "Yoru": 1,
+          "Cypher": 1
+        },
+        "Pearl": {
+          "Yoru": 2,
+          "Fade": 2,
+          "Astra": 2,
+          "Neon": 1,
+          "Cypher": 1,
+          "Killjoy": 1,
+          "Waylay": 1
+        },
+        "Split": {
+          "Viper": 2,
+          "Raze": 2,
+          "Yoru": 1,
+          "Fade": 1,
+          "Astra": 1,
+          "Omen": 1,
+          "Skye": 1,
+          "Waylay": 1
+        }
+      }
+    },
+    {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Lower Round 2",
+      "playerRows": 50,
+      "agentCounts": {
+        "Yoru": 7,
+        "Viper": 6,
+        "Fade": 5,
+        "Omen": 5,
+        "Neon": 5,
+        "Astra": 4,
+        "Sova": 4,
+        "Chamber": 2,
+        "Cypher": 2,
+        "Waylay": 2,
+        "Vyse": 2,
+        "Raze": 2,
+        "Phoenix": 1,
+        "Jett": 1,
+        "Killjoy": 1,
+        "Skye": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 21,
+          "atkWinRounds": 8,
+          "defWinRounds": 13
+        },
+        "Corrode": {
+          "rounds": 23,
+          "atkWinRounds": 16,
+          "defWinRounds": 7
+        },
+        "Haven": {
+          "rounds": 18,
+          "atkWinRounds": 15,
+          "defWinRounds": 3
+        },
+        "Pearl": {
+          "rounds": 20,
+          "atkWinRounds": 7,
+          "defWinRounds": 13
+        },
+        "Split": {
+          "rounds": 17,
+          "atkWinRounds": 10,
+          "defWinRounds": 7
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Sova": 2,
+          "Yoru": 2,
+          "Viper": 2,
+          "Astra": 1,
+          "Neon": 1,
+          "Jett": 1,
+          "Cypher": 1
+        },
+        "Corrode": {
+          "Fade": 2,
+          "Omen": 2,
+          "Viper": 2,
+          "Waylay": 1,
+          "Vyse": 1,
+          "Chamber": 1,
+          "Neon": 1
+        },
+        "Haven": {
+          "Yoru": 2,
+          "Phoenix": 1,
+          "Astra": 1,
+          "Fade": 1,
+          "Chamber": 1,
+          "Sova": 1,
+          "Omen": 1,
+          "Cypher": 1,
+          "Neon": 1
+        },
+        "Pearl": {
+          "Yoru": 2,
+          "Neon": 2,
+          "Astra": 2,
+          "Vyse": 1,
+          "Sova": 1,
+          "Fade": 1,
+          "Killjoy": 1
+        },
+        "Split": {
+          "Raze": 2,
+          "Viper": 2,
+          "Omen": 2,
+          "Yoru": 1,
+          "Fade": 1,
+          "Skye": 1,
+          "Waylay": 1
+        }
+      }
+    },
+    {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Lower Round 3",
+      "playerRows": 30,
+      "agentCounts": {
+        "Yoru": 5,
+        "Fade": 4,
+        "Omen": 3,
+        "Astra": 3,
+        "Viper": 3,
+        "Chamber": 2,
+        "Phoenix": 2,
+        "Sova": 2,
+        "Neon": 2,
+        "Vyse": 2,
+        "Jett": 1,
+        "Waylay": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 22,
+          "atkWinRounds": 9,
+          "defWinRounds": 13
+        },
+        "Corrode": {
+          "rounds": 17,
+          "atkWinRounds": 5,
+          "defWinRounds": 12
+        },
+        "Haven": {
+          "rounds": 24,
+          "atkWinRounds": 11,
+          "defWinRounds": 13
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Yoru": 2,
+          "Sova": 2,
+          "Viper": 2,
+          "Jett": 1,
+          "Omen": 1,
+          "Neon": 1,
+          "Astra": 1
+        },
+        "Corrode": {
+          "Vyse": 2,
+          "Fade": 2,
+          "Waylay": 1,
+          "Omen": 1,
+          "Viper": 1,
+          "Neon": 1,
+          "Yoru": 1,
+          "Astra": 1
+        },
+        "Haven": {
+          "Chamber": 2,
+          "Phoenix": 2,
+          "Yoru": 2,
+          "Fade": 2,
+          "Omen": 1,
+          "Astra": 1
+        }
+      }
+    },
+    {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Upper Final",
+      "playerRows": 20,
+      "agentCounts": {
+        "Yoru": 3,
+        "Viper": 3,
+        "Brimstone": 2,
+        "Fade": 2,
+        "Sova": 2,
+        "Omen": 2,
+        "Waylay": 2,
+        "Neon": 1,
+        "Raze": 1,
+        "Cypher": 1,
+        "Tejo": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 24,
+          "atkWinRounds": 17,
+          "defWinRounds": 7
+        },
+        "Bind": {
+          "rounds": 22,
+          "atkWinRounds": 11,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Sova": 2,
+          "Omen": 2,
+          "Waylay": 2,
+          "Yoru": 1,
+          "Cypher": 1,
+          "Viper": 1,
+          "Tejo": 1
+        },
+        "Bind": {
+          "Yoru": 2,
+          "Brimstone": 2,
+          "Fade": 2,
+          "Viper": 2,
+          "Neon": 1,
+          "Raze": 1
+        }
+      }
+    },
+    {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Upper Quarterfinals",
+      "playerRows": 100,
+      "agentCounts": {
+        "Omen": 13,
+        "Sova": 12,
+        "Yoru": 12,
+        "Viper": 11,
+        "Neon": 11,
+        "Waylay": 8,
+        "Astra": 7,
+        "Fade": 6,
+        "Killjoy": 3,
+        "Cypher": 3,
+        "Phoenix": 2,
+        "Raze": 2,
+        "Tejo": 2,
+        "Skye": 2,
+        "Harbor": 2,
+        "Chamber": 1,
+        "Jett": 1,
+        "Kayo": 1,
+        "Vyse": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 36,
+          "atkWinRounds": 19,
+          "defWinRounds": 17
+        },
+        "Breeze": {
+          "rounds": 17,
+          "atkWinRounds": 7,
+          "defWinRounds": 10
+        },
+        "Corrode": {
+          "rounds": 23,
+          "atkWinRounds": 15,
+          "defWinRounds": 8
+        },
+        "Haven": {
+          "rounds": 45,
+          "atkWinRounds": 24,
+          "defWinRounds": 21
+        },
+        "Pearl": {
+          "rounds": 19,
+          "atkWinRounds": 12,
+          "defWinRounds": 7
+        },
+        "Split": {
+          "rounds": 71,
+          "atkWinRounds": 35,
+          "defWinRounds": 28
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Waylay": 4,
+          "Sova": 4,
+          "Omen": 2,
+          "Yoru": 2,
+          "Astra": 2,
+          "Harbor": 2,
+          "Cypher": 1,
+          "Tejo": 1,
+          "Viper": 1,
+          "Neon": 1
+        },
+        "Breeze": {
+          "Yoru": 2,
+          "Sova": 2,
+          "Viper": 2,
+          "Omen": 2,
+          "Neon": 1,
+          "Jett": 1
+        },
+        "Corrode": {
+          "Neon": 2,
+          "Yoru": 1,
+          "Fade": 1,
+          "Viper": 1,
+          "Omen": 1,
+          "Astra": 1,
+          "Phoenix": 1,
+          "Sova": 1,
+          "Kayo": 1
+        },
+        "Haven": {
+          "Sova": 3,
+          "Omen": 3,
+          "Neon": 3,
+          "Yoru": 3,
+          "Killjoy": 2,
+          "Viper": 1,
+          "Chamber": 1,
+          "Phoenix": 1,
+          "Fade": 1,
+          "Astra": 1,
+          "Cypher": 1
+        },
+        "Pearl": {
+          "Astra": 2,
+          "Sova": 2,
+          "Yoru": 1,
+          "Cypher": 1,
+          "Neon": 1,
+          "Killjoy": 1,
+          "Tejo": 1,
+          "Waylay": 1
+        },
+        "Split": {
+          "Viper": 6,
+          "Omen": 5,
+          "Fade": 4,
+          "Yoru": 3,
+          "Waylay": 3,
+          "Neon": 3,
+          "Raze": 2,
+          "Skye": 2,
+          "Vyse": 1,
+          "Astra": 1
+        }
+      }
+    },
+    {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Upper Semifinals",
+      "playerRows": 50,
+      "agentCounts": {
+        "Astra": 6,
+        "Viper": 5,
+        "Yoru": 5,
+        "Waylay": 5,
+        "Neon": 4,
+        "Fade": 4,
+        "Sova": 4,
+        "Omen": 3,
+        "Skye": 2,
+        "Harbor": 2,
+        "Brimstone": 2,
+        "Raze": 2,
+        "Iso": 1,
+        "Vyse": 1,
+        "Phoenix": 1,
+        "Killjoy": 1,
+        "Tejo": 1,
+        "Gekko": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 20,
+          "atkWinRounds": 9,
+          "defWinRounds": 11
+        },
+        "Bind": {
+          "rounds": 24,
+          "atkWinRounds": 15,
+          "defWinRounds": 9
+        },
+        "Corrode": {
+          "rounds": 20,
+          "atkWinRounds": 15,
+          "defWinRounds": 5
+        },
+        "Pearl": {
+          "rounds": 26,
+          "atkWinRounds": 14,
+          "defWinRounds": 10
+        },
+        "Split": {
+          "rounds": 26,
+          "atkWinRounds": 8,
+          "defWinRounds": 16
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Waylay": 2,
+          "Sova": 2,
+          "Astra": 2,
+          "Omen": 1,
+          "Yoru": 1,
+          "Harbor": 1,
+          "Neon": 1
+        },
+        "Bind": {
+          "Brimstone": 2,
+          "Raze": 2,
+          "Skye": 1,
+          "Gekko": 1,
+          "Harbor": 1,
+          "Viper": 1,
+          "Yoru": 1,
+          "Fade": 1
+        },
+        "Corrode": {
+          "Viper": 2,
+          "Neon": 1,
+          "Yoru": 1,
+          "Omen": 1,
+          "Fade": 1,
+          "Skye": 1,
+          "Iso": 1,
+          "Astra": 1,
+          "Waylay": 1
+        },
+        "Pearl": {
+          "Astra": 2,
+          "Sova": 2,
+          "Yoru": 1,
+          "Vyse": 1,
+          "Phoenix": 1,
+          "Waylay": 1,
+          "Killjoy": 1,
+          "Tejo": 1
+        },
+        "Split": {
+          "Fade": 2,
+          "Neon": 2,
+          "Viper": 2,
+          "Yoru": 1,
+          "Omen": 1,
+          "Astra": 1,
+          "Waylay": 1
+        }
+      }
+    },
+    {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Swiss Stage",
+      "week": "Swiss Stage: Round 1",
+      "playerRows": 80,
+      "agentCounts": {
+        "Viper": 12,
+        "Omen": 10,
+        "Sova": 9,
+        "Neon": 9,
+        "Yoru": 8,
+        "Astra": 7,
+        "Waylay": 6,
+        "Fade": 5,
+        "Killjoy": 3,
+        "Cypher": 2,
+        "Raze": 2,
+        "Skye": 2,
+        "Chamber": 1,
+        "Tejo": 1,
+        "Iso": 1,
+        "Vyse": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 23,
+          "atkWinRounds": 16,
+          "defWinRounds": 7
+        },
+        "Breeze": {
+          "rounds": 21,
+          "atkWinRounds": 9,
+          "defWinRounds": 12
+        },
+        "Corrode": {
+          "rounds": 18,
+          "atkWinRounds": 11,
+          "defWinRounds": 7
+        },
+        "Haven": {
+          "rounds": 39,
+          "atkWinRounds": 25,
+          "defWinRounds": 14
+        },
+        "Pearl": {
+          "rounds": 20,
+          "atkWinRounds": 7,
+          "defWinRounds": 13
+        },
+        "Split": {
+          "rounds": 50,
+          "atkWinRounds": 19,
+          "defWinRounds": 27
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Omen": 2,
+          "Sova": 2,
+          "Waylay": 2,
+          "Astra": 1,
+          "Yoru": 1,
+          "Tejo": 1,
+          "Viper": 1
+        },
+        "Breeze": {
+          "Sova": 2,
+          "Viper": 2,
+          "Yoru": 2,
+          "Jett": 1,
+          "Astra": 1,
+          "Neon": 1,
+          "Omen": 1
+        },
+        "Corrode": {
+          "Viper": 2,
+          "Waylay": 2,
+          "Astra": 1,
+          "Skye": 1,
+          "Iso": 1,
+          "Vyse": 1,
+          "Fade": 1,
+          "Omen": 1
+        },
+        "Haven": {
+          "Sova": 4,
+          "Neon": 4,
+          "Omen": 3,
+          "Viper": 3,
+          "Killjoy": 2,
+          "Cypher": 1,
+          "Yoru": 1,
+          "Astra": 1,
+          "Chamber": 1
+        },
+        "Pearl": {
+          "Yoru": 2,
+          "Astra": 2,
+          "Neon": 2,
+          "Cypher": 1,
+          "Fade": 1,
+          "Killjoy": 1,
+          "Sova": 1
+        },
+        "Split": {
+          "Viper": 4,
+          "Fade": 3,
+          "Omen": 3,
+          "Neon": 2,
+          "Waylay": 2,
+          "Yoru": 2,
+          "Raze": 2,
+          "Astra": 1,
+          "Skye": 1
+        }
+      }
+    },
+    {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Swiss Stage",
+      "week": "Swiss Stage: Round 2 (0-1)",
+      "playerRows": 40,
+      "agentCounts": {
+        "Viper": 5,
+        "Neon": 5,
+        "Sova": 5,
+        "Omen": 4,
+        "Chamber": 3,
+        "Waylay": 3,
+        "Yoru": 3,
+        "Astra": 3,
+        "Brimstone": 2,
+        "Fade": 2,
+        "Killjoy": 2,
+        "Skye": 1,
+        "Harbor": 1,
+        "Phoenix": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 21,
+          "atkWinRounds": 8,
+          "defWinRounds": 13
+        },
+        "Bind": {
+          "rounds": 14,
+          "atkWinRounds": 11,
+          "defWinRounds": 3
+        },
+        "Haven": {
+          "rounds": 39,
+          "atkWinRounds": 16,
+          "defWinRounds": 23
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Astra": 2,
+          "Waylay": 2,
+          "Sova": 2,
+          "Omen": 1,
+          "Yoru": 1,
+          "Harbor": 1,
+          "Neon": 1
+        },
+        "Bind": {
+          "Brimstone": 2,
+          "Viper": 2,
+          "Chamber": 1,
+          "Neon": 1,
+          "Skye": 1,
+          "Fade": 1,
+          "Waylay": 1,
+          "Yoru": 1
+        },
+        "Haven": {
+          "Viper": 3,
+          "Sova": 3,
+          "Omen": 3,
+          "Neon": 3,
+          "Chamber": 2,
+          "Killjoy": 2,
+          "Phoenix": 1,
+          "Yoru": 1,
+          "Fade": 1,
+          "Astra": 1
+        }
+      }
+    },
+    {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Swiss Stage",
+      "week": "Swiss Stage: Round 2 (1-0)",
+      "playerRows": 50,
+      "agentCounts": {
+        "Viper": 6,
+        "Fade": 5,
+        "Yoru": 5,
+        "Neon": 5,
+        "Omen": 4,
+        "Astra": 4,
+        "Waylay": 4,
+        "Skye": 3,
+        "Raze": 2,
+        "Killjoy": 2,
+        "Sova": 2,
+        "Vyse": 1,
+        "Veto": 1,
+        "Tejo": 1,
+        "Chamber": 1,
+        "Phoenix": 1,
+        "Cypher": 1,
+        "Harbor": 1,
+        "Brimstone": 1
+      },
+      "mapStats": {
+        "Bind": {
+          "rounds": 16,
+          "atkWinRounds": 11,
+          "defWinRounds": 5
+        },
+        "Haven": {
+          "rounds": 24,
+          "atkWinRounds": 15,
+          "defWinRounds": 9
+        },
+        "Pearl": {
+          "rounds": 47,
+          "atkWinRounds": 25,
+          "defWinRounds": 22
+        },
+        "Split": {
+          "rounds": 23,
+          "atkWinRounds": 13,
+          "defWinRounds": 10
+        }
+      },
+      "mapAgentCounts": {
+        "Bind": {
+          "Viper": 2,
+          "Waylay": 2,
+          "Yoru": 1,
+          "Fade": 1,
+          "Astra": 1,
+          "Brimstone": 1,
+          "Skye": 1,
+          "Neon": 1
+        },
+        "Haven": {
+          "Omen": 2,
+          "Chamber": 1,
+          "Fade": 1,
+          "Phoenix": 1,
+          "Yoru": 1,
+          "Viper": 1,
+          "Neon": 1,
+          "Killjoy": 1,
+          "Sova": 1
+        },
+        "Pearl": {
+          "Astra": 3,
+          "Fade": 2,
+          "Yoru": 2,
+          "Waylay": 2,
+          "Neon": 2,
+          "Raze": 1,
+          "Veto": 1,
+          "Killjoy": 1,
+          "Tejo": 1,
+          "Sova": 1,
+          "Cypher": 1,
+          "Viper": 1,
+          "Skye": 1,
+          "Harbor": 1
+        },
+        "Split": {
+          "Omen": 2,
+          "Viper": 2,
+          "Fade": 1,
+          "Raze": 1,
+          "Yoru": 1,
+          "Skye": 1,
+          "Vyse": 1,
+          "Neon": 1
+        }
+      }
+    },
+    {
+      "region": "International",
+      "event": "Valorant Masters Santiago 2026",
+      "stage": "Masters",
+      "phase": "Swiss Stage",
+      "week": "Swiss Stage: Round 3",
+      "playerRows": 40,
+      "agentCounts": {
+        "Yoru": 7,
+        "Sova": 6,
+        "Viper": 5,
+        "Omen": 4,
+        "Astra": 4,
+        "Neon": 3,
+        "Jett": 2,
+        "Tejo": 1,
+        "Waylay": 1,
+        "Harbor": 1,
+        "Skye": 1,
+        "Fade": 1,
+        "Phoenix": 1,
+        "Chamber": 1,
+        "Cypher": 1,
+        "Iso": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 17,
+          "atkWinRounds": 9,
+          "defWinRounds": 8
+        },
+        "Breeze": {
+          "rounds": 43,
+          "atkWinRounds": 23,
+          "defWinRounds": 20
+        },
+        "Haven": {
+          "rounds": 30,
+          "atkWinRounds": 20,
+          "defWinRounds": 4
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Omen": 1,
+          "Viper": 1,
+          "Tejo": 1,
+          "Sova": 1,
+          "Waylay": 1,
+          "Yoru": 1,
+          "Astra": 1,
+          "Harbor": 1,
+          "Neon": 1,
+          "Skye": 1
+        },
+        "Breeze": {
+          "Yoru": 4,
+          "Sova": 4,
+          "Viper": 4,
+          "Jett": 2,
+          "Omen": 2,
+          "Neon": 2,
+          "Astra": 2
+        },
+        "Haven": {
+          "Yoru": 2,
+          "Fade": 1,
+          "Phoenix": 1,
+          "Astra": 1,
+          "Chamber": 1,
+          "Cypher": 1,
+          "Omen": 1,
+          "Iso": 1,
+          "Sova": 1
+        }
+      }
+    },
+    {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Final",
@@ -10586,6 +11170,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 1",
@@ -10695,6 +11280,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 2",
@@ -10800,6 +11386,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 3",
@@ -10886,6 +11473,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 4",
@@ -10955,6 +11543,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Lower Round 5",
@@ -11001,6 +11590,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Final",
@@ -11064,6 +11654,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 1",
@@ -11183,6 +11774,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 2",
@@ -11269,6 +11861,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 3",
@@ -11371,6 +11964,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Middle Round 4",
@@ -11417,6 +12011,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Final",
@@ -11511,6 +12106,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 1",
@@ -11608,6 +12204,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 2",
@@ -11732,6 +12329,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
       "phase": "Main Event",
       "week": "Main Event: Upper Round 3",
@@ -11804,6 +12402,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 1",
@@ -11943,6 +12542,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 2",
@@ -12079,6 +12679,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 3",
@@ -12222,6 +12823,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 4",
@@ -12357,6 +12959,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Group Stage",
       "week": "Group Stage: Week 5",
@@ -12508,6 +13111,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Grand Final",
@@ -12574,6 +13178,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Final",
@@ -12649,6 +13254,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 1",
@@ -12769,6 +13375,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 2",
@@ -12870,6 +13477,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Lower Round 3",
@@ -12940,6 +13548,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Final",
@@ -12991,6 +13600,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Round 1",
@@ -13079,6 +13689,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
       "phase": "Playoffs",
       "week": "Playoffs: Upper Semifinals",
@@ -13153,6 +13764,7 @@
     },
     {
       "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 2",
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 1",
@@ -13323,291 +13935,11 @@
     "Summit",
     "Sunset"
   ],
-  "regionStages": {
-    "Americas": [
-      "Kickoff",
-      "Stage 1",
-      "Stage 2"
-    ],
-    "China": [
-      "Kickoff",
-      "Stage 1",
-      "Stage 2"
-    ],
-    "EMEA": [
-      "Kickoff",
-      "Stage 1",
-      "Stage 2"
-    ],
-    "International": [
-      "Champions",
-      "Masters"
-    ],
-    "Pacific": [
-      "Kickoff",
-      "Stage 1",
-      "Stage 2"
-    ]
-  },
-  "regionStagePhases": {
-    "Americas": {
-      "Kickoff": [
-        "Main Event"
-      ],
-      "Stage 1": [
-        "Group Stage",
-        "Playoffs"
-      ],
-      "Stage 2": [
-        "Group Stage"
-      ]
-    },
-    "China": {
-      "Kickoff": [
-        "Main Event"
-      ],
-      "Stage 1": [
-        "Group Stage",
-        "Playoffs"
-      ],
-      "Stage 2": [
-        "Group Stage"
-      ]
-    },
-    "EMEA": {
-      "Kickoff": [
-        "Main Event"
-      ],
-      "Stage 1": [
-        "Group Stage",
-        "Playoffs"
-      ],
-      "Stage 2": [
-        "Group Stage"
-      ]
-    },
-    "International": {
-      "Masters": [
-        "Playoffs",
-        "Swiss Stage"
-      ]
-    },
-    "Pacific": {
-      "Kickoff": [
-        "Main Event"
-      ],
-      "Stage 1": [
-        "Group Stage",
-        "Playoffs"
-      ],
-      "Stage 2": [
-        "Group Stage"
-      ]
-    }
-  },
-  "regionStagePhaseWeeks": {
-    "Americas": {
-      "Kickoff": {
-        "Main Event": [
-          "Main Event: Lower Final",
-          "Main Event: Lower Round 1",
-          "Main Event: Lower Round 2",
-          "Main Event: Lower Round 3",
-          "Main Event: Lower Round 4",
-          "Main Event: Lower Round 5",
-          "Main Event: Middle Final",
-          "Main Event: Middle Round 1",
-          "Main Event: Middle Round 2",
-          "Main Event: Middle Round 3",
-          "Main Event: Middle Round 4",
-          "Main Event: Upper Final",
-          "Main Event: Upper Round 1",
-          "Main Event: Upper Round 2",
-          "Main Event: Upper Round 3"
-        ]
-      },
-      "Stage 1": {
-        "Group Stage": [
-          "Group Stage: Week 1",
-          "Group Stage: Week 2",
-          "Group Stage: Week 3",
-          "Group Stage: Week 4",
-          "Group Stage: Week 5"
-        ],
-        "Playoffs": [
-          "Playoffs: Grand Final",
-          "Playoffs: Lower Final",
-          "Playoffs: Lower Round 1",
-          "Playoffs: Lower Round 2",
-          "Playoffs: Lower Round 3",
-          "Playoffs: Upper Final",
-          "Playoffs: Upper Round 1",
-          "Playoffs: Upper Semifinals"
-        ]
-      },
-      "Stage 2": {
-        "Group Stage": [
-          "Group Stage: Week 1"
-        ]
-      }
-    },
-    "China": {
-      "Kickoff": {
-        "Main Event": [
-          "Main Event: Lower Final",
-          "Main Event: Lower Round 1",
-          "Main Event: Lower Round 2",
-          "Main Event: Lower Round 3",
-          "Main Event: Lower Round 4",
-          "Main Event: Lower Round 5",
-          "Main Event: Middle Final",
-          "Main Event: Middle Round 1",
-          "Main Event: Middle Round 2",
-          "Main Event: Middle Round 3",
-          "Main Event: Middle Round 4",
-          "Main Event: Upper Final",
-          "Main Event: Upper Round 1",
-          "Main Event: Upper Round 2",
-          "Main Event: Upper Round 3"
-        ]
-      },
-      "Stage 1": {
-        "Group Stage": [
-          "Group Stage: Seeding",
-          "Group Stage: Week 1",
-          "Group Stage: Week 2",
-          "Group Stage: Week 3"
-        ],
-        "Playoffs": [
-          "Playoffs: Grand Final",
-          "Playoffs: Lower Final",
-          "Playoffs: Lower Round 1",
-          "Playoffs: Lower Round 2",
-          "Playoffs: Lower Round 3",
-          "Playoffs: Upper Final",
-          "Playoffs: Upper Quarterfinals",
-          "Playoffs: Upper Semifinals"
-        ]
-      },
-      "Stage 2": {
-        "Group Stage": [
-          "Group Stage: Week 1",
-          "Group Stage: Week 2",
-          "Group Stage: Week 3"
-        ]
-      }
-    },
-    "EMEA": {
-      "Kickoff": {
-        "Main Event": [
-          "Main Event: Lower Final",
-          "Main Event: Lower Round 1",
-          "Main Event: Lower Round 2",
-          "Main Event: Lower Round 3",
-          "Main Event: Lower Round 4",
-          "Main Event: Lower Round 5",
-          "Main Event: Middle Final",
-          "Main Event: Middle Round 1",
-          "Main Event: Middle Round 2",
-          "Main Event: Middle Round 3",
-          "Main Event: Middle Round 4",
-          "Main Event: Upper Final",
-          "Main Event: Upper Round 1",
-          "Main Event: Upper Round 2",
-          "Main Event: Upper Round 3"
-        ]
-      },
-      "Stage 1": {
-        "Group Stage": [
-          "Group Stage: Week 1",
-          "Group Stage: Week 2",
-          "Group Stage: Week 3",
-          "Group Stage: Week 4",
-          "Group Stage: Week 5"
-        ],
-        "Playoffs": [
-          "Playoffs: Grand Final",
-          "Playoffs: Lower Final",
-          "Playoffs: Lower Round 1",
-          "Playoffs: Lower Round 2",
-          "Playoffs: Lower Round 3",
-          "Playoffs: Upper Final",
-          "Playoffs: Upper Round 1",
-          "Playoffs: Upper Semifinals"
-        ]
-      },
-      "Stage 2": {
-        "Group Stage": [
-          "Group Stage: Week 1",
-          "Group Stage: Week 2"
-        ]
-      }
-    },
-    "International": {
-      "Masters": {
-        "Playoffs": [
-          "Playoffs: Grand Final",
-          "Playoffs: Lower Final",
-          "Playoffs: Lower Round 1",
-          "Playoffs: Lower Round 2",
-          "Playoffs: Lower Round 3",
-          "Playoffs: Upper Final",
-          "Playoffs: Upper Quarterfinals",
-          "Playoffs: Upper Semifinals"
-        ],
-        "Swiss Stage": [
-          "Swiss Stage: Round 1",
-          "Swiss Stage: Round 2 (0-1)",
-          "Swiss Stage: Round 2 (1-0)",
-          "Swiss Stage: Round 3",
-          "Swiss Stage: Round 3 (1-1)"
-        ]
-      }
-    },
-    "Pacific": {
-      "Kickoff": {
-        "Main Event": [
-          "Main Event: Lower Final",
-          "Main Event: Lower Round 1",
-          "Main Event: Lower Round 2",
-          "Main Event: Lower Round 3",
-          "Main Event: Lower Round 4",
-          "Main Event: Lower Round 5",
-          "Main Event: Middle Final",
-          "Main Event: Middle Round 1",
-          "Main Event: Middle Round 2",
-          "Main Event: Middle Round 3",
-          "Main Event: Middle Round 4",
-          "Main Event: Upper Final",
-          "Main Event: Upper Round 1",
-          "Main Event: Upper Round 2",
-          "Main Event: Upper Round 3"
-        ]
-      },
-      "Stage 1": {
-        "Group Stage": [
-          "Group Stage: Week 1",
-          "Group Stage: Week 2",
-          "Group Stage: Week 3",
-          "Group Stage: Week 4",
-          "Group Stage: Week 5"
-        ],
-        "Playoffs": [
-          "Playoffs: Grand Final",
-          "Playoffs: Lower Final",
-          "Playoffs: Lower Round 1",
-          "Playoffs: Lower Round 2",
-          "Playoffs: Lower Round 3",
-          "Playoffs: Upper Final",
-          "Playoffs: Upper Round 1",
-          "Playoffs: Upper Semifinals"
-        ]
-      },
-      "Stage 2": {
-        "Group Stage": [
-          "Group Stage: Week 1"
-        ]
-      }
-    }
-  }
+  "facets": [
+    "region",
+    "event",
+    "stage",
+    "phase",
+    "week"
+  ]
 }

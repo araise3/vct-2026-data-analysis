@@ -3,15 +3,18 @@ import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import DataTable from '../components/DataTable'
 import FilterChips from '../components/FilterChips'
+import FacetGroup from '../components/FacetGroup'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
 
 const SCOPE_OPTIONS = ['All players', 'Non-China only', 'China only']
+const REGIONS = ['Americas', 'EMEA', 'Pacific', 'China']
 
 export default function Players() {
   const { data, loading } = useData('players')
   const [scope, setScope] = useState('Non-China only')
+  const [regions, setRegions] = useState([])
   const [useIntlStatsForChina, setUseIntlStatsForChina] = useState(true)
   const [ratedOnlyForChina, setRatedOnlyForChina] = useState(false)
   const [includeEwc, setIncludeEwc] = useState(false)
@@ -22,6 +25,7 @@ export default function Players() {
     let filtered = data
     if (scope === 'Non-China only') filtered = data.filter((p) => !p.isChina)
     if (scope === 'China only') filtered = data.filter((p) => p.isChina)
+    if (regions.length > 0) filtered = filtered.filter((p) => regions.includes(p.region))
 
     if (search.trim()) {
       const q = search.trim().toLowerCase()
@@ -53,7 +57,7 @@ export default function Players() {
         }
       })
       .filter(Boolean)
-  }, [data, scope, search, useIntlStatsForChina, ratedOnlyForChina, includeEwc])
+  }, [data, scope, regions, search, useIntlStatsForChina, ratedOnlyForChina, includeEwc])
 
   if (loading || !data) {
     return <div className="text-muted text-sm">Loading…</div>
@@ -122,6 +126,12 @@ export default function Players() {
 
       <div className="flex flex-col md:flex-row md:items-center gap-4 justify-between">
         <FilterChips options={SCOPE_OPTIONS} value={scope} onChange={setScope} />
+        <FacetGroup
+          label="Region"
+          options={REGIONS.map((r) => ({ value: r, available: true }))}
+          selected={regions}
+          onChange={setRegions}
+        />
         <input
           type="text"
           placeholder="Search player or team…"

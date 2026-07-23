@@ -295,6 +295,7 @@ def main():
         entry = {
             "player": player,
             "team": team,
+            "region": team_primary_region.get(team, "International"),
             "isChina": is_china,
             "hasIntlStats": player in players_with_intl,
             "countryCode": nat['country_code'] if nat and nat['country_code'] != 'un' else None,
@@ -444,7 +445,8 @@ def main():
     maps_df = maps_df_vct
     mps = mps_vct
     matches_tagged = matches.merge(
-        events_vct[['event_id', 'stage']].rename(columns={'stage': 'event_stage'}),
+        events_vct[['event_id', 'stage', 'name']].rename(
+            columns={'stage': 'event_stage', 'name': 'event_name'}),
         on='event_id', how='left'
     )
     matches_tagged['phase'] = matches_tagged['stage'].str.split(':').str[0].str.strip()
@@ -455,10 +457,10 @@ def main():
     # avoid a duplicate-column collision that silently suffixes both to
     # region_x/region_y instead of a single clean 'region' column.
     players_long = mps.merge(
-        matches_tagged[['match_id', 'event_stage', 'phase', 'stage']], on='match_id', how='left'
+        matches_tagged[['match_id', 'event_stage', 'event_name', 'phase', 'stage']], on='match_id', how='left'
     )
     maps_named = maps_df.merge(
-        matches_tagged[['match_id', 'region', 'event_stage', 'phase', 'stage']], on='match_id', how='left'
+        matches_tagged[['match_id', 'region', 'event_stage', 'event_name', 'phase', 'stage']], on='match_id', how='left'
     )
     players_long = players_long.merge(
         maps_named[['match_id', 'map_index', 'map_name']], on=['match_id', 'map_index'], how='left'
@@ -472,25 +474,7 @@ def main():
     maps_long['atk_win_rounds'] = maps_long['team1_atk_score'].fillna(0) + maps_long['team2_atk_score'].fillna(0)
     maps_long['def_win_rounds'] = maps_long['team1_def_score'].fillna(0) + maps_long['team2_def_score'].fillna(0)
 
-    # Cascade options: only stages/phases/weeks that actually exist per
-    # region (and per region+stage, etc), not hardcoded -- an "if they
-    # exist" filter at every tier.
-    region_stages = {
-        region: sorted(sub['stage'].dropna().unique().tolist())
-        for region, sub in events_vct.groupby('region')
-    }
-    region_stage_phases = {}
-    region_stage_phase_weeks = {}
-    for region, sub in matches_tagged.groupby('region'):
-        region_stage_phases[region] = {}
-        region_stage_phase_weeks[region] = {}
-        for stage, sub2 in sub.groupby('event_stage'):
-            region_stage_phases[region][stage] = sorted(sub2['phase'].dropna().unique().tolist())
-            region_stage_phase_weeks[region][stage] = {}
-            for phase, sub3 in sub2.groupby('phase'):
-                region_stage_phase_weeks[region][stage][phase] = sorted(sub3['stage'].dropna().unique().tolist())
-
-    # Raw, granular buckets -- one per (region, event_stage, phase, week)
+    # Raw, granular buckets -- one per (region, event, stage, phase, week)
     # combination -- carrying counts, not pre-computed percentages. The
     # site sums these client-side for whatever filter combination is
     # active, which is what makes the 4th tier (week/round) a genuine
@@ -498,11 +482,12 @@ def main():
     # would blow up combinatorially, but summing raw counts on demand
     # handles any combination for free.
     buckets = []
-    group_cols = ['region', 'event_stage', 'phase', 'stage']  # 'stage' here = full week/round text
-    for (region, event_stage, phase, week), g in players_long.groupby(group_cols, dropna=True):
+    group_cols = ['region', 'event_name', 'event_stage', 'phase', 'stage']  # 'stage' here = full week/round text
+    for (region, event_name, event_stage, phase, week), g in players_long.groupby(group_cols, dropna=True):
         agent_counts = g['agent'].value_counts().to_dict()
         map_g = maps_long[
-            (maps_long.region == region) & (maps_long.event_stage == event_stage) &
+            (maps_long.region == region) & (maps_long.event_name == event_name) &
+            (maps_long.event_stage == event_stage) &
             (maps_long.phase == phase) & (maps_long.stage == week)
         ]
         map_stats = {}
@@ -522,26 +507,32 @@ def main():
             map_agent_counts[map_name] = {k: int(v) for k, v in mg['agent'].value_counts().items()}
 
         buckets.append({
-            "region": region, "stage": event_stage, "phase": phase, "week": week,
+            "region": region, "event": event_name, "stage": event_stage,
+            "phase": phase, "week": week,
             "playerRows": int(len(g)),
             "agentCounts": {k: int(v) for k, v in agent_counts.items()},
             "mapStats": map_stats,
             "mapAgentCounts": map_agent_counts,
         })
 
+    # Faceted filtering replaces the old nested Region->Stage->Phase->Week
+    # cascade: every dimension is independent and multi-selectable, and the
+    # site derives which options are still reachable directly from the
+    # buckets. That means no pre-computed nested lookup tables are needed
+    # here at all -- and it fixes a real gap in the old model, where
+    # Masters Santiago and Masters London were indistinguishable (both are
+    # region=International + stage=Masters).
     agents_out = {
         "buckets": buckets,
         "mapNames": sorted(maps_long['map_name'].dropna().unique().tolist()),
-        "regionStages": region_stages,
-        "regionStagePhases": region_stage_phases,
-        "regionStagePhaseWeeks": region_stage_phase_weeks,
+        "facets": ["region", "event", "stage", "phase", "week"],
     }
 
     with open(f"{OUT}/agents.json", "w") as f:
         json.dump(agents_out, f, indent=2)
     print(f"agents.json written: {len(buckets)} buckets, "
           f"{len(agents_out['mapNames'])} maps, "
-          f"regions: {list(agents_out['regionStages'].keys())}")
+          f"{len(set(b['event'] for b in buckets))} events")
 
 
 if __name__ == "__main__":

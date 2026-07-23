@@ -77,6 +77,25 @@ def main():
     mte = pd.concat([vct["map_team_economy"], ewc["map_team_economy"]], ignore_index=True)
     events = pd.concat([vct["events"], ewc["events"]], ignore_index=True)
 
+    # Player nationality: a player-level attribute, not match-level, so it
+    # doesn't need the competition tag -- just load from whichever DB(s)
+    # have it and combine. Only populated for matches that have actually
+    # been (re-)scraped since this feature was added, so coverage will be
+    # partial until a fuller re-scrape happens.
+    def load_nationality(path):
+        conn = sqlite3.connect(path)
+        try:
+            df = pd.read_sql_query("SELECT * FROM player_nationality", conn)
+        except Exception:
+            df = pd.DataFrame(columns=['player', 'country_code', 'country_name'])
+        conn.close()
+        return df
+
+    nationality = pd.concat(
+        [load_nationality(DB_PATH), load_nationality(EWC_DB_PATH)], ignore_index=True
+    ).drop_duplicates(subset='player', keep='first')
+    nationality_map = nationality.set_index('player')[['country_code', 'country_name']].to_dict('index')
+
     # Raw scrape has kast/hs_pct as "73%" strings -- convert to fractions
     for col in ['kast', 'hs_pct']:
         mps[col] = pct_to_float(mps[col])
@@ -236,11 +255,14 @@ def main():
         sub_all = mps[mps['player'] == player]
         sub = sub_all[sub_all['competition'] == 'VCT']
         stats = player_stats(sub)
+        nat = nationality_map.get(player)
         entry = {
             "player": player,
             "team": team,
             "isChina": is_china,
             "hasIntlStats": player in players_with_intl,
+            "countryCode": nat['country_code'] if nat and nat['country_code'] != 'un' else None,
+            "countryName": nat['country_name'] if nat and nat['country_code'] != 'un' else None,
             "stats": stats,
             "statsWithEwc": player_stats(sub_all),
         }

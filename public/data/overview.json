@@ -1,17 +1,17 @@
 {
   "kpis": {
     "totalEvents": 15,
-    "totalMatches": 392,
-    "totalMaps": 1009,
-    "totalRounds": 21402,
+    "totalMatches": 396,
+    "totalMaps": 1021,
+    "totalRounds": 21667,
     "totalPlayers": 313,
     "totalTeams": 48
   },
   "kpisWithEwc": {
     "totalEvents": 20,
-    "totalMatches": 489,
-    "totalMaps": 1269,
-    "totalRounds": 26998,
+    "totalMatches": 493,
+    "totalMaps": 1281,
+    "totalRounds": 27263,
     "totalPlayers": 313,
     "totalTeams": 48
   },
@@ -20,7 +20,7 @@
       "player": "vo0kashu",
       "team": "Dragon Ranger Gaming",
       "rating": 1.2445,
-      "mapsPlayed": 58
+      "mapsPlayed": 61
     },
     {
       "player": "marteen",
@@ -38,7 +38,7 @@
       "player": "Deryeon",
       "team": "Wolves Esports",
       "rating": 1.23,
-      "mapsPlayed": 10
+      "mapsPlayed": 13
     },
     {
       "player": "primmie",
@@ -123,9 +123,9 @@
     {
       "team": "FNATIC",
       "region": "EMEA",
-      "mapWinPct": 0.5897435897435898,
-      "mapsPlayed": 39,
-      "mapsWon": 23
+      "mapWinPct": 0.5952380952380952,
+      "mapsPlayed": 42,
+      "mapsWon": 25
     },
     {
       "team": "NRG",
@@ -144,9 +144,9 @@
     {
       "team": "Xi Lai Gaming",
       "region": "China",
-      "mapWinPct": 0.5733333333333334,
-      "mapsPlayed": 75,
-      "mapsWon": 43
+      "mapWinPct": 0.5769230769230769,
+      "mapsPlayed": 78,
+      "mapsWon": 45
     }
   ],
   "topPlayersByRatingWithEwc": [
@@ -160,13 +160,13 @@
       "player": "vo0kashu",
       "team": "Dragon Ranger Gaming",
       "rating": 1.2445,
-      "mapsPlayed": 58
+      "mapsPlayed": 61
     },
     {
       "player": "Deryeon",
       "team": "Wolves Esports",
       "rating": 1.23,
-      "mapsPlayed": 10
+      "mapsPlayed": 13
     },
     {
       "player": "Neon",
@@ -264,23 +264,23 @@
     {
       "team": "All Gamers",
       "region": "China",
-      "mapWinPct": 0.5789473684210527,
-      "mapsPlayed": 76,
-      "mapsWon": 44
+      "mapWinPct": 0.5822784810126582,
+      "mapsPlayed": 79,
+      "mapsWon": 46
     },
     {
-      "team": "Gentle Mates",
+      "team": "FNATIC",
       "region": "EMEA",
-      "mapWinPct": 0.5737704918032787,
-      "mapsPlayed": 61,
-      "mapsWon": 35
+      "mapWinPct": 0.5769230769230769,
+      "mapsPlayed": 52,
+      "mapsWon": 30
     },
     {
       "team": "Xi Lai Gaming",
       "region": "China",
-      "mapWinPct": 0.5730337078651685,
-      "mapsPlayed": 89,
-      "mapsWon": 51
+      "mapWinPct": 0.5760869565217391,
+      "mapsPlayed": 92,
+      "mapsWon": 53
     }
   ]
 }

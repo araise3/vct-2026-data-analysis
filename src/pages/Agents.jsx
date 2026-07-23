@@ -3,18 +3,10 @@ import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
 import HorizontalBarChart from '../components/HorizontalBarChart'
 import DataTable from '../components/DataTable'
-import FacetGroup from '../components/FacetGroup'
+import FilterPanel, { FACETS } from '../components/FilterPanel'
 import AgentIcon from '../components/AgentIcon'
 import { pct, num } from '../lib/format'
 
-const FACETS = ['region', 'event', 'stage', 'phase', 'week']
-const FACET_LABELS = {
-  region: 'Region',
-  event: 'Event',
-  stage: 'Stage',
-  phase: 'Phase',
-  week: 'Week / Round',
-}
 
 // Sums raw counts first and computes percentages last -- this is what makes
 // arbitrary filter combinations correct, rather than averaging
@@ -64,24 +56,13 @@ function aggregate(buckets) {
   return { pickRates, mapWinRates, mapAgentCounts, mapTotalRows, totalRows }
 }
 
-// Week values carry their phase as a prefix ("Group Stage: Week 2") since
-// that's what makes them unique across the season -- but the phase is
-// already its own chip group, so strip it for display.
-function weekLabel(week) {
-  return week.includes(': ') ? week.split(': ').slice(1).join(': ') : week
-}
 
-// Event names come through as VLR's own title-cased strings
-// ("Vct 2026 Americas Kickoff") -- tidy up the acronym for display.
-function eventLabel(event) {
-  return event.replace(/^Vct\b/, 'VCT')
-}
 
 export default function Agents() {
   const { data, loading } = useData('agents')
   const buckets = data?.buckets ?? []
   const { selections, setFacet, clearAll, filtered, options, activeCount } =
-    useFacetedFilter(buckets, FACETS)
+    useFacetedFilter(buckets, FACETS, { competition: ['VCT'] })
 
   const scoped = useMemo(() => aggregate(filtered), [filtered])
 
@@ -111,8 +92,6 @@ export default function Agents() {
     })),
   ]
 
-  const renderers = { week: weekLabel, event: eventLabel }
-
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -123,33 +102,14 @@ export default function Agents() {
         </p>
       </div>
 
-      <div className="bg-surface border border-hairline rounded-2xl p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <span className="font-display text-sm font-semibold text-ink">Filters</span>
-          <div className="flex items-center gap-3 text-xs text-muted">
-            <span>
-              {num(scoped.totalRows / 5)} team-maps in scope
-              {activeCount > 0 && ` · ${activeCount} filter${activeCount > 1 ? 's' : ''} active`}
-            </span>
-            {activeCount > 0 && (
-              <button onClick={clearAll} className="text-accent-bright hover:underline">
-                Clear all
-              </button>
-            )}
-          </div>
-        </div>
-
-        {FACETS.map((facet) => (
-          <FacetGroup
-            key={facet}
-            label={FACET_LABELS[facet]}
-            options={options[facet] || []}
-            selected={selections[facet] || []}
-            onChange={(vals) => setFacet(facet, vals)}
-            renderLabel={renderers[facet]}
-          />
-        ))}
-      </div>
+      <FilterPanel
+        options={options}
+        selections={selections}
+        setFacet={setFacet}
+        clearAll={clearAll}
+        activeCount={activeCount}
+        summary={`${num(scoped.totalRows / 5)} team-maps in scope`}
+      />
 
       {scoped.totalRows === 0 ? (
         <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">

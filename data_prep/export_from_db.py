@@ -506,15 +506,14 @@ def main():
     # Quarterfinals") -- combining these gives full Region -> Stage ->
     # Phase filterability for free, computed from data already scraped.
     #
-    # Deliberately VCT-only for now, same as economy.json -- the EWC
-    # toggle isn't wired up here yet.
+    # Includes both VCT and EWC; 'competition' is carried through as a
+    # facet so the site can scope to either (or both) on demand rather
+    # than the data being pre-scoped to one of them.
     # ------------------------------------------------------------------
-    matches = matches[matches.competition == 'VCT']
-    maps_df = maps_df_vct
-    mps = mps_vct
     matches_tagged = matches.merge(
-        events_vct[['event_id', 'stage', 'name']].rename(
-            columns={'stage': 'event_stage', 'name': 'event_name'}),
+        events[['event_id', 'stage', 'name', 'region']].rename(
+            columns={'stage': 'event_stage', 'name': 'event_name',
+                     'region': 'event_region'}),
         on='event_id', how='left'
     )
     matches_tagged['phase'] = matches_tagged['stage'].str.split(':').str[0].str.strip()
@@ -525,10 +524,10 @@ def main():
     # avoid a duplicate-column collision that silently suffixes both to
     # region_x/region_y instead of a single clean 'region' column.
     players_long = mps.merge(
-        matches_tagged[['match_id', 'event_stage', 'event_name', 'phase', 'stage']], on='match_id', how='left'
+        matches_tagged[['match_id', 'event_stage', 'event_name', 'event_region', 'phase', 'stage']], on='match_id', how='left'
     )
     maps_named = maps_df.merge(
-        matches_tagged[['match_id', 'region', 'event_stage', 'event_name', 'phase', 'stage']], on='match_id', how='left'
+        matches_tagged[['match_id', 'event_stage', 'event_name', 'event_region', 'phase', 'stage']], on='match_id', how='left'
     )
     players_long = players_long.merge(
         maps_named[['match_id', 'map_index', 'map_name']], on=['match_id', 'map_index'], how='left'
@@ -550,11 +549,11 @@ def main():
     # would blow up combinatorially, but summing raw counts on demand
     # handles any combination for free.
     buckets = []
-    group_cols = ['region', 'event_name', 'event_stage', 'phase', 'stage']  # 'stage' here = full week/round text
-    for (region, event_name, event_stage, phase, week), g in players_long.groupby(group_cols, dropna=True):
+    group_cols = ['competition', 'event_region', 'event_name', 'event_stage', 'phase', 'stage']
+    for (competition, region, event_name, event_stage, phase, week), g in players_long.groupby(group_cols, dropna=True):
         agent_counts = g['agent'].value_counts().to_dict()
         map_g = maps_long[
-            (maps_long.region == region) & (maps_long.event_name == event_name) &
+            (maps_long.event_region == region) & (maps_long.event_name == event_name) &
             (maps_long.event_stage == event_stage) &
             (maps_long.phase == phase) & (maps_long.stage == week)
         ]
@@ -575,6 +574,7 @@ def main():
             map_agent_counts[map_name] = {k: int(v) for k, v in mg['agent'].value_counts().items()}
 
         buckets.append({
+            "competition": competition,
             "region": region, "event": event_name, "stage": event_stage,
             "phase": phase, "week": week,
             "playerRows": int(len(g)),
@@ -593,7 +593,7 @@ def main():
     agents_out = {
         "buckets": buckets,
         "mapNames": sorted(maps_long['map_name'].dropna().unique().tolist()),
-        "facets": ["region", "event", "stage", "phase", "week"],
+        "facets": ["competition", "region", "event", "stage", "phase", "week"],
     }
 
     with open(f"{OUT}/agents.json", "w") as f:

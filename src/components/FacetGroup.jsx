@@ -4,7 +4,7 @@
  * shown disabled rather than hidden, so the set of chips doesn't jump
  * around as you select things.
  */
-export default function FacetGroup({ label, options, selected, onChange, renderLabel }) {
+export default function FacetGroup({ label, options, selected, onChange, renderLabel, hideLabel = false }) {
   function toggle(value) {
     if (selected.includes(value)) {
       onChange(selected.filter((v) => v !== value))
@@ -17,6 +17,7 @@ export default function FacetGroup({ label, options, selected, onChange, renderL
 
   return (
     <div className="flex flex-col gap-1.5">
+      {!hideLabel && (
       <div className="flex items-center gap-2">
         <span className="text-[11px] uppercase tracking-wide text-muted font-medium">{label}</span>
         {!allActive && (
@@ -28,6 +29,7 @@ export default function FacetGroup({ label, options, selected, onChange, renderL
           </button>
         )}
       </div>
+      )}
       <div className="flex flex-wrap gap-1.5">
         {options.map(({ value, available }) => {
           const active = selected.includes(value)

@@ -4,23 +4,12 @@ import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
 import { expandBuckets, aggregatePlayerBuckets, groupByEntity } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
-import FacetGroup from '../components/FacetGroup'
+import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
 
-const FACETS = ['competition', 'region', 'event', 'stage', 'phase', 'week']
-const FACET_LABELS = {
-  competition: 'Competition',
-  region: 'Region',
-  event: 'Event',
-  stage: 'Stage',
-  phase: 'Phase',
-  week: 'Week / Round',
-}
 
-const weekLabel = (w) => (w.includes(': ') ? w.split(': ').slice(1).join(': ') : w)
-const eventLabel = (e) => e.replace(/^Vct\b/, 'VCT')
 
 export default function Players() {
   const { data, loading } = useData('player_buckets')
@@ -101,8 +90,6 @@ export default function Players() {
     { key: 'totalClutches', label: 'Clutches', align: 'right', format: (v) => num(v) },
   ]
 
-  const renderers = { week: weekLabel, event: eventLabel }
-
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -110,37 +97,22 @@ export default function Players() {
         <p className="text-muted text-sm mt-1">{rows.length} players shown</p>
       </div>
 
-      <div className="bg-surface border border-hairline rounded-2xl p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <span className="font-display text-sm font-semibold text-ink">Filters</span>
-          <div className="flex items-center gap-3">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search player or team…"
-              className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:border-muted w-56"
-            />
-            {activeCount > 0 && (
-              <button onClick={clearAll} className="text-xs text-accent-bright hover:underline">
-                Clear all ({activeCount})
-              </button>
-            )}
-          </div>
-        </div>
-
-        {FACETS.map((f) => (
-          <FacetGroup
-            key={f}
-            label={FACET_LABELS[f]}
-            options={options[f] || []}
-            selected={selections[f] || []}
-            onChange={(vals) => setFacet(f, vals)}
-            renderLabel={renderers[f]}
-          />
-        ))}
-
+      <FilterPanel
+        options={options}
+        selections={selections}
+        setFacet={setFacet}
+        clearAll={clearAll}
+        activeCount={activeCount}
+        summary={`${rows.length} players`}
+      >
         <div className="flex items-center gap-5 flex-wrap pt-1">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search player or team…"
+            className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:border-muted w-56"
+          />
           <label className="flex items-center gap-2 text-xs text-muted">
             <input
               type="checkbox"
@@ -161,7 +133,7 @@ export default function Players() {
             />
           </label>
         </div>
-      </div>
+      </FilterPanel>
 
       <div className="bg-surface2/40 border border-hairline rounded-xl px-4 py-3 text-xs text-muted leading-relaxed">
         China-region matches don't publish multi-kill, clutch, or economy data on VLR, so those

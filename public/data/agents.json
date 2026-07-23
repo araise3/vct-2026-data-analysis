@@ -1,6 +1,4463 @@
 {
   "buckets": [
     {
+      "competition": "EWC",
+      "region": "Americas",
+      "event": "Esports World Cup 2026 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Grand Final",
+      "playerRows": 30,
+      "agentCounts": {
+        "Neon": 6,
+        "Viper": 4,
+        "Omen": 4,
+        "Fade": 3,
+        "Killjoy": 2,
+        "Sova": 2,
+        "Vyse": 2,
+        "Phoenix": 2,
+        "Astra": 2,
+        "Sage": 1,
+        "Raze": 1,
+        "Skye": 1
+      },
+      "mapStats": {
+        "Haven": {
+          "rounds": 18,
+          "atkWinRounds": 13,
+          "defWinRounds": 5
+        },
+        "Pearl": {
+          "rounds": 14,
+          "atkWinRounds": 11,
+          "defWinRounds": 3
+        },
+        "Split": {
+          "rounds": 19,
+          "atkWinRounds": 6,
+          "defWinRounds": 13
+        }
+      },
+      "mapAgentCounts": {
+        "Haven": {
+          "Killjoy": 2,
+          "Neon": 2,
+          "Sova": 2,
+          "Viper": 2,
+          "Omen": 2
+        },
+        "Pearl": {
+          "Vyse": 2,
+          "Phoenix": 2,
+          "Fade": 2,
+          "Neon": 2,
+          "Astra": 2
+        },
+        "Split": {
+          "Viper": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Fade": 1,
+          "Sage": 1,
+          "Raze": 1,
+          "Skye": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Americas",
+      "event": "Esports World Cup 2026 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Lower Final",
+      "playerRows": 20,
+      "agentCounts": {
+        "Neon": 4,
+        "Omen": 3,
+        "Viper": 2,
+        "Sova": 2,
+        "Raze": 2,
+        "Fade": 2,
+        "Jett": 1,
+        "Harbor": 1,
+        "Iso": 1,
+        "Vyse": 1,
+        "Cypher": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 18,
+          "atkWinRounds": 11,
+          "defWinRounds": 7
+        },
+        "Lotus": {
+          "rounds": 20,
+          "atkWinRounds": 15,
+          "defWinRounds": 5
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Viper": 2,
+          "Sova": 2,
+          "Neon": 2,
+          "Jett": 1,
+          "Omen": 1,
+          "Harbor": 1,
+          "Iso": 1
+        },
+        "Lotus": {
+          "Raze": 2,
+          "Omen": 2,
+          "Fade": 2,
+          "Neon": 2,
+          "Vyse": 1,
+          "Cypher": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Americas",
+      "event": "Esports World Cup 2026 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Lower Round 1",
+      "playerRows": 20,
+      "agentCounts": {
+        "Fade": 4,
+        "Neon": 4,
+        "Vyse": 3,
+        "Omen": 2,
+        "Raze": 2,
+        "Clove": 2,
+        "Astra": 2,
+        "Killjoy": 1
+      },
+      "mapStats": {
+        "Lotus": {
+          "rounds": 22,
+          "atkWinRounds": 13,
+          "defWinRounds": 9
+        },
+        "Pearl": {
+          "rounds": 20,
+          "atkWinRounds": 11,
+          "defWinRounds": 9
+        }
+      },
+      "mapAgentCounts": {
+        "Lotus": {
+          "Fade": 2,
+          "Omen": 2,
+          "Neon": 2,
+          "Vyse": 2,
+          "Raze": 1,
+          "Clove": 1
+        },
+        "Pearl": {
+          "Astra": 2,
+          "Neon": 2,
+          "Fade": 2,
+          "Raze": 1,
+          "Vyse": 1,
+          "Killjoy": 1,
+          "Clove": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Americas",
+      "event": "Esports World Cup 2026 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Upper Final",
+      "playerRows": 30,
+      "agentCounts": {
+        "Sova": 5,
+        "Omen": 4,
+        "Neon": 4,
+        "Cypher": 3,
+        "Jett": 3,
+        "Astra": 2,
+        "Vyse": 2,
+        "Phoenix": 2,
+        "Waylay": 1,
+        "Viper": 1,
+        "Killjoy": 1,
+        "Iso": 1,
+        "Fade": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 26,
+          "atkWinRounds": 12,
+          "defWinRounds": 12
+        },
+        "Haven": {
+          "rounds": 30,
+          "atkWinRounds": 10,
+          "defWinRounds": 14
+        },
+        "Pearl": {
+          "rounds": 22,
+          "atkWinRounds": 7,
+          "defWinRounds": 15
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Omen": 2,
+          "Sova": 2,
+          "Cypher": 2,
+          "Jett": 2,
+          "Neon": 1,
+          "Waylay": 1
+        },
+        "Haven": {
+          "Omen": 2,
+          "Sova": 2,
+          "Viper": 1,
+          "Killjoy": 1,
+          "Neon": 1,
+          "Cypher": 1,
+          "Jett": 1,
+          "Iso": 1
+        },
+        "Pearl": {
+          "Astra": 2,
+          "Neon": 2,
+          "Vyse": 2,
+          "Phoenix": 2,
+          "Fade": 1,
+          "Sova": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Americas",
+      "event": "Esports World Cup 2026 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Upper Semifinals",
+      "playerRows": 60,
+      "agentCounts": {
+        "Neon": 10,
+        "Fade": 6,
+        "Omen": 5,
+        "Sova": 5,
+        "Vyse": 4,
+        "Astra": 4,
+        "Viper": 4,
+        "Raze": 3,
+        "Phoenix": 3,
+        "Cypher": 3,
+        "Jett": 3,
+        "Brimstone": 2,
+        "Skye": 1,
+        "Sage": 1,
+        "Clove": 1,
+        "Killjoy": 1,
+        "Waylay": 1,
+        "Harbor": 1,
+        "Iso": 1,
+        "Kayo": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 26,
+          "atkWinRounds": 10,
+          "defWinRounds": 14
+        },
+        "Breeze": {
+          "rounds": 21,
+          "atkWinRounds": 12,
+          "defWinRounds": 9
+        },
+        "Fracture": {
+          "rounds": 16,
+          "atkWinRounds": 11,
+          "defWinRounds": 5
+        },
+        "Pearl": {
+          "rounds": 48,
+          "atkWinRounds": 29,
+          "defWinRounds": 17
+        },
+        "Split": {
+          "rounds": 18,
+          "atkWinRounds": 11,
+          "defWinRounds": 7
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Jett": 2,
+          "Omen": 2,
+          "Clove": 1,
+          "Killjoy": 1,
+          "Cypher": 1,
+          "Waylay": 1
+        },
+        "Breeze": {
+          "Neon": 2,
+          "Sova": 2,
+          "Viper": 2,
+          "Harbor": 1,
+          "Iso": 1,
+          "Omen": 1,
+          "Jett": 1
+        },
+        "Fracture": {
+          "Cypher": 2,
+          "Brimstone": 2,
+          "Fade": 2,
+          "Neon": 2,
+          "Raze": 1,
+          "Phoenix": 1
+        },
+        "Pearl": {
+          "Vyse": 4,
+          "Astra": 4,
+          "Neon": 4,
+          "Fade": 3,
+          "Phoenix": 2,
+          "Raze": 1,
+          "Kayo": 1,
+          "Sova": 1
+        },
+        "Split": {
+          "Neon": 2,
+          "Viper": 2,
+          "Omen": 2,
+          "Skye": 1,
+          "Raze": 1,
+          "Fade": 1,
+          "Sage": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Americas",
+      "event": "Esports World Cup 2026 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Final",
+      "playerRows": 30,
+      "agentCounts": {
+        "Vyse": 4,
+        "Omen": 4,
+        "Phoenix": 3,
+        "Fade": 3,
+        "Neon": 3,
+        "Sova": 3,
+        "Astra": 2,
+        "Viper": 2,
+        "Cypher": 2,
+        "Tejo": 1,
+        "Waylay": 1,
+        "Raze": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Haven": {
+          "rounds": 18,
+          "atkWinRounds": 5,
+          "defWinRounds": 13
+        },
+        "Lotus": {
+          "rounds": 20,
+          "atkWinRounds": 11,
+          "defWinRounds": 9
+        },
+        "Pearl": {
+          "rounds": 23,
+          "atkWinRounds": 6,
+          "defWinRounds": 17
+        }
+      },
+      "mapAgentCounts": {
+        "Haven": {
+          "Cypher": 2,
+          "Phoenix": 2,
+          "Omen": 2,
+          "Sova": 2,
+          "Neon": 1,
+          "Jett": 1
+        },
+        "Lotus": {
+          "Omen": 2,
+          "Vyse": 2,
+          "Fade": 2,
+          "Viper": 2,
+          "Neon": 1,
+          "Raze": 1
+        },
+        "Pearl": {
+          "Astra": 2,
+          "Vyse": 2,
+          "Phoenix": 1,
+          "Fade": 1,
+          "Neon": 1,
+          "Tejo": 1,
+          "Sova": 1,
+          "Waylay": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Americas",
+      "event": "Esports World Cup 2026 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Round 1",
+      "playerRows": 50,
+      "agentCounts": {
+        "Omen": 8,
+        "Sova": 8,
+        "Neon": 5,
+        "Jett": 4,
+        "Cypher": 4,
+        "Viper": 3,
+        "Phoenix": 3,
+        "Miks": 2,
+        "Iso": 2,
+        "Raze": 2,
+        "Vyse": 2,
+        "Killjoy": 1,
+        "Harbor": 1,
+        "Reyna": 1,
+        "Sage": 1,
+        "Veto": 1,
+        "Skye": 1,
+        "Fade": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 20,
+          "atkWinRounds": 13,
+          "defWinRounds": 7
+        },
+        "Breeze": {
+          "rounds": 26,
+          "atkWinRounds": 16,
+          "defWinRounds": 8
+        },
+        "Haven": {
+          "rounds": 44,
+          "atkWinRounds": 17,
+          "defWinRounds": 25
+        },
+        "Lotus": {
+          "rounds": 22,
+          "atkWinRounds": 11,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Omen": 2,
+          "Phoenix": 1,
+          "Neon": 1,
+          "Cypher": 1,
+          "Sage": 1,
+          "Veto": 1,
+          "Jett": 1
+        },
+        "Breeze": {
+          "Sova": 2,
+          "Iso": 1,
+          "Viper": 1,
+          "Neon": 1,
+          "Harbor": 1,
+          "Jett": 1,
+          "Omen": 1,
+          "Miks": 1,
+          "Reyna": 1
+        },
+        "Haven": {
+          "Sova": 4,
+          "Omen": 3,
+          "Cypher": 3,
+          "Neon": 2,
+          "Jett": 2,
+          "Phoenix": 2,
+          "Killjoy": 1,
+          "Viper": 1,
+          "Miks": 1,
+          "Iso": 1
+        },
+        "Lotus": {
+          "Raze": 2,
+          "Vyse": 2,
+          "Omen": 2,
+          "Skye": 1,
+          "Neon": 1,
+          "Fade": 1,
+          "Viper": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Americas",
+      "event": "Esports World Cup 2026 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Round 2",
+      "playerRows": 50,
+      "agentCounts": {
+        "Neon": 8,
+        "Vyse": 6,
+        "Fade": 6,
+        "Astra": 5,
+        "Sova": 4,
+        "Omen": 4,
+        "Viper": 3,
+        "Phoenix": 3,
+        "Harbor": 2,
+        "Cypher": 2,
+        "Raze": 2,
+        "Iso": 1,
+        "Chamber": 1,
+        "Tejo": 1,
+        "Sage": 1,
+        "Deadlock": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 22,
+          "atkWinRounds": 9,
+          "defWinRounds": 13
+        },
+        "Lotus": {
+          "rounds": 49,
+          "atkWinRounds": 29,
+          "defWinRounds": 18
+        },
+        "Pearl": {
+          "rounds": 44,
+          "atkWinRounds": 22,
+          "defWinRounds": 22
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Sova": 2,
+          "Harbor": 2,
+          "Neon": 2,
+          "Astra": 1,
+          "Vyse": 1,
+          "Viper": 1,
+          "Iso": 1
+        },
+        "Lotus": {
+          "Fade": 4,
+          "Omen": 4,
+          "Vyse": 2,
+          "Neon": 2,
+          "Viper": 2,
+          "Cypher": 2,
+          "Raze": 2,
+          "Sage": 1,
+          "Deadlock": 1
+        },
+        "Pearl": {
+          "Astra": 4,
+          "Neon": 4,
+          "Vyse": 3,
+          "Phoenix": 3,
+          "Fade": 2,
+          "Sova": 2,
+          "Chamber": 1,
+          "Tejo": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Americas",
+      "event": "Esports World Cup 2026 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Upper Quarterfinals",
+      "playerRows": 90,
+      "agentCounts": {
+        "Neon": 12,
+        "Sova": 12,
+        "Omen": 9,
+        "Jett": 8,
+        "Viper": 7,
+        "Harbor": 6,
+        "Phoenix": 6,
+        "Cypher": 5,
+        "Fade": 4,
+        "Vyse": 4,
+        "Astra": 3,
+        "Kayo": 3,
+        "Raze": 2,
+        "Brimstone": 2,
+        "Iso": 1,
+        "Chamber": 1,
+        "Killjoy": 1,
+        "Skye": 1,
+        "Breach": 1,
+        "Tejo": 1,
+        "Waylay": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 37,
+          "atkWinRounds": 20,
+          "defWinRounds": 17
+        },
+        "Breeze": {
+          "rounds": 70,
+          "atkWinRounds": 35,
+          "defWinRounds": 35
+        },
+        "Fracture": {
+          "rounds": 20,
+          "atkWinRounds": 11,
+          "defWinRounds": 9
+        },
+        "Haven": {
+          "rounds": 19,
+          "atkWinRounds": 9,
+          "defWinRounds": 10
+        },
+        "Lotus": {
+          "rounds": 20,
+          "atkWinRounds": 7,
+          "defWinRounds": 13
+        },
+        "Split": {
+          "rounds": 17,
+          "atkWinRounds": 9,
+          "defWinRounds": 8
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Omen": 4,
+          "Sova": 4,
+          "Jett": 4,
+          "Phoenix": 3,
+          "Cypher": 3,
+          "Kayo": 1,
+          "Vyse": 1
+        },
+        "Breeze": {
+          "Sova": 6,
+          "Harbor": 6,
+          "Neon": 4,
+          "Jett": 3,
+          "Viper": 3,
+          "Kayo": 2,
+          "Omen": 1,
+          "Iso": 1,
+          "Phoenix": 1,
+          "Cypher": 1,
+          "Astra": 1,
+          "Vyse": 1
+        },
+        "Fracture": {
+          "Neon": 2,
+          "Brimstone": 2,
+          "Jett": 1,
+          "Skye": 1,
+          "Cypher": 1,
+          "Breach": 1,
+          "Tejo": 1,
+          "Waylay": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Neon": 2,
+          "Astra": 1,
+          "Phoenix": 1,
+          "Chamber": 1,
+          "Omen": 1,
+          "Viper": 1,
+          "Killjoy": 1
+        },
+        "Lotus": {
+          "Fade": 2,
+          "Vyse": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Raze": 1,
+          "Viper": 1
+        },
+        "Split": {
+          "Viper": 2,
+          "Neon": 2,
+          "Fade": 2,
+          "Omen": 1,
+          "Phoenix": 1,
+          "Astra": 1,
+          "Raze": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Americas",
+      "event": "Esports World Cup 2026 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Upper Semifinals",
+      "playerRows": 60,
+      "agentCounts": {
+        "Neon": 11,
+        "Omen": 8,
+        "Phoenix": 7,
+        "Fade": 6,
+        "Sova": 5,
+        "Cypher": 4,
+        "Viper": 3,
+        "Chamber": 3,
+        "Astra": 3,
+        "Raze": 2,
+        "Harbor": 2,
+        "Jett": 2,
+        "Vyse": 2,
+        "Sage": 1,
+        "Skye": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 26,
+          "atkWinRounds": 14,
+          "defWinRounds": 10
+        },
+        "Breeze": {
+          "rounds": 20,
+          "atkWinRounds": 11,
+          "defWinRounds": 9
+        },
+        "Haven": {
+          "rounds": 20,
+          "atkWinRounds": 7,
+          "defWinRounds": 13
+        },
+        "Pearl": {
+          "rounds": 23,
+          "atkWinRounds": 8,
+          "defWinRounds": 15
+        },
+        "Split": {
+          "rounds": 40,
+          "atkWinRounds": 24,
+          "defWinRounds": 16
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Neon": 2,
+          "Sova": 2,
+          "Omen": 2,
+          "Phoenix": 1,
+          "Chamber": 1,
+          "Jett": 1,
+          "Cypher": 1
+        },
+        "Breeze": {
+          "Harbor": 2,
+          "Sova": 2,
+          "Neon": 2,
+          "Omen": 1,
+          "Jett": 1,
+          "Cypher": 1,
+          "Phoenix": 1
+        },
+        "Haven": {
+          "Phoenix": 2,
+          "Neon": 2,
+          "Fade": 1,
+          "Chamber": 1,
+          "Astra": 1,
+          "Omen": 1,
+          "Sova": 1,
+          "Cypher": 1
+        },
+        "Pearl": {
+          "Astra": 2,
+          "Fade": 2,
+          "Phoenix": 2,
+          "Neon": 2,
+          "Chamber": 1,
+          "Vyse": 1
+        },
+        "Split": {
+          "Omen": 4,
+          "Fade": 3,
+          "Viper": 3,
+          "Neon": 3,
+          "Raze": 2,
+          "Phoenix": 1,
+          "Cypher": 1,
+          "Sage": 1,
+          "Skye": 1,
+          "Vyse": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Grand Final",
+      "playerRows": 30,
+      "agentCounts": {
+        "Omen": 6,
+        "Neon": 5,
+        "Killjoy": 3,
+        "Sova": 3,
+        "Phoenix": 3,
+        "Viper": 3,
+        "Fade": 2,
+        "Jett": 1,
+        "Chamber": 1,
+        "Veto": 1,
+        "Skye": 1,
+        "Cypher": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 21,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Haven": {
+          "rounds": 19,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Lotus": {
+          "rounds": 20,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Omen": 2,
+          "Jett": 1,
+          "Killjoy": 1,
+          "Phoenix": 1,
+          "Chamber": 1,
+          "Veto": 1,
+          "Neon": 1
+        },
+        "Haven": {
+          "Neon": 2,
+          "Omen": 2,
+          "Viper": 1,
+          "Killjoy": 1,
+          "Skye": 1,
+          "Cypher": 1,
+          "Phoenix": 1,
+          "Sova": 1
+        },
+        "Lotus": {
+          "Neon": 2,
+          "Omen": 2,
+          "Viper": 2,
+          "Fade": 2,
+          "Killjoy": 1,
+          "Phoenix": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Lower Final",
+      "playerRows": 30,
+      "agentCounts": {
+        "Neon": 6,
+        "Viper": 4,
+        "Sova": 4,
+        "Omen": 4,
+        "Phoenix": 3,
+        "Harbor": 2,
+        "Fade": 2,
+        "Killjoy": 2,
+        "Kayo": 1,
+        "Iso": 1,
+        "Cypher": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 23,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Haven": {
+          "rounds": 20,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Lotus": {
+          "rounds": 21,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Harbor": 2,
+          "Neon": 2,
+          "Viper": 2,
+          "Sova": 2,
+          "Kayo": 1,
+          "Iso": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Phoenix": 2,
+          "Killjoy": 1,
+          "Cypher": 1
+        },
+        "Lotus": {
+          "Viper": 2,
+          "Neon": 2,
+          "Fade": 2,
+          "Omen": 2,
+          "Killjoy": 1,
+          "Phoenix": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Lower Round 1",
+      "playerRows": 30,
+      "agentCounts": {
+        "Sova": 5,
+        "Neon": 4,
+        "Omen": 4,
+        "Killjoy": 3,
+        "Cypher": 2,
+        "Chamber": 2,
+        "Astra": 2,
+        "Viper": 1,
+        "Phoenix": 1,
+        "Jett": 1,
+        "Kayo": 1,
+        "Veto": 1,
+        "Waylay": 1,
+        "Tejo": 1,
+        "Fade": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 23,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Haven": {
+          "rounds": 22,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Pearl": {
+          "rounds": 23,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Omen": 2,
+          "Jett": 1,
+          "Cypher": 1,
+          "Kayo": 1,
+          "Veto": 1,
+          "Chamber": 1,
+          "Neon": 1
+        },
+        "Haven": {
+          "Neon": 2,
+          "Omen": 2,
+          "Sova": 2,
+          "Viper": 1,
+          "Killjoy": 1,
+          "Cypher": 1,
+          "Phoenix": 1
+        },
+        "Pearl": {
+          "Killjoy": 2,
+          "Astra": 2,
+          "Waylay": 1,
+          "Tejo": 1,
+          "Sova": 1,
+          "Chamber": 1,
+          "Neon": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Upper Final",
+      "playerRows": 30,
+      "agentCounts": {
+        "Omen": 6,
+        "Viper": 5,
+        "Killjoy": 4,
+        "Neon": 4,
+        "Skye": 3,
+        "Fade": 2,
+        "Raze": 2,
+        "Sova": 1,
+        "Phoenix": 1,
+        "Breach": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Haven": {
+          "rounds": 23,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Lotus": {
+          "rounds": 18,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Split": {
+          "rounds": 20,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        }
+      },
+      "mapAgentCounts": {
+        "Haven": {
+          "Killjoy": 2,
+          "Omen": 2,
+          "Sova": 1,
+          "Phoenix": 1,
+          "Breach": 1,
+          "Neon": 1,
+          "Viper": 1,
+          "Skye": 1
+        },
+        "Lotus": {
+          "Omen": 2,
+          "Killjoy": 2,
+          "Fade": 2,
+          "Viper": 2,
+          "Neon": 2
+        },
+        "Split": {
+          "Raze": 2,
+          "Viper": 2,
+          "Skye": 2,
+          "Omen": 2,
+          "Neon": 1,
+          "Jett": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Upper Semifinals",
+      "playerRows": 50,
+      "agentCounts": {
+        "Neon": 8,
+        "Killjoy": 6,
+        "Omen": 5,
+        "Astra": 5,
+        "Viper": 3,
+        "Fade": 3,
+        "Sova": 3,
+        "Chamber": 3,
+        "Skye": 3,
+        "Vyse": 2,
+        "Phoenix": 2,
+        "Tejo": 2,
+        "Cypher": 2,
+        "Waylay": 1,
+        "Veto": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 23,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Haven": {
+          "rounds": 20,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Lotus": {
+          "rounds": 20,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Pearl": {
+          "rounds": 44,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Chamber": 1,
+          "Veto": 1,
+          "Neon": 1,
+          "Omen": 1,
+          "Jett": 1,
+          "Phoenix": 1,
+          "Astra": 1,
+          "Cypher": 1
+        },
+        "Haven": {
+          "Skye": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Cypher": 1,
+          "Chamber": 1,
+          "Killjoy": 1,
+          "Viper": 1
+        },
+        "Lotus": {
+          "Neon": 2,
+          "Viper": 2,
+          "Omen": 2,
+          "Fade": 2,
+          "Killjoy": 1,
+          "Vyse": 1
+        },
+        "Pearl": {
+          "Killjoy": 4,
+          "Astra": 4,
+          "Neon": 3,
+          "Tejo": 2,
+          "Phoenix": 1,
+          "Waylay": 1,
+          "Sova": 1,
+          "Fade": 1,
+          "Chamber": 1,
+          "Vyse": 1,
+          "Skye": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Final",
+      "playerRows": 30,
+      "agentCounts": {},
+      "mapStats": {
+        "Fracture": {
+          "rounds": 22,
+          "atkWinRounds": 11,
+          "defWinRounds": 11
+        },
+        "Pearl": {
+          "rounds": 14,
+          "atkWinRounds": 3,
+          "defWinRounds": 11
+        },
+        "Split": {
+          "rounds": 14,
+          "atkWinRounds": 3,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Fracture": {},
+        "Pearl": {},
+        "Split": {}
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Round 1",
+      "playerRows": 50,
+      "agentCounts": {},
+      "mapStats": {
+        "Ascent": {
+          "rounds": 19,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Haven": {
+          "rounds": 43,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Split": {
+          "rounds": 55,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {},
+        "Haven": {},
+        "Split": {}
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Round 2",
+      "playerRows": 50,
+      "agentCounts": {},
+      "mapStats": {
+        "Ascent": {
+          "rounds": 24,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Breeze": {
+          "rounds": 15,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Haven": {
+          "rounds": 19,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Lotus": {
+          "rounds": 23,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Split": {
+          "rounds": 21,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {},
+        "Breeze": {},
+        "Haven": {},
+        "Lotus": {},
+        "Split": {}
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Round 3",
+      "playerRows": 20,
+      "agentCounts": {},
+      "mapStats": {
+        "Haven": {
+          "rounds": 22,
+          "atkWinRounds": 11,
+          "defWinRounds": 11
+        },
+        "Split": {
+          "rounds": 20,
+          "atkWinRounds": 13,
+          "defWinRounds": 7
+        }
+      },
+      "mapAgentCounts": {
+        "Haven": {},
+        "Split": {}
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Upper Final",
+      "playerRows": 30,
+      "agentCounts": {},
+      "mapStats": {
+        "Breeze": {
+          "rounds": 20,
+          "atkWinRounds": 7,
+          "defWinRounds": 13
+        },
+        "Lotus": {
+          "rounds": 20,
+          "atkWinRounds": 11,
+          "defWinRounds": 9
+        },
+        "Split": {
+          "rounds": 21,
+          "atkWinRounds": 7,
+          "defWinRounds": 14
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {},
+        "Lotus": {},
+        "Split": {}
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Upper Quarterfinals",
+      "playerRows": 110,
+      "agentCounts": {},
+      "mapStats": {
+        "Ascent": {
+          "rounds": 41,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Breeze": {
+          "rounds": 44,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Haven": {
+          "rounds": 46,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Lotus": {
+          "rounds": 22,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Pearl": {
+          "rounds": 30,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Split": {
+          "rounds": 50,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {},
+        "Breeze": {},
+        "Haven": {},
+        "Lotus": {},
+        "Pearl": {},
+        "Split": {}
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "China",
+      "event": "Esports World Cup 2026 China Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Upper Semifinals",
+      "playerRows": 50,
+      "agentCounts": {},
+      "mapStats": {
+        "Breeze": {
+          "rounds": 21,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Haven": {
+          "rounds": 19,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Lotus": {
+          "rounds": 26,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Pearl": {
+          "rounds": 16,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        },
+        "Split": {
+          "rounds": 30,
+          "atkWinRounds": 0,
+          "defWinRounds": 0
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {},
+        "Haven": {},
+        "Lotus": {},
+        "Pearl": {},
+        "Split": {}
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "EMEA",
+      "event": "Esports World Cup 2026 Emea Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Decider",
+      "playerRows": 20,
+      "agentCounts": {
+        "Sova": 4,
+        "Omen": 4,
+        "Neon": 3,
+        "Cypher": 3,
+        "Phoenix": 3,
+        "Vyse": 1,
+        "Kayo": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 15,
+          "atkWinRounds": 5,
+          "defWinRounds": 10
+        },
+        "Haven": {
+          "rounds": 19,
+          "atkWinRounds": 13,
+          "defWinRounds": 6
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Omen": 2,
+          "Neon": 1,
+          "Cypher": 1,
+          "Phoenix": 1,
+          "Vyse": 1,
+          "Kayo": 1,
+          "Jett": 1
+        },
+        "Haven": {
+          "Neon": 2,
+          "Phoenix": 2,
+          "Cypher": 2,
+          "Sova": 2,
+          "Omen": 2
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "EMEA",
+      "event": "Esports World Cup 2026 Emea Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Elimination",
+      "playerRows": 30,
+      "agentCounts": {
+        "Neon": 5,
+        "Omen": 5,
+        "Sova": 4,
+        "Jett": 3,
+        "Viper": 2,
+        "Fade": 2,
+        "Vyse": 2,
+        "Harbor": 2,
+        "Kayo": 2,
+        "Raze": 1,
+        "Astra": 1,
+        "Cypher": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 20,
+          "atkWinRounds": 7,
+          "defWinRounds": 13
+        },
+        "Breeze": {
+          "rounds": 24,
+          "atkWinRounds": 13,
+          "defWinRounds": 11
+        },
+        "Lotus": {
+          "rounds": 20,
+          "atkWinRounds": 13,
+          "defWinRounds": 7
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Jett": 2,
+          "Omen": 2,
+          "Neon": 1,
+          "Cypher": 1,
+          "Kayo": 1,
+          "Vyse": 1
+        },
+        "Breeze": {
+          "Neon": 2,
+          "Sova": 2,
+          "Astra": 1,
+          "Jett": 1,
+          "Omen": 1,
+          "Kayo": 1,
+          "Harbor": 1,
+          "Viper": 1
+        },
+        "Lotus": {
+          "Neon": 2,
+          "Fade": 2,
+          "Omen": 2,
+          "Viper": 1,
+          "Raze": 1,
+          "Vyse": 1,
+          "Harbor": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "EMEA",
+      "event": "Esports World Cup 2026 Emea Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Opening",
+      "playerRows": 50,
+      "agentCounts": {
+        "Neon": 9,
+        "Cypher": 8,
+        "Fade": 6,
+        "Phoenix": 6,
+        "Astra": 5,
+        "Omen": 5,
+        "Sova": 3,
+        "Tejo": 2,
+        "Veto": 1,
+        "Viper": 1,
+        "Chamber": 1,
+        "Skye": 1,
+        "Jett": 1,
+        "Waylay": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 26,
+          "atkWinRounds": 10,
+          "defWinRounds": 14
+        },
+        "Fracture": {
+          "rounds": 23,
+          "atkWinRounds": 5,
+          "defWinRounds": 18
+        },
+        "Haven": {
+          "rounds": 17,
+          "atkWinRounds": 5,
+          "defWinRounds": 12
+        },
+        "Pearl": {
+          "rounds": 46,
+          "atkWinRounds": 33,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Cypher": 2,
+          "Omen": 2,
+          "Neon": 2,
+          "Fade": 1,
+          "Phoenix": 1,
+          "Jett": 1,
+          "Sova": 1
+        },
+        "Fracture": {
+          "Neon": 2,
+          "Omen": 1,
+          "Viper": 1,
+          "Fade": 1,
+          "Chamber": 1,
+          "Astra": 1,
+          "Tejo": 1,
+          "Cypher": 1,
+          "Skye": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Cypher": 2,
+          "Omen": 2,
+          "Neon": 2,
+          "Phoenix": 2
+        },
+        "Pearl": {
+          "Fade": 4,
+          "Astra": 4,
+          "Cypher": 3,
+          "Neon": 3,
+          "Phoenix": 3,
+          "Veto": 1,
+          "Tejo": 1,
+          "Waylay": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "EMEA",
+      "event": "Esports World Cup 2026 Emea Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Winner's",
+      "playerRows": 20,
+      "agentCounts": {
+        "Fade": 4,
+        "Neon": 4,
+        "Astra": 2,
+        "Phoenix": 2,
+        "Cypher": 2,
+        "Omen": 2,
+        "Viper": 2,
+        "Raze": 2
+      },
+      "mapStats": {
+        "Pearl": {
+          "rounds": 17,
+          "atkWinRounds": 5,
+          "defWinRounds": 12
+        },
+        "Split": {
+          "rounds": 16,
+          "atkWinRounds": 9,
+          "defWinRounds": 7
+        }
+      },
+      "mapAgentCounts": {
+        "Pearl": {
+          "Astra": 2,
+          "Phoenix": 2,
+          "Fade": 2,
+          "Neon": 2,
+          "Cypher": 2
+        },
+        "Split": {
+          "Neon": 2,
+          "Omen": 2,
+          "Fade": 2,
+          "Viper": 2,
+          "Raze": 2
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "EMEA",
+      "event": "Esports World Cup 2026 Emea Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Final",
+      "playerRows": 30,
+      "agentCounts": {
+        "Neon": 5,
+        "Cypher": 5,
+        "Phoenix": 4,
+        "Sova": 4,
+        "Omen": 3,
+        "Astra": 2,
+        "Fade": 2,
+        "Jett": 2,
+        "Viper": 2,
+        "Deadlock": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 24,
+          "atkWinRounds": 7,
+          "defWinRounds": 17
+        },
+        "Breeze": {
+          "rounds": 28,
+          "atkWinRounds": 12,
+          "defWinRounds": 12
+        },
+        "Pearl": {
+          "rounds": 20,
+          "atkWinRounds": 5,
+          "defWinRounds": 15
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Omen": 2,
+          "Cypher": 2,
+          "Phoenix": 1,
+          "Neon": 1,
+          "Jett": 1,
+          "Deadlock": 1
+        },
+        "Breeze": {
+          "Viper": 2,
+          "Sova": 2,
+          "Neon": 2,
+          "Cypher": 1,
+          "Phoenix": 1,
+          "Omen": 1,
+          "Jett": 1
+        },
+        "Pearl": {
+          "Astra": 2,
+          "Neon": 2,
+          "Phoenix": 2,
+          "Cypher": 2,
+          "Fade": 2
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "EMEA",
+      "event": "Esports World Cup 2026 Emea Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Round 1",
+      "playerRows": 40,
+      "agentCounts": {
+        "Omen": 7,
+        "Neon": 5,
+        "Cypher": 5,
+        "Raze": 4,
+        "Fade": 4,
+        "Sova": 3,
+        "Jett": 3,
+        "Phoenix": 2,
+        "Viper": 2,
+        "Sage": 1,
+        "Skye": 1,
+        "Astra": 1,
+        "Tejo": 1,
+        "Vyse": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 24,
+          "atkWinRounds": 9,
+          "defWinRounds": 15
+        },
+        "Breeze": {
+          "rounds": 22,
+          "atkWinRounds": 15,
+          "defWinRounds": 7
+        },
+        "Lotus": {
+          "rounds": 55,
+          "atkWinRounds": 28,
+          "defWinRounds": 19
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Cypher": 2,
+          "Omen": 2,
+          "Phoenix": 1,
+          "Neon": 1,
+          "Jett": 1,
+          "Sage": 1
+        },
+        "Breeze": {
+          "Jett": 2,
+          "Viper": 2,
+          "Neon": 1,
+          "Sova": 1,
+          "Omen": 1,
+          "Skye": 1,
+          "Astra": 1,
+          "Tejo": 1
+        },
+        "Lotus": {
+          "Raze": 4,
+          "Omen": 4,
+          "Fade": 4,
+          "Neon": 3,
+          "Cypher": 3,
+          "Phoenix": 1,
+          "Vyse": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "EMEA",
+      "event": "Esports World Cup 2026 Emea Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Round 2",
+      "playerRows": 60,
+      "agentCounts": {
+        "Neon": 11,
+        "Omen": 8,
+        "Cypher": 7,
+        "Fade": 7,
+        "Sova": 4,
+        "Phoenix": 4,
+        "Viper": 3,
+        "Astra": 3,
+        "Raze": 3,
+        "Waylay": 2,
+        "Jett": 2,
+        "Vyse": 2,
+        "Kayo": 1,
+        "Skye": 1,
+        "Brimstone": 1,
+        "Chamber": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 28,
+          "atkWinRounds": 10,
+          "defWinRounds": 14
+        },
+        "Fracture": {
+          "rounds": 24,
+          "atkWinRounds": 19,
+          "defWinRounds": 5
+        },
+        "Haven": {
+          "rounds": 18,
+          "atkWinRounds": 9,
+          "defWinRounds": 9
+        },
+        "Lotus": {
+          "rounds": 18,
+          "atkWinRounds": 7,
+          "defWinRounds": 11
+        },
+        "Pearl": {
+          "rounds": 24,
+          "atkWinRounds": 13,
+          "defWinRounds": 11
+        },
+        "Split": {
+          "rounds": 24,
+          "atkWinRounds": 9,
+          "defWinRounds": 15
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Cypher": 2,
+          "Neon": 2,
+          "Sova": 2,
+          "Omen": 2,
+          "Kayo": 1,
+          "Phoenix": 1
+        },
+        "Fracture": {
+          "Fade": 2,
+          "Neon": 2,
+          "Brimstone": 1,
+          "Phoenix": 1,
+          "Cypher": 1,
+          "Omen": 1,
+          "Chamber": 1,
+          "Viper": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Omen": 2,
+          "Cypher": 2,
+          "Waylay": 1,
+          "Neon": 1,
+          "Jett": 1,
+          "Phoenix": 1
+        },
+        "Lotus": {
+          "Neon": 2,
+          "Omen": 2,
+          "Raze": 2,
+          "Fade": 2,
+          "Vyse": 2
+        },
+        "Pearl": {
+          "Neon": 2,
+          "Fade": 2,
+          "Astra": 2,
+          "Cypher": 2,
+          "Jett": 1,
+          "Phoenix": 1
+        },
+        "Split": {
+          "Viper": 2,
+          "Neon": 2,
+          "Skye": 1,
+          "Waylay": 1,
+          "Astra": 1,
+          "Raze": 1,
+          "Fade": 1,
+          "Omen": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "EMEA",
+      "event": "Esports World Cup 2026 Emea Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Upper Quarterfinals",
+      "playerRows": 90,
+      "agentCounts": {
+        "Neon": 14,
+        "Fade": 11,
+        "Cypher": 10,
+        "Omen": 10,
+        "Phoenix": 8,
+        "Raze": 6,
+        "Sova": 6,
+        "Astra": 5,
+        "Viper": 4,
+        "Jett": 4,
+        "Vyse": 3,
+        "Brimstone": 2,
+        "Chamber": 2,
+        "Harbor": 1,
+        "Kayo": 1,
+        "Skye": 1,
+        "Waylay": 1,
+        "Sage": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 44,
+          "atkWinRounds": 21,
+          "defWinRounds": 23
+        },
+        "Breeze": {
+          "rounds": 20,
+          "atkWinRounds": 11,
+          "defWinRounds": 9
+        },
+        "Fracture": {
+          "rounds": 43,
+          "atkWinRounds": 17,
+          "defWinRounds": 26
+        },
+        "Lotus": {
+          "rounds": 47,
+          "atkWinRounds": 32,
+          "defWinRounds": 15
+        },
+        "Pearl": {
+          "rounds": 23,
+          "atkWinRounds": 12,
+          "defWinRounds": 11
+        },
+        "Split": {
+          "rounds": 19,
+          "atkWinRounds": 8,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 4,
+          "Omen": 4,
+          "Jett": 3,
+          "Phoenix": 3,
+          "Cypher": 2,
+          "Chamber": 1,
+          "Neon": 1,
+          "Vyse": 1,
+          "Sage": 1
+        },
+        "Breeze": {
+          "Sova": 2,
+          "Neon": 2,
+          "Viper": 2,
+          "Harbor": 1,
+          "Kayo": 1,
+          "Jett": 1,
+          "Omen": 1
+        },
+        "Fracture": {
+          "Neon": 4,
+          "Fade": 4,
+          "Cypher": 3,
+          "Brimstone": 2,
+          "Phoenix": 2,
+          "Viper": 1,
+          "Omen": 1,
+          "Chamber": 1,
+          "Astra": 1,
+          "Raze": 1
+        },
+        "Lotus": {
+          "Fade": 4,
+          "Raze": 4,
+          "Omen": 4,
+          "Neon": 3,
+          "Cypher": 3,
+          "Vyse": 1,
+          "Phoenix": 1
+        },
+        "Pearl": {
+          "Phoenix": 2,
+          "Fade": 2,
+          "Astra": 2,
+          "Cypher": 2,
+          "Neon": 2
+        },
+        "Split": {
+          "Neon": 2,
+          "Astra": 2,
+          "Viper": 1,
+          "Skye": 1,
+          "Waylay": 1,
+          "Vyse": 1,
+          "Raze": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "EMEA",
+      "event": "Esports World Cup 2026 Emea Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Upper Semifinals",
+      "playerRows": 80,
+      "agentCounts": {
+        "Neon": 14,
+        "Cypher": 12,
+        "Phoenix": 10,
+        "Sova": 9,
+        "Omen": 9,
+        "Fade": 7,
+        "Brimstone": 3,
+        "Viper": 3,
+        "Astra": 2,
+        "Jett": 2,
+        "Chamber": 2,
+        "Kayo": 2,
+        "Harbor": 2,
+        "Waylay": 1,
+        "Deadlock": 1,
+        "Sage": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 44,
+          "atkWinRounds": 20,
+          "defWinRounds": 24
+        },
+        "Breeze": {
+          "rounds": 23,
+          "atkWinRounds": 12,
+          "defWinRounds": 11
+        },
+        "Fracture": {
+          "rounds": 39,
+          "atkWinRounds": 22,
+          "defWinRounds": 17
+        },
+        "Haven": {
+          "rounds": 44,
+          "atkWinRounds": 27,
+          "defWinRounds": 15
+        },
+        "Lotus": {
+          "rounds": 22,
+          "atkWinRounds": 7,
+          "defWinRounds": 15
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Cypher": 4,
+          "Sova": 4,
+          "Omen": 4,
+          "Neon": 3,
+          "Phoenix": 3,
+          "Jett": 1,
+          "Kayo": 1
+        },
+        "Breeze": {
+          "Neon": 2,
+          "Viper": 2,
+          "Harbor": 2,
+          "Sova": 2,
+          "Kayo": 1,
+          "Jett": 1
+        },
+        "Fracture": {
+          "Cypher": 4,
+          "Fade": 4,
+          "Phoenix": 4,
+          "Neon": 4,
+          "Brimstone": 3,
+          "Astra": 1
+        },
+        "Haven": {
+          "Neon": 4,
+          "Cypher": 3,
+          "Sova": 3,
+          "Omen": 3,
+          "Phoenix": 3,
+          "Waylay": 1,
+          "Chamber": 1,
+          "Astra": 1,
+          "Fade": 1
+        },
+        "Lotus": {
+          "Fade": 2,
+          "Omen": 2,
+          "Deadlock": 1,
+          "Sage": 1,
+          "Cypher": 1,
+          "Chamber": 1,
+          "Viper": 1,
+          "Neon": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Decider (A)",
+      "playerRows": 20,
+      "agentCounts": {
+        "Neon": 3,
+        "Omen": 3,
+        "Raze": 2,
+        "Jett": 2,
+        "Viper": 2,
+        "Sova": 2,
+        "Cypher": 1,
+        "Fade": 1,
+        "Vyse": 1,
+        "Skye": 1,
+        "Kayo": 1,
+        "Harbor": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 18,
+          "atkWinRounds": 9,
+          "defWinRounds": 9
+        },
+        "Lotus": {
+          "rounds": 17,
+          "atkWinRounds": 1,
+          "defWinRounds": 16
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Neon": 2,
+          "Viper": 2,
+          "Sova": 2,
+          "Omen": 1,
+          "Jett": 1,
+          "Kayo": 1,
+          "Harbor": 1
+        },
+        "Lotus": {
+          "Raze": 2,
+          "Omen": 2,
+          "Cypher": 1,
+          "Neon": 1,
+          "Fade": 1,
+          "Jett": 1,
+          "Vyse": 1,
+          "Skye": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Decider (B)",
+      "playerRows": 30,
+      "agentCounts": {
+        "Sova": 4,
+        "Phoenix": 4,
+        "Neon": 3,
+        "Cypher": 3,
+        "Jett": 2,
+        "Viper": 2,
+        "Harbor": 2,
+        "Brimstone": 2,
+        "Fade": 2,
+        "Omen": 2,
+        "Kayo": 1,
+        "Waylay": 1,
+        "Raze": 1,
+        "Chamber": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 19,
+          "atkWinRounds": 7,
+          "defWinRounds": 12
+        },
+        "Fracture": {
+          "rounds": 20,
+          "atkWinRounds": 7,
+          "defWinRounds": 13
+        },
+        "Haven": {
+          "rounds": 20,
+          "atkWinRounds": 5,
+          "defWinRounds": 15
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Jett": 2,
+          "Viper": 2,
+          "Sova": 2,
+          "Harbor": 2,
+          "Kayo": 1,
+          "Neon": 1
+        },
+        "Fracture": {
+          "Phoenix": 2,
+          "Brimstone": 2,
+          "Cypher": 2,
+          "Fade": 2,
+          "Waylay": 1,
+          "Raze": 1
+        },
+        "Haven": {
+          "Omen": 2,
+          "Neon": 2,
+          "Sova": 2,
+          "Phoenix": 2,
+          "Chamber": 1,
+          "Cypher": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Decider (C)",
+      "playerRows": 30,
+      "agentCounts": {
+        "Neon": 5,
+        "Sova": 4,
+        "Omen": 4,
+        "Phoenix": 3,
+        "Cypher": 3,
+        "Viper": 2,
+        "Harbor": 1,
+        "Kayo": 1,
+        "Astra": 1,
+        "Breach": 1,
+        "Fade": 1,
+        "Skye": 1,
+        "Sage": 1,
+        "Chamber": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 23,
+          "atkWinRounds": 15,
+          "defWinRounds": 8
+        },
+        "Haven": {
+          "rounds": 23,
+          "atkWinRounds": 18,
+          "defWinRounds": 5
+        },
+        "Sunset": {
+          "rounds": 26,
+          "atkWinRounds": 12,
+          "defWinRounds": 12
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Viper": 2,
+          "Sova": 2,
+          "Neon": 2,
+          "Phoenix": 1,
+          "Harbor": 1,
+          "Kayo": 1,
+          "Astra": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Phoenix": 2,
+          "Omen": 2,
+          "Cypher": 2,
+          "Neon": 1,
+          "Jett": 1
+        },
+        "Sunset": {
+          "Omen": 2,
+          "Neon": 2,
+          "Cypher": 1,
+          "Breach": 1,
+          "Fade": 1,
+          "Skye": 1,
+          "Sage": 1,
+          "Chamber": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Decider (D)",
+      "playerRows": 30,
+      "agentCounts": {
+        "Omen": 6,
+        "Raze": 4,
+        "Neon": 3,
+        "Cypher": 2,
+        "Waylay": 2,
+        "Fade": 2,
+        "Viper": 2,
+        "Skye": 2,
+        "Jett": 2,
+        "Sova": 2,
+        "Vyse": 1,
+        "Phoenix": 1,
+        "Chamber": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 17,
+          "atkWinRounds": 3,
+          "defWinRounds": 14
+        },
+        "Lotus": {
+          "rounds": 28,
+          "atkWinRounds": 16,
+          "defWinRounds": 8
+        },
+        "Split": {
+          "rounds": 19,
+          "atkWinRounds": 8,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Cypher": 1,
+          "Waylay": 1,
+          "Phoenix": 1,
+          "Chamber": 1
+        },
+        "Lotus": {
+          "Raze": 2,
+          "Fade": 2,
+          "Omen": 2,
+          "Cypher": 1,
+          "Waylay": 1,
+          "Neon": 1,
+          "Vyse": 1
+        },
+        "Split": {
+          "Omen": 2,
+          "Viper": 2,
+          "Skye": 2,
+          "Jett": 2,
+          "Raze": 2
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Elimination (A)",
+      "playerRows": 20,
+      "agentCounts": {
+        "Sova": 4,
+        "Jett": 3,
+        "Omen": 3,
+        "Kayo": 2,
+        "Viper": 2,
+        "Veto": 1,
+        "Sage": 1,
+        "Cypher": 1,
+        "Chamber": 1,
+        "Neon": 1,
+        "Harbor": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 18,
+          "atkWinRounds": 9,
+          "defWinRounds": 9
+        },
+        "Breeze": {
+          "rounds": 24,
+          "atkWinRounds": 11,
+          "defWinRounds": 13
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Jett": 2,
+          "Sova": 2,
+          "Omen": 2,
+          "Veto": 1,
+          "Sage": 1,
+          "Kayo": 1,
+          "Cypher": 1
+        },
+        "Breeze": {
+          "Sova": 2,
+          "Viper": 2,
+          "Chamber": 1,
+          "Omen": 1,
+          "Neon": 1,
+          "Kayo": 1,
+          "Jett": 1,
+          "Harbor": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Elimination (B)",
+      "playerRows": 30,
+      "agentCounts": {
+        "Raze": 4,
+        "Fade": 3,
+        "Viper": 3,
+        "Omen": 3,
+        "Neon": 2,
+        "Chamber": 2,
+        "Brimstone": 2,
+        "Skye": 2,
+        "Sova": 1,
+        "Harbor": 1,
+        "Waylay": 1,
+        "Phoenix": 1,
+        "Cypher": 1,
+        "Killjoy": 1,
+        "Breach": 1,
+        "Vyse": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Fracture": {
+          "rounds": 22,
+          "atkWinRounds": 9,
+          "defWinRounds": 13
+        },
+        "Lotus": {
+          "rounds": 20,
+          "atkWinRounds": 13,
+          "defWinRounds": 7
+        },
+        "Sunset": {
+          "rounds": 24,
+          "atkWinRounds": 15,
+          "defWinRounds": 9
+        }
+      },
+      "mapAgentCounts": {
+        "Fracture": {
+          "Raze": 2,
+          "Brimstone": 2,
+          "Phoenix": 1,
+          "Fade": 1,
+          "Cypher": 1,
+          "Skye": 1,
+          "Killjoy": 1,
+          "Breach": 1
+        },
+        "Lotus": {
+          "Omen": 2,
+          "Viper": 1,
+          "Chamber": 1,
+          "Neon": 1,
+          "Fade": 1,
+          "Vyse": 1,
+          "Jett": 1,
+          "Skye": 1,
+          "Raze": 1
+        },
+        "Sunset": {
+          "Viper": 2,
+          "Neon": 1,
+          "Chamber": 1,
+          "Fade": 1,
+          "Omen": 1,
+          "Sova": 1,
+          "Raze": 1,
+          "Harbor": 1,
+          "Waylay": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Elimination (C)",
+      "playerRows": 20,
+      "agentCounts": {
+        "Omen": 3,
+        "Viper": 3,
+        "Vyse": 2,
+        "Jett": 2,
+        "Raze": 2,
+        "Sova": 2,
+        "Fade": 1,
+        "Skye": 1,
+        "Phoenix": 1,
+        "Astra": 1,
+        "Neon": 1,
+        "Kayo": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 22,
+          "atkWinRounds": 15,
+          "defWinRounds": 7
+        },
+        "Lotus": {
+          "rounds": 20,
+          "atkWinRounds": 9,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Viper": 2,
+          "Sova": 2,
+          "Omen": 1,
+          "Phoenix": 1,
+          "Jett": 1,
+          "Astra": 1,
+          "Neon": 1,
+          "Kayo": 1
+        },
+        "Lotus": {
+          "Vyse": 2,
+          "Omen": 2,
+          "Raze": 2,
+          "Jett": 1,
+          "Fade": 1,
+          "Viper": 1,
+          "Skye": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Elimination (D)",
+      "playerRows": 20,
+      "agentCounts": {
+        "Omen": 4,
+        "Fade": 3,
+        "Raze": 3,
+        "Cypher": 2,
+        "Neon": 2,
+        "Viper": 2,
+        "Jett": 2,
+        "Phoenix": 1,
+        "Skye": 1
+      },
+      "mapStats": {
+        "Split": {
+          "rounds": 23,
+          "atkWinRounds": 10,
+          "defWinRounds": 13
+        },
+        "Sunset": {
+          "rounds": 26,
+          "atkWinRounds": 14,
+          "defWinRounds": 10
+        }
+      },
+      "mapAgentCounts": {
+        "Split": {
+          "Viper": 2,
+          "Raze": 2,
+          "Jett": 2,
+          "Omen": 2,
+          "Fade": 1,
+          "Skye": 1
+        },
+        "Sunset": {
+          "Fade": 2,
+          "Cypher": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Phoenix": 1,
+          "Raze": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Opening (A)",
+      "playerRows": 50,
+      "agentCounts": {
+        "Omen": 9,
+        "Sova": 8,
+        "Jett": 5,
+        "Neon": 4,
+        "Phoenix": 4,
+        "Cypher": 3,
+        "Sage": 3,
+        "Viper": 2,
+        "Raze": 2,
+        "Vyse": 2,
+        "Deadlock": 2,
+        "Chamber": 2,
+        "Harbor": 1,
+        "Veto": 1,
+        "Fade": 1,
+        "Skye": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 43,
+          "atkWinRounds": 20,
+          "defWinRounds": 23
+        },
+        "Breeze": {
+          "rounds": 18,
+          "atkWinRounds": 9,
+          "defWinRounds": 9
+        },
+        "Lotus": {
+          "rounds": 34,
+          "atkWinRounds": 10,
+          "defWinRounds": 14
+        },
+        "Sunset": {
+          "rounds": 16,
+          "atkWinRounds": 3,
+          "defWinRounds": 13
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Omen": 4,
+          "Sova": 4,
+          "Jett": 3,
+          "Sage": 2,
+          "Phoenix": 2,
+          "Cypher": 2,
+          "Veto": 1,
+          "Deadlock": 1,
+          "Chamber": 1
+        },
+        "Breeze": {
+          "Neon": 2,
+          "Sova": 2,
+          "Viper": 1,
+          "Omen": 1,
+          "Jett": 1,
+          "Cypher": 1,
+          "Phoenix": 1,
+          "Harbor": 1
+        },
+        "Lotus": {
+          "Omen": 2,
+          "Raze": 2,
+          "Vyse": 2,
+          "Neon": 1,
+          "Fade": 1,
+          "Jett": 1,
+          "Skye": 1
+        },
+        "Sunset": {
+          "Omen": 2,
+          "Sova": 2,
+          "Deadlock": 1,
+          "Viper": 1,
+          "Neon": 1,
+          "Phoenix": 1,
+          "Chamber": 1,
+          "Sage": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Opening (B)",
+      "playerRows": 50,
+      "agentCounts": {
+        "Omen": 7,
+        "Viper": 5,
+        "Fade": 5,
+        "Sova": 4,
+        "Jett": 4,
+        "Raze": 4,
+        "Neon": 3,
+        "Vyse": 3,
+        "Waylay": 2,
+        "Killjoy": 2,
+        "Phoenix": 2,
+        "Cypher": 2,
+        "Brimstone": 2,
+        "Chamber": 1,
+        "Skye": 1,
+        "Breach": 1,
+        "Kayo": 1,
+        "Harbor": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 23,
+          "atkWinRounds": 14,
+          "defWinRounds": 9
+        },
+        "Fracture": {
+          "rounds": 22,
+          "atkWinRounds": 11,
+          "defWinRounds": 11
+        },
+        "Haven": {
+          "rounds": 21,
+          "atkWinRounds": 10,
+          "defWinRounds": 11
+        },
+        "Lotus": {
+          "rounds": 40,
+          "atkWinRounds": 16,
+          "defWinRounds": 24
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Jett": 2,
+          "Sova": 2,
+          "Viper": 2,
+          "Kayo": 1,
+          "Harbor": 1,
+          "Neon": 1,
+          "Omen": 1
+        },
+        "Fracture": {
+          "Brimstone": 2,
+          "Phoenix": 1,
+          "Fade": 1,
+          "Cypher": 1,
+          "Waylay": 1,
+          "Killjoy": 1,
+          "Skye": 1,
+          "Raze": 1,
+          "Breach": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Omen": 2,
+          "Jett": 1,
+          "Waylay": 1,
+          "Killjoy": 1,
+          "Phoenix": 1,
+          "Neon": 1,
+          "Cypher": 1
+        },
+        "Lotus": {
+          "Omen": 4,
+          "Fade": 4,
+          "Viper": 3,
+          "Raze": 3,
+          "Vyse": 3,
+          "Neon": 1,
+          "Chamber": 1,
+          "Jett": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Opening (C)",
+      "playerRows": 60,
+      "agentCounts": {
+        "Omen": 10,
+        "Neon": 9,
+        "Viper": 8,
+        "Sova": 7,
+        "Phoenix": 4,
+        "Jett": 3,
+        "Cypher": 3,
+        "Raze": 3,
+        "Skye": 3,
+        "Fade": 2,
+        "Sage": 2,
+        "Killjoy": 1,
+        "Harbor": 1,
+        "Astra": 1,
+        "Kayo": 1,
+        "Chamber": 1,
+        "Waylay": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 38,
+          "atkWinRounds": 22,
+          "defWinRounds": 16
+        },
+        "Haven": {
+          "rounds": 21,
+          "atkWinRounds": 10,
+          "defWinRounds": 11
+        },
+        "Lotus": {
+          "rounds": 14,
+          "atkWinRounds": 3,
+          "defWinRounds": 11
+        },
+        "Split": {
+          "rounds": 19,
+          "atkWinRounds": 9,
+          "defWinRounds": 10
+        },
+        "Sunset": {
+          "rounds": 20,
+          "atkWinRounds": 9,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Sova": 4,
+          "Viper": 4,
+          "Neon": 3,
+          "Jett": 2,
+          "Omen": 2,
+          "Phoenix": 2,
+          "Harbor": 1,
+          "Astra": 1,
+          "Kayo": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Cypher": 1,
+          "Phoenix": 1,
+          "Viper": 1,
+          "Killjoy": 1
+        },
+        "Lotus": {
+          "Raze": 2,
+          "Omen": 2,
+          "Fade": 1,
+          "Neon": 1,
+          "Cypher": 1,
+          "Jett": 1,
+          "Viper": 1,
+          "Skye": 1
+        },
+        "Split": {
+          "Viper": 2,
+          "Omen": 2,
+          "Phoenix": 1,
+          "Fade": 1,
+          "Neon": 1,
+          "Raze": 1,
+          "Waylay": 1,
+          "Skye": 1
+        },
+        "Sunset": {
+          "Neon": 2,
+          "Sage": 2,
+          "Omen": 2,
+          "Cypher": 1,
+          "Sova": 1,
+          "Skye": 1,
+          "Chamber": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Opening (D)",
+      "playerRows": 50,
+      "agentCounts": {
+        "Omen": 10,
+        "Neon": 6,
+        "Fade": 5,
+        "Sova": 5,
+        "Raze": 4,
+        "Cypher": 4,
+        "Vyse": 4,
+        "Jett": 3,
+        "Phoenix": 3,
+        "Chamber": 3,
+        "Waylay": 2,
+        "Deadlock": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 21,
+          "atkWinRounds": 9,
+          "defWinRounds": 12
+        },
+        "Haven": {
+          "rounds": 40,
+          "atkWinRounds": 26,
+          "defWinRounds": 14
+        },
+        "Lotus": {
+          "rounds": 35,
+          "atkWinRounds": 20,
+          "defWinRounds": 15
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Phoenix": 2,
+          "Omen": 2,
+          "Chamber": 1,
+          "Neon": 1,
+          "Jett": 1,
+          "Cypher": 1
+        },
+        "Haven": {
+          "Omen": 4,
+          "Sova": 3,
+          "Neon": 3,
+          "Cypher": 2,
+          "Chamber": 2,
+          "Jett": 1,
+          "Waylay": 1,
+          "Deadlock": 1,
+          "Phoenix": 1,
+          "Vyse": 1,
+          "Fade": 1
+        },
+        "Lotus": {
+          "Omen": 4,
+          "Raze": 4,
+          "Fade": 4,
+          "Vyse": 3,
+          "Neon": 2,
+          "Waylay": 1,
+          "Cypher": 1,
+          "Jett": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Winner's (A)",
+      "playerRows": 30,
+      "agentCounts": {
+        "Omen": 5,
+        "Neon": 4,
+        "Fade": 3,
+        "Vyse": 3,
+        "Raze": 3,
+        "Viper": 2,
+        "Sova": 2,
+        "Phoenix": 2,
+        "Cypher": 2,
+        "Waylay": 1,
+        "Skye": 1,
+        "Sage": 1,
+        "Astra": 1
+      },
+      "mapStats": {
+        "Haven": {
+          "rounds": 22,
+          "atkWinRounds": 9,
+          "defWinRounds": 13
+        },
+        "Lotus": {
+          "rounds": 26,
+          "atkWinRounds": 10,
+          "defWinRounds": 14
+        },
+        "Split": {
+          "rounds": 16,
+          "atkWinRounds": 7,
+          "defWinRounds": 9
+        }
+      },
+      "mapAgentCounts": {
+        "Haven": {
+          "Omen": 2,
+          "Neon": 2,
+          "Sova": 2,
+          "Phoenix": 2,
+          "Cypher": 2
+        },
+        "Lotus": {
+          "Fade": 2,
+          "Vyse": 2,
+          "Omen": 2,
+          "Viper": 1,
+          "Waylay": 1,
+          "Raze": 1,
+          "Neon": 1
+        },
+        "Split": {
+          "Raze": 2,
+          "Viper": 1,
+          "Skye": 1,
+          "Omen": 1,
+          "Sage": 1,
+          "Neon": 1,
+          "Astra": 1,
+          "Vyse": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Winner's (B)",
+      "playerRows": 30,
+      "agentCounts": {
+        "Omen": 4,
+        "Sova": 4,
+        "Viper": 4,
+        "Vyse": 3,
+        "Jett": 3,
+        "Phoenix": 2,
+        "Raze": 2,
+        "Fade": 2,
+        "Harbor": 2,
+        "Kayo": 2,
+        "Chamber": 1,
+        "Neon": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 30,
+          "atkWinRounds": 8,
+          "defWinRounds": 16
+        },
+        "Breeze": {
+          "rounds": 23,
+          "atkWinRounds": 10,
+          "defWinRounds": 13
+        },
+        "Lotus": {
+          "rounds": 21,
+          "atkWinRounds": 9,
+          "defWinRounds": 12
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Phoenix": 2,
+          "Omen": 2,
+          "Sova": 2,
+          "Vyse": 1,
+          "Jett": 1,
+          "Chamber": 1,
+          "Neon": 1
+        },
+        "Breeze": {
+          "Viper": 2,
+          "Jett": 2,
+          "Sova": 2,
+          "Harbor": 2,
+          "Kayo": 2
+        },
+        "Lotus": {
+          "Raze": 2,
+          "Vyse": 2,
+          "Viper": 2,
+          "Fade": 2,
+          "Omen": 2
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Winner's (C)",
+      "playerRows": 30,
+      "agentCounts": {
+        "Omen": 6,
+        "Cypher": 5,
+        "Neon": 5,
+        "Sova": 4,
+        "Phoenix": 4,
+        "Raze": 2,
+        "Fade": 1,
+        "Skye": 1,
+        "Vyse": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 16,
+          "atkWinRounds": 7,
+          "defWinRounds": 9
+        },
+        "Haven": {
+          "rounds": 23,
+          "atkWinRounds": 15,
+          "defWinRounds": 8
+        },
+        "Lotus": {
+          "rounds": 32,
+          "atkWinRounds": 4,
+          "defWinRounds": 20
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Cypher": 2,
+          "Sova": 2,
+          "Phoenix": 2,
+          "Omen": 2,
+          "Jett": 1,
+          "Neon": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Phoenix": 2,
+          "Cypher": 2,
+          "Omen": 2,
+          "Neon": 2
+        },
+        "Lotus": {
+          "Omen": 2,
+          "Raze": 2,
+          "Neon": 2,
+          "Cypher": 1,
+          "Fade": 1,
+          "Skye": 1,
+          "Vyse": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Group Stage",
+      "week": "Group Stage: Winner's (D)",
+      "playerRows": 20,
+      "agentCounts": {
+        "Omen": 4,
+        "Cypher": 3,
+        "Raze": 2,
+        "Waylay": 2,
+        "Fade": 2,
+        "Neon": 2,
+        "Sova": 2,
+        "Vyse": 1,
+        "Jett": 1,
+        "Phoenix": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 15,
+          "atkWinRounds": 5,
+          "defWinRounds": 10
+        },
+        "Lotus": {
+          "rounds": 30,
+          "atkWinRounds": 14,
+          "defWinRounds": 10
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Omen": 2,
+          "Cypher": 2,
+          "Waylay": 1,
+          "Neon": 1,
+          "Jett": 1,
+          "Phoenix": 1
+        },
+        "Lotus": {
+          "Raze": 2,
+          "Fade": 2,
+          "Omen": 2,
+          "Waylay": 1,
+          "Cypher": 1,
+          "Vyse": 1,
+          "Neon": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Playoffs",
+      "week": "Playoffs: Consolation Final",
+      "playerRows": 20,
+      "agentCounts": {
+        "Neon": 4,
+        "Omen": 3,
+        "Viper": 2,
+        "Sova": 2,
+        "Raze": 2,
+        "Harbor": 1,
+        "Phoenix": 1,
+        "Jett": 1,
+        "Skye": 1,
+        "Vyse": 1,
+        "Cypher": 1,
+        "Fade": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 23,
+          "atkWinRounds": 9,
+          "defWinRounds": 14
+        },
+        "Lotus": {
+          "rounds": 24,
+          "atkWinRounds": 19,
+          "defWinRounds": 5
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Neon": 2,
+          "Viper": 2,
+          "Sova": 2,
+          "Harbor": 1,
+          "Phoenix": 1,
+          "Omen": 1,
+          "Jett": 1
+        },
+        "Lotus": {
+          "Omen": 2,
+          "Neon": 2,
+          "Raze": 2,
+          "Skye": 1,
+          "Vyse": 1,
+          "Cypher": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Playoffs",
+      "week": "Playoffs: Grand Final",
+      "playerRows": 40,
+      "agentCounts": {
+        "Sova": 7,
+        "Phoenix": 7,
+        "Neon": 6,
+        "Omen": 6,
+        "Cypher": 4,
+        "Chamber": 3,
+        "Harbor": 2,
+        "Jett": 2,
+        "Viper": 1,
+        "Kayo": 1,
+        "Fade": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 26,
+          "atkWinRounds": 6,
+          "defWinRounds": 18
+        },
+        "Breeze": {
+          "rounds": 20,
+          "atkWinRounds": 13,
+          "defWinRounds": 7
+        },
+        "Haven": {
+          "rounds": 15,
+          "atkWinRounds": 5,
+          "defWinRounds": 10
+        },
+        "Sunset": {
+          "rounds": 19,
+          "atkWinRounds": 7,
+          "defWinRounds": 12
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Omen": 2,
+          "Phoenix": 2,
+          "Sova": 2,
+          "Cypher": 1,
+          "Jett": 1,
+          "Chamber": 1,
+          "Neon": 1
+        },
+        "Breeze": {
+          "Sova": 2,
+          "Harbor": 2,
+          "Neon": 1,
+          "Phoenix": 1,
+          "Cypher": 1,
+          "Viper": 1,
+          "Kayo": 1,
+          "Jett": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Omen": 2,
+          "Phoenix": 2,
+          "Neon": 2,
+          "Cypher": 1,
+          "Chamber": 1
+        },
+        "Sunset": {
+          "Omen": 2,
+          "Neon": 2,
+          "Phoenix": 2,
+          "Cypher": 1,
+          "Sova": 1,
+          "Chamber": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Playoffs",
+      "week": "Playoffs: Quarterfinals",
+      "playerRows": 120,
+      "agentCounts": {
+        "Neon": 18,
+        "Omen": 17,
+        "Sova": 16,
+        "Cypher": 13,
+        "Phoenix": 13,
+        "Viper": 8,
+        "Jett": 6,
+        "Raze": 6,
+        "Fade": 6,
+        "Harbor": 5,
+        "Vyse": 3,
+        "Kayo": 2,
+        "Chamber": 2,
+        "Skye": 2,
+        "Deadlock": 1,
+        "Brimstone": 1,
+        "Waylay": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 45,
+          "atkWinRounds": 17,
+          "defWinRounds": 28
+        },
+        "Breeze": {
+          "rounds": 68,
+          "atkWinRounds": 29,
+          "defWinRounds": 33
+        },
+        "Fracture": {
+          "rounds": 15,
+          "atkWinRounds": 10,
+          "defWinRounds": 5
+        },
+        "Haven": {
+          "rounds": 41,
+          "atkWinRounds": 22,
+          "defWinRounds": 19
+        },
+        "Lotus": {
+          "rounds": 38,
+          "atkWinRounds": 19,
+          "defWinRounds": 19
+        },
+        "Split": {
+          "rounds": 20,
+          "atkWinRounds": 9,
+          "defWinRounds": 11
+        },
+        "Sunset": {
+          "rounds": 23,
+          "atkWinRounds": 15,
+          "defWinRounds": 8
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Phoenix": 4,
+          "Omen": 4,
+          "Sova": 4,
+          "Cypher": 2,
+          "Jett": 2,
+          "Neon": 2,
+          "Chamber": 1,
+          "Vyse": 1
+        },
+        "Breeze": {
+          "Sova": 6,
+          "Neon": 5,
+          "Viper": 4,
+          "Phoenix": 4,
+          "Harbor": 4,
+          "Cypher": 3,
+          "Jett": 2,
+          "Omen": 1,
+          "Kayo": 1
+        },
+        "Fracture": {
+          "Cypher": 2,
+          "Fade": 1,
+          "Neon": 1,
+          "Harbor": 1,
+          "Phoenix": 1,
+          "Brimstone": 1,
+          "Skye": 1,
+          "Jett": 1,
+          "Raze": 1
+        },
+        "Haven": {
+          "Omen": 4,
+          "Neon": 4,
+          "Sova": 4,
+          "Phoenix": 3,
+          "Cypher": 3,
+          "Chamber": 1,
+          "Waylay": 1
+        },
+        "Lotus": {
+          "Raze": 4,
+          "Fade": 4,
+          "Omen": 4,
+          "Neon": 3,
+          "Vyse": 2,
+          "Cypher": 2,
+          "Viper": 1
+        },
+        "Split": {
+          "Viper": 2,
+          "Omen": 2,
+          "Jett": 1,
+          "Skye": 1,
+          "Raze": 1,
+          "Phoenix": 1,
+          "Neon": 1,
+          "Fade": 1
+        },
+        "Sunset": {
+          "Sova": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Kayo": 1,
+          "Cypher": 1,
+          "Deadlock": 1,
+          "Viper": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "International",
+      "event": "Esports World Cup 2026",
+      "stage": "Main Event",
+      "phase": "Playoffs",
+      "week": "Playoffs: Semifinals",
+      "playerRows": 60,
+      "agentCounts": {
+        "Omen": 11,
+        "Neon": 9,
+        "Sova": 7,
+        "Cypher": 6,
+        "Phoenix": 5,
+        "Fade": 4,
+        "Viper": 4,
+        "Vyse": 3,
+        "Raze": 3,
+        "Jett": 2,
+        "Breach": 1,
+        "Waylay": 1,
+        "Skye": 1,
+        "Chamber": 1,
+        "Harbor": 1,
+        "Kayo": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 26,
+          "atkWinRounds": 10,
+          "defWinRounds": 14
+        },
+        "Haven": {
+          "rounds": 41,
+          "atkWinRounds": 26,
+          "defWinRounds": 15
+        },
+        "Lotus": {
+          "rounds": 39,
+          "atkWinRounds": 18,
+          "defWinRounds": 21
+        },
+        "Sunset": {
+          "rounds": 19,
+          "atkWinRounds": 8,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Sova": 2,
+          "Jett": 2,
+          "Viper": 2,
+          "Omen": 1,
+          "Neon": 1,
+          "Harbor": 1,
+          "Kayo": 1
+        },
+        "Haven": {
+          "Omen": 4,
+          "Sova": 4,
+          "Phoenix": 4,
+          "Neon": 4,
+          "Cypher": 3,
+          "Chamber": 1
+        },
+        "Lotus": {
+          "Omen": 4,
+          "Vyse": 3,
+          "Fade": 3,
+          "Raze": 3,
+          "Viper": 2,
+          "Neon": 2,
+          "Waylay": 1,
+          "Skye": 1,
+          "Cypher": 1
+        },
+        "Sunset": {
+          "Cypher": 2,
+          "Omen": 2,
+          "Neon": 2,
+          "Sova": 1,
+          "Phoenix": 1,
+          "Breach": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Pacific",
+      "event": "Esports World Cup 2026 Pacific Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Grand Final",
+      "playerRows": 20,
+      "agentCounts": {
+        "Neon": 4,
+        "Omen": 3,
+        "Phoenix": 2,
+        "Fade": 2,
+        "Raze": 2,
+        "Sova": 1,
+        "Cypher": 1,
+        "Chamber": 1,
+        "Viper": 1,
+        "Skye": 1,
+        "Astra": 1,
+        "Vyse": 1
+      },
+      "mapStats": {
+        "Haven": {
+          "rounds": 16,
+          "atkWinRounds": 7,
+          "defWinRounds": 9
+        },
+        "Split": {
+          "rounds": 23,
+          "atkWinRounds": 15,
+          "defWinRounds": 8
+        }
+      },
+      "mapAgentCounts": {
+        "Haven": {
+          "Omen": 2,
+          "Phoenix": 2,
+          "Neon": 2,
+          "Sova": 1,
+          "Cypher": 1,
+          "Chamber": 1,
+          "Fade": 1
+        },
+        "Split": {
+          "Neon": 2,
+          "Raze": 2,
+          "Omen": 1,
+          "Viper": 1,
+          "Skye": 1,
+          "Astra": 1,
+          "Fade": 1,
+          "Vyse": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Pacific",
+      "event": "Esports World Cup 2026 Pacific Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Lower Final",
+      "playerRows": 20,
+      "agentCounts": {
+        "Neon": 4,
+        "Astra": 3,
+        "Vyse": 2,
+        "Fade": 2,
+        "Viper": 2,
+        "Sova": 2,
+        "Killjoy": 1,
+        "Phoenix": 1,
+        "Kayo": 1,
+        "Jett": 1,
+        "Omen": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 19,
+          "atkWinRounds": 5,
+          "defWinRounds": 14
+        },
+        "Pearl": {
+          "rounds": 26,
+          "atkWinRounds": 8,
+          "defWinRounds": 16
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Viper": 2,
+          "Neon": 2,
+          "Sova": 2,
+          "Kayo": 1,
+          "Astra": 1,
+          "Jett": 1,
+          "Omen": 1
+        },
+        "Pearl": {
+          "Vyse": 2,
+          "Astra": 2,
+          "Neon": 2,
+          "Fade": 2,
+          "Killjoy": 1,
+          "Phoenix": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Pacific",
+      "event": "Esports World Cup 2026 Pacific Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Lower Round 1",
+      "playerRows": 20,
+      "agentCounts": {
+        "Omen": 4,
+        "Sova": 3,
+        "Neon": 3,
+        "Vyse": 2,
+        "Phoenix": 2,
+        "Kayo": 1,
+        "Jett": 1,
+        "Waylay": 1,
+        "Cypher": 1,
+        "Chamber": 1,
+        "Fade": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 19,
+          "atkWinRounds": 9,
+          "defWinRounds": 10
+        },
+        "Haven": {
+          "rounds": 24,
+          "atkWinRounds": 11,
+          "defWinRounds": 13
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Vyse": 2,
+          "Omen": 2,
+          "Kayo": 1,
+          "Jett": 1,
+          "Waylay": 1,
+          "Neon": 1
+        },
+        "Haven": {
+          "Omen": 2,
+          "Phoenix": 2,
+          "Neon": 2,
+          "Cypher": 1,
+          "Sova": 1,
+          "Chamber": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Pacific",
+      "event": "Esports World Cup 2026 Pacific Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Upper Final",
+      "playerRows": 30,
+      "agentCounts": {
+        "Neon": 6,
+        "Omen": 4,
+        "Viper": 4,
+        "Skye": 3,
+        "Raze": 3,
+        "Cypher": 3,
+        "Fade": 2,
+        "Brimstone": 2,
+        "Vyse": 1,
+        "Breach": 1,
+        "Tejo": 1
+      },
+      "mapStats": {
+        "Fracture": {
+          "rounds": 28,
+          "atkWinRounds": 16,
+          "defWinRounds": 8
+        },
+        "Lotus": {
+          "rounds": 32,
+          "atkWinRounds": 14,
+          "defWinRounds": 10
+        },
+        "Split": {
+          "rounds": 24,
+          "atkWinRounds": 13,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Fracture": {
+          "Cypher": 2,
+          "Brimstone": 2,
+          "Neon": 2,
+          "Breach": 1,
+          "Raze": 1,
+          "Skye": 1,
+          "Tejo": 1
+        },
+        "Lotus": {
+          "Fade": 2,
+          "Neon": 2,
+          "Viper": 2,
+          "Omen": 2,
+          "Raze": 1,
+          "Vyse": 1
+        },
+        "Split": {
+          "Skye": 2,
+          "Omen": 2,
+          "Viper": 2,
+          "Neon": 2,
+          "Raze": 1,
+          "Cypher": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Pacific",
+      "event": "Esports World Cup 2026 Pacific Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 1",
+      "week": "Stage 1: Upper Semifinals",
+      "playerRows": 50,
+      "agentCounts": {
+        "Neon": 10,
+        "Omen": 9,
+        "Viper": 7,
+        "Fade": 5,
+        "Raze": 4,
+        "Vyse": 3,
+        "Sova": 3,
+        "Skye": 2,
+        "Phoenix": 2,
+        "Chamber": 1,
+        "Cypher": 1,
+        "Jett": 1,
+        "Kayo": 1,
+        "Astra": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 20,
+          "atkWinRounds": 9,
+          "defWinRounds": 11
+        },
+        "Haven": {
+          "rounds": 16,
+          "atkWinRounds": 9,
+          "defWinRounds": 7
+        },
+        "Lotus": {
+          "rounds": 47,
+          "atkWinRounds": 28,
+          "defWinRounds": 17
+        },
+        "Split": {
+          "rounds": 34,
+          "atkWinRounds": 8,
+          "defWinRounds": 16
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Viper": 2,
+          "Sova": 2,
+          "Neon": 2,
+          "Jett": 1,
+          "Omen": 1,
+          "Kayo": 1,
+          "Astra": 1
+        },
+        "Haven": {
+          "Omen": 2,
+          "Neon": 2,
+          "Phoenix": 2,
+          "Chamber": 1,
+          "Fade": 1,
+          "Cypher": 1,
+          "Sova": 1
+        },
+        "Lotus": {
+          "Fade": 4,
+          "Omen": 4,
+          "Neon": 4,
+          "Viper": 3,
+          "Vyse": 3,
+          "Raze": 2
+        },
+        "Split": {
+          "Skye": 2,
+          "Viper": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Raze": 2
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Pacific",
+      "event": "Esports World Cup 2026 Pacific Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Final",
+      "playerRows": 40,
+      "agentCounts": {
+        "Neon": 8,
+        "Phoenix": 6,
+        "Fade": 4,
+        "Sova": 3,
+        "Omen": 3,
+        "Chamber": 2,
+        "Astra": 2,
+        "Killjoy": 2,
+        "Brimstone": 2,
+        "Viper": 2,
+        "Cypher": 1,
+        "Vyse": 1,
+        "Breach": 1,
+        "Raze": 1,
+        "Harbor": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 23,
+          "atkWinRounds": 16,
+          "defWinRounds": 7
+        },
+        "Fracture": {
+          "rounds": 22,
+          "atkWinRounds": 11,
+          "defWinRounds": 11
+        },
+        "Haven": {
+          "rounds": 24,
+          "atkWinRounds": 21,
+          "defWinRounds": 3
+        },
+        "Pearl": {
+          "rounds": 21,
+          "atkWinRounds": 6,
+          "defWinRounds": 15
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Neon": 2,
+          "Viper": 2,
+          "Sova": 2,
+          "Phoenix": 1,
+          "Harbor": 1,
+          "Jett": 1,
+          "Omen": 1
+        },
+        "Fracture": {
+          "Killjoy": 2,
+          "Neon": 2,
+          "Brimstone": 2,
+          "Breach": 1,
+          "Raze": 1,
+          "Phoenix": 1,
+          "Fade": 1
+        },
+        "Haven": {
+          "Phoenix": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Sova": 1,
+          "Cypher": 1,
+          "Fade": 1,
+          "Chamber": 1
+        },
+        "Pearl": {
+          "Astra": 2,
+          "Fade": 2,
+          "Neon": 2,
+          "Phoenix": 2,
+          "Chamber": 1,
+          "Vyse": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Pacific",
+      "event": "Esports World Cup 2026 Pacific Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Round 1",
+      "playerRows": 60,
+      "agentCounts": {
+        "Omen": 11,
+        "Jett": 10,
+        "Viper": 7,
+        "Sova": 6,
+        "Skye": 4,
+        "Raze": 4,
+        "Neon": 4,
+        "Fade": 2,
+        "Phoenix": 2,
+        "Chamber": 2,
+        "Killjoy": 2,
+        "Kayo": 2,
+        "Cypher": 2,
+        "Sage": 1,
+        "Harbor": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 22,
+          "atkWinRounds": 11,
+          "defWinRounds": 11
+        },
+        "Breeze": {
+          "rounds": 15,
+          "atkWinRounds": 10,
+          "defWinRounds": 5
+        },
+        "Haven": {
+          "rounds": 44,
+          "atkWinRounds": 22,
+          "defWinRounds": 22
+        },
+        "Split": {
+          "rounds": 47,
+          "atkWinRounds": 26,
+          "defWinRounds": 21
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 2,
+          "Jett": 2,
+          "Omen": 2,
+          "Killjoy": 1,
+          "Kayo": 1,
+          "Cypher": 1,
+          "Neon": 1
+        },
+        "Breeze": {
+          "Viper": 2,
+          "Jett": 2,
+          "Sova": 2,
+          "Neon": 1,
+          "Omen": 1,
+          "Kayo": 1,
+          "Harbor": 1
+        },
+        "Haven": {
+          "Omen": 4,
+          "Jett": 3,
+          "Phoenix": 2,
+          "Chamber": 2,
+          "Sova": 2,
+          "Neon": 2,
+          "Fade": 1,
+          "Killjoy": 1,
+          "Viper": 1,
+          "Cypher": 1,
+          "Skye": 1
+        },
+        "Split": {
+          "Viper": 4,
+          "Omen": 4,
+          "Raze": 4,
+          "Skye": 3,
+          "Jett": 3,
+          "Sage": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Pacific",
+      "event": "Esports World Cup 2026 Pacific Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Lower Round 2",
+      "playerRows": 40,
+      "agentCounts": {
+        "Sova": 6,
+        "Neon": 6,
+        "Viper": 5,
+        "Phoenix": 3,
+        "Omen": 3,
+        "Jett": 3,
+        "Harbor": 3,
+        "Cypher": 2,
+        "Killjoy": 2,
+        "Kayo": 2,
+        "Brimstone": 2,
+        "Fade": 1,
+        "Skye": 1,
+        "Raze": 1
+      },
+      "mapStats": {
+        "Breeze": {
+          "rounds": 50,
+          "atkWinRounds": 23,
+          "defWinRounds": 23
+        },
+        "Fracture": {
+          "rounds": 17,
+          "atkWinRounds": 9,
+          "defWinRounds": 8
+        },
+        "Haven": {
+          "rounds": 21,
+          "atkWinRounds": 10,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Breeze": {
+          "Viper": 4,
+          "Sova": 4,
+          "Harbor": 3,
+          "Neon": 3,
+          "Jett": 2,
+          "Kayo": 2,
+          "Phoenix": 1,
+          "Omen": 1
+        },
+        "Fracture": {
+          "Brimstone": 2,
+          "Neon": 2,
+          "Phoenix": 1,
+          "Killjoy": 1,
+          "Fade": 1,
+          "Cypher": 1,
+          "Skye": 1,
+          "Raze": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Omen": 2,
+          "Phoenix": 1,
+          "Neon": 1,
+          "Cypher": 1,
+          "Viper": 1,
+          "Jett": 1,
+          "Killjoy": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Pacific",
+      "event": "Esports World Cup 2026 Pacific Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Upper Quarterfinals",
+      "playerRows": 90,
+      "agentCounts": {
+        "Omen": 12,
+        "Jett": 10,
+        "Neon": 9,
+        "Phoenix": 8,
+        "Fade": 8,
+        "Sova": 7,
+        "Astra": 6,
+        "Viper": 6,
+        "Killjoy": 6,
+        "Vyse": 4,
+        "Raze": 4,
+        "Chamber": 3,
+        "Skye": 3,
+        "Cypher": 2,
+        "Tejo": 1,
+        "Kayo": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 28,
+          "atkWinRounds": 14,
+          "defWinRounds": 10
+        },
+        "Breeze": {
+          "rounds": 30,
+          "atkWinRounds": 14,
+          "defWinRounds": 10
+        },
+        "Haven": {
+          "rounds": 38,
+          "atkWinRounds": 24,
+          "defWinRounds": 14
+        },
+        "Lotus": {
+          "rounds": 21,
+          "atkWinRounds": 14,
+          "defWinRounds": 7
+        },
+        "Pearl": {
+          "rounds": 64,
+          "atkWinRounds": 27,
+          "defWinRounds": 35
+        },
+        "Split": {
+          "rounds": 24,
+          "atkWinRounds": 9,
+          "defWinRounds": 15
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Omen": 2,
+          "Sova": 2,
+          "Jett": 1,
+          "Killjoy": 1,
+          "Kayo": 1,
+          "Phoenix": 1,
+          "Neon": 1,
+          "Cypher": 1
+        },
+        "Breeze": {
+          "Jett": 2,
+          "Viper": 2,
+          "Neon": 2,
+          "Sova": 2,
+          "Omen": 2
+        },
+        "Haven": {
+          "Omen": 4,
+          "Phoenix": 3,
+          "Jett": 3,
+          "Fade": 2,
+          "Killjoy": 2,
+          "Sova": 2,
+          "Cypher": 1,
+          "Chamber": 1,
+          "Neon": 1,
+          "Viper": 1
+        },
+        "Lotus": {
+          "Raze": 2,
+          "Omen": 2,
+          "Vyse": 2,
+          "Skye": 1,
+          "Jett": 1,
+          "Viper": 1,
+          "Fade": 1
+        },
+        "Pearl": {
+          "Astra": 6,
+          "Neon": 5,
+          "Phoenix": 4,
+          "Fade": 4,
+          "Killjoy": 3,
+          "Vyse": 2,
+          "Chamber": 2,
+          "Jett": 1,
+          "Tejo": 1,
+          "Sova": 1,
+          "Skye": 1
+        },
+        "Split": {
+          "Viper": 2,
+          "Raze": 2,
+          "Jett": 2,
+          "Omen": 2,
+          "Skye": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "region": "Pacific",
+      "event": "Esports World Cup 2026 Pacific Qualifier",
+      "stage": "Qualifier",
+      "phase": "Stage 2",
+      "week": "Stage 2: Upper Semifinals",
+      "playerRows": 100,
+      "agentCounts": {
+        "Neon": 13,
+        "Omen": 13,
+        "Sova": 11,
+        "Phoenix": 9,
+        "Jett": 8,
+        "Vyse": 7,
+        "Fade": 6,
+        "Viper": 6,
+        "Chamber": 4,
+        "Raze": 4,
+        "Astra": 4,
+        "Skye": 3,
+        "Cypher": 3,
+        "Killjoy": 2,
+        "Harbor": 2,
+        "Waylay": 1,
+        "Kayo": 1,
+        "Tejo": 1,
+        "Deadlock": 1,
+        "Sage": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 44,
+          "atkWinRounds": 16,
+          "defWinRounds": 28
+        },
+        "Breeze": {
+          "rounds": 39,
+          "atkWinRounds": 25,
+          "defWinRounds": 14
+        },
+        "Haven": {
+          "rounds": 41,
+          "atkWinRounds": 19,
+          "defWinRounds": 22
+        },
+        "Lotus": {
+          "rounds": 21,
+          "atkWinRounds": 12,
+          "defWinRounds": 9
+        },
+        "Pearl": {
+          "rounds": 37,
+          "atkWinRounds": 14,
+          "defWinRounds": 23
+        },
+        "Split": {
+          "rounds": 30,
+          "atkWinRounds": 8,
+          "defWinRounds": 16
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 4,
+          "Omen": 4,
+          "Vyse": 3,
+          "Neon": 2,
+          "Jett": 2,
+          "Phoenix": 2,
+          "Waylay": 1,
+          "Chamber": 1,
+          "Cypher": 1
+        },
+        "Breeze": {
+          "Sova": 4,
+          "Viper": 4,
+          "Neon": 3,
+          "Jett": 2,
+          "Harbor": 2,
+          "Omen": 1,
+          "Kayo": 1,
+          "Phoenix": 1,
+          "Sage": 1,
+          "Chamber": 1
+        },
+        "Haven": {
+          "Omen": 4,
+          "Neon": 3,
+          "Phoenix": 3,
+          "Sova": 3,
+          "Cypher": 2,
+          "Chamber": 1,
+          "Fade": 1,
+          "Jett": 1,
+          "Killjoy": 1,
+          "Deadlock": 1
+        },
+        "Lotus": {
+          "Vyse": 2,
+          "Omen": 2,
+          "Raze": 2,
+          "Fade": 1,
+          "Neon": 1,
+          "Skye": 1,
+          "Jett": 1
+        },
+        "Pearl": {
+          "Astra": 4,
+          "Phoenix": 3,
+          "Fade": 3,
+          "Neon": 3,
+          "Vyse": 2,
+          "Jett": 1,
+          "Tejo": 1,
+          "Skye": 1,
+          "Chamber": 1,
+          "Killjoy": 1
+        },
+        "Split": {
+          "Raze": 2,
+          "Viper": 2,
+          "Omen": 2,
+          "Skye": 1,
+          "Neon": 1,
+          "Fade": 1,
+          "Jett": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -100,6 +4557,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -185,6 +4643,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -253,6 +4712,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -325,6 +4785,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -399,6 +4860,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -454,6 +4916,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -528,6 +4991,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -637,6 +5101,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -726,6 +5191,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -801,6 +5267,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -856,6 +5323,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -948,6 +5416,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -1086,6 +5555,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -1211,6 +5681,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Kickoff",
       "stage": "Kickoff",
@@ -1305,6 +5776,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -1424,6 +5896,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -1556,6 +6029,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -1705,6 +6179,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -1850,6 +6325,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -1997,6 +6473,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -2099,6 +6576,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -2204,6 +6682,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -2287,6 +6766,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -2359,6 +6839,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -2414,6 +6895,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -2483,6 +6965,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -2568,6 +7051,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 1",
       "stage": "Stage 1",
@@ -2674,6 +7158,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Americas",
       "event": "Vct 2026 Americas Stage 2",
       "stage": "Stage 2",
@@ -2825,6 +7310,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -2910,6 +7396,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -2996,6 +7483,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -3084,6 +7572,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -3160,6 +7649,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -3230,6 +7720,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -3302,6 +7793,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -3401,6 +7893,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -3521,6 +8014,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -3605,6 +8099,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -3722,6 +8217,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -3779,6 +8275,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -3874,6 +8371,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -3992,6 +8490,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -4103,6 +8602,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -4207,6 +8707,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -4328,6 +8829,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -4482,6 +8984,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -4633,6 +9136,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -4778,6 +9282,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -4883,6 +9388,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -4970,6 +9476,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -5067,6 +9574,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -5152,6 +9660,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -5220,6 +9729,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -5270,6 +9780,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -5397,6 +9908,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 1",
       "stage": "Stage 1",
@@ -5473,6 +9985,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 2",
       "stage": "Stage 2",
@@ -5617,6 +10130,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 2",
       "stage": "Stage 2",
@@ -5780,6 +10294,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "China",
       "event": "Vct 2026 China Stage 2",
       "stage": "Stage 2",
@@ -5908,6 +10423,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -5985,6 +10501,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -6080,6 +10597,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -6198,6 +10716,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -6291,6 +10810,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -6346,6 +10866,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -6419,6 +10940,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -6519,6 +11041,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -6655,6 +11178,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -6741,6 +11265,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -6831,6 +11356,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -6888,6 +11414,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -6980,6 +11507,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -7107,6 +11635,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -7235,6 +11764,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",
@@ -7312,6 +11842,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -7452,6 +11983,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -7591,6 +12123,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -7734,6 +12267,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -7868,6 +12402,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -7980,6 +12515,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -8079,6 +12615,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -8160,6 +12697,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -8248,6 +12786,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -8321,6 +12860,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -8386,6 +12926,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -8454,6 +12995,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -8544,6 +13086,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 1",
       "stage": "Stage 1",
@@ -8636,6 +13179,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 2",
       "stage": "Stage 2",
@@ -8777,6 +13321,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "EMEA",
       "event": "Vct 2026 Emea Stage 2",
       "stage": "Stage 2",
@@ -8869,6 +13414,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -8972,6 +13518,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -9045,6 +13592,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -9121,6 +13669,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -9197,6 +13746,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -9249,6 +13799,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -9320,6 +13871,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -9461,6 +14013,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -9553,6 +14106,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -9688,6 +14242,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -9795,6 +14350,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -9899,6 +14455,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -9991,6 +14548,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -10055,6 +14613,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -10139,6 +14698,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -10253,6 +14813,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -10355,6 +14916,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -10423,6 +14985,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -10475,6 +15038,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -10604,6 +15168,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -10710,6 +15275,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -10830,6 +15396,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -10904,6 +15471,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -11004,6 +15572,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "International",
       "event": "Valorant Masters Santiago 2026",
       "stage": "Masters",
@@ -11081,6 +15650,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -11169,6 +15739,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -11279,6 +15850,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -11385,6 +15957,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -11472,6 +16045,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -11542,6 +16116,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -11589,6 +16164,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -11653,6 +16229,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -11773,6 +16350,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -11860,6 +16438,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -11963,6 +16542,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -12010,6 +16590,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -12105,6 +16686,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -12203,6 +16785,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -12328,6 +16911,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Kickoff",
       "stage": "Kickoff",
@@ -12401,6 +16985,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -12541,6 +17126,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -12678,6 +17264,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -12822,6 +17409,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -12958,6 +17546,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -13110,6 +17699,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -13177,6 +17767,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -13253,6 +17844,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -13374,6 +17966,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -13476,6 +18069,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -13547,6 +18141,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -13599,6 +18194,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -13688,6 +18284,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 1",
       "stage": "Stage 1",
@@ -13763,6 +18360,7 @@
       }
     },
     {
+      "competition": "VCT",
       "region": "Pacific",
       "event": "Vct 2026 Pacific Stage 2",
       "stage": "Stage 2",
@@ -13936,6 +18534,7 @@
     "Sunset"
   ],
   "facets": [
+    "competition",
     "region",
     "event",
     "stage",

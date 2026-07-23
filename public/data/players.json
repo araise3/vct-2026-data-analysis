@@ -52,8 +52,8 @@
     "team": "Natus Vincere",
     "isChina": false,
     "hasIntlStats": false,
-    "countryCode": null,
-    "countryName": null,
+    "countryCode": "ru",
+    "countryName": "Russian Federation",
     "stats": {
       "mapsPlayed": 12,
       "roundsPlayed": 261,
@@ -292,8 +292,8 @@
     "team": "Karmine Corp",
     "isChina": false,
     "hasIntlStats": false,
-    "countryCode": null,
-    "countryName": null,
+    "countryCode": "ru",
+    "countryName": "Russian Federation",
     "stats": {
       "mapsPlayed": 31,
       "roundsPlayed": 669,

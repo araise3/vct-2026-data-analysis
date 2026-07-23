@@ -1430,5 +1430,13 @@
   "xihe": {
     "country_code": "cn",
     "country_name": "China"
+  },
+  "Shao": {
+    "country_code": "ru",
+    "country_name": "Russian Federation"
+  },
+  "SUYGETSU": {
+    "country_code": "ru",
+    "country_name": "Russian Federation"
   }
 }

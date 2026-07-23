@@ -421,6 +421,172 @@ def main():
         json.dump(economy_out, f, indent=2)
     print("economy.json written")
 
+    # ------------------------------------------------------------------
+    # player_buckets.json / team_buckets.json
+    # ------------------------------------------------------------------
+    # Season totals above are pre-aggregated and therefore can't be
+    # filtered by event/stage/phase/week. These bucket files carry the
+    # same underlying data broken out per (entity, event, week), letting
+    # the site aggregate any filter combination client-side -- the same
+    # approach already used for agents.json.
+    #
+    # Only event_id + week are stored as keys: region, event name,
+    # event-level stage and phase are all derivable from them via the
+    # events lookup, so storing them per row would just bloat the file.
+    #
+    # Averages are stored as (value x rounds) sums plus their round
+    # counts rather than pre-divided averages, so the site can reproduce
+    # the rounds-weighted averaging VLR uses at any aggregation level --
+    # averaging pre-computed averages would be wrong.
+    all_matches = pd.concat([vct["matches"], ewc["matches"]], ignore_index=True)
+    all_events = pd.concat([vct["events"], ewc["events"]], ignore_index=True)
+    all_maps = pd.concat([vct["maps"], ewc["maps"]], ignore_index=True)
+    all_mps = pd.concat([vct["map_player_stats"], ewc["map_player_stats"]], ignore_index=True)
+    all_mte = pd.concat([vct["map_team_economy"], ewc["map_team_economy"]], ignore_index=True)
+    for col in ['kast', 'hs_pct']:
+        all_mps[col] = pct_to_float(all_mps[col])
+
+    all_mps['canonical_team'] = all_mps['team'].map(name_to_canon).fillna(all_mps['team'])
+    all_mte['canonical_team'] = all_mte['team'].map(name_to_canon).fillna(all_mte['team'])
+    all_matches['c1'] = all_matches['team1'].map(name_to_canon).fillna(all_matches['team1'])
+    all_matches['c2'] = all_matches['team2'].map(name_to_canon).fillna(all_matches['team2'])
+
+    events_lookup = {}
+    for r in all_events.to_dict(orient='records'):
+        events_lookup[int(r['event_id'])] = {
+            "name": r['name'], "region": r['region'], "stage": r['stage'],
+            "competition": r['competition'],
+        }
+
+    am = all_maps.merge(
+        all_matches[['match_id', 'event_id', 'stage', 'c1', 'c2', 'status']],
+        on='match_id', how='left', suffixes=('', '_m')
+    )
+    am['rounds_total'] = am['team1_score'] + am['team2_score']
+    am['winner'] = np.where(am.team1_score > am.team2_score, am.c1,
+                     np.where(am.team2_score > am.team1_score, am.c2, None))
+
+    mps_ctx = all_mps.merge(
+        all_matches[['match_id', 'event_id', 'stage']], on='match_id', how='left'
+    ).merge(
+        am[['match_id', 'map_index', 'rounds_total']], on=['match_id', 'map_index'], how='left'
+    )
+
+    def wsum(g, col):
+        """(value x rounds) sum and the rounds behind it, ignoring nulls."""
+        valid = g[[col, 'rounds_total']].dropna()
+        if len(valid) == 0:
+            return 0.0, 0
+        return float((valid[col] * valid['rounds_total']).sum()), int(valid['rounds_total'].sum())
+
+    player_buckets = []
+    for (player, event_id, week), g in mps_ctx.groupby(['player', 'event_id', 'stage'], dropna=True):
+        r_sum, r_rnd = wsum(g, 'rating')
+        k_sum, k_rnd = wsum(g, 'kast')
+        a_sum, a_rnd = wsum(g, 'adr')
+        h_sum, h_rnd = wsum(g, 'hs_pct')
+        acs_valid = g['acs'].dropna()
+        row = {
+            "p": player, "e": int(event_id), "w": week,
+            "maps": int(len(g)), "rnd": int(g['rounds_total'].fillna(0).sum()),
+            "ratS": round(r_sum, 3), "ratR": r_rnd,
+            "acsS": round(float(acs_valid.sum()), 2), "acsM": int(len(acs_valid)),
+            "kastS": round(k_sum, 4), "kastR": k_rnd,
+            "adrS": round(a_sum, 3), "adrR": a_rnd,
+            "hsS": round(h_sum, 4), "hsR": h_rnd,
+            "k": int(g['kills'].fillna(0).sum()), "d": int(g['deaths'].fillna(0).sum()),
+            "a": int(g['assists'].fillna(0).sum()),
+            "fk": int(g['first_kills'].fillna(0).sum()), "fd": int(g['first_deaths'].fillna(0).sum()),
+            "m2": int(g['multi_2k'].fillna(0).sum()), "m3": int(g['multi_3k'].fillna(0).sum()),
+            "m4": int(g['multi_4k'].fillna(0).sum()), "m5": int(g['multi_5k'].fillna(0).sum()),
+            "cl": int(g[['clutch_1v1','clutch_1v2','clutch_1v3','clutch_1v4','clutch_1v5']].fillna(0).sum().sum()),
+        }
+        # Sparse "unrated maps" delta: only ~21 China matches lack Rating
+        # 2.0, so rather than duplicating every field for a rated-only
+        # variant, store just what those maps contributed. The site
+        # subtracts this to get rated-only figures. Omitted entirely
+        # (the overwhelmingly common case) when every map has a rating.
+        unrated = g[g['rating'].isna()]
+        if len(unrated) > 0:
+            u_acs = unrated['acs'].dropna()
+            row["u"] = {
+                "maps": int(len(unrated)), "rnd": int(unrated['rounds_total'].fillna(0).sum()),
+                "acsS": round(float(u_acs.sum()), 2), "acsM": int(len(u_acs)),
+                "kastS": round(wsum(unrated, 'kast')[0], 4), "kastR": wsum(unrated, 'kast')[1],
+                "adrS": round(wsum(unrated, 'adr')[0], 3), "adrR": wsum(unrated, 'adr')[1],
+                "hsS": round(wsum(unrated, 'hs_pct')[0], 4), "hsR": wsum(unrated, 'hs_pct')[1],
+                "k": int(unrated['kills'].fillna(0).sum()), "d": int(unrated['deaths'].fillna(0).sum()),
+                "a": int(unrated['assists'].fillna(0).sum()),
+                "fk": int(unrated['first_kills'].fillna(0).sum()),
+                "fd": int(unrated['first_deaths'].fillna(0).sum()),
+            }
+        player_buckets.append(row)
+
+    player_meta = {}
+    for p in players_out:
+        player_meta[p['player']] = {
+            "team": p['team'], "region": p['region'], "isChina": p['isChina'],
+            "countryCode": p['countryCode'], "countryName": p['countryName'],
+        }
+
+    with open(f"{OUT}/player_buckets.json", "w") as f:
+        json.dump({"events": events_lookup, "meta": player_meta, "buckets": player_buckets},
+                  f, separators=(',', ':'))
+    print(f"player_buckets.json: {len(player_buckets)} buckets")
+
+    # --- teams ---
+    completed_all = all_matches[all_matches['status'] == 'completed']
+    team_buckets = []
+    map_ctx = am.dropna(subset=['winner'])
+    mte_ctx = all_mte.merge(
+        all_matches[['match_id', 'event_id', 'stage']], on='match_id', how='left'
+    )
+
+    team_rows = []
+    for team_col, opp_col in (('c1', 'c2'), ('c2', 'c1')):
+        sub = completed_all[['event_id', 'stage', team_col, 'score1', 'score2']].copy()
+        sub.columns = ['event_id', 'week', 'team', 's1', 's2']
+        sub['won'] = (sub['s1'] > sub['s2']) if team_col == 'c1' else (sub['s2'] > sub['s1'])
+        team_rows.append(sub[['event_id', 'week', 'team', 'won']])
+    match_long = pd.concat(team_rows, ignore_index=True)
+
+    map_rows = []
+    for team_col in ('c1', 'c2'):
+        sub = map_ctx[['event_id', 'stage', team_col, 'winner', 'rounds_total']].copy()
+        sub.columns = ['event_id', 'week', 'team', 'winner', 'rounds_total']
+        map_rows.append(sub)
+    map_long = pd.concat(map_rows, ignore_index=True)
+
+    mps_team = mps_ctx.copy()
+    keys = ['team', 'event_id', 'week']
+    agg = {}
+    for (team, eid, wk), g in match_long.groupby(['team', 'event_id', 'week'], dropna=True):
+        agg[(team, int(eid), wk)] = {"mP": int(len(g)), "mW": int(g['won'].sum())}
+    for (team, eid, wk), g in map_long.groupby(['team', 'event_id', 'week'], dropna=True):
+        d = agg.setdefault((team, int(eid), wk), {})
+        d["mapP"] = int(len(g))
+        d["mapW"] = int((g['winner'] == team).sum())
+        d["rnd"] = int(g['rounds_total'].fillna(0).sum())
+    for (team, eid, wk), g in mte_ctx.groupby(['canonical_team', 'event_id', 'stage'], dropna=True):
+        d = agg.setdefault((team, int(eid), wk), {})
+        d["pisW"] = int(g['pistol_won'].fillna(0).sum())
+    for (team, eid, wk), g in mps_team.groupby(['canonical_team', 'event_id', 'stage'], dropna=True):
+        d = agg.setdefault((team, int(eid), wk), {})
+        r_sum, r_rnd = wsum(g, 'rating')
+        d["ratS"] = round(r_sum, 3)
+        d["ratR"] = r_rnd
+
+    for (team, eid, wk), d in agg.items():
+        if team == 'TBD':
+            continue
+        team_buckets.append({"t": team, "e": eid, "w": wk, **d})
+
+    team_meta = {t['team']: {"region": t['region']} for t in teams_out}
+    with open(f"{OUT}/team_buckets.json", "w") as f:
+        json.dump({"events": events_lookup, "meta": team_meta, "buckets": team_buckets},
+                  f, separators=(',', ':'))
+    print(f"team_buckets.json: {len(team_buckets)} buckets")
+
     events_out = [clean_row(r) for r in events_vct.to_dict(orient='records')]
     with open(f"{OUT}/events.json", "w") as f:
         json.dump(events_out, f, indent=2)

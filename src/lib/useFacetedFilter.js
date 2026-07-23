@@ -15,9 +15,9 @@ import { useMemo, useState, useCallback } from 'react'
  * given everything else currently selected -- selecting a value never
  * makes its own siblings disappear.
  */
-export function useFacetedFilter(records, facets) {
+export function useFacetedFilter(records, facets, initial = {}) {
   const [selections, setSelections] = useState(() =>
-    Object.fromEntries(facets.map((f) => [f, []]))
+    Object.fromEntries(facets.map((f) => [f, initial[f] ?? []]))
   )
 
   const setFacet = useCallback((facet, values) => {
@@ -25,7 +25,8 @@ export function useFacetedFilter(records, facets) {
   }, [])
 
   const clearAll = useCallback(() => {
-    setSelections(Object.fromEntries(facets.map((f) => [f, []])))
+    setSelections(Object.fromEntries(facets.map((f) => [f, initial[f] ?? []])))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [facets])
 
   const matchesExcept = useCallback(

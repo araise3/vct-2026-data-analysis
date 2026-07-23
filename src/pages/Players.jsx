@@ -1,94 +1,78 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
+import { useFacetedFilter } from '../lib/useFacetedFilter'
+import { expandBuckets, aggregatePlayerBuckets, groupByEntity } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
-import FilterChips from '../components/FilterChips'
 import FacetGroup from '../components/FacetGroup'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
 
-const SCOPE_OPTIONS = ['All players', 'Non-China only', 'China only']
-const REGIONS = ['Americas', 'EMEA', 'Pacific', 'China']
+const FACETS = ['competition', 'region', 'event', 'stage', 'phase', 'week']
+const FACET_LABELS = {
+  competition: 'Competition',
+  region: 'Region',
+  event: 'Event',
+  stage: 'Stage',
+  phase: 'Phase',
+  week: 'Week / Round',
+}
+
+const weekLabel = (w) => (w.includes(': ') ? w.split(': ').slice(1).join(': ') : w)
+const eventLabel = (e) => e.replace(/^Vct\b/, 'VCT')
 
 export default function Players() {
-  const { data, loading } = useData('players')
-  const [scope, setScope] = useState('Non-China only')
-  const [regions, setRegions] = useState([])
-  const [useIntlStatsForChina, setUseIntlStatsForChina] = useState(true)
-  const [ratedOnlyForChina, setRatedOnlyForChina] = useState(false)
-  const [includeEwc, setIncludeEwc] = useState(false)
+  const { data, loading } = useData('player_buckets')
+  const [ratedOnly, setRatedOnly] = useState(false)
   const [search, setSearch] = useState('')
+  const [minMaps, setMinMaps] = useState(0)
+
+  const records = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
+  const { selections, setFacet, clearAll, filtered, options, activeCount } =
+    useFacetedFilter(records, FACETS, { competition: ['VCT'] })
 
   const rows = useMemo(() => {
     if (!data) return []
-    let filtered = data
-    if (scope === 'Non-China only') filtered = data.filter((p) => !p.isChina)
-    if (scope === 'China only') filtered = data.filter((p) => p.isChina)
-    if (regions.length > 0) filtered = filtered.filter((p) => regions.includes(p.region))
-
-    if (search.trim()) {
-      const q = search.trim().toLowerCase()
-      filtered = filtered.filter(
-        (p) => p.player.toLowerCase().includes(q) || p.team?.toLowerCase().includes(q)
-      )
-    }
-
-    return filtered
-      .map((p) => {
-        // Precedence: the China-specific toggles (Intl-only, Rated-only)
-        // take priority since they address a data-quality gap, not a
-        // scope choice -- EWC inclusion only applies to the plain
-        // default stats, not on top of either China variant.
-        const useIntl = p.isChina && useIntlStatsForChina && p.hasIntlStats
-        const useRatedOnly = !useIntl && p.isChina && ratedOnlyForChina && p.ratedOnlyStats
-        const base = includeEwc && p.statsWithEwc ? p.statsWithEwc : p.stats
-        const s = useIntl ? p.intlStats : useRatedOnly ? p.ratedOnlyStats : base
-        if (!s) return null
-        return {
-          player: p.player,
-          team: p.team,
-          isChina: p.isChina,
-          countryCode: p.countryCode,
-          countryName: p.countryName,
-          usingIntlStats: useIntl,
-          usingRatedOnlyStats: useRatedOnly,
-          ...s,
-        }
+    const grouped = groupByEntity(filtered)
+    const out = []
+    for (const [player, buckets] of grouped) {
+      const meta = data.meta[player]
+      if (!meta) continue
+      const s = aggregatePlayerBuckets(buckets, { ratedOnly })
+      if (!s || !s.mapsPlayed) continue
+      if (s.mapsPlayed < minMaps) continue
+      out.push({
+        player,
+        team: meta.team,
+        region: meta.region,
+        isChina: meta.isChina,
+        countryCode: meta.countryCode,
+        countryName: meta.countryName,
+        ...s,
       })
-      .filter(Boolean)
-  }, [data, scope, regions, search, useIntlStatsForChina, ratedOnlyForChina, includeEwc])
+    }
+    const q = search.trim().toLowerCase()
+    const searched = q
+      ? out.filter((p) => p.player.toLowerCase().includes(q) || p.team?.toLowerCase().includes(q))
+      : out
+    return searched.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
+  }, [filtered, data, ratedOnly, search, minMaps])
 
-  if (loading || !data) {
-    return <div className="text-muted text-sm">Loading…</div>
-  }
+  if (loading || !data) return <div className="text-muted text-sm">Loading…</div>
 
   const columns = [
     {
-      key: 'player',
-      label: 'Player',
-      align: 'left',
-      width: 190,
+      key: 'player', label: 'Player', align: 'left', width: 190,
       format: (v, row) => (
         <div className="flex items-center gap-2">
           <Flag countryCode={row.countryCode} countryName={row.countryName} size={20} />
           <Link
             to={`/players/${encodeURIComponent(v)}`}
             className="font-body font-medium hover:text-accent-bright transition-colors"
-            onClick={(e) => e.stopPropagation()}
           >
             {v}
           </Link>
-          {row.usingIntlStats && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent-bright font-body">
-              Intl-only
-            </span>
-          )}
-          {row.usingRatedOnlyStats && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent-bright font-body">
-              Rated maps only
-            </span>
-          )}
         </div>
       ),
     },
@@ -117,73 +101,82 @@ export default function Players() {
     { key: 'totalClutches', label: 'Clutches', align: 'right', format: (v) => num(v) },
   ]
 
+  const renderers = { week: weekLabel, event: eventLabel }
+
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       <div>
         <h1 className="font-display text-2xl font-semibold text-ink">Players</h1>
         <p className="text-muted text-sm mt-1">{rows.length} players shown</p>
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-center gap-4 justify-between">
-        <FilterChips options={SCOPE_OPTIONS} value={scope} onChange={setScope} />
-        <FacetGroup
-          label="Region"
-          options={REGIONS.map((r) => ({ value: r, available: true }))}
-          selected={regions}
-          onChange={setRegions}
-        />
-        <input
-          type="text"
-          placeholder="Search player or team…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="bg-surface border border-hairline rounded-xl px-4 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:border-accent/50 w-full md:w-64"
-        />
-      </div>
+      <div className="bg-surface border border-hairline rounded-2xl p-5 flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <span className="font-display text-sm font-semibold text-ink">Filters</span>
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search player or team…"
+              className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:border-muted w-56"
+            />
+            {activeCount > 0 && (
+              <button onClick={clearAll} className="text-xs text-accent-bright hover:underline">
+                Clear all ({activeCount})
+              </button>
+            )}
+          </div>
+        </div>
 
-      <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
-        <input
-          type="checkbox"
-          checked={includeEwc}
-          onChange={(e) => setIncludeEwc(e.target.checked)}
-          className="accent-accent w-4 h-4"
-        />
-        Include Esports World Cup (EWC) 2026
-      </label>
+        {FACETS.map((f) => (
+          <FacetGroup
+            key={f}
+            label={FACET_LABELS[f]}
+            options={options[f] || []}
+            selected={selections[f] || []}
+            onChange={(vals) => setFacet(f, vals)}
+            renderLabel={renderers[f]}
+          />
+        ))}
 
-      {(scope !== 'Non-China only') && (
-        <div className="flex flex-col gap-2">
-          <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
+        <div className="flex items-center gap-5 flex-wrap pt-1">
+          <label className="flex items-center gap-2 text-xs text-muted">
             <input
               type="checkbox"
-              checked={useIntlStatsForChina}
-              onChange={(e) => setUseIntlStatsForChina(e.target.checked)}
+              checked={ratedOnly}
+              onChange={(e) => setRatedOnly(e.target.checked)}
               className="accent-accent w-4 h-4"
             />
-            Use International-only stats for China players who also played Masters/EWC
+            Only maps with a Rating 2.0
           </label>
-          <label className="flex items-center gap-2.5 text-sm text-muted bg-surface border border-hairline rounded-xl px-4 py-3 w-fit">
+          <label className="flex items-center gap-2 text-xs text-muted">
+            Min. maps
             <input
-              type="checkbox"
-              checked={ratedOnlyForChina}
-              onChange={(e) => setRatedOnlyForChina(e.target.checked)}
-              className="accent-accent w-4 h-4"
+              type="number"
+              min={0}
+              value={minMaps}
+              onChange={(e) => setMinMaps(Number(e.target.value) || 0)}
+              className="bg-surface2 border border-hairline rounded-lg px-2 py-1 w-20 text-ink focus:outline-none focus:border-muted"
             />
-            Only include maps that came with a Rating 2.0 value (excludes ~21 China matches missing it)
           </label>
         </div>
-      )}
-
-      <div className="bg-surface2/40 border border-hairline rounded-xl px-4 py-3 text-xs text-muted leading-relaxed">
-        China-region matches don't publish multi-kill, clutch, or economy data on VLR — those columns
-        will read 0 for China players unless "Intl-only stats" is checked above and that player also
-        competed internationally. Separately, ~21 China matches are missing Rating 2.0 specifically;
-        by default those maps still count toward a player's other stats (kills, ACS, etc.), which can
-        make a player's rating average reflect fewer maps than their other averages — check "Rated
-        maps only" above to make every stat consistent by excluding those maps entirely.
       </div>
 
-      <DataTable columns={columns} rows={rows} defaultSortKey="avgRating" />
+      <div className="bg-surface2/40 border border-hairline rounded-xl px-4 py-3 text-xs text-muted leading-relaxed">
+        China-region matches don't publish multi-kill, clutch, or economy data on VLR, so those
+        columns read 0 for China players. A small number of China maps are also missing Rating 2.0 —
+        by default they still count toward other stats, which can make a rating average cover fewer
+        maps than the rest of the row; "Only maps with a Rating 2.0" makes every stat consistent.
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
+          <p className="text-muted text-sm">No players match this filter combination.</p>
+        </div>
+      ) : (
+        <DataTable columns={columns} rows={rows} defaultSortKey="avgRating" />
+      )}
     </div>
   )
 }

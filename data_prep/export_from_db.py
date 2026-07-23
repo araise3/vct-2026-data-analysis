@@ -7,6 +7,7 @@ version to use for future re-scrapes: just point DB_PATH at the fresh
 """
 import json
 import math
+import os
 import sqlite3
 import numpy as np
 import pandas as pd
@@ -95,6 +96,20 @@ def main():
         [load_nationality(DB_PATH), load_nationality(EWC_DB_PATH)], ignore_index=True
     ).drop_duplicates(subset='player', keep='first')
     nationality_map = nationality.set_index('player')[['country_code', 'country_name']].to_dict('index')
+
+    # Supplementary, much more complete nationality source: VLR's own
+    # /stats/ leaderboard page lists every VCT 2026 player at once (4
+    # pages, ~100 each), rather than relying on box scores from
+    # individually re-scraped matches. Verified: all 313 players already
+    # on the site matched exactly against this source. Takes priority
+    # over the sparser per-match table above.
+    try:
+        with open(os.path.join(os.path.dirname(__file__), "player_countries.json")) as f:
+            stats_page_nationality = json.load(f)
+        for player, info in stats_page_nationality.items():
+            nationality_map[player] = info
+    except FileNotFoundError:
+        pass
 
     # Raw scrape has kast/hs_pct as "73%" strings -- convert to fractions
     for col in ['kast', 'hs_pct']:

@@ -52,7 +52,7 @@ export default function Overview() {
           rows={topPlayersByRating}
           renderRow={(p) => (
             <>
-              <Link to={`/teams/${encodeURIComponent(p.team)}`} className="shrink-0">
+              <Link to={`/teams/${encodeURIComponent(p.team)}`} className="shrink-0 self-center">
                 <TeamLogo team={p.team} size={32} showName={false} />
               </Link>
               <div className="flex-1 min-w-0">
@@ -72,7 +72,7 @@ export default function Overview() {
           rows={topTeamsByMapWinPct}
           renderRow={(t) => (
             <>
-              <Link to={`/teams/${encodeURIComponent(t.team)}`} className="shrink-0">
+              <Link to={`/teams/${encodeURIComponent(t.team)}`} className="shrink-0 self-center">
                 <TeamLogo team={t.team} size={32} showName={false} />
               </Link>
               <div className="flex-1 min-w-0">

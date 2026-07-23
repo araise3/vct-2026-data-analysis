@@ -58,8 +58,8 @@ export default function Overview() {
               </Link>
               <div className="flex-1 min-w-0 self-center">
                 <Link to={`/players/${encodeURIComponent(p.player)}`} className="flex items-center gap-1.5 text-sm text-ink font-medium truncate leading-tight hover:text-accent-bright transition-colors">
+                  <Flag countryCode={p.countryCode} countryName={p.countryName} size={18} />
                   <span className="truncate">{p.player}</span>
-                  <Flag countryCode={p.countryCode} countryName={p.countryName} size={14} />
                 </Link>
                 <Link to={`/teams/${encodeURIComponent(p.team)}`} className="block text-xs text-muted truncate leading-tight hover:text-accent-bright transition-colors">
                   {p.team}

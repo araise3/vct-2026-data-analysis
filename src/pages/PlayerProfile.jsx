@@ -40,9 +40,9 @@ export default function PlayerProfile() {
       <Link to="/players" className="text-sm text-muted hover:text-ink w-fit">← Back to Players</Link>
 
       <div>
-        <h1 className="font-display text-2xl font-semibold text-ink flex items-center gap-2.5">
+        <h1 className="font-display text-2xl font-semibold text-ink flex items-center gap-3">
+          <Flag countryCode={player.countryCode} countryName={player.countryName} size={32} />
           {player.player}
-          <Flag countryCode={player.countryCode} countryName={player.countryName} size={22} />
         </h1>
         <Link to={`/teams/${encodeURIComponent(player.team)}`} className="text-muted text-sm hover:text-accent-bright inline-block mt-1">
           <TeamLogo team={player.team} size={18} />

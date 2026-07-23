@@ -67,6 +67,7 @@ export default function Players() {
       width: 160,
       format: (v, row) => (
         <div className="flex items-center gap-2">
+          <Flag countryCode={row.countryCode} countryName={row.countryName} size={20} />
           <Link
             to={`/players/${encodeURIComponent(v)}`}
             className="font-body font-medium hover:text-accent-bright transition-colors"
@@ -74,7 +75,6 @@ export default function Players() {
           >
             {v}
           </Link>
-          <Flag countryCode={row.countryCode} countryName={row.countryName} size={14} />
           {row.usingIntlStats && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent-bright font-body">
               Intl-only

@@ -87,8 +87,8 @@ export default function TeamProfile() {
               className="flex items-center justify-between px-5 py-3 hover:bg-surface2/50 transition-colors"
             >
               <span className="text-sm text-ink font-medium flex items-center gap-2">
+                <Flag countryCode={p.countryCode} countryName={p.countryName} size={22} />
                 {p.player}
-                <Flag countryCode={p.countryCode} countryName={p.countryName} size={16} />
               </span>
               <div className="flex items-center gap-6 text-xs text-muted">
                 <span>{p._stats.mapsPlayed} maps</span>

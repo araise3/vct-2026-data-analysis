@@ -10,7 +10,7 @@
     "pistolWon": 41,
     "pistolPlayed": 88,
     "pistolWinPct": 0.4659090909090909,
-    "avgRating": 1.0304,
+    "avgRating": 1.0218,
     "team": "100 Thieves",
     "region": "Americas",
     "withEwc": {
@@ -24,7 +24,7 @@
       "pistolWon": 65,
       "pistolPlayed": 128,
       "pistolWinPct": 0.5078125,
-      "avgRating": 1.0382
+      "avgRating": 1.0331
     }
   },
   {
@@ -38,7 +38,7 @@
     "pistolWon": 7,
     "pistolPlayed": 116,
     "pistolWinPct": 0.0603448275862069,
-    "avgRating": 0.992,
+    "avgRating": 0.9969,
     "team": "All Gamers",
     "region": "China",
     "withEwc": {
@@ -52,7 +52,7 @@
       "pistolWon": 14,
       "pistolPlayed": 158,
       "pistolWinPct": 0.08860759493670886,
-      "avgRating": 0.985
+      "avgRating": 0.9909
     }
   },
   {
@@ -66,7 +66,7 @@
     "pistolWon": 33,
     "pistolPlayed": 72,
     "pistolWinPct": 0.4583333333333333,
-    "avgRating": 0.9514,
+    "avgRating": 0.9562,
     "team": "BBL Esports",
     "region": "EMEA",
     "withEwc": {
@@ -80,7 +80,7 @@
       "pistolWon": 60,
       "pistolPlayed": 124,
       "pistolWinPct": 0.4838709677419355,
-      "avgRating": 0.9997
+      "avgRating": 0.995
     }
   },
   {
@@ -94,7 +94,7 @@
     "pistolWon": 0,
     "pistolPlayed": 94,
     "pistolWinPct": 0.0,
-    "avgRating": 1.0112,
+    "avgRating": 1.0073,
     "team": "Bilibili Gaming",
     "region": "China",
     "withEwc": {
@@ -108,7 +108,7 @@
       "pistolWon": 0,
       "pistolPlayed": 110,
       "pistolWinPct": 0.0,
-      "avgRating": 1.0112
+      "avgRating": 1.0073
     }
   },
   {
@@ -122,7 +122,7 @@
     "pistolWon": 21,
     "pistolPlayed": 62,
     "pistolWinPct": 0.3387096774193548,
-    "avgRating": 0.9479,
+    "avgRating": 0.9654,
     "team": "Cloud9",
     "region": "Americas",
     "withEwc": {
@@ -136,7 +136,7 @@
       "pistolWon": 24,
       "pistolPlayed": 72,
       "pistolWinPct": 0.3333333333333333,
-      "avgRating": 0.9391
+      "avgRating": 0.9556
     }
   },
   {
@@ -150,7 +150,7 @@
     "pistolWon": 42,
     "pistolPlayed": 70,
     "pistolWinPct": 0.6,
-    "avgRating": 0.9537,
+    "avgRating": 0.9586,
     "team": "DetonatioN FocusMe",
     "region": "Pacific",
     "withEwc": {
@@ -164,7 +164,7 @@
       "pistolWon": 46,
       "pistolPlayed": 80,
       "pistolWinPct": 0.575,
-      "avgRating": 0.9499
+      "avgRating": 0.9556
     }
   },
   {
@@ -178,7 +178,7 @@
     "pistolWon": 5,
     "pistolPlayed": 122,
     "pistolWinPct": 0.040983606557377046,
-    "avgRating": 1.0025,
+    "avgRating": 1.0041,
     "team": "Dragon Ranger Gaming",
     "region": "China",
     "withEwc": {
@@ -192,7 +192,7 @@
       "pistolWon": 5,
       "pistolPlayed": 130,
       "pistolWinPct": 0.038461538461538464,
-      "avgRating": 1.0025
+      "avgRating": 1.0041
     }
   },
   {
@@ -206,7 +206,7 @@
     "pistolWon": 12,
     "pistolPlayed": 144,
     "pistolWinPct": 0.08333333333333333,
-    "avgRating": 1.0106,
+    "avgRating": 1.0111,
     "team": "EDward Gaming",
     "region": "China",
     "withEwc": {
@@ -220,7 +220,7 @@
       "pistolWon": 17,
       "pistolPlayed": 158,
       "pistolWinPct": 0.10759493670886076,
-      "avgRating": 0.9965
+      "avgRating": 0.9998
     }
   },
   {
@@ -234,7 +234,7 @@
     "pistolWon": 31,
     "pistolPlayed": 54,
     "pistolWinPct": 0.5740740740740741,
-    "avgRating": 0.9359,
+    "avgRating": 0.9347,
     "team": "ENVY",
     "region": "Americas",
     "withEwc": {
@@ -248,7 +248,7 @@
       "pistolWon": 37,
       "pistolPlayed": 70,
       "pistolWinPct": 0.5285714285714286,
-      "avgRating": 0.9356
+      "avgRating": 0.9358
     }
   },
   {
@@ -262,7 +262,7 @@
     "pistolWon": 37,
     "pistolPlayed": 72,
     "pistolWinPct": 0.5138888888888888,
-    "avgRating": 0.9718,
+    "avgRating": 0.9729,
     "team": "Eternal Fire",
     "region": "EMEA",
     "withEwc": {
@@ -276,7 +276,7 @@
       "pistolWon": 43,
       "pistolPlayed": 82,
       "pistolWinPct": 0.524390243902439,
-      "avgRating": 0.9689
+      "avgRating": 0.9693
     }
   },
   {
@@ -290,7 +290,7 @@
     "pistolWon": 25,
     "pistolPlayed": 50,
     "pistolWinPct": 0.5,
-    "avgRating": 0.959,
+    "avgRating": 0.9617,
     "team": "Evil Geniuses",
     "region": "Americas",
     "withEwc": {
@@ -304,7 +304,7 @@
       "pistolWon": 32,
       "pistolPlayed": 68,
       "pistolWinPct": 0.47058823529411764,
-      "avgRating": 0.9528
+      "avgRating": 0.9623
     }
   },
   {
@@ -318,7 +318,7 @@
     "pistolWon": 46,
     "pistolPlayed": 84,
     "pistolWinPct": 0.5476190476190477,
-    "avgRating": 1.0197,
+    "avgRating": 1.0193,
     "team": "FNATIC",
     "region": "EMEA",
     "withEwc": {
@@ -332,7 +332,7 @@
       "pistolWon": 57,
       "pistolPlayed": 104,
       "pistolWinPct": 0.5480769230769231,
-      "avgRating": 1.0178
+      "avgRating": 1.0171
     }
   },
   {
@@ -346,7 +346,7 @@
     "pistolWon": 38,
     "pistolPlayed": 82,
     "pistolWinPct": 0.4634146341463415,
-    "avgRating": 0.9933,
+    "avgRating": 0.9996,
     "team": "FULL SENSE",
     "region": "Pacific",
     "withEwc": {
@@ -360,7 +360,7 @@
       "pistolWon": 45,
       "pistolPlayed": 94,
       "pistolWinPct": 0.4787234042553192,
-      "avgRating": 0.9788
+      "avgRating": 0.986
     }
   },
   {
@@ -374,7 +374,7 @@
     "pistolWon": 34,
     "pistolPlayed": 80,
     "pistolWinPct": 0.425,
-    "avgRating": 0.9646,
+    "avgRating": 0.971,
     "team": "FURIA",
     "region": "Americas",
     "withEwc": {
@@ -388,7 +388,7 @@
       "pistolWon": 36,
       "pistolPlayed": 88,
       "pistolWinPct": 0.4090909090909091,
-      "avgRating": 0.9555
+      "avgRating": 0.9608
     }
   },
   {
@@ -402,7 +402,7 @@
     "pistolWon": 56,
     "pistolPlayed": 106,
     "pistolWinPct": 0.5283018867924528,
-    "avgRating": 0.9706,
+    "avgRating": 0.9779,
     "team": "FUT Esports",
     "region": "EMEA",
     "withEwc": {
@@ -416,7 +416,7 @@
       "pistolWon": 66,
       "pistolPlayed": 122,
       "pistolWinPct": 0.5409836065573771,
-      "avgRating": 0.9708
+      "avgRating": 0.9766
     }
   },
   {
@@ -430,7 +430,7 @@
     "pistolWon": 0,
     "pistolPlayed": 58,
     "pistolWinPct": 0.0,
-    "avgRating": 0.9486,
+    "avgRating": 0.9536,
     "team": "FunPlus Phoenix",
     "region": "China",
     "withEwc": {
@@ -444,7 +444,7 @@
       "pistolWon": 0,
       "pistolPlayed": 102,
       "pistolWinPct": 0.0,
-      "avgRating": 0.9486
+      "avgRating": 0.9536
     }
   },
   {
@@ -458,7 +458,7 @@
     "pistolWon": 66,
     "pistolPlayed": 130,
     "pistolWinPct": 0.5076923076923077,
-    "avgRating": 1.0383,
+    "avgRating": 1.0364,
     "team": "G2 Esports",
     "region": "Americas",
     "withEwc": {
@@ -472,7 +472,7 @@
       "pistolWon": 76,
       "pistolPlayed": 146,
       "pistolWinPct": 0.5205479452054794,
-      "avgRating": 1.0367
+      "avgRating": 1.0353
     }
   },
   {
@@ -486,7 +486,7 @@
     "pistolWon": 36,
     "pistolPlayed": 58,
     "pistolWinPct": 0.6206896551724138,
-    "avgRating": 0.9388,
+    "avgRating": 0.9492,
     "team": "GIANTX",
     "region": "EMEA",
     "withEwc": {
@@ -500,7 +500,7 @@
       "pistolWon": 43,
       "pistolPlayed": 72,
       "pistolWinPct": 0.5972222222222222,
-      "avgRating": 0.9216
+      "avgRating": 0.9342
     }
   },
   {
@@ -514,7 +514,7 @@
     "pistolWon": 24,
     "pistolPlayed": 58,
     "pistolWinPct": 0.41379310344827586,
-    "avgRating": 0.9777,
+    "avgRating": 0.979,
     "team": "Gen.G",
     "region": "Pacific",
     "withEwc": {
@@ -528,7 +528,7 @@
       "pistolWon": 49,
       "pistolPlayed": 104,
       "pistolWinPct": 0.47115384615384615,
-      "avgRating": 1.012
+      "avgRating": 1.0063
     }
   },
   {
@@ -542,7 +542,7 @@
     "pistolWon": 46,
     "pistolPlayed": 94,
     "pistolWinPct": 0.48936170212765956,
-    "avgRating": 1.0107,
+    "avgRating": 1.0078,
     "team": "Gentle Mates",
     "region": "EMEA",
     "withEwc": {
@@ -556,7 +556,7 @@
       "pistolWon": 64,
       "pistolPlayed": 122,
       "pistolWinPct": 0.5245901639344263,
-      "avgRating": 1.0265
+      "avgRating": 1.0192
     }
   },
   {
@@ -570,7 +570,7 @@
     "pistolWon": 53,
     "pistolPlayed": 96,
     "pistolWinPct": 0.5520833333333334,
-    "avgRating": 1.0061,
+    "avgRating": 1.0016,
     "team": "Global Esports",
     "region": "Pacific",
     "withEwc": {
@@ -584,7 +584,7 @@
       "pistolWon": 68,
       "pistolPlayed": 118,
       "pistolWinPct": 0.576271186440678,
-      "avgRating": 1.0073
+      "avgRating": 1.0021
     }
   },
   {
@@ -598,7 +598,7 @@
     "pistolWon": 0,
     "pistolPlayed": 100,
     "pistolWinPct": 0.0,
-    "avgRating": 0.9585,
+    "avgRating": 0.9711,
     "team": "JDG Esports",
     "region": "China",
     "withEwc": {
@@ -612,7 +612,7 @@
       "pistolWon": 0,
       "pistolPlayed": 112,
       "pistolWinPct": 0.0,
-      "avgRating": 0.9585
+      "avgRating": 0.9711
     }
   },
   {
@@ -626,7 +626,7 @@
     "pistolWon": 44,
     "pistolPlayed": 82,
     "pistolWinPct": 0.5365853658536586,
-    "avgRating": 0.9818,
+    "avgRating": 0.988,
     "team": "KIWOOM DRX",
     "region": "Pacific",
     "withEwc": {
@@ -640,7 +640,7 @@
       "pistolWon": 48,
       "pistolPlayed": 96,
       "pistolWinPct": 0.5,
-      "avgRating": 0.9798
+      "avgRating": 0.9837
     }
   },
   {
@@ -654,7 +654,7 @@
     "pistolWon": 24,
     "pistolPlayed": 54,
     "pistolWinPct": 0.4444444444444444,
-    "avgRating": 0.9544,
+    "avgRating": 0.9633,
     "team": "KR\u00dc Esports",
     "region": "Americas",
     "withEwc": {
@@ -668,7 +668,7 @@
       "pistolWon": 29,
       "pistolPlayed": 64,
       "pistolWinPct": 0.453125,
-      "avgRating": 0.9459
+      "avgRating": 0.9527
     }
   },
   {
@@ -682,7 +682,7 @@
     "pistolWon": 32,
     "pistolPlayed": 62,
     "pistolWinPct": 0.5161290322580645,
-    "avgRating": 0.9885,
+    "avgRating": 0.9802,
     "team": "Karmine Corp",
     "region": "EMEA",
     "withEwc": {
@@ -696,7 +696,7 @@
       "pistolWon": 54,
       "pistolPlayed": 106,
       "pistolWinPct": 0.5094339622641509,
-      "avgRating": 0.9997
+      "avgRating": 0.994
     }
   },
   {
@@ -710,7 +710,7 @@
     "pistolWon": 70,
     "pistolPlayed": 126,
     "pistolWinPct": 0.5555555555555556,
-    "avgRating": 1.0602,
+    "avgRating": 1.0569,
     "team": "LEVIAT\u00c1N",
     "region": "Americas",
     "withEwc": {
@@ -724,7 +724,7 @@
       "pistolWon": 76,
       "pistolPlayed": 142,
       "pistolWinPct": 0.5352112676056338,
-      "avgRating": 1.0492
+      "avgRating": 1.044
     }
   },
   {
@@ -738,7 +738,7 @@
     "pistolWon": 27,
     "pistolPlayed": 50,
     "pistolWinPct": 0.54,
-    "avgRating": 0.9387,
+    "avgRating": 0.947,
     "team": "LOUD",
     "region": "Americas",
     "withEwc": {
@@ -752,7 +752,7 @@
       "pistolWon": 37,
       "pistolPlayed": 72,
       "pistolWinPct": 0.5138888888888888,
-      "avgRating": 0.9463
+      "avgRating": 0.9522
     }
   },
   {
@@ -766,7 +766,7 @@
     "pistolWon": 28,
     "pistolPlayed": 72,
     "pistolWinPct": 0.3888888888888889,
-    "avgRating": 0.9773,
+    "avgRating": 0.9801,
     "team": "MIBR",
     "region": "Americas",
     "withEwc": {
@@ -780,7 +780,7 @@
       "pistolWon": 42,
       "pistolPlayed": 102,
       "pistolWinPct": 0.4117647058823529,
-      "avgRating": 1.0057
+      "avgRating": 1.0077
     }
   },
   {
@@ -794,7 +794,7 @@
     "pistolWon": 76,
     "pistolPlayed": 136,
     "pistolWinPct": 0.5588235294117647,
-    "avgRating": 1.0378,
+    "avgRating": 1.0278,
     "team": "NRG",
     "region": "Americas",
     "withEwc": {
@@ -808,7 +808,7 @@
       "pistolWon": 108,
       "pistolPlayed": 192,
       "pistolWinPct": 0.5625,
-      "avgRating": 1.0433
+      "avgRating": 1.0343
     }
   },
   {
@@ -822,7 +822,7 @@
     "pistolWon": 30,
     "pistolPlayed": 60,
     "pistolWinPct": 0.5,
-    "avgRating": 0.9861,
+    "avgRating": 0.9891,
     "team": "Natus Vincere",
     "region": "EMEA",
     "withEwc": {
@@ -836,7 +836,7 @@
       "pistolWon": 45,
       "pistolPlayed": 90,
       "pistolWinPct": 0.5,
-      "avgRating": 0.9947
+      "avgRating": 0.9941
     }
   },
   {
@@ -850,7 +850,7 @@
     "pistolWon": 51,
     "pistolPlayed": 90,
     "pistolWinPct": 0.5666666666666667,
-    "avgRating": 1.0196,
+    "avgRating": 1.0103,
     "team": "Nongshim RedForce",
     "region": "Pacific",
     "withEwc": {
@@ -864,7 +864,7 @@
       "pistolWon": 75,
       "pistolPlayed": 150,
       "pistolWinPct": 0.5,
-      "avgRating": 1.0218
+      "avgRating": 1.0193
     }
   },
   {
@@ -878,7 +878,7 @@
     "pistolWon": 0,
     "pistolPlayed": 54,
     "pistolWinPct": 0.0,
-    "avgRating": 0.936,
+    "avgRating": 0.9455,
     "team": "Nova Esports",
     "region": "China",
     "withEwc": {
@@ -892,7 +892,7 @@
       "pistolWon": 0,
       "pistolPlayed": 72,
       "pistolWinPct": 0.0,
-      "avgRating": 0.936
+      "avgRating": 0.9455
     }
   },
   {
@@ -906,7 +906,7 @@
     "pistolWon": 21,
     "pistolPlayed": 52,
     "pistolWinPct": 0.40384615384615385,
-    "avgRating": 0.9075,
+    "avgRating": 0.925,
     "team": "PCIFIC Esports",
     "region": "EMEA",
     "withEwc": {
@@ -920,7 +920,7 @@
       "pistolWon": 24,
       "pistolPlayed": 64,
       "pistolWinPct": 0.375,
-      "avgRating": 0.9119
+      "avgRating": 0.9277
     }
   },
   {
@@ -934,7 +934,7 @@
     "pistolWon": 90,
     "pistolPlayed": 172,
     "pistolWinPct": 0.5232558139534884,
-    "avgRating": 1.0665,
+    "avgRating": 1.0562,
     "team": "Paper Rex",
     "region": "Pacific",
     "withEwc": {
@@ -948,7 +948,7 @@
       "pistolWon": 96,
       "pistolPlayed": 184,
       "pistolWinPct": 0.5217391304347826,
-      "avgRating": 1.057
+      "avgRating": 1.0478
     }
   },
   {
@@ -962,7 +962,7 @@
     "pistolWon": 32,
     "pistolPlayed": 78,
     "pistolWinPct": 0.41025641025641024,
-    "avgRating": 0.9926,
+    "avgRating": 0.9941,
     "team": "Rex Regum Qeon",
     "region": "Pacific",
     "withEwc": {
@@ -976,7 +976,7 @@
       "pistolWon": 44,
       "pistolPlayed": 100,
       "pistolWinPct": 0.44,
-      "avgRating": 0.9924
+      "avgRating": 0.9948
     }
   },
   {
@@ -990,7 +990,7 @@
     "pistolWon": 29,
     "pistolPlayed": 46,
     "pistolWinPct": 0.6304347826086957,
-    "avgRating": 0.9741,
+    "avgRating": 0.9761,
     "team": "Sentinels",
     "region": "Americas",
     "withEwc": {
@@ -1004,7 +1004,7 @@
       "pistolWon": 55,
       "pistolPlayed": 84,
       "pistolWinPct": 0.6547619047619048,
-      "avgRating": 1.0078
+      "avgRating": 1.0049
     }
   },
   {
@@ -1018,7 +1018,7 @@
     "pistolWon": 47,
     "pistolPlayed": 88,
     "pistolWinPct": 0.5340909090909091,
-    "avgRating": 1.0373,
+    "avgRating": 1.0273,
     "team": "T1",
     "region": "Pacific",
     "withEwc": {
@@ -1032,7 +1032,7 @@
       "pistolWon": 56,
       "pistolPlayed": 102,
       "pistolWinPct": 0.5490196078431373,
-      "avgRating": 1.0245
+      "avgRating": 1.016
     }
   },
   {
@@ -1046,7 +1046,7 @@
     "pistolWon": 0,
     "pistolPlayed": 102,
     "pistolWinPct": 0.0,
-    "avgRating": 1.0571,
+    "avgRating": 1.0533,
     "team": "TYLOO",
     "region": "China",
     "withEwc": {
@@ -1060,7 +1060,7 @@
       "pistolWon": 0,
       "pistolPlayed": 120,
       "pistolWinPct": 0.0,
-      "avgRating": 1.0571
+      "avgRating": 1.0533
     }
   },
   {
@@ -1074,7 +1074,7 @@
     "pistolWon": 48,
     "pistolPlayed": 106,
     "pistolWinPct": 0.4528301886792453,
-    "avgRating": 1.0155,
+    "avgRating": 1.0103,
     "team": "Team Heretics",
     "region": "EMEA",
     "withEwc": {
@@ -1088,7 +1088,7 @@
       "pistolWon": 56,
       "pistolPlayed": 122,
       "pistolWinPct": 0.45901639344262296,
-      "avgRating": 1.0197
+      "avgRating": 1.0149
     }
   },
   {
@@ -1102,7 +1102,7 @@
     "pistolWon": 48,
     "pistolPlayed": 98,
     "pistolWinPct": 0.4897959183673469,
-    "avgRating": 0.9859,
+    "avgRating": 0.9963,
     "team": "Team Liquid",
     "region": "EMEA",
     "withEwc": {
@@ -1116,7 +1116,7 @@
       "pistolWon": 51,
       "pistolPlayed": 106,
       "pistolWinPct": 0.4811320754716981,
-      "avgRating": 0.9799
+      "avgRating": 0.9891
     }
   },
   {
@@ -1130,7 +1130,7 @@
     "pistolWon": 23,
     "pistolPlayed": 48,
     "pistolWinPct": 0.4791666666666667,
-    "avgRating": 0.9383,
+    "avgRating": 0.9467,
     "team": "Team Secret",
     "region": "Pacific",
     "withEwc": {
@@ -1144,7 +1144,7 @@
       "pistolWon": 31,
       "pistolPlayed": 64,
       "pistolWinPct": 0.484375,
-      "avgRating": 0.9516
+      "avgRating": 0.9629
     }
   },
   {
@@ -1158,7 +1158,7 @@
     "pistolWon": 53,
     "pistolPlayed": 114,
     "pistolWinPct": 0.4649122807017544,
-    "avgRating": 1.0451,
+    "avgRating": 1.0319,
     "team": "Team Vitality",
     "region": "EMEA",
     "withEwc": {
@@ -1172,7 +1172,7 @@
       "pistolWon": 60,
       "pistolPlayed": 130,
       "pistolWinPct": 0.46153846153846156,
-      "avgRating": 1.0314
+      "avgRating": 1.0225
     }
   },
   {
@@ -1186,7 +1186,7 @@
     "pistolWon": 0,
     "pistolPlayed": 88,
     "pistolWinPct": 0.0,
-    "avgRating": 0.9893,
+    "avgRating": 0.9877,
     "team": "Titan Esports Club",
     "region": "China",
     "withEwc": {
@@ -1200,7 +1200,7 @@
       "pistolWon": 0,
       "pistolPlayed": 108,
       "pistolWinPct": 0.0,
-      "avgRating": 0.9893
+      "avgRating": 0.9877
     }
   },
   {
@@ -1214,7 +1214,7 @@
     "pistolWon": 0,
     "pistolPlayed": 86,
     "pistolWinPct": 0.0,
-    "avgRating": 0.9499,
+    "avgRating": 0.9575,
     "team": "Trace Esports",
     "region": "China",
     "withEwc": {
@@ -1228,7 +1228,7 @@
       "pistolWon": 0,
       "pistolPlayed": 100,
       "pistolWinPct": 0.0,
-      "avgRating": 0.9499
+      "avgRating": 0.9575
     }
   },
   {
@@ -1242,7 +1242,7 @@
     "pistolWon": 19,
     "pistolPlayed": 46,
     "pistolWinPct": 0.41304347826086957,
-    "avgRating": 0.919,
+    "avgRating": 0.9319,
     "team": "VARREL",
     "region": "Pacific",
     "withEwc": {
@@ -1256,7 +1256,7 @@
       "pistolWon": 24,
       "pistolPlayed": 60,
       "pistolWinPct": 0.4,
-      "avgRating": 0.9196
+      "avgRating": 0.9355
     }
   },
   {
@@ -1270,7 +1270,7 @@
     "pistolWon": 0,
     "pistolPlayed": 78,
     "pistolWinPct": 0.0,
-    "avgRating": 0.9659,
+    "avgRating": 0.9689,
     "team": "Wolves Esports",
     "region": "China",
     "withEwc": {
@@ -1284,7 +1284,7 @@
       "pistolWon": 0,
       "pistolPlayed": 88,
       "pistolWinPct": 0.0,
-      "avgRating": 0.9659
+      "avgRating": 0.9689
     }
   },
   {
@@ -1298,7 +1298,7 @@
     "pistolWon": 21,
     "pistolPlayed": 156,
     "pistolWinPct": 0.1346153846153846,
-    "avgRating": 1.0079,
+    "avgRating": 1.0061,
     "team": "Xi Lai Gaming",
     "region": "China",
     "withEwc": {
@@ -1312,7 +1312,7 @@
       "pistolWon": 23,
       "pistolPlayed": 184,
       "pistolWinPct": 0.125,
-      "avgRating": 0.9957
+      "avgRating": 0.9964
     }
   },
   {
@@ -1326,7 +1326,7 @@
     "pistolWon": 26,
     "pistolPlayed": 50,
     "pistolWinPct": 0.52,
-    "avgRating": 0.8988,
+    "avgRating": 0.9087,
     "team": "ZETA DIVISION",
     "region": "Pacific",
     "withEwc": {
@@ -1340,7 +1340,7 @@
       "pistolWon": 29,
       "pistolPlayed": 58,
       "pistolWinPct": 0.5,
-      "avgRating": 0.9025
+      "avgRating": 0.9124
     }
   }
 ]

@@ -188,7 +188,9 @@ def main():
         pistol_played = maps_played * 2
 
         team_players = mps_sub[mps_sub.canonical_team == team]
-        avg_rating = team_players['rating'].mean()
+        tp_valid = team_players.dropna(subset=['rating'])
+        avg_rating = ((tp_valid['rating'] * tp_valid['rounds_total']).sum() / tp_valid['rounds_total'].sum()
+                      if len(tp_valid) and tp_valid['rounds_total'].sum() else None)
 
         return clean_row({
             "matchesPlayed": matches_played,
@@ -241,18 +243,37 @@ def main():
             return None
         kills = sub['kills'].sum()
         deaths = sub['deaths'].sum()
+        rounds = sub['rounds_total']
+        total_rounds = rounds.sum()
+
+        def rounds_weighted(col):
+            # VLR's own season aggregates weight Rating/KAST/ADR/HS% by
+            # rounds played per map, not a flat per-map average -- verified
+            # against real VLR aggregate data for two different players
+            # (3 maps and 86 maps): flat-averaging Rating overstated it
+            # (1.39 vs VLR's actual 1.30 for a 3-map sample), while
+            # rounds-weighting matched exactly in both cases.
+            valid = sub[[col]].join(rounds.rename('_rounds')).dropna(subset=[col])
+            if len(valid) == 0 or valid['_rounds'].sum() == 0:
+                return None
+            return (valid[col] * valid['_rounds']).sum() / valid['_rounds'].sum()
+
         return clean_row({
             "mapsPlayed": len(sub),
-            "roundsPlayed": int(sub['rounds_total'].sum()),
-            "avgRating": sub['rating'].mean(),
+            "roundsPlayed": int(total_rounds),
+            "avgRating": rounds_weighted('rating'),
+            # ACS is the one exception -- verified against real VLR data
+            # that it's flat-averaged per map, not rounds-weighted (a
+            # rounds-weighted ACS undershot VLR's actual value in both
+            # test cases).
             "avgAcs": sub['acs'].mean(),
             "totalKills": int(kills),
             "totalDeaths": int(deaths),
             "kd": (kills / deaths) if deaths else None,
             "totalAssists": int(sub['assists'].sum()),
-            "avgKast": sub['kast'].mean(),
-            "avgAdr": sub['adr'].mean(),
-            "avgHsPct": sub['hs_pct'].mean(),
+            "avgKast": rounds_weighted('kast'),
+            "avgAdr": rounds_weighted('adr'),
+            "avgHsPct": rounds_weighted('hs_pct'),
             "totalFirstKills": int(sub['first_kills'].sum()),
             "totalFirstDeaths": int(sub['first_deaths'].sum()),
             "total2k": int(sub['multi_2k'].sum()) if sub['multi_2k'].notna().any() else 0,

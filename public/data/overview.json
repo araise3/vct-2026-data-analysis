@@ -21,7 +21,7 @@
       "team": "Dragon Ranger Gaming",
       "countryCode": "ru",
       "countryName": "Russian Federation",
-      "rating": 1.2445,
+      "rating": 1.2511,
       "mapsPlayed": 61
     },
     {
@@ -29,7 +29,7 @@
       "team": "Gentle Mates",
       "countryCode": "cz",
       "countryName": "Czechia",
-      "rating": 1.2374,
+      "rating": 1.2375,
       "mapsPlayed": 47
     },
     {
@@ -37,7 +37,7 @@
       "team": "LEVIAT\u00c1N",
       "countryCode": "ar",
       "countryName": "Argentina",
-      "rating": 1.2338,
+      "rating": 1.2284,
       "mapsPlayed": 58
     },
     {
@@ -45,7 +45,7 @@
       "team": "Wolves Esports",
       "countryCode": "sg",
       "countryName": "Singapore",
-      "rating": 1.23,
+      "rating": 1.2265,
       "mapsPlayed": 13
     },
     {
@@ -53,7 +53,7 @@
       "team": "FULL SENSE",
       "countryCode": "th",
       "countryName": "Thailand",
-      "rating": 1.2134,
+      "rating": 1.22,
       "mapsPlayed": 41
     },
     {
@@ -61,40 +61,40 @@
       "team": "Natus Vincere",
       "countryCode": "tr",
       "countryName": "T\u00fcrkiye",
-      "rating": 1.1693,
+      "rating": 1.1819,
       "mapsPlayed": 30
-    },
-    {
-      "player": "Jemkin",
-      "team": "Rex Regum Qeon",
-      "countryCode": "ru",
-      "countryName": "Russian Federation",
-      "rating": 1.1597,
-      "mapsPlayed": 39
-    },
-    {
-      "player": "iZu",
-      "team": "T1",
-      "countryCode": "kr",
-      "countryName": "Korea, Republic of",
-      "rating": 1.1586,
-      "mapsPlayed": 44
     },
     {
       "player": "Less",
       "team": "KR\u00dc Esports",
       "countryCode": "br",
       "countryName": "Brazil",
-      "rating": 1.1553,
+      "rating": 1.1717,
       "mapsPlayed": 19
+    },
+    {
+      "player": "Jemkin",
+      "team": "Rex Regum Qeon",
+      "countryCode": "ru",
+      "countryName": "Russian Federation",
+      "rating": 1.1632,
+      "mapsPlayed": 39
     },
     {
       "player": "slowly",
       "team": "TYLOO",
       "countryCode": "cn",
       "countryName": "China",
-      "rating": 1.1545,
+      "rating": 1.1569,
       "mapsPlayed": 51
+    },
+    {
+      "player": "happywei",
+      "team": "Xi Lai Gaming",
+      "countryCode": "tw",
+      "countryName": "Taiwan, Province of China",
+      "rating": 1.151,
+      "mapsPlayed": 78
     }
   ],
   "topTeamsByMapWinPct": [
@@ -175,7 +175,7 @@
       "team": "Gentle Mates",
       "countryCode": "cz",
       "countryName": "Czechia",
-      "rating": 1.2597,
+      "rating": 1.2518,
       "mapsPlayed": 61
     },
     {
@@ -183,7 +183,7 @@
       "team": "Dragon Ranger Gaming",
       "countryCode": "ru",
       "countryName": "Russian Federation",
-      "rating": 1.2445,
+      "rating": 1.2511,
       "mapsPlayed": 61
     },
     {
@@ -191,7 +191,7 @@
       "team": "Wolves Esports",
       "countryCode": "sg",
       "countryName": "Singapore",
-      "rating": 1.23,
+      "rating": 1.2265,
       "mapsPlayed": 13
     },
     {
@@ -199,7 +199,7 @@
       "team": "LEVIAT\u00c1N",
       "countryCode": "ar",
       "countryName": "Argentina",
-      "rating": 1.1967,
+      "rating": 1.1887,
       "mapsPlayed": 66
     },
     {
@@ -207,48 +207,48 @@
       "team": "FULL SENSE",
       "countryCode": "th",
       "countryName": "Thailand",
-      "rating": 1.1764,
+      "rating": 1.1884,
       "mapsPlayed": 47
-    },
-    {
-      "player": "t3xture",
-      "team": "Gen.G",
-      "countryCode": "kr",
-      "countryName": "Korea, Republic of",
-      "rating": 1.1654,
-      "mapsPlayed": 52
-    },
-    {
-      "player": "slowly",
-      "team": "TYLOO",
-      "countryCode": "cn",
-      "countryName": "China",
-      "rating": 1.1545,
-      "mapsPlayed": 60
-    },
-    {
-      "player": "Ruxic",
-      "team": "Natus Vincere",
-      "countryCode": "tr",
-      "countryName": "T\u00fcrkiye",
-      "rating": 1.1516,
-      "mapsPlayed": 45
     },
     {
       "player": "Zeus",
       "team": "Team Secret",
       "countryCode": "ph",
       "countryName": "Philippines",
-      "rating": 1.1458,
+      "rating": 1.1624,
       "mapsPlayed": 19
     },
     {
-      "player": "iZu",
-      "team": "T1",
+      "player": "slowly",
+      "team": "TYLOO",
+      "countryCode": "cn",
+      "countryName": "China",
+      "rating": 1.1569,
+      "mapsPlayed": 60
+    },
+    {
+      "player": "t3xture",
+      "team": "Gen.G",
       "countryCode": "kr",
       "countryName": "Korea, Republic of",
-      "rating": 1.1382,
-      "mapsPlayed": 51
+      "rating": 1.1534,
+      "mapsPlayed": 52
+    },
+    {
+      "player": "Ruxic",
+      "team": "Natus Vincere",
+      "countryCode": "tr",
+      "countryName": "T\u00fcrkiye",
+      "rating": 1.1472,
+      "mapsPlayed": 45
+    },
+    {
+      "player": "Meiy",
+      "team": "DetonatioN FocusMe",
+      "countryCode": "jp",
+      "countryName": "Japan",
+      "rating": 1.1342,
+      "mapsPlayed": 40
     }
   ],
   "topTeamsByMapWinPctWithEwc": [

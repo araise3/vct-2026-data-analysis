@@ -6,6 +6,7 @@ const items = [
   { to: '/teams', label: 'Teams', icon: TeamsIcon },
   { to: '/agents', label: 'Agents', icon: AgentsIcon },
   { to: '/economy', label: 'Economy', icon: EconomyIcon },
+  { to: '/graphics', label: 'Graphics', icon: GraphicsIcon },
 ]
 
 export default function Sidebar() {
@@ -83,6 +84,16 @@ function AgentsIcon(props) {
       <circle cx="8" cy="5.2" r="3" stroke="currentColor" strokeWidth="1.3" />
       <path d="M8 8.2c-2.8 0-4.5 1.6-5 4.2h10c-.5-2.6-2.2-4.2-5-4.2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
       <path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.4" />
+    </svg>
+  )
+}
+
+function GraphicsIcon(props) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" {...props}>
+      <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+      <circle cx="5.3" cy="6" r="1.2" stroke="currentColor" strokeWidth="1.1" />
+      <path d="M2.5 12l3.5-3.5 2.5 2.5 3-3.5 2 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }

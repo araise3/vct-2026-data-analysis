@@ -7,6 +7,7 @@ import Teams from './pages/Teams'
 import TeamProfile from './pages/TeamProfile'
 import Agents from './pages/Agents'
 import Economy from './pages/Economy'
+import Graphics from './pages/Graphics'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/teams/:name" element={<TeamProfile />} />
             <Route path="/agents" element={<Agents />} />
             <Route path="/economy" element={<Economy />} />
+            <Route path="/graphics" element={<Graphics />} />
           </Routes>
         </main>
       </div>

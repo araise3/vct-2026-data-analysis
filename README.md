@@ -18,6 +18,7 @@ Six views, plus per-player and per-team profile pages:
 | **Agents** | Pick rates and map win rates, filterable by Region → Stage → Phase → Week/Round (the last one is multi-select) |
 | **Economy** | Buy-tier distribution (eco/semi-eco/semi-buy/full-buy) and win rates by tier |
 | **Player / Team profiles** | Click any name anywhere on the site to open a full breakdown |
+| **Graphics** | Build shareable HLTV-style stat cards — pick players or teams, pick a stat (rating, ACS, multi-kills/24R, round win%, pistol win%, …), filter the sample, tune minimum rounds/maps and top-N with live preview, then export a 2160px PNG |
 
 Most pages that touch China have an explicit toggle for known VLR data gaps
 (see [Data caveats](#data-caveats) below), and most also have a toggle to

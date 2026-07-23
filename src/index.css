@@ -6,6 +6,15 @@
   box-sizing: border-box;
 }
 
+/* Browsers default <img> to vertical-align:baseline, which creates a
+   small visual offset whenever an image sits inline next to text (team
+   logos, agent icons, flags, etc.) -- the exact "sits slightly high" bug
+   that kept recurring component-by-component. Fixing it once, globally,
+   here, rather than patching each new spot it shows up in. */
+img {
+  vertical-align: middle;
+}
+
 html, body {
   margin: 0;
   padding: 0;

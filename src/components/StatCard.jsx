@@ -103,17 +103,19 @@ const StatCard = forwardRef(function StatCard(
               width: 74,
               height: 74,
               borderRadius: 14,
-              background: C.accent,
+              background: '#f5f7fa',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
             }}
           >
-            {/* Simple spike glyph */}
-            <svg viewBox="0 0 24 24" width="44" height="44" fill="none">
-              <path d="M3 5l8 10v4h2v-4l8-10-4 1-4 6h-2L7 6 3 5z" fill="#fff" />
-            </svg>
+            <img
+              src="/logos/valorant-logo.png"
+              alt="Valorant"
+              crossOrigin="anonymous"
+              style={{ width: '62%', height: '62%', objectFit: 'contain' }}
+            />
           </div>
           <div>
             <div

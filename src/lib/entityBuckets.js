@@ -123,6 +123,31 @@ export function groupByEntity(records) {
   return out
 }
 
+/**
+ * Expands series_length.json's match-level rows the same way expandBuckets
+ * does for player/team buckets (attaching region/event/stage/phase/week/
+ * competition from the shared events lookup) -- but there's no bucket
+ * aggregation step afterward, since each row is already one specific
+ * match, not a sum that needs re-deriving per filtered subset.
+ */
+export function expandSeriesRows(data) {
+  if (!data) return []
+  const { events, rows } = data
+  return rows.map((r) => {
+    const ev = events[r.e] || {}
+    const week = r.w || ''
+    return {
+      ...r,
+      region: ev.region,
+      event: ev.name,
+      stage: ev.stage,
+      phase: week.includes(':') ? week.split(':')[0].trim() : week,
+      week,
+      competition: ev.competition,
+    }
+  })
+}
+
 const BUY_TIERS = [
   { key: 'eco', label: 'Eco', r: 'ecoR', w: 'ecoW' },
   { key: 'semiEco', label: 'Semi-eco', r: 'secR', w: 'secW' },

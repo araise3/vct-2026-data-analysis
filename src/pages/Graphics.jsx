@@ -4,37 +4,44 @@ import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
 import {
   expandBuckets,
+  expandSeriesRows,
   aggregatePlayerBuckets,
   aggregateTeamBuckets,
   groupByEntity,
 } from '../lib/entityBuckets'
-import { PLAYER_STATS, TEAM_STATS, teamTierExtras } from '../lib/statDefs'
+import { PLAYER_STATS, TEAM_STATS, SERIES_STATS, teamTierExtras } from '../lib/statDefs'
 import FilterPanel, { FACETS, FACET_LABELS, FACET_RENDERERS } from '../components/FilterPanel'
 import StatCard, { CARD_W } from '../components/StatCard'
 
 /**
  * Graphics -- an exportable-infographic builder.
  *
- * Pick players or teams, pick a stat, filter with the same faceted panel
- * as everywhere else, then tune sample-size thresholds (min rounds / min
- * maps) and top-N with live preview. Export renders the exact preview
- * tree to a PNG at 2x via html-to-image.
+ * Pick players, teams, or series (match-level duration leaderboard),
+ * pick a stat, filter with the same faceted panel as everywhere else,
+ * then tune sample-size thresholds (min rounds / min maps, or top-N for
+ * series) with live preview. Export renders the exact preview tree to a
+ * PNG at 2x via html-to-image.
  */
 
 const labeled = 'text-[11px] uppercase tracking-wide font-medium text-muted'
 const inputCls =
   'bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-muted'
 
+const ENTITY_DEFAULT_TOP_N = { players: 10, teams: 10, series: 5 }
+
 export default function Graphics() {
   const [entity, setEntity] = useState('players')
   const isPlayers = entity === 'players'
+  const isTeams = entity === 'teams'
+  const isSeries = entity === 'series'
 
   const { data: playerData, loading: pl } = useData('player_buckets')
   const { data: teamData, loading: tl } = useData('team_buckets')
-  const data = isPlayers ? playerData : teamData
-  const loading = isPlayers ? pl : tl
+  const { data: seriesData, loading: sel } = useData('series_length')
+  const data = isPlayers ? playerData : isTeams ? teamData : seriesData
+  const loading = isPlayers ? pl : isTeams ? tl : sel
 
-  const statDefs = isPlayers ? PLAYER_STATS : TEAM_STATS
+  const statDefs = isPlayers ? PLAYER_STATS : isTeams ? TEAM_STATS : SERIES_STATS
   const [statKey, setStatKey] = useState(PLAYER_STATS[0].key)
   const stat = statDefs.find((s) => s.key === statKey) || statDefs[0]
 
@@ -48,15 +55,34 @@ export default function Graphics() {
   const [exporting, setExporting] = useState(false)
   const [exportError, setExportError] = useState(null)
 
-  const records = useMemo(
-    () => (data ? expandBuckets(data, isPlayers ? 'p' : 't') : []),
-    [data, isPlayers]
-  )
+  const records = useMemo(() => {
+    if (!data) return []
+    if (isSeries) return expandSeriesRows(data)
+    return expandBuckets(data, isPlayers ? 'p' : 't')
+  }, [data, isPlayers, isSeries])
   const { selections, setFacet, clearAll, filtered, options, activeCount } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
 
   const rows = useMemo(() => {
     if (!data) return []
+
+    if (isSeries) {
+      // Only matches where every map has a scraped duration are ranked --
+      // a partial sum would understate a match's real length and could
+      // wrongly surface as "shortest".
+      const eligible = filtered.filter((r) => r.fullyTimed)
+      const out = eligible.map((r) => ({
+        id: r.id,
+        name: `${r.team1} vs ${r.team2}`,
+        team: r.team1,
+        team2: r.team2,
+        value: r.durationSeconds,
+        secondary: { value: r.mapCount, label: r.mapCount === 1 ? 'map' : 'maps' },
+      }))
+      out.sort((a, b) => (bottom ? a.value - b.value : b.value - a.value))
+      return out.slice(0, topN)
+    }
+
     const grouped = groupByEntity(filtered)
     const out = []
     for (const [id, buckets] of grouped) {
@@ -82,14 +108,20 @@ export default function Graphics() {
     const desc = higher !== bottom
     out.sort((a, b) => (desc ? b.value - a.value : a.value - b.value))
     return out.slice(0, topN)
-  }, [filtered, data, isPlayers, ratedOnly, minRounds, minMaps, stat, topN, bottom])
+  }, [filtered, data, isPlayers, isSeries, ratedOnly, minRounds, minMaps, stat, topN, bottom])
 
   // Auto title / subtitle from current settings; overridable.
-  const autoTitle = `${isPlayers ? 'PLAYERS' : 'TEAMS'} ${stat.cardTitle}`
+  const autoTitle = isSeries
+    ? `${bottom ? 'SHORTEST' : 'LONGEST'} SERIES`
+    : `${isPlayers ? 'PLAYERS' : 'TEAMS'} ${stat.cardTitle}`
   const autoSubtitle = useMemo(() => {
     const bits = []
-    if (minRounds > 0) bits.push(`${minRounds}+ rounds`)
-    if (minMaps > 0) bits.push(`${minMaps}+ maps`)
+    if (isSeries) {
+      bits.push('fully-timed matches only')
+    } else {
+      if (minRounds > 0) bits.push(`${minRounds}+ rounds`)
+      if (minMaps > 0) bits.push(`${minMaps}+ maps`)
+    }
     for (const f of FACETS) {
       const sel = selections[f] || []
       if (!sel.length || (f === 'competition' && sel.length === 1 && sel[0] === 'VCT'))
@@ -99,9 +131,9 @@ export default function Graphics() {
         sel.length <= 2 ? sel.map(render).join(' + ') : `${sel.length} ${FACET_LABELS[f].toLowerCase()}`
       )
     }
-    if (bottom) bits.push('bottom ' + topN)
+    if (!isSeries && bottom) bits.push('bottom ' + topN)
     return bits.length ? `(${bits.join(', ').toUpperCase()})` : ''
-  }, [selections, minRounds, minMaps, bottom, topN])
+  }, [selections, minRounds, minMaps, bottom, topN, isSeries])
 
   const title = titleOverride.trim() || autoTitle
   const subtitle = subtitleOverride.trim() || autoSubtitle
@@ -136,7 +168,7 @@ export default function Graphics() {
       await toPng(cardRef.current, { pixelRatio: 2, cacheBust: false })
       const url = await toPng(cardRef.current, { pixelRatio: 2, cacheBust: false })
       const a = document.createElement('a')
-      const statSlug = stat.cardTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+      const statSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
       a.download = `vct-2026-${entity}-${statSlug}.png`
       a.href = url
       a.click()
@@ -146,7 +178,7 @@ export default function Graphics() {
     } finally {
       setExporting(false)
     }
-  }, [entity, stat])
+  }, [entity, title])
 
   if (loading || !data) return <div className="text-muted text-sm">Loading…</div>
 
@@ -175,12 +207,14 @@ export default function Graphics() {
           <div className="flex flex-col gap-1.5">
             <span className={labeled}>Entity</span>
             <div className="flex rounded-lg overflow-hidden border border-hairline w-fit">
-              {['players', 'teams'].map((e) => (
+              {['players', 'teams', 'series'].map((e) => (
                 <button
                   key={e}
                   onClick={() => {
                     setEntity(e)
-                    setStatKey((e === 'players' ? PLAYER_STATS : TEAM_STATS)[0].key)
+                    const defs = e === 'players' ? PLAYER_STATS : e === 'teams' ? TEAM_STATS : SERIES_STATS
+                    setStatKey(defs[0].key)
+                    setTopN(ENTITY_DEFAULT_TOP_N[e])
                   }}
                   className={`px-4 py-1.5 text-sm font-medium capitalize transition-colors ${
                     entity === e ? 'bg-accent text-white' : 'bg-surface2 text-muted hover:text-ink'
@@ -192,37 +226,43 @@ export default function Graphics() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <span className={labeled}>Statistic</span>
-            <select
-              value={stat.key}
-              onChange={(e) => setStatKey(e.target.value)}
-              className={inputCls}
-            >
-              {statDefs.map((s) => (
-                <option key={s.key} value={s.key}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          {!isSeries && (
+            <div className="flex flex-col gap-1.5">
+              <span className={labeled}>Statistic</span>
+              <select
+                value={stat.key}
+                onChange={(e) => setStatKey(e.target.value)}
+                className={inputCls}
+              >
+                {statDefs.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
-          <RangeControl
-            label={`Minimum rounds — ${minRounds}`}
-            value={minRounds}
-            onChange={setMinRounds}
-            min={0}
-            max={1500}
-            step={25}
-          />
-          <RangeControl
-            label={`Minimum maps — ${minMaps}`}
-            value={minMaps}
-            onChange={setMinMaps}
-            min={0}
-            max={100}
-            step={1}
-          />
+          {!isSeries && (
+            <>
+              <RangeControl
+                label={`Minimum rounds — ${minRounds}`}
+                value={minRounds}
+                onChange={setMinRounds}
+                min={0}
+                max={1500}
+                step={25}
+              />
+              <RangeControl
+                label={`Minimum maps — ${minMaps}`}
+                value={minMaps}
+                onChange={setMinMaps}
+                min={0}
+                max={100}
+                step={1}
+              />
+            </>
+          )}
           <RangeControl
             label={`Entries — top ${topN}`}
             value={topN}
@@ -240,7 +280,7 @@ export default function Graphics() {
                 onChange={(e) => setBottom(e.target.checked)}
                 className="accent-[#FF4655]"
               />
-              Show bottom instead of top
+              {isSeries ? 'Show shortest instead of longest' : 'Show bottom instead of top'}
             </label>
             {isPlayers && (
               <label className="flex items-center gap-2 text-xs text-muted">
@@ -252,6 +292,12 @@ export default function Graphics() {
                 />
                 Rated maps only
               </label>
+            )}
+            {isSeries && (
+              <p className="text-muted text-xs leading-relaxed">
+                Only matches where every map has a scraped duration are ranked — a partial
+                match wouldn't give a true series length.
+              </p>
             )}
           </div>
 
@@ -286,8 +332,9 @@ export default function Graphics() {
           {exportError && <div className="text-bad text-xs">{exportError}</div>}
           {rows.length === 0 && (
             <div className="text-muted text-xs">
-              No rows pass the current filters and thresholds — lower minimum rounds/maps or
-              widen the filters.
+              {isSeries
+                ? 'No fully-timed matches pass the current filters — widen the filters or re-export series_length.json once more matches have a scraped duration.'
+                : 'No rows pass the current filters and thresholds — lower minimum rounds/maps or widen the filters.'}
             </div>
           )}
         </div>

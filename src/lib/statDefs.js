@@ -242,9 +242,22 @@ export const TEAM_STATS = [
 ]
 
 /**
- * Extends aggregateTeamBuckets output with buy-tier round win rates,
- * which the Teams page never needed but the graphic cards do.
+ * Series (match) stats -- unlike PLAYER_STATS/TEAM_STATS these operate on
+ * an already-atomic match record (from series_length.json), not an
+ * aggregated bucket, so `compute` reads straight off the row.
  */
+export const SERIES_STATS = [
+  {
+    key: 'seriesDuration',
+    label: 'Series duration (clock time)',
+    // Overridden per-render in Graphics.jsx to say LONGEST/SHORTEST
+    // depending on the top/bottom toggle.
+    cardTitle: 'SERIES DURATION',
+    compute: (s) => s.durationSeconds,
+    format: fmmss,
+    secondary: (s) => ({ value: s.mapCount, label: s.mapCount === 1 ? 'map' : 'maps' }),
+  },
+]
 export function teamTierExtras(buckets) {
   let ecoR = 0, ecoW = 0, fubR = 0, fubW = 0, allR = 0, allW = 0
   for (const b of buckets) {

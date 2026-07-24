@@ -517,6 +517,38 @@ def main():
                   f, separators=(',', ':'))
     print(f"team_buckets.json: {len(team_buckets)} buckets")
 
+    # --- series (match-level duration leaderboard) ---
+    # One row per completed match. A series' total duration is the sum of
+    # its maps' durations, but only counted when *every* map in that match
+    # has a scraped duration -- a partial sum (e.g. 2 of 3 maps timed)
+    # would understate the real length and could wrongly surface as a
+    # "shortest series". fullyTimed marks which rows are safe to rank;
+    # the frontend only ranks those, though partial rows are still kept
+    # in the file in case that's useful later.
+    series_rows = []
+    for match_id, g in map_ctx.groupby('match_id'):
+        row0 = g.iloc[0]
+        map_count = len(g)
+        maps_timed = int(g['duration_seconds'].notna().sum())
+        if maps_timed == 0:
+            continue
+        series_rows.append({
+            "id": int(match_id),
+            "team1": row0['c1'],
+            "team2": row0['c2'],
+            "e": int(row0['event_id']) if pd.notna(row0['event_id']) else None,
+            "w": row0['stage'] if pd.notna(row0['stage']) else '',
+            "mapCount": map_count,
+            "mapsTimed": maps_timed,
+            "fullyTimed": maps_timed == map_count,
+            "durationSeconds": int(g['duration_seconds'].fillna(0).sum()),
+        })
+
+    with open(f"{OUT}/series_length.json", "w") as f:
+        json.dump({"events": events_lookup, "rows": series_rows}, f, separators=(',', ':'))
+    fully = sum(1 for r in series_rows if r['fullyTimed'])
+    print(f"series_length.json: {len(series_rows)} matches with a timed map ({fully} fully timed)")
+
     events_out = [clean_row(r) for r in events_vct.to_dict(orient='records')]
     with open(f"{OUT}/events.json", "w") as f:
         json.dump(events_out, f, indent=2)

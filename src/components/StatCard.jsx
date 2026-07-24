@@ -169,7 +169,7 @@ const StatCard = forwardRef(function StatCard(
         const top = i === 0
         return (
           <div
-            key={r.name}
+            key={r.id ?? r.name}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -178,34 +178,78 @@ const StatCard = forwardRef(function StatCard(
               background: top ? C.rowTop : i % 2 ? C.rowB : C.rowA,
             }}
           >
-            <LogoTile team={r.team} size={top ? 88 : 72} />
-            {r.countryCode && (
-              <img
-                src={corsSafe(`https://flagcdn.com/${r.countryCode}.svg`)}
-                alt={r.countryName || r.countryCode}
-                crossOrigin="anonymous"
+            {r.team2 ? (
+              <div
                 style={{
-                  width: 40,
-                  height: 30,
-                  objectFit: 'cover',
-                  borderRadius: 4,
-                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 14,
+                  flex: 1,
+                  minWidth: 0,
                 }}
-              />
+              >
+                <LogoTile team={r.team} size={top ? 60 : 50} />
+                <span
+                  style={{
+                    fontWeight: 700,
+                    fontSize: top ? 34 : 29,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {r.team}
+                </span>
+                <span style={{ color: C.dim, fontWeight: 600, fontSize: top ? 22 : 19 }}>
+                  vs
+                </span>
+                <LogoTile team={r.team2} size={top ? 60 : 50} />
+                <span
+                  style={{
+                    fontWeight: 700,
+                    fontSize: top ? 34 : 29,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    flex: 1,
+                    minWidth: 0,
+                  }}
+                >
+                  {r.team2}
+                </span>
+              </div>
+            ) : (
+              <>
+                <LogoTile team={r.team} size={top ? 88 : 72} />
+                {r.countryCode && (
+                  <img
+                    src={corsSafe(`https://flagcdn.com/${r.countryCode}.svg`)}
+                    alt={r.countryName || r.countryCode}
+                    crossOrigin="anonymous"
+                    style={{
+                      width: 40,
+                      height: 30,
+                      objectFit: 'cover',
+                      borderRadius: 4,
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+                <div
+                  style={{
+                    fontWeight: 700,
+                    fontSize: top ? 42 : 36,
+                    flex: 1,
+                    minWidth: 0,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {r.name}
+                </div>
+              </>
             )}
-            <div
-              style={{
-                fontWeight: 700,
-                fontSize: top ? 42 : 36,
-                flex: 1,
-                minWidth: 0,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {r.name}
-            </div>
             <div
               style={{
                 textAlign: 'right',

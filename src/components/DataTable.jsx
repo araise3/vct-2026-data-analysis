@@ -13,10 +13,21 @@ import { scaleColor } from '../lib/format'
  * were being measured against the same fixed scale. Each view's own
  * min/max is what's actually being used.
  */
+/**
+ * columns: [{ key, label, format(v), colorScale?: true, align?: 'left'|'right' }]
+ *
+ * Deliberately no per-column width/table-layout:fixed: that mode forces
+ * every column to split whatever space is left after the sized ones,
+ * which kept shrinking (and truncating headers) every time a new column
+ * got added -- this has recurred several times as columns were added
+ * over time. Default table-layout:auto instead, so every column sizes
+ * itself to its own content and can never truncate; the wrapping
+ * overflow-auto div handles horizontal scroll if the whole table is
+ * wider than the viewport, which is normal for a many-column stats table.
+ */
 export default function DataTable({ columns, rows, defaultSortKey, defaultSortDir = 'desc' }) {
   const [sortKey, setSortKey] = useState(defaultSortKey)
   const [sortDir, setSortDir] = useState(defaultSortDir)
-  const hasFixedWidths = columns.some((c) => c.width)
 
   const colorRanges = useMemo(() => {
     const ranges = {}
@@ -54,18 +65,14 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
 
   return (
     <div className="overflow-auto rounded-2xl border border-hairline">
-      <table
-        className="w-full border-collapse text-sm"
-        style={hasFixedWidths ? { tableLayout: 'fixed' } : undefined}
-      >
+      <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="bg-surface2 sticky top-0 z-10">
             {columns.map((col) => (
               <th
                 key={col.key}
                 onClick={() => toggleSort(col.key)}
-                style={col.width ? { width: col.width } : undefined}
-                className={`px-4 py-3 font-medium text-xs uppercase tracking-wide text-muted cursor-pointer select-none whitespace-nowrap hover:text-ink transition-colors overflow-hidden text-ellipsis align-middle ${
+                className={`px-4 py-3 font-medium text-xs uppercase tracking-wide text-muted cursor-pointer select-none whitespace-nowrap hover:text-ink transition-colors align-middle ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 }`}
               >
@@ -86,8 +93,8 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                 return (
                   <td
                     key={col.key}
-                    style={{ ...(col.width ? { width: col.width } : {}), ...(bg ? { backgroundColor: bg } : {}) }}
-                    className={`px-4 py-2.5 font-body text-[13px] whitespace-nowrap overflow-hidden text-ellipsis align-middle ${
+                    style={bg ? { backgroundColor: bg } : undefined}
+                    className={`px-4 py-2.5 font-body text-[13px] whitespace-nowrap align-middle ${
                       col.align === 'right' ? 'text-right' : 'text-left'
                     } ${col.key === columns[0].key ? 'text-ink' : 'text-ink/90'}`}
                   >

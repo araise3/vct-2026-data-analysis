@@ -86,7 +86,7 @@ export default function Agents() {
   }
 
   const matrixColumns = [
-    { key: 'agent', label: 'Agent', align: 'left', width: 172, format: (v) => <AgentIcon agent={v} size={20} /> },
+    { key: 'agent', label: 'Agent', align: 'left', format: (v) => <AgentIcon agent={v} size={20} /> },
     ...data.mapNames.map((m) => ({
       key: m, label: m, align: 'right', colorScale: true,
       format: (v) => (v === null || v === undefined ? '—' : pct(v, 0)),

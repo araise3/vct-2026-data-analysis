@@ -53,7 +53,7 @@ export default function Players() {
 
   const columns = [
     {
-      key: 'player', label: 'Player', align: 'left', width: 190,
+      key: 'player', label: 'Player', align: 'left',
       format: (v, row) => (
         <div className="flex items-center gap-2">
           <Flag countryCode={row.countryCode} countryName={row.countryName} size={20} />
@@ -67,7 +67,7 @@ export default function Players() {
       ),
     },
     {
-      key: 'team', label: 'Team', align: 'left', width: 200,
+      key: 'team', label: 'Team', align: 'left',
       format: (v) => (
         <Link to={`/teams/${encodeURIComponent(v)}`} className="hover:text-accent-bright transition-colors">
           <TeamLogo team={v} size={18} />

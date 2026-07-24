@@ -273,6 +273,7 @@ export default function Graphics() {
                 min={0}
                 max={1500}
                 step={25}
+                digits={4}
               />
               <RangeControl
                 label={`Minimum maps — ${minMaps}`}
@@ -281,6 +282,7 @@ export default function Graphics() {
                 min={0}
                 max={100}
                 step={1}
+                digits={3}
               />
             </>
           )}
@@ -291,6 +293,7 @@ export default function Graphics() {
             min={3}
             max={15}
             step={1}
+            digits={2}
           />
 
           <div className="flex flex-col gap-2">
@@ -387,7 +390,7 @@ export default function Graphics() {
   )
 }
 
-function RangeControl({ label, value, onChange, min, max, step }) {
+function RangeControl({ label, value, onChange, min, max, step, digits }) {
   return (
     <div className="flex flex-col gap-1.5">
       <span className={labeled}>{label}</span>
@@ -407,7 +410,12 @@ function RangeControl({ label, value, onChange, min, max, step }) {
           max={max}
           value={value}
           onChange={(e) => onChange(Math.max(min, Math.min(max, Number(e.target.value) || 0)))}
-          className={`${inputCls} w-20 text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          // `digits` sizes the input to exactly that many characters of
+          // content -- box-content switches off Tailwind's global
+          // border-box preflight for just this element, so the `ch`
+          // width isn't shrunk by the input's own padding/border.
+          className={`${inputCls} text-right box-content [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+          style={{ width: `${digits}ch` }}
         />
       </div>
     </div>

@@ -183,7 +183,7 @@ export default function FilterPanel({
                   min={dateBounds?.min || undefined}
                   max={dateBounds?.max || undefined}
                   onChange={(e) => setDateRange({ from: e.target.value })}
-                  className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-muted"
+                  className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-muted w-[150px] shrink-0"
                 />
                 <span className="text-muted text-xs">to</span>
                 <input
@@ -192,7 +192,7 @@ export default function FilterPanel({
                   min={dateBounds?.min || undefined}
                   max={dateBounds?.max || undefined}
                   onChange={(e) => setDateRange({ to: e.target.value })}
-                  className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-muted"
+                  className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-muted w-[150px] shrink-0"
                 />
                 {(dateRange?.from || dateRange?.to) && (
                   <button

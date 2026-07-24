@@ -40,25 +40,21 @@ export function compact(v) {
   return new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(v)
 }
 
-// Maps a value's rank within [min, max] to a red -> gold -> green color,
-// using rft.gg's exact destructive/legendary/success token values.
+// Maps a value's position within [min, max] to VLR's own stats-table
+// heatmap color. Reverse-engineered from a real vlr.gg/stats page source
+// (not guessed): every colored cell there is `hsl(var(--stat-h), 20%, 45%)`,
+// where --stat-h is a hue in degrees, linearly interpolated across a
+// column-specific value range and clamped to [0, 270] (red -> orange ->
+// yellow -> green -> cyan -> blue -> violet, not the more common
+// red-green-only traffic-light scheme). Confirmed by sampling actual
+// rendered pixels against their known intended hue: e.g. a cell with
+// --stat-h:260 rendered as rgb(107,92,138), which converts back to
+// H=259.6° S=20.0% L=45.1% -- matching to within rounding on every
+// sample checked.
 export function scaleColor(value, min, max) {
   if (value === null || value === undefined || Number.isNaN(value) || min === max) {
     return 'transparent'
   }
   const t = Math.max(0, Math.min(1, (value - min) / (max - min)))
-  // destructive (247,102,94) -> legendary (255,212,125) -> success (74,201,126)
-  const stops = [
-    [247, 102, 94],
-    [255, 212, 125],
-    [74, 201, 126],
-  ]
-  const seg = t < 0.5 ? 0 : 1
-  const localT = t < 0.5 ? t / 0.5 : (t - 0.5) / 0.5
-  const [r1, g1, b1] = stops[seg]
-  const [r2, g2, b2] = stops[seg + 1]
-  const r = Math.round(r1 + (r2 - r1) * localT)
-  const g = Math.round(g1 + (g2 - g1) * localT)
-  const b = Math.round(b1 + (b2 - b1) * localT)
-  return `rgba(${r}, ${g}, ${b}, 0.28)`
+  return `hsl(${t * 270}, 20%, 45%)`
 }

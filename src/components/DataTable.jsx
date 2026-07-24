@@ -2,7 +2,14 @@ import { useMemo, useState } from 'react'
 import { scaleColor } from '../lib/format'
 
 /**
- * columns: [{ key, label, format(v), colorScale?: true, align?: 'left'|'right' }]
+ * columns: [{ key, label, format(v), colorScale?: true, colorDomain?: [min, max], align?: 'left'|'right' }]
+ *
+ * colorDomain, when given, fixes the color scale to that exact range
+ * (e.g. VLR's own empirically-derived Rating/ACS/K:D thresholds) instead
+ * of the default behaviour of scaling to whatever's currently displayed.
+ * Fixed domains keep a stat's color meaning consistent across different
+ * filters -- a 1.40 Rating should always look about as good, not look
+ * different depending on who else happens to be in the current view.
  */
 export default function DataTable({ columns, rows, defaultSortKey, defaultSortDir = 'desc' }) {
   const [sortKey, setSortKey] = useState(defaultSortKey)
@@ -13,6 +20,10 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
     const ranges = {}
     columns.forEach((col) => {
       if (col.colorScale) {
+        if (col.colorDomain) {
+          ranges[col.key] = col.colorDomain
+          return
+        }
         const values = rows.map((r) => r[col.key]).filter((v) => v !== null && v !== undefined && !Number.isNaN(v))
         ranges[col.key] = values.length ? [Math.min(...values), Math.max(...values)] : [0, 1]
       }

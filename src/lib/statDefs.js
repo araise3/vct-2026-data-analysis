@@ -239,23 +239,33 @@ export const TEAM_STATS = [
     format: f2,
     secondary: (s) => ({ value: s.mapsPlayed, label: 'maps' }),
   },
-]
-
-/**
- * Series (match) stats -- unlike PLAYER_STATS/TEAM_STATS these operate on
- * an already-atomic match record (from series_length.json), not an
- * aggregated bucket, so `compute` reads straight off the row.
- */
-export const SERIES_STATS = [
   {
     key: 'seriesDuration',
-    label: 'Series duration (clock time)',
-    // Overridden per-render in Graphics.jsx to say LONGEST/SHORTEST
-    // depending on the top/bottom toggle.
+    label: 'Longest/shortest series (matchup)',
+    // cardTitle is overridden in Graphics.jsx to say LONGEST/SHORTEST
+    // SERIES depending on the top/bottom toggle -- this is a fallback
+    // only.
     cardTitle: 'SERIES DURATION',
+    // Marks this as operating on individual matches (from
+    // series_length.json) rather than a per-team aggregate -- Graphics.jsx
+    // branches on this instead of running the usual aggregateTeamBuckets
+    // pipeline, and StatCard renders these rows as a two-team "vs" matchup
+    // rather than a single-entity row.
+    matchLevel: 'series',
     compute: (s) => s.durationSeconds,
     format: fmmss,
     secondary: (s) => ({ value: s.mapCount, label: s.mapCount === 1 ? 'map' : 'maps' }),
+  },
+  {
+    key: 'mapDuration',
+    label: 'Longest/shortest map (matchup)',
+    cardTitle: 'MAP DURATION',
+    // Same idea as seriesDuration above, but sourced from map_length.json
+    // -- one row per individual map rather than a whole match.
+    matchLevel: 'map',
+    compute: (s) => s.durationSeconds,
+    format: fmmss,
+    secondary: (s) => ({ value: s.mapName, label: '' }),
   },
 ]
 export function teamTierExtras(buckets) {

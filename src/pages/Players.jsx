@@ -76,18 +76,12 @@ export default function Players() {
     },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
     { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
-    // colorDomain values below are VLR's own thresholds (the value that
-    // hits hue 0 and hue 270), reverse-engineered from a real vlr.gg/stats
-    // page: fit a line through each column's (value, --stat-h) pairs
-    // across 100 real rows and solved for where that line crosses 0/270.
-    // KAST/HS% domains are /100 since VLR's are in percent but these are
-    // stored as fractions here.
-    { key: 'avgRating', label: 'Rating', align: 'right', colorScale: true, colorDomain: [0.6355, 1.4507], format: (v) => rating(v) },
-    { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, colorDomain: [135.14, 279.03], format: (v) => num(v, 0) },
-    { key: 'kd', label: 'K/D', align: 'right', colorScale: true, colorDomain: [0.6052, 1.4897], format: (v) => (v ? v.toFixed(2) : '—') },
-    { key: 'avgKast', label: 'KAST', align: 'right', colorScale: true, colorDomain: [0.6085, 0.8378], format: (v) => pct(v) },
-    { key: 'avgAdr', label: 'ADR', align: 'right', colorScale: true, colorDomain: [89.44, 184.06], format: (v) => num(v, 0) },
-    { key: 'avgHsPct', label: 'HS%', align: 'right', colorScale: true, colorDomain: [0.1617, 0.4394], format: (v) => pct(v) },
+    { key: 'avgRating', label: 'Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
+    { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
+    { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },
+    { key: 'avgKast', label: 'KAST', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'avgAdr', label: 'ADR', align: 'right', colorScale: true, format: (v) => num(v, 0) },
+    { key: 'avgHsPct', label: 'HS%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'totalKills', label: 'Kills', align: 'right', format: (v) => num(v) },
     { key: 'totalDeaths', label: 'Deaths', align: 'right', format: (v) => num(v) },
     { key: 'totalFirstKills', label: 'FK', align: 'right', format: (v) => num(v) },

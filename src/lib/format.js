@@ -44,13 +44,24 @@ export function compact(v) {
 // heatmap color. Reverse-engineered from a real vlr.gg/stats page source
 // (not guessed): every colored cell there is `hsl(var(--stat-h), 20%, 45%)`,
 // where --stat-h is a hue in degrees, linearly interpolated across a
-// column-specific value range and clamped to [0, 270] (red -> orange ->
-// yellow -> green -> cyan -> blue -> violet, not the more common
-// red-green-only traffic-light scheme). Confirmed by sampling actual
-// rendered pixels against their known intended hue: e.g. a cell with
-// --stat-h:260 rendered as rgb(107,92,138), which converts back to
-// H=259.6° S=20.0% L=45.1% -- matching to within rounding on every
-// sample checked.
+// value range and clamped to [0, 270] (red -> orange -> yellow -> green
+// -> cyan -> blue -> violet, not the more common red-green-only
+// traffic-light scheme).
+//
+// The [min, max] range is the current view's own min/max, not a fixed
+// global constant -- confirmed across two separate real screenshots: a
+// player with Rating 1.33 hit the maximum hue (270°) on one page, while a
+// player with a *higher* Rating (1.42) on a different, broader page only
+// reached 259.6°. That's only possible if each page computes its own
+// range from whichever rows currently qualify, which is what min/max here
+// already does (DataTable passes the currently-displayed rows' own
+// min/max for each colorScale column).
+//
+// The color law itself (hsl hue + fixed 20%/45% saturation/lightness) is
+// separately confirmed by sampling actual rendered pixels against their
+// known intended hue on both screenshots: a cell with hue 260 rendered as
+// rgb(107,92,138) -> H=259.6° S=20.0% L=45.1%, and a cell with hue 270
+// rendered as rgb(115,92,138) -> H=270.0° S=20.0% L=45.1%.
 export function scaleColor(value, min, max) {
   if (value === null || value === undefined || Number.isNaN(value) || min === max) {
     return 'transparent'

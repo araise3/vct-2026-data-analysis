@@ -99,7 +99,7 @@ export default function Teams() {
     { key: 'avgMapDurationSeconds', label: 'Avg Map Time', align: 'right', colorScale: true, format: (v) => duration(v) },
     { key: 'mapWinPct', label: 'Map Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'pistolWinPct', label: 'Pistol Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
-    { key: 'avgRating', label: 'Avg Rating', align: 'right', colorScale: true, colorDomain: [0.6355, 1.4507], format: (v) => rating(v) },
+    { key: 'avgRating', label: 'Avg Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
   ]
 
   return (

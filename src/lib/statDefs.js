@@ -15,6 +15,12 @@ const f2 = (v) => v.toFixed(2)
 const f1 = (v) => v.toFixed(1)
 const f0 = (v) => Math.round(v).toLocaleString()
 const fpct = (v) => `${(v * 100).toFixed(1)}%`
+const fmmss = (v) => {
+  const s = Math.round(v)
+  const m = Math.floor(s / 60)
+  const sec = s % 60
+  return `${m}:${String(sec).padStart(2, '0')}`
+}
 
 const per24 = (count, rounds) => (rounds ? (count / rounds) * 24 : null)
 
@@ -165,16 +171,28 @@ export const TEAM_STATS = [
   },
   {
     key: 'avgMapLength',
-    label: 'Avg map length (rounds)',
-    cardTitle: 'AVG MAP LENGTH',
-    // Rounds per map played -- a proxy for how long/close a team's maps
-    // tend to run (more overtime and 13-11/13-12 finishes push this up).
-    // There's no per-map round count stored in the buckets, only the
-    // summed totals, so this is an average rather than a single
-    // longest/shortest map on record.
+    label: 'Rounds per map (avg)',
+    cardTitle: 'AVG ROUNDS PER MAP',
+    // Rounds per map played -- not the same thing as clock-time map
+    // duration (see avgMapDuration below), just a rounds-based proxy for
+    // how close/OT-heavy a team's maps run. There's no per-map round
+    // count stored, only the summed totals, so this is an average.
     compute: (s) => (s.mapsPlayed ? s.roundsPlayed / s.mapsPlayed : null),
     format: f1,
     secondary: (s) => ({ value: s.mapsPlayed, label: 'maps' }),
+  },
+  {
+    key: 'avgMapDuration',
+    label: 'Avg map duration (clock time)',
+    cardTitle: 'AVG MAP DURATION',
+    // The literal wall-clock map length VLR shows next to the map name
+    // (e.g. "31:07"), averaged across whichever of the team's maps have
+    // it scraped. Coverage is partial -- only matches scraped/re-scraped
+    // since the scraper started capturing it carry a value -- so this
+    // divides by mapsWithDuration, not mapsPlayed.
+    compute: (s) => s.avgMapDurationSeconds,
+    format: fmmss,
+    secondary: (s) => ({ value: s.mapsWithDuration, label: 'maps timed' }),
   },
   {
     key: 'avgSeriesLength',

@@ -357,6 +357,23 @@ def main():
     am['winner'] = np.where(am.team1_score > am.team2_score, am.c1,
                      np.where(am.team2_score > am.team1_score, am.c2, None))
 
+    def parse_duration(s):
+        # Scraper stores this as "31:07" (mm:ss) text, pulled from VLR's
+        # .map-duration element. Only populated for matches scraped/
+        # re-scraped since that field was added, so coverage is partial --
+        # same situation as player nationality above. Return None rather
+        # than 0 for anything missing/malformed so it's excluded from
+        # averages instead of dragging them down.
+        if not isinstance(s, str) or ':' not in s:
+            return None
+        mm, _, ss = s.partition(':')
+        try:
+            return int(mm) * 60 + int(ss)
+        except ValueError:
+            return None
+
+    am['duration_seconds'] = am['duration'].apply(parse_duration)
+
     mps_ctx = all_mps.merge(
         all_matches[['match_id', 'event_id', 'stage']], on='match_id', how='left'
     ).merge(
@@ -443,8 +460,8 @@ def main():
 
     map_rows = []
     for team_col in ('c1', 'c2'):
-        sub = map_ctx[['event_id', 'stage', team_col, 'winner', 'rounds_total']].copy()
-        sub.columns = ['event_id', 'week', 'team', 'winner', 'rounds_total']
+        sub = map_ctx[['event_id', 'stage', team_col, 'winner', 'rounds_total', 'duration_seconds']].copy()
+        sub.columns = ['event_id', 'week', 'team', 'winner', 'rounds_total', 'duration_seconds']
         map_rows.append(sub)
     map_long = pd.concat(map_rows, ignore_index=True)
 
@@ -458,6 +475,11 @@ def main():
         d["mapP"] = int(len(g))
         d["mapW"] = int((g['winner'] == team).sum())
         d["rnd"] = int(g['rounds_total'].fillna(0).sum())
+        # durM is how many of this bucket's maps actually have a known
+        # duration (partial coverage -- only re-scraped matches carry it),
+        # so downstream averaging divides by durM, not mapP.
+        d["durS"] = int(g['duration_seconds'].fillna(0).sum())
+        d["durM"] = int(g['duration_seconds'].notna().sum())
     for (team, eid, wk), g in mte_ctx.groupby(['canonical_team', 'event_id', 'stage'], dropna=True):
         d = agg.setdefault((team, int(eid), wk), {})
         d["pisW"] = int(g['pistol_won'].fillna(0).sum())

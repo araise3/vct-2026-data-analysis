@@ -84,12 +84,13 @@ export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
 
 export function aggregateTeamBuckets(buckets) {
   if (!buckets.length) return null
-  const t = { mP: 0, mW: 0, mapP: 0, mapW: 0, rnd: 0, pisW: 0, ratS: 0, ratR: 0 }
+  const t = { mP: 0, mW: 0, mapP: 0, mapW: 0, rnd: 0, pisW: 0, ratS: 0, ratR: 0, durS: 0, durM: 0 }
   for (const b of buckets) {
     t.mP += b.mP || 0; t.mW += b.mW || 0
     t.mapP += b.mapP || 0; t.mapW += b.mapW || 0
     t.rnd += b.rnd || 0; t.pisW += b.pisW || 0
     t.ratS += b.ratS || 0; t.ratR += b.ratR || 0
+    t.durS += b.durS || 0; t.durM += b.durM || 0
   }
   const pistolPlayed = t.mapP * 2
   return {
@@ -104,6 +105,11 @@ export function aggregateTeamBuckets(buckets) {
     pistolPlayed,
     pistolWinPct: div(t.pisW, pistolPlayed),
     avgRating: div(t.ratS, t.ratR),
+    // Duration coverage is partial (only re-scraped matches carry it), so
+    // this divides by mapsWithDuration, not mapsPlayed.
+    durationSeconds: t.durS,
+    mapsWithDuration: t.durM,
+    avgMapDurationSeconds: div(t.durS, t.durM),
   }
 }
 

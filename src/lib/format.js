@@ -21,6 +21,19 @@ export function rating(v) {
   return v.toFixed(2)
 }
 
+// Clock-time duration in seconds -> "44:31" or "1:01:51" once past an hour,
+// matching VLR's own .map-duration display convention.
+export function duration(v) {
+  if (v === null || v === undefined || Number.isNaN(v)) return '—'
+  const s = Math.round(v)
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const sec = s % 60
+  return h
+    ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+    : `${m}:${String(sec).padStart(2, '0')}`
+}
+
 // Compact large numbers: 1234 -> "1.2K"
 export function compact(v) {
   if (v === null || v === undefined) return '—'

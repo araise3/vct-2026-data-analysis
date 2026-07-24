@@ -407,7 +407,7 @@ function RangeControl({ label, value, onChange, min, max, step }) {
           max={max}
           value={value}
           onChange={(e) => onChange(Math.max(min, Math.min(max, Number(e.target.value) || 0)))}
-          className={`${inputCls} w-20 text-right`}
+          className={`${inputCls} w-20 text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         />
       </div>
     </div>

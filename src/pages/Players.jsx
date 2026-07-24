@@ -131,7 +131,7 @@ export default function Players() {
               min={0}
               value={minMaps}
               onChange={(e) => setMinMaps(Number(e.target.value) || 0)}
-              className="bg-surface2 border border-hairline rounded-lg px-2 py-1 w-20 text-ink focus:outline-none focus:border-muted"
+              className="bg-surface2 border border-hairline rounded-lg px-2 py-1 w-20 text-ink focus:outline-none focus:border-muted [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
           </label>
         </div>

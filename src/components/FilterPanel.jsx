@@ -70,7 +70,7 @@ function Chevron({ open }) {
 export default function FilterPanel({
   selections, setFacet, clearAll, options, activeCount, children, summary,
   dateRange, setDateRange, dateBounds,
-  defaultOpen = true,
+  defaultOpen = false,
 }) {
   const [open, setOpen] = useState(defaultOpen)
   const [collapsed, setCollapsed] = useState(() => new Set())

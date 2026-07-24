@@ -18,25 +18,23 @@ import { useMemo, useState, useCallback } from 'react'
 const EMPTY_RANGE = { from: '', to: '' }
 
 /**
- * Does a record's date span overlap the selected range?
+ * Is a record's date inside the selected range?
  *
- * Records carry a [d0, d1] span (buckets aggregate an event-week, which
- * can cover a few days; match-level rows collapse to a single date). A
- * bucket is kept if it overlaps the range *at all*, so one straddling the
- * boundary is included whole rather than being partially attributed --
- * exact per-day splitting isn't possible from pre-aggregated buckets.
+ * Every record -- bucket or match-level row -- carries exactly one date,
+ * since buckets are keyed per calendar day upstream. That makes this an
+ * exact filter rather than a span-overlap approximation. Dates are
+ * YYYY-MM-DD so lexicographic comparison is chronological.
  *
- * Records with no date info pass through rather than being filtered out,
- * so a future export missing dates degrades to "no date filter" instead
- * of silently emptying every page.
+ * Records with no date pass through rather than being filtered out, so a
+ * future export missing dates degrades to "no date filter" instead of
+ * silently emptying every page.
  */
 function inDateRange(record, { from, to }) {
   if (!from && !to) return true
-  const d0 = record.d0
-  const d1 = record.d1 || record.d0
-  if (!d0) return true
-  if (from && d1 < from) return false
-  if (to && d0 > to) return false
+  const d = record.date
+  if (!d) return true
+  if (from && d < from) return false
+  if (to && d > to) return false
   return true
 }
 
@@ -119,9 +117,10 @@ export function useFacetedFilter(records, facets, initial = {}) {
     let min = null
     let max = null
     for (const r of records) {
-      if (r.d0 && (min === null || r.d0 < min)) min = r.d0
-      const hi = r.d1 || r.d0
-      if (hi && (max === null || hi > max)) max = hi
+      const d = r.date
+      if (!d) continue
+      if (min === null || d < min) min = d
+      if (max === null || d > max) max = d
     }
     return { min, max }
   }, [records])

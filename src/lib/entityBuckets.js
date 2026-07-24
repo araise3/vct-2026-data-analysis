@@ -52,6 +52,10 @@ export function expandBuckets(data, keyField) {
   return buckets.map((b) => ({
     ...b,
     id: b[keyField],
+    // Buckets are keyed per calendar day, so `d` is one exact date -- the
+    // same shape as a match-level row's `date`, which lets date filtering
+    // treat both record kinds identically.
+    date: b.d,
     ...eventFields(events[b.e] || {}, b.w || ''),
   }))
 }
@@ -161,10 +165,6 @@ export function expandSeriesRows(data) {
   const { events, rows } = data
   return rows.map((r) => ({
     ...r,
-    // Match-level rows carry one exact date; buckets carry a [d0,d1]
-    // span. Normalise to the span shape so date filtering is uniform.
-    d0: r.date,
-    d1: r.date,
     ...eventFields(events[r.e] || {}, r.w || ''),
   }))
 }
@@ -179,10 +179,6 @@ export function expandMapLengthRows(data) {
   const { events, rows } = data
   return rows.map((r) => ({
     ...r,
-    // Match-level rows carry one exact date; buckets carry a [d0,d1]
-    // span. Normalise to the span shape so date filtering is uniform.
-    d0: r.date,
-    d1: r.date,
     ...eventFields(events[r.e] || {}, r.w || ''),
   }))
 }

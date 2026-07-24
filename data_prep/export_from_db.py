@@ -420,19 +420,16 @@ def main():
         am[['match_id', 'map_index', 'rounds_total']], on=['match_id', 'map_index'], how='left'
     )
 
-    def date_span(g):
-        """
-        (first, last) match date in a bucket as YYYY-MM-DD, or (None, None).
+    def day_col(series):
+        """match_date timestamps -> 'YYYY-MM-DD' strings (NaT -> None)."""
+        return pd.to_datetime(series, errors='coerce').dt.strftime('%Y-%m-%d')
 
-        A bucket is (entity, event, week), which can straddle a few days --
-        group weeks run up to 5 days, though the mean span is well under
-        one. The site filters on overlap with this span, so a bucket that
-        only partly falls inside a selected date range is included whole.
-        """
+    def first_day(g):
+        """The single calendar day a group falls on, or None."""
         d = pd.to_datetime(g['match_date'], errors='coerce').dropna()
-        if len(d) == 0:
-            return None, None
-        return d.min().strftime('%Y-%m-%d'), d.max().strftime('%Y-%m-%d')
+        return d.min().strftime('%Y-%m-%d') if len(d) else None
+
+    mps_ctx['date'] = day_col(mps_ctx['match_date'])
 
     def wsum(g, col):
         """(value x rounds) sum and the rounds behind it, ignoring nulls."""
@@ -442,16 +439,15 @@ def main():
         return float((valid[col] * valid['rounds_total']).sum()), int(valid['rounds_total'].sum())
 
     player_buckets = []
-    for (player, event_id, week), g in mps_ctx.groupby(['player', 'event_id', 'stage'], dropna=True):
+    for (player, event_id, week, day), g in mps_ctx.groupby(
+            ['player', 'event_id', 'stage', 'date'], dropna=True):
         r_sum, r_rnd = wsum(g, 'rating')
         k_sum, k_rnd = wsum(g, 'kast')
         a_sum, a_rnd = wsum(g, 'adr')
         h_sum, h_rnd = wsum(g, 'hs_pct')
         acs_valid = g['acs'].dropna()
-        d0, d1 = date_span(g)
         row = {
-            "p": player, "e": int(event_id), "w": week,
-            "d0": d0, "d1": d1,
+            "p": player, "e": int(event_id), "w": week, "d": day,
             "maps": int(len(g)), "rnd": int(g['rounds_total'].fillna(0).sum()),
             "ratS": round(r_sum, 3), "ratR": r_rnd,
             "acsS": round(float(acs_valid.sum()), 2), "acsM": int(len(acs_valid)),
@@ -505,8 +501,11 @@ def main():
         all_matches[['match_id', 'match_date']], on='match_id', how='left'
     )
     mte_ctx = all_mte.merge(
-        all_matches[['match_id', 'event_id', 'stage']], on='match_id', how='left'
+        all_matches[['match_id', 'event_id', 'stage', 'match_date']], on='match_id', how='left'
     )
+    mte_ctx['date'] = day_col(mte_ctx['match_date'])
+    map_ctx = map_ctx.copy()
+    map_ctx['date'] = day_col(map_ctx['match_date'])
 
     team_rows = []
     for team_col, opp_col in (('c1', 'c2'), ('c2', 'c1')):
@@ -515,22 +514,25 @@ def main():
         sub['won'] = (sub['s1'] > sub['s2']) if team_col == 'c1' else (sub['s2'] > sub['s1'])
         team_rows.append(sub[['event_id', 'week', 'team', 'won', 'match_date']])
     match_long = pd.concat(team_rows, ignore_index=True)
+    match_long['date'] = day_col(match_long['match_date'])
 
     map_rows = []
     for team_col in ('c1', 'c2'):
-        sub = map_ctx[['event_id', 'stage', team_col, 'winner', 'rounds_total', 'duration_seconds']].copy()
-        sub.columns = ['event_id', 'week', 'team', 'winner', 'rounds_total', 'duration_seconds']
+        sub = map_ctx[['event_id', 'stage', team_col, 'winner', 'rounds_total',
+                       'duration_seconds', 'date']].copy()
+        sub.columns = ['event_id', 'week', 'team', 'winner', 'rounds_total',
+                       'duration_seconds', 'date']
         map_rows.append(sub)
     map_long = pd.concat(map_rows, ignore_index=True)
 
     mps_team = mps_ctx.copy()
     keys = ['team', 'event_id', 'week']
     agg = {}
-    for (team, eid, wk), g in match_long.groupby(['team', 'event_id', 'week'], dropna=True):
-        d0, d1 = date_span(g)
-        agg[(team, int(eid), wk)] = {"mP": int(len(g)), "mW": int(g['won'].sum()), "d0": d0, "d1": d1}
-    for (team, eid, wk), g in map_long.groupby(['team', 'event_id', 'week'], dropna=True):
-        d = agg.setdefault((team, int(eid), wk), {})
+    for (team, eid, wk, day), g in match_long.groupby(
+            ['team', 'event_id', 'week', 'date'], dropna=True):
+        agg[(team, int(eid), wk, day)] = {"mP": int(len(g)), "mW": int(g['won'].sum())}
+    for (team, eid, wk, day), g in map_long.groupby(['team', 'event_id', 'week', 'date'], dropna=True):
+        d = agg.setdefault((team, int(eid), wk, day), {})
         d["mapP"] = int(len(g))
         d["mapW"] = int((g['winner'] == team).sum())
         d["rnd"] = int(g['rounds_total'].fillna(0).sum())
@@ -539,8 +541,8 @@ def main():
         # so downstream averaging divides by durM, not mapP.
         d["durS"] = int(g['duration_seconds'].fillna(0).sum())
         d["durM"] = int(g['duration_seconds'].notna().sum())
-    for (team, eid, wk), g in mte_ctx.groupby(['canonical_team', 'event_id', 'stage'], dropna=True):
-        d = agg.setdefault((team, int(eid), wk), {})
+    for (team, eid, wk, day), g in mte_ctx.groupby(['canonical_team', 'event_id', 'stage', 'date'], dropna=True):
+        d = agg.setdefault((team, int(eid), wk, day), {})
         d["pisW"] = int(g['pistol_won'].fillna(0).sum())
         # Buy-type counts live here rather than in a separate economy file:
         # they're per-team-per-map like everything else in this bucket, so
@@ -553,16 +555,16 @@ def main():
             if rounds or won:
                 d[f"{short}R"] = rounds
                 d[f"{short}W"] = won
-    for (team, eid, wk), g in mps_team.groupby(['canonical_team', 'event_id', 'stage'], dropna=True):
-        d = agg.setdefault((team, int(eid), wk), {})
+    for (team, eid, wk, day), g in mps_team.groupby(['canonical_team', 'event_id', 'stage', 'date'], dropna=True):
+        d = agg.setdefault((team, int(eid), wk, day), {})
         r_sum, r_rnd = wsum(g, 'rating')
         d["ratS"] = round(r_sum, 3)
         d["ratR"] = r_rnd
 
-    for (team, eid, wk), d in agg.items():
+    for (team, eid, wk, day), d in agg.items():
         if team == 'TBD':
             continue
-        team_buckets.append({"t": team, "e": eid, "w": wk, **d})
+        team_buckets.append({"t": team, "e": eid, "w": wk, "d": day, **d})
 
     team_meta = {t['team']: {"region": t['region']} for t in teams_out}
     with open(f"{OUT}/team_buckets.json", "w") as f:
@@ -585,7 +587,7 @@ def main():
         maps_timed = int(g['duration_seconds'].notna().sum())
         if maps_timed == 0:
             continue
-        d0, _ = date_span(g)
+        d0 = first_day(g)
         series_rows.append({
             "id": int(match_id),
             "team1": row0['c1'],

@@ -164,6 +164,29 @@ export const TEAM_STATS = [
     secondary: (s) => ({ value: s.matchesPlayed, label: 'matches' }),
   },
   {
+    key: 'avgMapLength',
+    label: 'Avg map length (rounds)',
+    cardTitle: 'AVG MAP LENGTH',
+    // Rounds per map played -- a proxy for how long/close a team's maps
+    // tend to run (more overtime and 13-11/13-12 finishes push this up).
+    // There's no per-map round count stored in the buckets, only the
+    // summed totals, so this is an average rather than a single
+    // longest/shortest map on record.
+    compute: (s) => (s.mapsPlayed ? s.roundsPlayed / s.mapsPlayed : null),
+    format: f1,
+    secondary: (s) => ({ value: s.mapsPlayed, label: 'maps' }),
+  },
+  {
+    key: 'avgSeriesLength',
+    label: 'Avg series length (maps)',
+    cardTitle: 'AVG SERIES LENGTH',
+    // Maps per match -- how often a team's series go the distance
+    // (closer to 3.0 in a Bo3) versus end in a sweep (closer to 2.0).
+    compute: (s) => (s.matchesPlayed ? s.mapsPlayed / s.matchesPlayed : null),
+    format: f2,
+    secondary: (s) => ({ value: s.matchesPlayed, label: 'matches' }),
+  },
+  {
     key: 'pistolWinPct',
     label: 'Pistol win %',
     cardTitle: 'PISTOL ROUND WIN%',

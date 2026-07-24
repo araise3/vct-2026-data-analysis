@@ -148,6 +148,29 @@ export function expandSeriesRows(data) {
   })
 }
 
+/**
+ * Expands map_length.json's per-map rows the same way expandSeriesRows
+ * does for the match-level file -- one row per individual map that has a
+ * scraped duration, no aggregation needed since each row is already atomic.
+ */
+export function expandMapLengthRows(data) {
+  if (!data) return []
+  const { events, rows } = data
+  return rows.map((r) => {
+    const ev = events[r.e] || {}
+    const week = r.w || ''
+    return {
+      ...r,
+      region: ev.region,
+      event: ev.name,
+      stage: ev.stage,
+      phase: week.includes(':') ? week.split(':')[0].trim() : week,
+      week,
+      competition: ev.competition,
+    }
+  })
+}
+
 const BUY_TIERS = [
   { key: 'eco', label: 'Eco', r: 'ecoR', w: 'ecoW' },
   { key: 'semiEco', label: 'Semi-eco', r: 'secR', w: 'secW' },

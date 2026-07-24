@@ -576,6 +576,27 @@ def main():
     fully = sum(1 for r in series_rows if r['fullyTimed'])
     print(f"series_length.json: {len(series_rows)} matches with a timed map ({fully} fully timed)")
 
+    # --- individual map durations (for the "map" view of the same panel) ---
+    # One row per map that actually has a scraped duration -- this is the
+    # atomic version of the series rows above, letting the frontend toggle
+    # between "longest/shortest series" (whole match) and "longest/
+    # shortest map" (a single map within some match).
+    map_length_rows = []
+    for row in map_ctx.dropna(subset=['duration_seconds']).itertuples():
+        map_length_rows.append({
+            "id": f"{int(row.match_id)}-{int(row.map_index)}",
+            "team1": row.c1,
+            "team2": row.c2,
+            "mapName": row.map_name,
+            "e": int(row.event_id) if pd.notna(row.event_id) else None,
+            "w": row.stage if pd.notna(row.stage) else '',
+            "durationSeconds": int(row.duration_seconds),
+        })
+
+    with open(f"{OUT}/map_length.json", "w") as f:
+        json.dump({"events": events_lookup, "rows": map_length_rows}, f, separators=(',', ':'))
+    print(f"map_length.json: {len(map_length_rows)} timed maps")
+
     events_out = [clean_row(r) for r in events_vct.to_dict(orient='records')]
     with open(f"{OUT}/events.json", "w") as f:
         json.dump(events_out, f, indent=2)

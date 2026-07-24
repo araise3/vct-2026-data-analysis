@@ -358,19 +358,25 @@ def main():
                      np.where(am.team2_score > am.team1_score, am.c2, None))
 
     def parse_duration(s):
-        # Scraper stores this as "31:07" (mm:ss) text, pulled from VLR's
-        # .map-duration element. Only populated for matches scraped/
-        # re-scraped since that field was added, so coverage is partial --
-        # same situation as player nationality above. Return None rather
-        # than 0 for anything missing/malformed so it's excluded from
-        # averages instead of dragging them down.
+        # Scraper stores this as VLR's own .map-duration text -- "44:31"
+        # (mm:ss) normally, but "1:01:51" (h:mm:ss) once a map runs past
+        # an hour, confirmed against a real export (values like '1:01:51'
+        # and '1:02:51' alongside plain '44:31' / '58:37'). Coverage is
+        # partial -- only matches scraped/re-scraped since this field was
+        # added carry it -- same situation as player nationality above.
+        # Return None rather than 0 for anything missing/malformed so
+        # it's excluded from averages instead of dragging them down.
         if not isinstance(s, str) or ':' not in s:
             return None
-        mm, _, ss = s.partition(':')
+        parts = s.split(':')
         try:
-            return int(mm) * 60 + int(ss)
+            parts = [int(p) for p in parts]
         except ValueError:
             return None
+        seconds = 0
+        for p in parts:
+            seconds = seconds * 60 + p
+        return seconds
 
     am['duration_seconds'] = am['duration'].apply(parse_duration)
 

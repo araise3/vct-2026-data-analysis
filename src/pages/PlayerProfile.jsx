@@ -22,7 +22,8 @@ export default function PlayerProfile() {
     return expandBuckets(data, 'p').filter((r) => r.id === decodedName)
   }, [data, decodedName])
 
-  const { selections, setFacet, clearAll, filtered, options, activeCount } =
+  const { selections, setFacet, clearAll, filtered, options, activeCount,
+          dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
 
   const stats = useMemo(
@@ -67,6 +68,7 @@ export default function PlayerProfile() {
         setFacet={setFacet}
         clearAll={clearAll}
         activeCount={activeCount}
+        dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
       >
         <label className="flex items-center gap-2 text-xs text-muted">
           <input

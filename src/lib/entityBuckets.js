@@ -3,7 +3,7 @@
  * team_buckets.json).
  *
  * Buckets are stored keyed only by event id + week, since region, event
- * name, event-level stage and phase are all derivable from those. These
+ * name, phase and week are all derivable from those. These
  * helpers expand them into flat records the faceted filter can work on,
  * and re-aggregate any filtered subset.
  *
@@ -12,22 +12,48 @@
  * view's numbers consistent with VLR's own rounds-weighted convention.
  */
 
+/**
+ * Separator for event-scoped facet values. Phase and week names ("Week 2",
+ * "Playoffs") repeat across every event, so filtering on the bare name
+ * would silently match that week in *all* events at once. Prefixing with
+ * the event name makes each value refer to one specific event's week, and
+ * FilterPanel splits on this to render them grouped under their event.
+ */
+export const SCOPE_SEP = ' \u00a7 '
+
+export function scopeValue(event, value) {
+  return `${event}${SCOPE_SEP}${value}`
+}
+
+export function unscopeValue(scoped) {
+  const i = scoped.indexOf(SCOPE_SEP)
+  return i === -1
+    ? { event: '', value: scoped }
+    : { event: scoped.slice(0, i), value: scoped.slice(i + SCOPE_SEP.length) }
+}
+
+/** Shared derivation of the filterable fields hanging off an event + week. */
+function eventFields(ev, week) {
+  const event = ev.name
+  const phase = week.includes(':') ? week.split(':')[0].trim() : week
+  return {
+    region: ev.region,
+    event,
+    phase,
+    week,
+    eventPhase: scopeValue(event, phase),
+    eventWeek: scopeValue(event, week),
+    competition: ev.competition,
+  }
+}
+
 export function expandBuckets(data, keyField) {
   const { events, buckets } = data
-  return buckets.map((b) => {
-    const ev = events[b.e] || {}
-    const week = b.w || ''
-    return {
-      ...b,
-      id: b[keyField],
-      region: ev.region,
-      event: ev.name,
-      stage: ev.stage,
-      phase: week.includes(':') ? week.split(':')[0].trim() : week,
-      week,
-      competition: ev.competition,
-    }
-  })
+  return buckets.map((b) => ({
+    ...b,
+    id: b[keyField],
+    ...eventFields(events[b.e] || {}, b.w || ''),
+  }))
 }
 
 function div(num, den) {
@@ -125,7 +151,7 @@ export function groupByEntity(records) {
 
 /**
  * Expands series_length.json's match-level rows the same way expandBuckets
- * does for player/team buckets (attaching region/event/stage/phase/week/
+ * does for player/team buckets (attaching region/event/phase/week/
  * competition from the shared events lookup) -- but there's no bucket
  * aggregation step afterward, since each row is already one specific
  * match, not a sum that needs re-deriving per filtered subset.
@@ -133,19 +159,14 @@ export function groupByEntity(records) {
 export function expandSeriesRows(data) {
   if (!data) return []
   const { events, rows } = data
-  return rows.map((r) => {
-    const ev = events[r.e] || {}
-    const week = r.w || ''
-    return {
-      ...r,
-      region: ev.region,
-      event: ev.name,
-      stage: ev.stage,
-      phase: week.includes(':') ? week.split(':')[0].trim() : week,
-      week,
-      competition: ev.competition,
-    }
-  })
+  return rows.map((r) => ({
+    ...r,
+    // Match-level rows carry one exact date; buckets carry a [d0,d1]
+    // span. Normalise to the span shape so date filtering is uniform.
+    d0: r.date,
+    d1: r.date,
+    ...eventFields(events[r.e] || {}, r.w || ''),
+  }))
 }
 
 /**
@@ -156,19 +177,14 @@ export function expandSeriesRows(data) {
 export function expandMapLengthRows(data) {
   if (!data) return []
   const { events, rows } = data
-  return rows.map((r) => {
-    const ev = events[r.e] || {}
-    const week = r.w || ''
-    return {
-      ...r,
-      region: ev.region,
-      event: ev.name,
-      stage: ev.stage,
-      phase: week.includes(':') ? week.split(':')[0].trim() : week,
-      week,
-      competition: ev.competition,
-    }
-  })
+  return rows.map((r) => ({
+    ...r,
+    // Match-level rows carry one exact date; buckets carry a [d0,d1]
+    // span. Normalise to the span shape so date filtering is uniform.
+    d0: r.date,
+    d1: r.date,
+    ...eventFields(events[r.e] || {}, r.w || ''),
+  }))
 }
 
 const BUY_TIERS = [

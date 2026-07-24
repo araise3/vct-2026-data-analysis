@@ -415,10 +415,24 @@ def main():
     am['duration_seconds'] = am['duration'].apply(parse_duration)
 
     mps_ctx = all_mps.merge(
-        all_matches[['match_id', 'event_id', 'stage']], on='match_id', how='left'
+        all_matches[['match_id', 'event_id', 'stage', 'match_date']], on='match_id', how='left'
     ).merge(
         am[['match_id', 'map_index', 'rounds_total']], on=['match_id', 'map_index'], how='left'
     )
+
+    def date_span(g):
+        """
+        (first, last) match date in a bucket as YYYY-MM-DD, or (None, None).
+
+        A bucket is (entity, event, week), which can straddle a few days --
+        group weeks run up to 5 days, though the mean span is well under
+        one. The site filters on overlap with this span, so a bucket that
+        only partly falls inside a selected date range is included whole.
+        """
+        d = pd.to_datetime(g['match_date'], errors='coerce').dropna()
+        if len(d) == 0:
+            return None, None
+        return d.min().strftime('%Y-%m-%d'), d.max().strftime('%Y-%m-%d')
 
     def wsum(g, col):
         """(value x rounds) sum and the rounds behind it, ignoring nulls."""
@@ -434,8 +448,10 @@ def main():
         a_sum, a_rnd = wsum(g, 'adr')
         h_sum, h_rnd = wsum(g, 'hs_pct')
         acs_valid = g['acs'].dropna()
+        d0, d1 = date_span(g)
         row = {
             "p": player, "e": int(event_id), "w": week,
+            "d0": d0, "d1": d1,
             "maps": int(len(g)), "rnd": int(g['rounds_total'].fillna(0).sum()),
             "ratS": round(r_sum, 3), "ratR": r_rnd,
             "acsS": round(float(acs_valid.sum()), 2), "acsM": int(len(acs_valid)),
@@ -485,17 +501,19 @@ def main():
     # --- teams ---
     completed_all = all_matches[all_matches['status'] == 'completed']
     team_buckets = []
-    map_ctx = am.dropna(subset=['winner'])
+    map_ctx = am.dropna(subset=['winner']).merge(
+        all_matches[['match_id', 'match_date']], on='match_id', how='left'
+    )
     mte_ctx = all_mte.merge(
         all_matches[['match_id', 'event_id', 'stage']], on='match_id', how='left'
     )
 
     team_rows = []
     for team_col, opp_col in (('c1', 'c2'), ('c2', 'c1')):
-        sub = completed_all[['event_id', 'stage', team_col, 'score1', 'score2']].copy()
-        sub.columns = ['event_id', 'week', 'team', 's1', 's2']
+        sub = completed_all[['event_id', 'stage', team_col, 'score1', 'score2', 'match_date']].copy()
+        sub.columns = ['event_id', 'week', 'team', 's1', 's2', 'match_date']
         sub['won'] = (sub['s1'] > sub['s2']) if team_col == 'c1' else (sub['s2'] > sub['s1'])
-        team_rows.append(sub[['event_id', 'week', 'team', 'won']])
+        team_rows.append(sub[['event_id', 'week', 'team', 'won', 'match_date']])
     match_long = pd.concat(team_rows, ignore_index=True)
 
     map_rows = []
@@ -509,7 +527,8 @@ def main():
     keys = ['team', 'event_id', 'week']
     agg = {}
     for (team, eid, wk), g in match_long.groupby(['team', 'event_id', 'week'], dropna=True):
-        agg[(team, int(eid), wk)] = {"mP": int(len(g)), "mW": int(g['won'].sum())}
+        d0, d1 = date_span(g)
+        agg[(team, int(eid), wk)] = {"mP": int(len(g)), "mW": int(g['won'].sum()), "d0": d0, "d1": d1}
     for (team, eid, wk), g in map_long.groupby(['team', 'event_id', 'week'], dropna=True):
         d = agg.setdefault((team, int(eid), wk), {})
         d["mapP"] = int(len(g))
@@ -566,10 +585,12 @@ def main():
         maps_timed = int(g['duration_seconds'].notna().sum())
         if maps_timed == 0:
             continue
+        d0, _ = date_span(g)
         series_rows.append({
             "id": int(match_id),
             "team1": row0['c1'],
             "team2": row0['c2'],
+            "date": d0,
             "e": int(row0['event_id']) if pd.notna(row0['event_id']) else None,
             "w": row0['stage'] if pd.notna(row0['stage']) else '',
             "mapCount": map_count,
@@ -595,6 +616,7 @@ def main():
             "team1": row.c1,
             "team2": row.c2,
             "mapName": row.map_name,
+            "date": (row.match_date[:10] if isinstance(row.match_date, str) else None),
             "e": int(row.event_id) if pd.notna(row.event_id) else None,
             "w": row.stage if pd.notna(row.stage) else '',
             "durationSeconds": int(row.duration_seconds),

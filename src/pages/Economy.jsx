@@ -10,7 +10,8 @@ import { pct, num } from '../lib/format'
 export default function Economy() {
   const { data, loading } = useData('team_buckets')
   const records = useMemo(() => (data ? expandBuckets(data, 't') : []), [data])
-  const { selections, setFacet, clearAll, filtered, options, activeCount } =
+  const { selections, setFacet, clearAll, filtered, options, activeCount,
+          dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
 
   const econ = useMemo(() => aggregateEconomyBuckets(filtered), [filtered])
@@ -33,6 +34,7 @@ export default function Economy() {
       <FilterPanel
         selections={selections} setFacet={setFacet} clearAll={clearAll}
         options={options} activeCount={activeCount}
+        dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
         summary={`${num(econ.totalRounds)} rounds in scope`}
       />
 

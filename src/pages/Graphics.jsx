@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState, useLayoutEffect, useCallback } from 'react'
 import { toPng } from 'html-to-image'
 import { useData } from '../lib/useData'
-import { useFacetedFilter } from '../lib/useFacetedFilter'
+import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandBuckets,
   expandSeriesRows,
@@ -65,7 +65,8 @@ export default function Graphics() {
     () => (data ? expandBuckets(data, isPlayers ? 'p' : 't') : []),
     [data, isPlayers]
   )
-  const { selections, setFacet, clearAll, filtered, options, activeCount } =
+  const { selections, setFacet, clearAll, filtered, options, activeCount,
+          dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
 
   const rows = useMemo(() => {
@@ -81,10 +82,7 @@ export default function Graphics() {
       // `filtered` already covers.
       const eligible = expandFn(source).filter((r) => {
         if (stat.matchLevel === 'series' && !r.fullyTimed) return false
-        return FACETS.every((f) => {
-          const sel = selections[f]
-          return !sel || sel.length === 0 || sel.includes(r[f])
-        })
+        return matchesFilters(r, FACETS, selections, dateRange)
       })
       const out = eligible.map((r) => ({
         id: r.id,
@@ -124,7 +122,7 @@ export default function Graphics() {
     out.sort((a, b) => (desc ? b.value - a.value : a.value - b.value))
     return out.slice(0, topN)
   }, [
-    filtered, data, isPlayers, isMatchLevel, stat, selections, seriesData, mapLengthData,
+    filtered, data, isPlayers, isMatchLevel, stat, selections, dateRange, seriesData, mapLengthData,
     ratedOnly, minRounds, minMaps, topN, bottom,
   ])
 
@@ -215,6 +213,7 @@ export default function Graphics() {
         setFacet={setFacet}
         clearAll={clearAll}
         activeCount={activeCount}
+        dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
         summary={`${rows.length} rows on card`}
         defaultOpen={false}
       />

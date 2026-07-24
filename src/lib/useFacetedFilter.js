@@ -15,28 +15,74 @@ import { useMemo, useState, useCallback } from 'react'
  * given everything else currently selected -- selecting a value never
  * makes its own siblings disappear.
  */
+const EMPTY_RANGE = { from: '', to: '' }
+
+/**
+ * Does a record's date span overlap the selected range?
+ *
+ * Records carry a [d0, d1] span (buckets aggregate an event-week, which
+ * can cover a few days; match-level rows collapse to a single date). A
+ * bucket is kept if it overlaps the range *at all*, so one straddling the
+ * boundary is included whole rather than being partially attributed --
+ * exact per-day splitting isn't possible from pre-aggregated buckets.
+ *
+ * Records with no date info pass through rather than being filtered out,
+ * so a future export missing dates degrades to "no date filter" instead
+ * of silently emptying every page.
+ */
+function inDateRange(record, { from, to }) {
+  if (!from && !to) return true
+  const d0 = record.d0
+  const d1 = record.d1 || record.d0
+  if (!d0) return true
+  if (from && d1 < from) return false
+  if (to && d0 > to) return false
+  return true
+}
+
+/**
+ * Standalone version of the hook's matching logic, for pages that filter a
+ * second, differently-shaped record set (match-level series/map rows,
+ * player rows on a team-driven page) against the same active selections.
+ * Keeping it here means the date range can't be forgotten at a call site.
+ */
+export function matchesFilters(record, facets, selections, dateRange = EMPTY_RANGE) {
+  if (!inDateRange(record, dateRange)) return false
+  return facets.every((f) => {
+    const sel = selections[f]
+    return !sel || sel.length === 0 || sel.includes(record[f])
+  })
+}
+
 export function useFacetedFilter(records, facets, initial = {}) {
   const [selections, setSelections] = useState(() =>
     Object.fromEntries(facets.map((f) => [f, initial[f] ?? []]))
   )
+  const [dateRange, setDateRangeState] = useState(EMPTY_RANGE)
 
   const setFacet = useCallback((facet, values) => {
     setSelections((prev) => ({ ...prev, [facet]: values }))
   }, [])
 
+  const setDateRange = useCallback((next) => {
+    setDateRangeState((prev) => ({ ...prev, ...next }))
+  }, [])
+
   const clearAll = useCallback(() => {
     setSelections(Object.fromEntries(facets.map((f) => [f, initial[f] ?? []])))
+    setDateRangeState(EMPTY_RANGE)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [facets])
 
   const matchesExcept = useCallback(
     (record, exceptFacet) =>
+      inDateRange(record, dateRange) &&
       facets.every((f) => {
         if (f === exceptFacet) return true
         const sel = selections[f]
         return !sel || sel.length === 0 || sel.includes(record[f])
       }),
-    [facets, selections]
+    [facets, selections, dateRange]
   )
 
   const filtered = useMemo(
@@ -64,7 +110,24 @@ export function useFacetedFilter(records, facets, initial = {}) {
     return out
   }, [records, facets, matchesExcept])
 
-  const activeCount = facets.reduce((n, f) => n + (selections[f]?.length || 0), 0)
+  const activeCount =
+    facets.reduce((n, f) => n + (selections[f]?.length || 0), 0) +
+    (dateRange.from || dateRange.to ? 1 : 0)
 
-  return { selections, setFacet, clearAll, filtered, options, activeCount }
+  // Earliest/latest date present, to bound the date inputs.
+  const dateBounds = useMemo(() => {
+    let min = null
+    let max = null
+    for (const r of records) {
+      if (r.d0 && (min === null || r.d0 < min)) min = r.d0
+      const hi = r.d1 || r.d0
+      if (hi && (max === null || hi > max)) max = hi
+    }
+    return { min, max }
+  }, [records])
+
+  return {
+    selections, setFacet, clearAll, filtered, options, activeCount,
+    dateRange, setDateRange, dateBounds,
+  }
 }

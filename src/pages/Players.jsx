@@ -18,7 +18,8 @@ export default function Players() {
   const [minMaps, setMinMaps] = useState(0)
 
   const records = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
-  const { selections, setFacet, clearAll, filtered, options, activeCount } =
+  const { selections, setFacet, clearAll, filtered, options, activeCount,
+          dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
 
   const rows = useMemo(() => {
@@ -103,6 +104,7 @@ export default function Players() {
         setFacet={setFacet}
         clearAll={clearAll}
         activeCount={activeCount}
+        dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
         summary={`${rows.length} players`}
       >
         <div className="flex items-center gap-5 flex-wrap pt-1">

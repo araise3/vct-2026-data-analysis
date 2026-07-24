@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
-import { useFacetedFilter } from '../lib/useFacetedFilter'
+import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandBuckets,
   expandSeriesRows,
@@ -24,7 +24,8 @@ export default function Teams() {
   const [durationView, setDurationView] = useState('series') // 'series' | 'map'
 
   const records = useMemo(() => (data ? expandBuckets(data, 't') : []), [data])
-  const { selections, setFacet, clearAll, filtered, options, activeCount } =
+  const { selections, setFacet, clearAll, filtered, options, activeCount,
+          dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
 
   const rows = useMemo(() => {
@@ -54,21 +55,17 @@ export default function Teams() {
   // duplicated here rather than sharing useFacetedFilter's internal
   // matching logic, since that hook owns its own state and this is a
   // second, independently-shaped record set filtered by the same values.
-  const matchesSelections = (r) =>
-    FACETS.every((f) => {
-      const sel = selections[f]
-      return !sel || sel.length === 0 || sel.includes(r[f])
-    })
+  const matchesSelections = (r) => matchesFilters(r, FACETS, selections, dateRange)
 
   const seriesRows = useMemo(() => {
     if (!seriesData) return []
     return expandSeriesRows(seriesData).filter((r) => r.fullyTimed && matchesSelections(r))
-  }, [seriesData, selections])
+  }, [seriesData, selections, dateRange])
 
   const mapRows = useMemo(() => {
     if (!mapLengthData) return []
     return expandMapLengthRows(mapLengthData).filter(matchesSelections)
-  }, [mapLengthData, selections])
+  }, [mapLengthData, selections, dateRange])
 
   const activeDurationRows = durationView === 'series' ? seriesRows : mapRows
 
@@ -118,6 +115,7 @@ export default function Teams() {
         setFacet={setFacet}
         clearAll={clearAll}
         activeCount={activeCount}
+        dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
         summary={`${rows.length} teams`}
       />
 

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
-import { useFacetedFilter } from '../lib/useFacetedFilter'
+import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandBuckets, aggregatePlayerBuckets, aggregateTeamBuckets,
   aggregateOverview, groupByEntity,
@@ -25,18 +25,14 @@ export default function Overview() {
   // Facets are driven off the team buckets (which cover every event), and
   // the same selections are applied to the player buckets -- so both
   // halves of the page always describe the same scope.
-  const { selections, setFacet, clearAll, filtered: filteredTeams, options, activeCount } =
+  const { selections, setFacet, clearAll, filtered: filteredTeams, options, activeCount,
+          dateRange, setDateRange, dateBounds } =
     useFacetedFilter(teamRecords, FACETS, { competition: ['VCT'] })
 
   const filteredPlayers = useMemo(
     () =>
-      playerRecords.filter((r) =>
-        FACETS.every((f) => {
-          const sel = selections[f]
-          return !sel || sel.length === 0 || sel.includes(r[f])
-        })
-      ),
-    [playerRecords, selections]
+      playerRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange)),
+    [playerRecords, selections, dateRange]
   )
 
   const kpis = useMemo(
@@ -84,6 +80,7 @@ export default function Overview() {
       <FilterPanel
         selections={selections} setFacet={setFacet} clearAll={clearAll}
         options={options} activeCount={activeCount}
+        dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
       />
 
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">

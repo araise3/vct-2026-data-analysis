@@ -22,7 +22,8 @@ export default function TeamProfile() {
     return expandBuckets(teamData, 't').filter((r) => r.id === decodedName)
   }, [teamData, decodedName])
 
-  const { selections, setFacet, clearAll, filtered, options, activeCount } =
+  const { selections, setFacet, clearAll, filtered, options, activeCount,
+          dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
 
   const stats = useMemo(() => aggregateTeamBuckets(filtered), [filtered])
@@ -82,6 +83,7 @@ export default function TeamProfile() {
         setFacet={setFacet}
         clearAll={clearAll}
         activeCount={activeCount}
+        dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
       />
 
       {!stats || !stats.mapsPlayed ? (

@@ -61,7 +61,8 @@ function aggregate(buckets) {
 export default function Agents() {
   const { data, loading } = useData('agents')
   const buckets = data?.buckets ?? []
-  const { selections, setFacet, clearAll, filtered, options, activeCount } =
+  const { selections, setFacet, clearAll, filtered, options, activeCount,
+          dateRange, setDateRange, dateBounds } =
     useFacetedFilter(buckets, FACETS, { competition: ['VCT'] })
 
   const scoped = useMemo(() => aggregate(filtered), [filtered])
@@ -108,6 +109,7 @@ export default function Agents() {
         setFacet={setFacet}
         clearAll={clearAll}
         activeCount={activeCount}
+        dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
         summary={`${num(scoped.totalRows / 5)} team-maps in scope`}
       />
 

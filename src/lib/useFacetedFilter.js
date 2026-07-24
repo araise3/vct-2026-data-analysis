@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback } from 'react'
+import { SCOPE_SEP } from './entityBuckets'
 
 /**
  * Faceted (multi-select) filtering over a list of records.
@@ -38,6 +39,37 @@ function inDateRange(record, { from, to }) {
   return true
 }
 
+/** The event a scoped value ("Santiago § Swiss Stage") belongs to, or null
+ *  if the value isn't scoped at all (plain facets like region/competition). */
+function scopedEventOf(value) {
+  if (typeof value !== 'string') return null
+  const i = value.indexOf(SCOPE_SEP)
+  return i === -1 ? null : value.slice(0, i)
+}
+
+/**
+ * Does `record` satisfy one facet's selection?
+ *
+ * Scoped facets (eventPhase/eventWeek -- detected by the § separator
+ * rather than hardcoded by name, so this keeps working if more scoped
+ * facets get added later) need different logic than a plain facet: a
+ * selection like "Santiago § Swiss Stage" must only constrain records
+ * that actually belong to Santiago. A record from a different event has
+ * no opinion expressed for it at all and should pass through untouched --
+ * treating the selection as global (the naive `sel.includes(record[f])`)
+ * meant picking a phase for one event silently filtered out every other
+ * event's data, and made every other event's chip look unselectable.
+ */
+function matchesOneFacet(record, sel, recordValue) {
+  if (!sel || sel.length === 0) return true
+  const recordEvent = scopedEventOf(recordValue)
+  if (recordEvent !== null) {
+    const relevant = sel.filter((s) => scopedEventOf(s) === recordEvent)
+    return relevant.length === 0 || relevant.includes(recordValue)
+  }
+  return sel.includes(recordValue)
+}
+
 /**
  * Standalone version of the hook's matching logic, for pages that filter a
  * second, differently-shaped record set (match-level series/map rows,
@@ -53,8 +85,7 @@ export function matchesFilters(record, facets, selections, dateRange = EMPTY_RAN
   if (!inDateRange(record, dateRange)) return false
   return facets.every((f) => {
     if (f === exceptFacet) return true
-    const sel = selections[f]
-    return !sel || sel.length === 0 || sel.includes(record[f])
+    return matchesOneFacet(record, selections[f], record[f])
   })
 }
 

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
-import { expandBuckets, aggregatePlayerBuckets, groupByEntity } from '../lib/entityBuckets'
+import { expandBuckets, expandPlayerClutchRows, aggregatePlayerBuckets, groupByEntity } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
@@ -13,6 +13,7 @@ import { rating, pct, num } from '../lib/format'
 
 export default function Players() {
   const { data, loading } = useData('player_buckets')
+  const { data: clutchData } = useData('player_clutch')
   const [ratedOnly, setRatedOnly] = useState(false)
   const [search, setSearch] = useState('')
   const [minMaps, setMinMaps] = useState(0)
@@ -21,6 +22,19 @@ export default function Players() {
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
+
+  // player_clutch.json is event-level only (no per-day/week granularity,
+  // unlike everything else here -- it comes from VLR's /event/stats page,
+  // not the per-map box scores). Keyed by "player|eventId" so the row
+  // loop below can sum exactly the events a player's own filtered buckets
+  // actually touch, rather than re-filtering this separately.
+  const clutchByKey = useMemo(() => {
+    const m = new Map()
+    for (const r of expandPlayerClutchRows(clutchData)) {
+      m.set(`${r.p}|${r.e}`, r)
+    }
+    return m
+  }, [clutchData])
 
   const rows = useMemo(() => {
     if (!data) return []
@@ -32,6 +46,16 @@ export default function Players() {
       const s = aggregatePlayerBuckets(buckets, { ratedOnly })
       if (!s || !s.mapsPlayed) continue
       if (s.mapsPlayed < minMaps) continue
+
+      let clWon = null
+      let clAttempted = null
+      for (const eventId of new Set(buckets.map((b) => b.e))) {
+        const c = clutchByKey.get(`${player}|${eventId}`)
+        if (!c) continue
+        clWon = (clWon ?? 0) + c.clWon
+        clAttempted = (clAttempted ?? 0) + c.clAttempted
+      }
+
       out.push({
         player,
         team: meta.team,
@@ -39,6 +63,8 @@ export default function Players() {
         isChina: meta.isChina,
         countryCode: meta.countryCode,
         countryName: meta.countryName,
+        clWon,
+        clAttempted,
         ...s,
       })
     }
@@ -47,7 +73,7 @@ export default function Players() {
       ? out.filter((p) => p.player.toLowerCase().includes(q) || p.team?.toLowerCase().includes(q))
       : out
     return searched.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
-  }, [filtered, data, ratedOnly, search, minMaps])
+  }, [filtered, data, ratedOnly, search, minMaps, clutchByKey])
 
   if (loading || !data) return <div className="text-muted text-sm">Loading…</div>
 
@@ -88,7 +114,10 @@ export default function Players() {
     { key: 'total2k', label: '2K', align: 'right', format: (v) => num(v) },
     { key: 'total3k', label: '3K', align: 'right', format: (v) => num(v) },
     { key: 'totalAce', label: 'Ace', align: 'right', format: (v) => num(v) },
-    { key: 'totalClutches', label: 'Clutches', align: 'right', format: (v) => num(v) },
+    {
+      key: 'totalClutches', label: 'Clutches', align: 'right',
+      format: (v, row) => (row.clAttempted != null ? `${row.clWon}/${row.clAttempted}` : num(v)),
+    },
   ]
 
   return (

@@ -68,6 +68,10 @@ TABLE_COLUMNS = {
                          "eco_rounds", "eco_won", "semi_eco_rounds", "semi_eco_won",
                          "semi_buy_rounds", "semi_buy_won", "full_buy_rounds", "full_buy_won"],
     "events": ["event_id", "slug", "name", "region", "stage", "dates", "prize", "location"],
+    "player_event_stats": ["event_id", "player", "player_url", "team", "agents",
+                           "maps_played", "rounds_played", "rating", "acs", "kd", "kast",
+                           "adr", "kpr", "apr", "fkfd", "fkpr", "fdpr", "hs_pct", "cl_pct",
+                           "cl", "kmax", "kills", "deaths", "assists", "first_kills", "first_deaths"],
 }
 
 
@@ -82,7 +86,7 @@ def load_db(path, competition):
                 for name, cols in TABLE_COLUMNS.items()}
     conn = sqlite3.connect(path)
     tables = {}
-    for name in ["matches", "maps", "map_player_stats", "map_team_economy", "events"]:
+    for name in ["matches", "maps", "map_player_stats", "map_team_economy", "events", "player_event_stats"]:
         df = pd.read_sql_query(f"SELECT * FROM {name}", conn)
         df["competition"] = competition
         tables[name] = df
@@ -361,6 +365,7 @@ def main():
     all_maps = pd.concat([vct["maps"], ewc["maps"]], ignore_index=True)
     all_mps = pd.concat([vct["map_player_stats"], ewc["map_player_stats"]], ignore_index=True)
     all_mte = pd.concat([vct["map_team_economy"], ewc["map_team_economy"]], ignore_index=True)
+    all_pes = pd.concat([vct["player_event_stats"], ewc["player_event_stats"]], ignore_index=True)
     for col in ['kast', 'hs_pct']:
         all_mps[col] = pct_to_float(all_mps[col])
 
@@ -493,6 +498,35 @@ def main():
         json.dump({"events": events_lookup, "meta": player_meta, "buckets": player_buckets},
                   f, separators=(',', ':'))
     print(f"player_buckets.json: {len(player_buckets)} buckets")
+
+    # --- player clutches won/attempted ("9/39") ---
+    # map_player_stats only has clutch_1v1..1v5 (wins by type, no attempts),
+    # so totalClutches in the main buckets is wins-only. The won/attempted
+    # fraction VLR actually shows lives in a completely different scraped
+    # table -- player_event_stats.cl, from the /event/stats page -- which
+    # was being scraped all along but never exported. player_event_stats.
+    # player is "name TEAM" (confirmed: the team suffix always matches the
+    # separately-parsed team column exactly, 0 mismatches across 1122 rows
+    # in both dbs) rather than the bare name used everywhere else, so it's
+    # stripped here. This is event-level only (no week/phase granularity
+    # available), so the frontend sums it across whichever events are
+    # actually in a player's current filtered scope.
+    clutch_rows = []
+    for row in all_pes.itertuples():
+        if not isinstance(row.cl, str) or '/' not in row.cl:
+            continue
+        team = row.team or ''
+        name = row.player[:-len(team) - 1] if team and row.player.endswith(' ' + team) else row.player
+        won, _, attempted = row.cl.partition('/')
+        try:
+            won, attempted = int(won), int(attempted)
+        except ValueError:
+            continue
+        clutch_rows.append({"p": name, "e": int(row.event_id), "clWon": won, "clAttempted": attempted})
+
+    with open(f"{OUT}/player_clutch.json", "w") as f:
+        json.dump({"events": events_lookup, "rows": clutch_rows}, f, separators=(',', ':'))
+    print(f"player_clutch.json: {len(clutch_rows)} player-event clutch rows")
 
     # --- teams ---
     completed_all = all_matches[all_matches['status'] == 'completed']

@@ -183,6 +183,22 @@ export function expandMapLengthRows(data) {
   }))
 }
 
+/**
+ * Expands player_clutch.json's event-level rows the same way
+ * expandMapLengthRows does -- attaching region/event/competition. There's
+ * no phase/week/date here since this data only ever exists per
+ * player-per-event (it comes from VLR's /event/stats page, not the
+ * per-map box scores everything else is built from).
+ */
+export function expandPlayerClutchRows(data) {
+  if (!data) return []
+  const { events, rows } = data
+  return rows.map((r) => {
+    const ev = events[r.e] || {}
+    return { ...r, region: ev.region, event: ev.name, competition: ev.competition }
+  })
+}
+
 const BUY_TIERS = [
   { key: 'eco', label: 'Eco', r: 'ecoR', w: 'ecoW' },
   { key: 'semiEco', label: 'Semi-eco', r: 'secR', w: 'secW' },

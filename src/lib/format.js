@@ -62,11 +62,11 @@ export function compact(v) {
 // known intended hue on both screenshots: a cell with hue 260 rendered as
 // rgb(107,92,138) -> H=259.6° S=20.0% L=45.1%, and a cell with hue 270
 // rendered as rgb(115,92,138) -> H=270.0° S=20.0% L=45.1%. That's VLR's
-// real, fairly muted value; bumped to 50%/42% here for a punchier look
-// on request -- same hue math, just more saturated and a touch darker so
-// text on top stays readable.
-const SAT = 50
-const LIGHT = 42
+// real, fairly muted value. 50%/42% (tried first) came out too strong;
+// settled on 35%/44% as the middle ground -- noticeably bolder than
+// VLR's original without overpowering the text on top.
+const SAT = 35
+const LIGHT = 44
 export function scaleColor(value, min, max) {
   if (value === null || value === undefined || Number.isNaN(value) || min === max) {
     return 'transparent'

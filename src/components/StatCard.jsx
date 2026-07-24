@@ -86,6 +86,7 @@ const StatCard = forwardRef(function StatCard(
         fontFamily: '"Plus Jakarta Sans", ui-sans-serif, sans-serif',
         color: C.ink,
         padding: '0 0 6px 0',
+        position: 'relative',
       }}
     >
       {/* header */}
@@ -94,7 +95,7 @@ const StatCard = forwardRef(function StatCard(
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'space-between',
-          padding: '30px 36px 24px',
+          padding: '30px 210px 24px 36px',
         }}
       >
         <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
@@ -151,12 +152,14 @@ const StatCard = forwardRef(function StatCard(
         </div>
         <div
           style={{
+            position: 'absolute',
+            top: 18,
+            right: 24,
             textAlign: 'right',
             color: C.dim,
             fontSize: 17,
             fontWeight: 600,
             lineHeight: 1.4,
-            alignSelf: 'flex-start',
             whiteSpace: 'pre-line',
           }}
         >

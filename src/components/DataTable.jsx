@@ -12,9 +12,6 @@ import { scaleColor } from '../lib/format'
  * a different, broader page only reached 259.6° -- impossible if both
  * were being measured against the same fixed scale. Each view's own
  * min/max is what's actually being used.
- */
-/**
- * columns: [{ key, label, format(v), colorScale?: true, align?: 'left'|'right' }]
  *
  * Deliberately no per-column width/table-layout:fixed: that mode forces
  * every column to split whatever space is left after the sized ones,
@@ -24,6 +21,16 @@ import { scaleColor } from '../lib/format'
  * itself to its own content and can never truncate; the wrapping
  * overflow-auto div handles horizontal scroll if the whole table is
  * wider than the viewport, which is normal for a many-column stats table.
+ *
+ * border-separate (not border-collapse) on the table: border-collapse
+ * doesn't reliably merge borders across a position:sticky boundary in
+ * most browsers, which left a gap where the grid lines should have
+ * continued from the body up into the sticky header. border-separate
+ * with 0 spacing avoids that, at the cost of each cell owning its own
+ * border rather than sharing one with its neighbor -- so cells only set
+ * border on the right/bottom (border-hairline provides left/top via the
+ * previous cell's right/bottom edge, and the outer wrapper's border
+ * covers the table's own left/top edge).
  */
 export default function DataTable({ columns, rows, defaultSortKey, defaultSortDir = 'desc' }) {
   const [sortKey, setSortKey] = useState(defaultSortKey)
@@ -65,14 +72,14 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
 
   return (
     <div className="overflow-auto rounded-2xl border border-hairline">
-      <table className="w-full border-collapse text-sm">
+      <table className="w-full border-separate border-spacing-0 text-sm">
         <thead>
           <tr className="bg-surface2 sticky top-0 z-10">
             {columns.map((col) => (
               <th
                 key={col.key}
                 onClick={() => toggleSort(col.key)}
-                className={`px-4 py-3 font-medium text-xs uppercase tracking-wide text-muted cursor-pointer select-none whitespace-nowrap hover:text-ink transition-colors align-middle border border-hairline ${
+                className={`px-4 py-3 font-medium text-xs uppercase tracking-wide text-muted cursor-pointer select-none whitespace-nowrap hover:text-ink transition-colors align-middle border-r border-b border-hairline ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 }`}
               >
@@ -94,7 +101,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                   <td
                     key={col.key}
                     style={bg ? { backgroundColor: bg } : undefined}
-                    className={`px-4 py-2.5 font-body text-[13px] whitespace-nowrap align-middle border border-hairline ${
+                    className={`px-4 py-2.5 font-body text-[13px] whitespace-nowrap align-middle border-r border-b border-hairline ${
                       col.align === 'right' ? 'text-right' : 'text-left'
                     } ${col.key === columns[0].key ? 'text-ink' : 'text-ink/90'}`}
                   >

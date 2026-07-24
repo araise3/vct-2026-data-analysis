@@ -155,8 +155,8 @@ const StatCard = forwardRef(function StatCard(
             color: C.dim,
             fontSize: 17,
             fontWeight: 600,
-            lineHeight: 1.5,
-            paddingTop: 4,
+            lineHeight: 1.4,
+            alignSelf: 'flex-start',
             whiteSpace: 'pre-line',
           }}
         >

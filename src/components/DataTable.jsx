@@ -72,7 +72,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
               <th
                 key={col.key}
                 onClick={() => toggleSort(col.key)}
-                className={`px-4 py-3 font-medium text-xs uppercase tracking-wide text-muted cursor-pointer select-none whitespace-nowrap hover:text-ink transition-colors align-middle ${
+                className={`px-4 py-3 font-medium text-xs uppercase tracking-wide text-muted cursor-pointer select-none whitespace-nowrap hover:text-ink transition-colors align-middle border border-hairline ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 }`}
               >
@@ -84,7 +84,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
         </thead>
         <tbody>
           {sorted.map((row, i) => (
-            <tr key={i} className="border-t border-hairline hover:bg-surface/60 transition-colors">
+            <tr key={i} className="hover:bg-surface/60 transition-colors">
               {columns.map((col) => {
                 const value = row[col.key]
                 const bg = col.colorScale && colorRanges[col.key]
@@ -94,7 +94,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                   <td
                     key={col.key}
                     style={bg ? { backgroundColor: bg } : undefined}
-                    className={`px-4 py-2.5 font-body text-[13px] whitespace-nowrap align-middle ${
+                    className={`px-4 py-2.5 font-body text-[13px] whitespace-nowrap align-middle border border-hairline ${
                       col.align === 'right' ? 'text-right' : 'text-left'
                     } ${col.key === columns[0].key ? 'text-ink' : 'text-ink/90'}`}
                   >

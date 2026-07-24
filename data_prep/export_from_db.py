@@ -52,7 +52,34 @@ def pct_to_float(s):
     return pd.to_numeric(s.astype(str).str.replace('%', '', regex=False), errors='coerce') / 100
 
 
+TABLE_COLUMNS = {
+    "matches": ["match_id", "event_id", "team1", "team2", "score1", "score2",
+                "stage", "match_date", "match_url", "status"],
+    "maps": ["match_id", "map_index", "map_name", "team1_score", "team2_score",
+             "team1_atk_score", "team1_def_score", "team2_atk_score",
+             "team2_def_score", "duration"],
+    "map_player_stats": ["match_id", "map_index", "player", "team", "agent",
+                         "rating", "acs", "kills", "deaths", "assists", "kd_diff",
+                         "kast", "adr", "hs_pct", "first_kills", "first_deaths",
+                         "fk_fd_diff", "side", "multi_2k", "multi_3k", "multi_4k",
+                         "multi_5k", "clutch_1v1", "clutch_1v2", "clutch_1v3",
+                         "clutch_1v4", "clutch_1v5", "econ", "plants", "defuses"],
+    "map_team_economy": ["match_id", "map_index", "team", "pistol_won",
+                         "eco_rounds", "eco_won", "semi_eco_rounds", "semi_eco_won",
+                         "semi_buy_rounds", "semi_buy_won", "full_buy_rounds", "full_buy_won"],
+    "events": ["event_id", "slug", "name", "region", "stage", "dates", "prize", "location"],
+}
+
+
 def load_db(path, competition):
+    # The EWC db is a separate optional file -- if it isn't present
+    # alongside the VCT one, run on VCT alone rather than erroring, using
+    # empty (but correctly-shaped) frames so every downstream pd.concat/
+    # merge still works unchanged.
+    if not os.path.exists(path):
+        print(f"[info] {path} not found -- skipping ({competition} data will be empty)")
+        return {name: pd.DataFrame(columns=cols + ["competition"])
+                for name, cols in TABLE_COLUMNS.items()}
     conn = sqlite3.connect(path)
     tables = {}
     for name in ["matches", "maps", "map_player_stats", "map_team_economy", "events"]:

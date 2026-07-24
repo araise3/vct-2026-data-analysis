@@ -376,7 +376,7 @@ export default function Graphics() {
                 kicker="VALORANT — VCT 2026"
                 title={title}
                 subtitle={subtitle}
-                credit={'vct-2026 stats\nstats: vlr.gg'}
+                credit={'@vctinsight\nstats: vlr.gg'}
                 rows={rows}
                 valueFormat={stat.format}
               />

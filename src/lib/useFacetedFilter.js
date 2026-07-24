@@ -43,10 +43,16 @@ function inDateRange(record, { from, to }) {
  * second, differently-shaped record set (match-level series/map rows,
  * player rows on a team-driven page) against the same active selections.
  * Keeping it here means the date range can't be forgotten at a call site.
+ *
+ * `exceptFacet`, when given, is skipped -- this is also what the hook uses
+ * internally to compute per-facet chip availability (a chip's own
+ * selections shouldn't be able to grey out its own siblings), so there's
+ * exactly one copy of the actual matching loop in the file.
  */
-export function matchesFilters(record, facets, selections, dateRange = EMPTY_RANGE) {
+export function matchesFilters(record, facets, selections, dateRange = EMPTY_RANGE, exceptFacet = null) {
   if (!inDateRange(record, dateRange)) return false
   return facets.every((f) => {
+    if (f === exceptFacet) return true
     const sel = selections[f]
     return !sel || sel.length === 0 || sel.includes(record[f])
   })
@@ -73,13 +79,7 @@ export function useFacetedFilter(records, facets, initial = {}) {
   }, [facets])
 
   const matchesExcept = useCallback(
-    (record, exceptFacet) =>
-      inDateRange(record, dateRange) &&
-      facets.every((f) => {
-        if (f === exceptFacet) return true
-        const sel = selections[f]
-        return !sel || sel.length === 0 || sel.includes(record[f])
-      }),
+    (record, exceptFacet) => matchesFilters(record, facets, selections, dateRange, exceptFacet),
     [facets, selections, dateRange]
   )
 

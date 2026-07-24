@@ -391,8 +391,15 @@ def main():
         # and '1:02:51' alongside plain '44:31' / '58:37'). Coverage is
         # partial -- only matches scraped/re-scraped since this field was
         # added carry it -- same situation as player nationality above.
-        # Return None rather than 0 for anything missing/malformed so
-        # it's excluded from averages instead of dragging them down.
+        #
+        # Confirmed root cause of the only real gap found so far: VLR
+        # itself shows a literal "-" instead of a duration for 94 maps,
+        # 100% of them China-region (VCT China Kickoff/Stage 1/Stage 2,
+        # EWC China Qualifier) -- the same known gap as the missing
+        # Rating 2.0 values noted elsewhere in this pipeline. Nothing to
+        # extract if VLR's own China broadcast pipeline never published
+        # it. Return None rather than 0 for anything missing/malformed
+        # so it's excluded from averages instead of dragging them down.
         if not isinstance(s, str) or ':' not in s:
             return None
         parts = s.split(':')

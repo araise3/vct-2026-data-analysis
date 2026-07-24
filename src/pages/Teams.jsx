@@ -177,8 +177,9 @@ export default function Teams() {
             Pistol Win% assumes 2 pistol rounds per map. China teams show — since VLR doesn't
             publish economy data for that region. "Eternal Fire" reflects one EMEA franchise slot
             held sequentially by two orgs (ULF Esports, then Eternal Fire). Avg Map Time and the
-            series/map lists only count maps/matches with a scraped duration, so coverage may be
-            partial for older or unrescraped matches.
+            series/map lists exclude a small number of China-region maps (94 of 1281) where VLR
+            itself never published a duration — the same known gap as the missing Rating 2.0
+            values for that region.
           </p>
         </>
       )}

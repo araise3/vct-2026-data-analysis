@@ -251,6 +251,20 @@ their end (China runs through a separate broadcast/stats pipeline than the
 other regions). There's nothing to extract if VLR itself doesn't have the
 number. No fix needed — `NULL` here is the honest, correct value.
 
+## The same China gap shows up in map duration too
+
+`maps.duration` comes back as the literal string `"-"` (not NULL, an actual
+dash character) for 94 of the 1281 maps across both VCT and EWC -- and
+every single one of those 94 is China-region (VCT China Kickoff/Stage 1/
+Stage 2, EWC China Qualifier). Same root cause as the rating gap above:
+VLR's own China broadcast pipeline doesn't publish a duration for these
+maps, so the scraper is faithfully capturing what's actually on the page.
+Downstream parsing (`data_prep/export_from_db.py`'s `parse_duration`)
+already treats anything without a `:` in it as unparseable and returns
+`None`, so these are correctly excluded from any duration-based average or
+leaderboard rather than being counted as 0 seconds. No fix needed here
+either.
+
 ## Multi-kill and clutch data (2K-5K, 1v1-1v5, ECON/plants/defuses)
 
 `map_player_stats` now includes 12 additional columns per player per map:

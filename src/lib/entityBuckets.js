@@ -154,7 +154,7 @@ export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
 export function aggregateTeamBuckets(buckets) {
   if (!buckets.length) return null
   const t = {
-    mP: 0, mW: 0, mapP: 0, mapW: 0, rnd: 0, pisW: 0, ratS: 0, ratR: 0, durS: 0, durM: 0,
+    mP: 0, mW: 0, mapP: 0, mapW: 0, rnd: 0, ratS: 0, ratR: 0, durS: 0, durM: 0,
     atkW: 0, atkP: 0, defW: 0, defP: 0, otM: 0, otW: 0,
     aeR: 0, aeW: 0, bonusR: 0, bonusW: 0, cbN: 0, cbW: 0,
   }
@@ -167,7 +167,7 @@ export function aggregateTeamBuckets(buckets) {
   for (const b of buckets) {
     t.mP += b.mP || 0; t.mW += b.mW || 0
     t.mapP += b.mapP || 0; t.mapW += b.mapW || 0
-    t.rnd += b.rnd || 0; t.pisW += b.pisW || 0
+    t.rnd += b.rnd || 0
     t.ratS += b.ratS || 0; t.ratR += b.ratR || 0
     t.durS += b.durS || 0; t.durM += b.durM || 0
     t.atkW += b.atkW || 0; t.atkP += b.atkP || 0
@@ -186,7 +186,21 @@ export function aggregateTeamBuckets(buckets) {
       if (k.startsWith('wc_')) winConditions[k.slice(3)] = (winConditions[k.slice(3)] || 0) + b[k]
     }
   }
-  const pistolPlayed = t.mapP * 2
+  // Pistol win/loss derived from round positions 1 and 13 (indices 0 and
+  // 12) rather than a separately-tracked pistol field -- that field is
+  // entirely absent from China buckets (no economy-derived data gets
+  // extracted for China matches at all), which silently zeroed out every
+  // China team's pistol stats. rnP/rnW are tracked for every team
+  // regardless of region, so deriving from them instead recovers real
+  // China pistol data with no scraper change needed. Cross-checked
+  // against the old pisW-based numbers for all 36 non-China teams --
+  // identical in every case -- so this isn't a behavior change for
+  // anyone except the 12 China teams it fixes. Using roundsPlayedByNum
+  // as the denominator (rather than mapP*2) also correctly excludes the
+  // occasional map where round-by-round data has a gap, instead of
+  // padding the denominator with maps we have no real outcome for.
+  const pistolWon = roundsWonByNum[0] + roundsWonByNum[12]
+  const pistolPlayed = roundsPlayedByNum[0] + roundsPlayedByNum[12]
   return {
     matchesPlayed: t.mP,
     matchesWon: t.mW,
@@ -195,9 +209,9 @@ export function aggregateTeamBuckets(buckets) {
     mapsWon: t.mapW,
     mapWinPct: div(t.mapW, t.mapP),
     roundsPlayed: t.rnd,
-    pistolWon: t.pisW,
+    pistolWon,
     pistolPlayed,
-    pistolWinPct: div(t.pisW, pistolPlayed),
+    pistolWinPct: div(pistolWon, pistolPlayed),
     avgRating: div(t.ratS, t.ratR),
     // Duration coverage is partial (only re-scraped matches carry it), so
     // this divides by mapsWithDuration, not mapsPlayed.

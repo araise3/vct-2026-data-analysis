@@ -12,9 +12,9 @@ import sqlite3
 import numpy as np
 import pandas as pd
 
-DB_PATH = os.environ.get("VCT_DB_PATH", "/mnt/user-data/uploads/vlr_vct_2026.db")
-EWC_DB_PATH = os.environ.get("EWC_DB_PATH", "/mnt/user-data/uploads/vlr_ewc_2026.db")
-OUT = os.environ.get("EXPORT_OUT_DIR", "/home/claude/vct-site/public/data")
+DB_PATH = "/mnt/user-data/uploads/vlr_vct_2026.db"
+EWC_DB_PATH = "/mnt/user-data/uploads/vlr_ewc_2026.db"
+OUT = "/home/claude/vct-site/public/data"
 
 CHINA_TEAMS = ['All Gamers', 'Bilibili Gaming', 'Dragon Ranger Gaming', 'EDward Gaming',
                'FunPlus Phoenix', 'JDG Esports', 'Nova Esports', 'TYLOO',

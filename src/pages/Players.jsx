@@ -151,7 +151,7 @@ export default function Players() {
     { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
     { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },
     { key: 'avgKast', label: 'KAST', align: 'right', colorScale: true, format: (v) => pct(v) },
-    { key: 'avgAdr', label: 'ADR', align: 'right', colorScale: true, format: (v) => num(v, 0) },
+    { key: 'avgAdr', label: 'ADR', align: 'right', colorScale: true, format: (v) => num(v, 1) },
     // VLR's own per-round block order is KPR, APR, FKPR, FDPR -- matched
     // here rather than the FKPR/FDPR/APR grouping this originally shipped
     // with.

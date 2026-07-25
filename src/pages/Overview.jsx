@@ -9,11 +9,58 @@ import {
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
 import RankedList from '../components/RankedList'
+import LeaderCard, { topBy } from '../components/LeaderCard'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
 
 const MIN_MAPS = 10
+
+/**
+ * Moved here from the Players page, which the person wanted to be just
+ * the table. None of these have a side breakdown in the source data
+ * (see entityBuckets' aggregatePlayerBuckets), so there's no Attack/
+ * Defend toggle to worry about here either.
+ */
+const PLAYER_LEADERS = [
+  {
+    key: 'ratingSd', title: 'Most consistent',
+    invert: true,
+    // Gates on ratedMaps, NOT mapsPlayed: China maps often have no
+    // Rating 2.0, so a player can have 33 maps but only 14 that feed the
+    // SD. Using mapsPlayed here let a 14-rated-map player onto the card
+    // with an artificially tiny spread.
+    qualify: (r) => r.ratedMaps >= 15,
+    meta: (r) => `${num(r.ratedMaps)} rated`,
+    value: (r) => r.ratingSd.toFixed(3),
+    note: 'Standard deviation of Rating 2.0 across individual maps — lower is steadier. Min. 15 rated maps.',
+  },
+  {
+    key: 'avgEcon', title: 'Highest econ rating',
+    qualify: (r) => r.utilMaps >= 15,
+    meta: (r) => `${num(r.utilMaps)} maps`,
+    value: (r) => num(r.avgEcon),
+    note: 'Min. 15 maps with economy data.',
+  },
+  {
+    key: 'totalClutches', title: 'Most clutches',
+    qualify: (r) => r.totalClutches > 0,
+    meta: (r) => `${num(r.roundsPlayed)} rds`,
+    value: (r) => num(r.totalClutches),
+  },
+  {
+    key: 'totalPlants', title: 'Most spike plants',
+    qualify: (r) => r.utilMaps > 0,
+    meta: (r) => `${num(r.utilMaps)} maps`,
+    value: (r) => num(r.totalPlants),
+  },
+  {
+    key: 'totalDefuses', title: 'Most defuses',
+    qualify: (r) => r.utilMaps > 0,
+    meta: (r) => `${num(r.utilMaps)} maps`,
+    value: (r) => num(r.totalDefuses),
+  },
+]
 
 export default function Overview() {
   const { data: pData, loading: pLoading } = useData('player_buckets')
@@ -63,6 +110,24 @@ export default function Overview() {
     }
     return out.sort((a, b) => b.mapWinPct - a.mapWinPct).slice(0, 10)
   }, [filteredTeams, tData])
+
+  // Full per-player rows (not capped at 10, unlike topPlayers above) for
+  // the leader cards -- each card picks its own top 5 off a different
+  // stat, so this needs every qualifying player in scope, not just the
+  // rating leaders.
+  const leaderRows = useMemo(() => {
+    if (!pData) return []
+    const out = []
+    for (const [player, buckets] of groupByEntity(filteredPlayers)) {
+      const meta = pData.meta[player]
+      if (!meta) continue
+      const s = aggregatePlayerBuckets(buckets)
+      if (!s || !s.mapsPlayed) continue
+      out.push({ player, team: meta.team, countryCode: meta.countryCode,
+                 countryName: meta.countryName, ...s })
+    }
+    return out
+  }, [filteredPlayers, pData])
 
   if (pLoading || tLoading || !pData || !tData) {
     return <div className="text-muted text-sm">Loading…</div>
@@ -139,6 +204,40 @@ export default function Overview() {
               </>
             )}
           />
+        </div>
+      )}
+
+      {leaderRows.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display text-sm font-semibold text-ink">Player leaders</h2>
+            <p className="text-muted text-xs">Follows the filters above.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {PLAYER_LEADERS.map((c) => (
+              <LeaderCard
+                key={c.key}
+                title={c.title}
+                note={c.note}
+                rows={topBy(leaderRows, c.key, { qualify: c.qualify, invert: c.invert })}
+                renderEntity={(r) => (
+                  <>
+                    <Flag countryCode={r.countryCode} countryName={r.countryName} size={18} />
+                    <Link
+                      to={`/players/${encodeURIComponent(r.player)}`}
+                      className="font-medium text-ink truncate hover:text-accent-bright transition-colors"
+                    >
+                      {r.player}
+                    </Link>
+                    <TeamLogo team={r.team} size={16} />
+                  </>
+                )}
+                meta={c.meta}
+                value={c.value}
+                showRank
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

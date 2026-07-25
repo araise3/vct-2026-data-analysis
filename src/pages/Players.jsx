@@ -4,59 +4,12 @@ import { useData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import { expandBuckets, aggregatePlayerBuckets, aggregateSideBuckets, groupByEntity } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
-import LeaderCard, { topBy } from '../components/LeaderCard'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
 
 
-
-/**
- * The player-side additions from d4db14d (consistency, econ, plants,
- * defuses) as cards. None of these have a side breakdown in the source
- * data, so they're deliberately unaffected by the Attack/Defend toggle --
- * the note under the grid says so rather than leaving it to be inferred.
- */
-const PLAYER_LEADERS = [
-  {
-    key: 'ratingSd', title: 'Most consistent',
-    invert: true,
-    // Gates on ratedMaps, NOT mapsPlayed: China maps often have no
-    // Rating 2.0, so a player can have 33 maps but only 14 that feed the
-    // SD. Using mapsPlayed here let a 14-rated-map player onto the card
-    // with an artificially tiny spread.
-    qualify: (r) => r.ratedMaps >= 15,
-    meta: (r) => `${num(r.ratedMaps)} rated`,
-    value: (r) => r.ratingSd.toFixed(3),
-    note: 'Standard deviation of Rating 2.0 across individual maps — lower is steadier. Min. 15 rated maps.',
-  },
-  {
-    key: 'avgEcon', title: 'Highest econ rating',
-    qualify: (r) => r.utilMaps >= 15,
-    meta: (r) => `${num(r.utilMaps)} maps`,
-    value: (r) => num(r.avgEcon),
-    note: 'Min. 15 maps with economy data.',
-  },
-  {
-    key: 'totalClutches', title: 'Most clutches',
-    qualify: (r) => r.totalClutches > 0,
-    meta: (r) => `${num(r.roundsPlayed)} rds`,
-    value: (r) => num(r.totalClutches),
-  },
-  {
-    key: 'totalPlants', title: 'Most spike plants',
-    qualify: (r) => r.utilMaps > 0,
-    meta: (r) => `${num(r.utilMaps)} maps`,
-    value: (r) => num(r.totalPlants),
-  },
-  {
-    key: 'totalDefuses', title: 'Most defuses',
-    qualify: (r) => r.utilMaps > 0,
-    meta: (r) => `${num(r.utilMaps)} maps`,
-    value: (r) => num(r.totalDefuses),
-  },
-]
 
 export default function Players() {
   const { data, loading } = useData('player_buckets')
@@ -295,44 +248,7 @@ export default function Players() {
           <p className="text-muted text-sm">No players match this filter combination.</p>
         </div>
       ) : (
-        <>
-          <div className="flex flex-col gap-3">
-            <div className="flex items-baseline justify-between gap-4 flex-wrap">
-              <h2 className="font-display text-sm font-semibold text-ink">Leaders</h2>
-              <p className="text-muted text-xs">
-                Follows the filters and search above. Not affected by the Attack/Defend toggle —
-                none of these are split by side in the source data.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {PLAYER_LEADERS.map((c) => (
-                <LeaderCard
-                  key={c.key}
-                  title={c.title}
-                  note={c.note}
-                  rows={topBy(rows, c.key, { qualify: c.qualify, invert: c.invert })}
-                  renderEntity={(r) => (
-                    <>
-                      <Flag countryCode={r.countryCode} countryName={r.countryName} size={18} />
-                      <Link
-                        to={`/players/${encodeURIComponent(r.player)}`}
-                        className="font-medium text-ink truncate hover:text-accent-bright transition-colors"
-                      >
-                        {r.player}
-                      </Link>
-                      <TeamLogo team={r.team} size={16} />
-                    </>
-                  )}
-                  meta={c.meta}
-                  value={c.value}
-                  showRank
-                />
-              ))}
-            </div>
-          </div>
-
-          <DataTable columns={columns} rows={rows} defaultSortKey="avgRating" />
-        </>
+        <DataTable columns={columns} rows={rows} defaultSortKey="avgRating" />
       )}
     </div>
   )

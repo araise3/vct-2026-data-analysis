@@ -992,7 +992,21 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
         # truncated the way the Economy tab's round table was.
         rounds_block = game.select_one(".vlr-rounds")
         if rounds_block:
-            round_cols = rounds_block.select(".vlr-rounds-row-col")[1:]  # first col is the team-name header, not a round
+            # Long maps (OT) wrap into MULTIPLE ".vlr-rounds-row" divs
+            # (confirmed against a real 36-round OT map: two rows, 24+12),
+            # each with its OWN leading team-name header column, not just
+            # one at the very start of the whole block. .select() already
+            # finds columns across every row (it is not scoped to the
+            # first), so no explicit per-row iteration is needed -- but
+            # slicing off "the first column" would only remove ONE of
+            # those header columns, leaving the other row(s)' header
+            # column(s) in the list. Skip them by checking for a real
+            # round number instead, which is correct regardless of how
+            # many rows/header columns exist.
+            round_cols = [
+                c for c in rounds_block.select(".vlr-rounds-row-col")
+                if c.select_one(".rnd-num") is not None
+            ]
             for col in round_cols:
                 num_el = col.select_one(".rnd-num")
                 round_num = to_int(clean(num_el.get_text())) if num_el else None

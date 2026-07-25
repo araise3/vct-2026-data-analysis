@@ -854,7 +854,15 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
         # 19 rounds on a 6-13 map, matching the final score exactly).
         rounds_block = game.select_one(".vlr-rounds")
         if rounds_block:
-            round_cols = rounds_block.select(".vlr-rounds-row-col")[1:]
+            # Long maps (OT) wrap into MULTIPLE ".vlr-rounds-row" divs, each
+            # with its own leading team-name header column -- see
+            # vlr_vct_scraper.py for the full writeup. Filtering by "has a
+            # real round number" instead of slicing off "the first column"
+            # handles this correctly regardless of row count.
+            round_cols = [
+                c for c in rounds_block.select(".vlr-rounds-row-col")
+                if c.select_one(".rnd-num") is not None
+            ]
             for col in round_cols:
                 num_el = col.select_one(".rnd-num")
                 round_num = to_int(clean(num_el.get_text())) if num_el else None

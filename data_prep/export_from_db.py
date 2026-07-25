@@ -914,12 +914,26 @@ def main():
             "ot": int(row.is_ot),
         })
 
-    # Total kills for the whole series (every player, both teams, every
-    # map summed together) -- powers the kill-record cards on the Records
-    # page. all_mps is already side=='both'-filtered (see the comment
-    # where it's built), so this isn't at risk of the double/triple-count
-    # bug that filter exists to prevent.
-    kills_by_match = all_mps.groupby('match_id')['kills'].sum().to_dict()
+    # Top individual scorer per series (total kills across every map of
+    # that match for one player) -- powers the kill-record cards on the
+    # Records page. all_mps is already side=='both'-filtered (see the
+    # comment where it's built), so this isn't at risk of the double/
+    # triple-count bug that filter exists to prevent. Grouped by
+    # canonical_team too (not just player) since a player's raw `team`
+    # string should already be consistent within one player across one
+    # match, but canonical_team is what TeamLogo/team_buckets expect for
+    # display -- keeping it means the frontend doesn't need its own
+    # name_to_canon lookup just for this one field.
+    player_kills_by_match = (
+        all_mps.groupby(['match_id', 'player', 'canonical_team'])['kills']
+        .sum()
+        .reset_index()
+    )
+    top_scorer_by_match = {}
+    if not player_kills_by_match.empty:
+        top_idx = player_kills_by_match.groupby('match_id')['kills'].idxmax()
+        for r in player_kills_by_match.loc[top_idx].itertuples():
+            top_scorer_by_match[int(r.match_id)] = (r.player, r.canonical_team, int(r.kills))
 
     match_rows = []
     for row in completed_all.itertuples():
@@ -929,7 +943,7 @@ def main():
         s2 = int(row.score2) if pd.notna(row.score2) else None
         if s1 is None or s2 is None:
             continue
-        total_kills = kills_by_match.get(int(row.match_id))
+        top = top_scorer_by_match.get(int(row.match_id))
         match_rows.append({
             "id": int(row.match_id),
             "team1": row.c1, "team2": row.c2,
@@ -940,7 +954,9 @@ def main():
             "str1": round(strength[row.c1], 4) if row.c1 in strength else None,
             "str2": round(strength[row.c2], 4) if row.c2 in strength else None,
             "maps": maps_by_match.get(int(row.match_id), []),
-            "kills": int(total_kills) if total_kills is not None and pd.notna(total_kills) else None,
+            "topKiller": top[0] if top else None,
+            "topKillerTeam": top[1] if top else None,
+            "topKills": top[2] if top else None,
         })
 
     with open(f"{OUT}/match_results.json", "w") as f:

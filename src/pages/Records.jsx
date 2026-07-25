@@ -70,23 +70,39 @@ export default function Records() {
     [activeDurationRows]
   )
 
-  // Kill records: total kills across every player, both teams, every map
-  // of the series -- summed at export time (see export_from_db.py) since
-  // per-player kill counts aren't otherwise available at match level in
-  // any exported file. Best-of is inferred from the winning score alone
-  // (max(s1,s2)==2 can only be a Bo3, ==3 can only be a Bo5 -- a Bo5
-  // can't end 2-0, so there's no ambiguity), not a separately-tracked
-  // field.
+  // Kill records: the single highest individual kill total across an
+  // entire series (summed across every map of that match for one
+  // player) -- computed at export time as the per-match top scorer (see
+  // export_from_db.py), not a combined team total. Best-of is inferred
+  // from the winning score alone (max(s1,s2)==2 can only be a Bo3, ==3
+  // can only be a Bo5 -- a Bo5 can't end 2-0, so there's no ambiguity),
+  // not a separately-tracked field.
   const killRecordsBo3 = useMemo(
     () => matches
-      .filter((m) => m.kills != null && Math.max(m.s1, m.s2) === 2)
+      .filter((m) => m.topKills != null && Math.max(m.s1, m.s2) === 2)
+      .map((m) => ({
+        id: m.id,
+        player: m.topKiller,
+        team: m.topKillerTeam,
+        opponent: m.topKillerTeam === m.team1 ? m.team2 : m.team1,
+        score: `${m.s1}–${m.s2}`,
+        kills: m.topKills,
+      }))
       .sort((a, b) => b.kills - a.kills)
       .slice(0, 5),
     [matches]
   )
   const killRecordsBo5 = useMemo(
     () => matches
-      .filter((m) => m.kills != null && Math.max(m.s1, m.s2) === 3)
+      .filter((m) => m.topKills != null && Math.max(m.s1, m.s2) === 3)
+      .map((m) => ({
+        id: m.id,
+        player: m.topKiller,
+        team: m.topKillerTeam,
+        opponent: m.topKillerTeam === m.team1 ? m.team2 : m.team1,
+        score: `${m.s1}–${m.s2}`,
+        kills: m.topKills,
+      }))
       .sort((a, b) => b.kills - a.kills)
       .slice(0, 5),
     [matches]
@@ -299,12 +315,26 @@ export default function Records() {
             <MatchList
               title={durationView === 'series' ? 'Longest series (clock time)' : 'Longest map (clock time)'}
               rows={longestSeries}
+              renderEntity={(r) => (
+                <>
+                  <TeamLogo team={r.team1} size={18} />
+                  <span className="text-muted text-xs shrink-0">vs</span>
+                  <TeamLogo team={r.team2} size={18} />
+                </>
+              )}
               renderMeta={(r) => (durationView === 'series' ? `${r.mapCount} maps` : r.mapName)}
               renderValue={(r) => duration(r.durationSeconds)}
             />
             <MatchList
               title={durationView === 'series' ? 'Shortest series (clock time)' : 'Shortest map (clock time)'}
               rows={shortestSeries}
+              renderEntity={(r) => (
+                <>
+                  <TeamLogo team={r.team1} size={18} />
+                  <span className="text-muted text-xs shrink-0">vs</span>
+                  <TeamLogo team={r.team2} size={18} />
+                </>
+              )}
               renderMeta={(r) => (durationView === 'series' ? `${r.mapCount} maps` : r.mapName)}
               renderValue={(r) => duration(r.durationSeconds)}
             />
@@ -320,15 +350,35 @@ export default function Records() {
       {(killRecordsBo3.length > 0 || killRecordsBo5.length > 0) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <MatchList
-            title="Most kills in a Bo3"
+            title="Most kills in a Bo3 (single player)"
             rows={killRecordsBo3}
-            renderMeta={(r) => `${r.s1}–${r.s2}`}
+            renderEntity={(r) => (
+              <>
+                <TeamLogo team={r.team} size={16} showName={false} showTag />
+                <span className="font-medium text-ink truncate">{r.player}</span>
+              </>
+            )}
+            renderMeta={(r) => (
+              <span className="flex items-center gap-1.5">
+                vs <TeamLogo team={r.opponent} size={14} showName={false} showTag /> {r.score}
+              </span>
+            )}
             renderValue={(r) => `${num(r.kills)} kills`}
           />
           <MatchList
-            title="Most kills in a Bo5"
+            title="Most kills in a Bo5 (single player)"
             rows={killRecordsBo5}
-            renderMeta={(r) => `${r.s1}–${r.s2}`}
+            renderEntity={(r) => (
+              <>
+                <TeamLogo team={r.team} size={16} showName={false} showTag />
+                <span className="font-medium text-ink truncate">{r.player}</span>
+              </>
+            )}
+            renderMeta={(r) => (
+              <span className="flex items-center gap-1.5">
+                vs <TeamLogo team={r.opponent} size={14} showName={false} showTag /> {r.score}
+              </span>
+            )}
             renderValue={(r) => `${num(r.kills)} kills`}
           />
         </div>
@@ -338,23 +388,20 @@ export default function Records() {
 }
 
 /**
- * Generic "team vs. team, some meta text, one right-aligned number"
+ * Generic "identity block, some meta text, one right-aligned number"
  * leaderboard used for series/map duration and kill records. Generalized
  * from a Teams-page-only SeriesList component (moved here along with the
- * duration cards) by taking renderMeta/renderValue instead of hardcoding
- * what the middle and right columns show.
+ * duration cards) by taking renderEntity/renderMeta/renderValue instead
+ * of hardcoding a team-vs-team identity block -- kill records need to
+ * show a player, not two teams.
  */
-function MatchList({ title, rows, renderMeta, renderValue }) {
+function MatchList({ title, rows, renderEntity, renderMeta, renderValue }) {
   return (
     <CardShell title={title}>
       <div className="flex flex-col gap-3">
         {rows.map((r) => (
           <div key={r.id} className="flex items-center gap-3 text-sm">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-              <TeamLogo team={r.team1} size={18} />
-              <span className="text-muted text-xs shrink-0">vs</span>
-              <TeamLogo team={r.team2} size={18} />
-            </div>
+            <div className="flex items-center gap-2 min-w-0 flex-1">{renderEntity(r)}</div>
             <div className="text-muted text-xs shrink-0">{renderMeta(r)}</div>
             <div className="font-semibold text-ink shrink-0 w-20 text-right">{renderValue(r)}</div>
           </div>

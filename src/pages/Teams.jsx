@@ -1,17 +1,15 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
-import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
+import { useFacetedFilter } from '../lib/useFacetedFilter'
 import {
   expandBuckets,
-  expandSeriesRows,
-  expandMapLengthRows,
   aggregateTeamBuckets,
   groupByEntity,
 } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
 import HorizontalBarChart from '../components/HorizontalBarChart'
-import LeaderCard, { CardShell, topBy } from '../components/LeaderCard'
+import LeaderCard, { topBy } from '../components/LeaderCard'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
 import { pct, num, rating, duration } from '../lib/format'
@@ -89,9 +87,6 @@ const TEAM_LEADERS = [
 
 export default function Teams() {
   const { data, loading } = useData('team_buckets')
-  const { data: seriesData } = useData('series_length')
-  const { data: mapLengthData } = useData('map_length')
-  const [durationView, setDurationView] = useState('series') // 'series' | 'map'
 
   const records = useMemo(() => (data ? expandBuckets(data, 't') : []), [data])
   const { selections, setFacet, clearAll, filtered, options, activeCount,
@@ -125,33 +120,6 @@ export default function Teams() {
   const topByMapWin = useMemo(
     () => rows.filter((t) => t.mapsPlayed >= 10).slice(0, 12),
     [rows]
-  )
-
-  // Same active facet selections applied to the match-level series data --
-  // duplicated here rather than sharing useFacetedFilter's internal
-  // matching logic, since that hook owns its own state and this is a
-  // second, independently-shaped record set filtered by the same values.
-  const matchesSelections = (r) => matchesFilters(r, FACETS, selections, dateRange)
-
-  const seriesRows = useMemo(() => {
-    if (!seriesData) return []
-    return expandSeriesRows(seriesData).filter((r) => r.fullyTimed && matchesSelections(r))
-  }, [seriesData, selections, dateRange])
-
-  const mapRows = useMemo(() => {
-    if (!mapLengthData) return []
-    return expandMapLengthRows(mapLengthData).filter(matchesSelections)
-  }, [mapLengthData, selections, dateRange])
-
-  const activeDurationRows = durationView === 'series' ? seriesRows : mapRows
-
-  const longestSeries = useMemo(
-    () => [...activeDurationRows].sort((a, b) => b.durationSeconds - a.durationSeconds).slice(0, 5),
-    [activeDurationRows]
-  )
-  const shortestSeries = useMemo(
-    () => [...activeDurationRows].sort((a, b) => a.durationSeconds - b.durationSeconds).slice(0, 5),
-    [activeDurationRows]
   )
 
   if (loading || !data) return <div className="text-muted text-sm">Loading…</div>
@@ -250,74 +218,15 @@ export default function Teams() {
             </div>
           </div>
 
-          {(seriesRows.length > 0 || mapRows.length > 0) && (
-            <div className="flex flex-col gap-3">
-              <div className="flex justify-end">
-                <div className="flex rounded-lg overflow-hidden border border-hairline w-fit">
-                  {['series', 'map'].map((v) => (
-                    <button
-                      key={v}
-                      onClick={() => setDurationView(v)}
-                      className={`px-4 py-1.5 text-xs font-medium capitalize transition-colors ${
-                        durationView === v ? 'bg-accent text-white' : 'bg-surface2 text-muted hover:text-ink'
-                      }`}
-                    >
-                      {v}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <SeriesList
-                  title={durationView === 'series' ? 'Longest series (clock time)' : 'Longest map (clock time)'}
-                  rows={longestSeries}
-                  mode={durationView}
-                />
-                <SeriesList
-                  title={durationView === 'series' ? 'Shortest series (clock time)' : 'Shortest map (clock time)'}
-                  rows={shortestSeries}
-                  mode={durationView}
-                />
-              </div>
-            </div>
-          )}
-
           <DataTable columns={columns} rows={rows} defaultSortKey="mapWinPct" />
 
           <p className="text-muted text-xs">
             Pistol Win% assumes 2 pistol rounds per map. China teams show — since VLR doesn't
             publish economy data for that region. "Eternal Fire" reflects one EMEA franchise slot
-            held sequentially by two orgs (ULF Esports, then Eternal Fire). Avg Map Time and the
-            series/map lists exclude a small number of China-region maps (94 of 1281) where VLR
-            itself never published a duration — the same known gap as the missing Rating 2.0
-            values for that region.
+            held sequentially by two orgs (ULF Esports, then Eternal Fire).
           </p>
         </>
       )}
     </div>
-  )
-}
-
-function SeriesList({ title, rows, mode = 'series' }) {
-  return (
-    <CardShell title={title}>
-      <div className="flex flex-col gap-3">
-        {rows.map((r) => (
-          <div key={r.id} className="flex items-center gap-3 text-sm">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-              <TeamLogo team={r.team1} size={18} />
-              <span className="text-muted text-xs shrink-0">vs</span>
-              <TeamLogo team={r.team2} size={18} />
-            </div>
-            <div className="text-muted text-xs shrink-0">
-              {mode === 'series' ? `${r.mapCount} maps` : r.mapName}
-            </div>
-            <div className="font-semibold text-ink shrink-0 w-16 text-right">
-              {duration(r.durationSeconds)}
-            </div>
-          </div>
-        ))}
-      </div>
-    </CardShell>
   )
 }

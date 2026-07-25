@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
-import { expandMatchRows } from '../lib/entityBuckets'
+import { expandMatchRows, expandSeriesRows, expandMapLengthRows } from '../lib/entityBuckets'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
+import { CardShell } from '../components/LeaderCard'
 import TeamLogo from '../components/TeamLogo'
-import { pct } from '../lib/format'
+import { pct, duration, num } from '../lib/format'
 
 /**
  * Records -- the things that are about a specific matchup rather than one
@@ -19,8 +20,11 @@ const heading = 'font-display text-sm font-semibold text-ink mb-4'
 
 export default function Records() {
   const { data, loading } = useData('match_results')
+  const { data: seriesData } = useData('series_length')
+  const { data: mapLengthData } = useData('map_length')
   const [teamA, setTeamA] = useState('')
   const [teamB, setTeamB] = useState('')
+  const [durationView, setDurationView] = useState('series') // 'series' | 'map'
 
   const records = useMemo(() => expandMatchRows(data), [data])
   const { selections, setFacet, clearAll, options, activeCount,
@@ -34,6 +38,57 @@ export default function Records() {
 
   const teams = useMemo(
     () => [...new Set(matches.flatMap((m) => [m.team1, m.team2]))].sort(),
+    [matches]
+  )
+
+  // Same active facet selections applied to the match-level series/map
+  // duration data -- duplicated here rather than sharing useFacetedFilter's
+  // internal matching logic, since that hook owns its own state and these
+  // are second/third, independently-shaped record sets filtered by the
+  // same values. Moved here from the Teams page along with the cards
+  // themselves below.
+  const matchesSelections = (r) => matchesFilters(r, FACETS, selections, dateRange)
+
+  const seriesRows = useMemo(() => {
+    if (!seriesData) return []
+    return expandSeriesRows(seriesData).filter((r) => r.fullyTimed && matchesSelections(r))
+  }, [seriesData, selections, dateRange])
+
+  const mapRows = useMemo(() => {
+    if (!mapLengthData) return []
+    return expandMapLengthRows(mapLengthData).filter(matchesSelections)
+  }, [mapLengthData, selections, dateRange])
+
+  const activeDurationRows = durationView === 'series' ? seriesRows : mapRows
+
+  const longestSeries = useMemo(
+    () => [...activeDurationRows].sort((a, b) => b.durationSeconds - a.durationSeconds).slice(0, 5),
+    [activeDurationRows]
+  )
+  const shortestSeries = useMemo(
+    () => [...activeDurationRows].sort((a, b) => a.durationSeconds - b.durationSeconds).slice(0, 5),
+    [activeDurationRows]
+  )
+
+  // Kill records: total kills across every player, both teams, every map
+  // of the series -- summed at export time (see export_from_db.py) since
+  // per-player kill counts aren't otherwise available at match level in
+  // any exported file. Best-of is inferred from the winning score alone
+  // (max(s1,s2)==2 can only be a Bo3, ==3 can only be a Bo5 -- a Bo5
+  // can't end 2-0, so there's no ambiguity), not a separately-tracked
+  // field.
+  const killRecordsBo3 = useMemo(
+    () => matches
+      .filter((m) => m.kills != null && Math.max(m.s1, m.s2) === 2)
+      .sort((a, b) => b.kills - a.kills)
+      .slice(0, 5),
+    [matches]
+  )
+  const killRecordsBo5 = useMemo(
+    () => matches
+      .filter((m) => m.kills != null && Math.max(m.s1, m.s2) === 3)
+      .sort((a, b) => b.kills - a.kills)
+      .slice(0, 5),
     [matches]
   )
 
@@ -222,6 +277,89 @@ export default function Records() {
           </div>
         </div>
       </div>
+
+      {(seriesRows.length > 0 || mapRows.length > 0) && (
+        <div className="flex flex-col gap-3">
+          <div className="flex justify-end">
+            <div className="flex rounded-lg overflow-hidden border border-hairline w-fit">
+              {['series', 'map'].map((v) => (
+                <button
+                  key={v}
+                  onClick={() => setDurationView(v)}
+                  className={`px-4 py-1.5 text-xs font-medium capitalize transition-colors ${
+                    durationView === v ? 'bg-accent text-white' : 'bg-surface2 text-muted hover:text-ink'
+                  }`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <MatchList
+              title={durationView === 'series' ? 'Longest series (clock time)' : 'Longest map (clock time)'}
+              rows={longestSeries}
+              renderMeta={(r) => (durationView === 'series' ? `${r.mapCount} maps` : r.mapName)}
+              renderValue={(r) => duration(r.durationSeconds)}
+            />
+            <MatchList
+              title={durationView === 'series' ? 'Shortest series (clock time)' : 'Shortest map (clock time)'}
+              rows={shortestSeries}
+              renderMeta={(r) => (durationView === 'series' ? `${r.mapCount} maps` : r.mapName)}
+              renderValue={(r) => duration(r.durationSeconds)}
+            />
+          </div>
+          <p className="text-muted text-xs">
+            Excludes a small number of China-region maps (94 of 1281) where VLR itself never
+            published a duration — the same known gap as the missing Rating 2.0 values for that
+            region.
+          </p>
+        </div>
+      )}
+
+      {(killRecordsBo3.length > 0 || killRecordsBo5.length > 0) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <MatchList
+            title="Most kills in a Bo3"
+            rows={killRecordsBo3}
+            renderMeta={(r) => `${r.s1}–${r.s2}`}
+            renderValue={(r) => `${num(r.kills)} kills`}
+          />
+          <MatchList
+            title="Most kills in a Bo5"
+            rows={killRecordsBo5}
+            renderMeta={(r) => `${r.s1}–${r.s2}`}
+            renderValue={(r) => `${num(r.kills)} kills`}
+          />
+        </div>
+      )}
     </div>
+  )
+}
+
+/**
+ * Generic "team vs. team, some meta text, one right-aligned number"
+ * leaderboard used for series/map duration and kill records. Generalized
+ * from a Teams-page-only SeriesList component (moved here along with the
+ * duration cards) by taking renderMeta/renderValue instead of hardcoding
+ * what the middle and right columns show.
+ */
+function MatchList({ title, rows, renderMeta, renderValue }) {
+  return (
+    <CardShell title={title}>
+      <div className="flex flex-col gap-3">
+        {rows.map((r) => (
+          <div key={r.id} className="flex items-center gap-3 text-sm">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <TeamLogo team={r.team1} size={18} />
+              <span className="text-muted text-xs shrink-0">vs</span>
+              <TeamLogo team={r.team2} size={18} />
+            </div>
+            <div className="text-muted text-xs shrink-0">{renderMeta(r)}</div>
+            <div className="font-semibold text-ink shrink-0 w-20 text-right">{renderValue(r)}</div>
+          </div>
+        ))}
+      </div>
+    </CardShell>
   )
 }

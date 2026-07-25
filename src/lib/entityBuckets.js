@@ -226,6 +226,48 @@ export function aggregateTeamBuckets(buckets) {
 }
 
 /**
+ * Aggregates player_sides.json buckets (attack/defense split) -- a much
+ * lighter schema than the main player buckets (just the headline stats:
+ * Rating/ACS/K/D/A/KAST/ADR/HS%), so this is a separate function rather
+ * than reusing aggregatePlayerBuckets, which sums a few fields (m2/m3/m4/
+ * m5/cl) with no `|| 0` fallback -- fine for the main buckets where those
+ * always exist, but would silently produce NaN here where they don't.
+ */
+export function aggregateSideBuckets(buckets) {
+  if (!buckets.length) return null
+  const t = {
+    maps: 0, rnd: 0, ratS: 0, ratR: 0, acsS: 0, acsM: 0,
+    kastS: 0, kastR: 0, adrS: 0, adrR: 0, hsS: 0, hsR: 0,
+    k: 0, d: 0, a: 0, fk: 0, fd: 0,
+  }
+  for (const b of buckets) {
+    t.maps += b.maps || 0; t.rnd += b.rnd || 0
+    t.ratS += b.ratS || 0; t.ratR += b.ratR || 0
+    t.acsS += b.acsS || 0; t.acsM += b.acsM || 0
+    t.kastS += b.kastS || 0; t.kastR += b.kastR || 0
+    t.adrS += b.adrS || 0; t.adrR += b.adrR || 0
+    t.hsS += b.hsS || 0; t.hsR += b.hsR || 0
+    t.k += b.k || 0; t.d += b.d || 0; t.a += b.a || 0
+    t.fk += b.fk || 0; t.fd += b.fd || 0
+  }
+  return {
+    mapsPlayed: t.maps,
+    roundsPlayed: t.rnd,
+    avgRating: div(t.ratS, t.ratR),
+    avgAcs: div(t.acsS, t.acsM),
+    totalKills: t.k,
+    totalDeaths: t.d,
+    kd: div(t.k, t.d),
+    totalAssists: t.a,
+    avgKast: div(t.kastS, t.kastR),
+    avgAdr: div(t.adrS, t.adrR),
+    avgHsPct: div(t.hsS, t.hsR),
+    totalFirstKills: t.fk,
+    totalFirstDeaths: t.fd,
+  }
+}
+
+/**
  * Aggregates player_agents.json buckets (same shape as player buckets but
  * split by agent). Separate from aggregatePlayerBuckets because that one
  * handles the sparse rated-only delta, which this file doesn't carry.

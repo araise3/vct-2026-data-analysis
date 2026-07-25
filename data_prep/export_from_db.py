@@ -386,6 +386,7 @@ def main():
     # rows aren't used anywhere in this script yet; filtering here means
     # nothing downstream needs to remember to do it.
     all_mps = pd.concat([vct["map_player_stats"], ewc["map_player_stats"]], ignore_index=True)
+    all_mps_unfiltered = all_mps.copy()  # keeps the 't'/'ct' rows, for player_sides.json below
     all_mps = all_mps[all_mps["side"] == "both"]
     all_mte = pd.concat([vct["map_team_economy"], ewc["map_team_economy"]], ignore_index=True)
     all_mre = pd.concat([vct["map_round_economy"], ewc["map_round_economy"]], ignore_index=True)
@@ -539,6 +540,49 @@ def main():
         json.dump({"events": events_lookup, "meta": player_meta, "buckets": player_buckets},
                   f, separators=(',', ':'))
     print(f"player_buckets.json: {len(player_buckets)} buckets")
+
+    # --- attack/defense side splits (player_sides.json) ---
+    # A much lighter parallel export of just the headline per-player stats
+    # (Rating/ACS/K/D/A/KAST/ADR/HS%/FK/FD), computed for side='t' (attack)
+    # and side='ct' (defend) specifically -- matches VLR's own All/Attack/
+    # Defend toggle exactly. Kept as a separate file rather than adding
+    # _t/_ct variants of every field to player_buckets.json, since only
+    # this handful of stats is meaningful to split by side -- clutches,
+    # utility, and consistency don't have a side breakdown in the source
+    # data at all.
+    mps_sides = all_mps_unfiltered[all_mps_unfiltered['side'].isin(['t', 'ct'])].merge(
+        all_matches[['match_id', 'event_id', 'stage', 'match_date']], on='match_id', how='left'
+    ).merge(
+        am[['match_id', 'map_index', 'rounds_total']], on=['match_id', 'map_index'], how='left'
+    )
+    mps_sides['date'] = day_col(mps_sides['match_date'])
+    for col in ['kast', 'hs_pct']:
+        mps_sides[col] = pct_to_float(mps_sides[col])
+
+    side_buckets = []
+    for (player, event_id, week, day, side), g in mps_sides.groupby(
+            ['player', 'event_id', 'stage', 'date', 'side'], dropna=True):
+        r_sum, r_rnd = wsum(g, 'rating')
+        k_sum, k_rnd = wsum(g, 'kast')
+        a_sum, a_rnd = wsum(g, 'adr')
+        h_sum, h_rnd = wsum(g, 'hs_pct')
+        acs_valid = g['acs'].dropna()
+        side_buckets.append({
+            "p": player, "e": int(event_id), "w": week, "d": day, "s": side,
+            "maps": int(len(g)), "rnd": int(g['rounds_total'].fillna(0).sum()),
+            "ratS": round(r_sum, 3), "ratR": r_rnd,
+            "acsS": round(float(acs_valid.sum()), 2), "acsM": int(len(acs_valid)),
+            "kastS": round(k_sum, 4), "kastR": k_rnd,
+            "adrS": round(a_sum, 3), "adrR": a_rnd,
+            "hsS": round(h_sum, 4), "hsR": h_rnd,
+            "k": int(g['kills'].fillna(0).sum()), "d": int(g['deaths'].fillna(0).sum()),
+            "a": int(g['assists'].fillna(0).sum()),
+            "fk": int(g['first_kills'].fillna(0).sum()), "fd": int(g['first_deaths'].fillna(0).sum()),
+        })
+
+    with open(f"{OUT}/player_sides.json", "w") as f:
+        json.dump({"events": events_lookup, "buckets": side_buckets}, f, separators=(',', ':'))
+    print(f"player_sides.json: {len(side_buckets)} buckets")
 
     # --- per-agent player buckets ---
     # Same (player, event, week, day) key as player_buckets but split by

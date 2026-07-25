@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
-import { useFacetedFilter } from '../lib/useFacetedFilter'
-import { expandBuckets, aggregatePlayerBuckets, groupByEntity } from '../lib/entityBuckets'
+import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
+import { expandBuckets, aggregatePlayerBuckets, aggregateSideBuckets, groupByEntity } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
@@ -13,14 +13,38 @@ import { rating, pct, num } from '../lib/format'
 
 export default function Players() {
   const { data, loading } = useData('player_buckets')
+  const { data: sideData } = useData('player_sides')
   const [ratedOnly, setRatedOnly] = useState(false)
   const [search, setSearch] = useState('')
-  const [minMaps, setMinMaps] = useState(0)
+  const [minRounds, setMinRounds] = useState(0)
+  const [side, setSide] = useState('both') // 'both' | 't' (attack) | 'ct' (defend)
 
   const records = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
+
+  // player_sides.json mirrors VLR's own All/Attack/Defend toggle -- a
+  // separate, lighter file (just the headline stats) rather than tripling
+  // player_buckets.json. Filtered by the SAME active selections as the
+  // main table so switching side never changes which players/events are
+  // in scope, only which numbers are shown for them.
+  const sideRecords = useMemo(() => (sideData ? expandBuckets(sideData, 'p') : []), [sideData])
+  const sideStatsByPlayer = useMemo(() => {
+    if (side === 'both') return null
+    const byPlayer = new Map()
+    for (const r of sideRecords) {
+      if (r.s !== side) continue
+      if (!matchesFilters(r, FACETS, selections, dateRange)) continue
+      if (!byPlayer.has(r.p)) byPlayer.set(r.p, [])
+      byPlayer.get(r.p).push(r)
+    }
+    const out = new Map()
+    for (const [player, buckets] of byPlayer) {
+      out.set(player, aggregateSideBuckets(buckets))
+    }
+    return out
+  }, [sideRecords, selections, dateRange, side])
 
   const rows = useMemo(() => {
     if (!data) return []
@@ -31,7 +55,15 @@ export default function Players() {
       if (!meta) continue
       const s = aggregatePlayerBuckets(buckets, { ratedOnly })
       if (!s || !s.mapsPlayed) continue
-      if (s.mapsPlayed < minMaps) continue
+      if (s.roundsPlayed < minRounds) continue
+
+      // Side toggle only swaps the headline stats (Rating/ACS/K:D/KAST/
+      // ADR/HS%/Kills/Deaths/Assists/FK/FD) -- Maps/Rounds/Clutches/
+      // utility stay from the 'both' aggregate, since those either don't
+      // have a meaningful side split (maps played is side-invariant) or
+      // simply aren't captured per side in the source data at all.
+      const sideStats = side !== 'both' ? sideStatsByPlayer?.get(player) : null
+
       out.push({
         player,
         team: meta.team,
@@ -40,6 +72,31 @@ export default function Players() {
         countryCode: meta.countryCode,
         countryName: meta.countryName,
         ...s,
+        ...(sideStats
+          ? {
+              avgRating: sideStats.avgRating,
+              avgAcs: sideStats.avgAcs,
+              kd: sideStats.kd,
+              avgKast: sideStats.avgKast,
+              avgAdr: sideStats.avgAdr,
+              avgHsPct: sideStats.avgHsPct,
+              totalKills: sideStats.totalKills,
+              totalDeaths: sideStats.totalDeaths,
+              totalAssists: sideStats.totalAssists,
+              totalFirstKills: sideStats.totalFirstKills,
+              totalFirstDeaths: sideStats.totalFirstDeaths,
+            }
+          : side !== 'both'
+            ? // No side data at all for this player in scope (rare -- would
+              // mean every round they played was somehow on the other
+              // side). Null out rather than show stale 'both' numbers
+              // under an Attack/Defend heading.
+              {
+                avgRating: null, avgAcs: null, kd: null, avgKast: null, avgAdr: null,
+                avgHsPct: null, totalKills: null, totalDeaths: null, totalAssists: null,
+                totalFirstKills: null, totalFirstDeaths: null,
+              }
+            : {}),
       })
     }
     const q = search.trim().toLowerCase()
@@ -47,7 +104,7 @@ export default function Players() {
       ? out.filter((p) => p.player.toLowerCase().includes(q) || p.team?.toLowerCase().includes(q))
       : out
     return searched.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
-  }, [filtered, data, ratedOnly, search, minMaps])
+  }, [filtered, data, ratedOnly, search, minRounds, side, sideStatsByPlayer])
 
   if (loading || !data) return <div className="text-muted text-sm">Loading…</div>
 
@@ -130,15 +187,35 @@ export default function Players() {
             Only maps with a Rating 2.0
           </label>
           <label className="flex items-center gap-2 text-xs text-muted">
-            Min. maps
+            Min. rounds
             <input
               type="number"
               min={0}
-              value={minMaps}
-              onChange={(e) => setMinMaps(Number(e.target.value) || 0)}
+              value={minRounds}
+              onChange={(e) => setMinRounds(Number(e.target.value) || 0)}
               className="bg-surface2 border border-hairline rounded-lg px-2 py-1 w-20 text-ink focus:outline-none focus:border-muted [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
           </label>
+          <div className="flex items-center gap-2 text-xs text-muted">
+            Side
+            <div className="flex rounded-lg overflow-hidden border border-hairline">
+              {[
+                { key: 'both', label: 'All' },
+                { key: 't', label: 'Attack' },
+                { key: 'ct', label: 'Defend' },
+              ].map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => setSide(opt.key)}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                    side === opt.key ? 'bg-accent text-white' : 'bg-surface2 text-muted hover:text-ink'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </FilterPanel>
 

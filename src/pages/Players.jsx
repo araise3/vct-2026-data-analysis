@@ -138,7 +138,7 @@ export default function Players() {
       ),
     },
     {
-      key: 'team', label: 'Team', align: 'center',
+      key: 'team', label: 'Team', align: 'left',
       format: (v) => (
         <Link to={`/teams/${encodeURIComponent(v)}`} className="hover:text-accent-bright transition-colors">
           <TeamLogo team={v} size={18} showName={false} showTag />

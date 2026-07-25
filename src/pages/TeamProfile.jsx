@@ -177,9 +177,14 @@ export default function TeamProfile() {
               sub="Won after facing a 3+ round deficit"
             />
             <KpiCard
-              label="Pistol Conversion"
-              value={stats.pistolConvRounds ? pct(stats.pistolConvWinPct) : '—'}
+              label="Post-Pistol Anti-Eco"
+              value={stats.postPistolAntiEcoRounds ? pct(stats.postPistolAntiEcoWinPct) : '—'}
               sub="Rounds 2 & 14, after winning the pistol"
+            />
+            <KpiCard
+              label="Bonus Round"
+              value={stats.bonusRounds ? pct(stats.bonusWinPct) : '—'}
+              sub="Rounds 3 & 15, after winning the pistol AND round 2/14"
             />
             <KpiCard
               label="Anti-Eco Win%"

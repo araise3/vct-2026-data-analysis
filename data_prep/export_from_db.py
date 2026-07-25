@@ -760,6 +760,11 @@ def main():
             score = {teams[0]: 0, teams[1]: 0}
             max_deficit = {teams[0]: 0, teams[1]: 0}
             pistol_winner = None
+            # Team that won BOTH the pistol round (1/13) AND the round
+            # right after it (2/14) -- i.e. still on the economic upswing
+            # for a second round in a row. Set below, mirroring how
+            # pistol_winner is set on round 1/13.
+            bonus_winner = None
 
             for row in grp.itertuples():
                 rn = int(row.round_num)
@@ -795,20 +800,44 @@ def main():
                     if won and row.win_condition:
                         bump(key, f'wc_{row.win_condition}')
 
-                    # Anti-eco: we're on eco/semi-eco, they're full-buy.
-                    # `in`/`==` against None is always False, so a round
-                    # with no economy data on either side naturally never
-                    # triggers this -- no separate None-check needed.
+                    # Anti-eco (economy-based): we're on eco/semi-eco,
+                    # they're full-buy. `in`/`==` against None is always
+                    # False, so a round with no economy data on either
+                    # side naturally never triggers this -- no separate
+                    # None-check needed. This is a DIFFERENT stat from
+                    # the position-based ae2R/ae2W below -- this one is
+                    # about actual loadout value, that one is about round
+                    # position relative to the pistol. Both are
+                    # legitimately called "anti-eco" under different
+                    # definitions; kept as separate fields (aeR/aeW vs.
+                    # ae2R/ae2W) rather than merged, since they answer
+                    # different questions and have different China
+                    # availability (this one needs the economy tab, that
+                    # one doesn't).
                     if buys[team] in ECO_BUYS and buys[opp] == '$$$':
                         bump(key, 'aeR')
                         if won:
                             bump(key, 'aeW')
 
-                    # Pistol conversion: the bonus round immediately after
-                    # winning a pistol, now covering BOTH halves (the
-                    # truncation bug previously meant only round 1->2 was
-                    # ever visible; round 13->14 exists in the data now).
+                    # Anti-eco (position-based): round 2/14, contingent on
+                    # having won the preceding pistol. The pistol winner
+                    # is usually still on a stronger buy than an opponent
+                    # forced onto an eco/semi-buy after losing the
+                    # pistol, so this measures whether that positional
+                    # advantage got converted. Renamed from bonusR/bonusW
+                    # -- that name now refers to the round after THIS one
+                    # (see below), not this one.
                     if rn in (2, 14) and pistol_winner == team:
+                        bump(key, 'ae2R')
+                        if won:
+                            bump(key, 'ae2W')
+
+                    # Bonus round: round 3/15, contingent on having won
+                    # BOTH the pistol AND the anti-eco round right after
+                    # it -- the round with the biggest economic edge of
+                    # the half, two full buys deep against an opponent
+                    # still recovering from the pistol loss.
+                    if rn in (3, 15) and bonus_winner == team:
                         bump(key, 'bonusR')
                         if won:
                             bump(key, 'bonusW')
@@ -821,6 +850,8 @@ def main():
                         max_deficit[team] = deficit
                 if rn in (1, 13):
                     pistol_winner = winner
+                if rn in (2, 14):
+                    bonus_winner = winner if winner == pistol_winner else None
 
             # Comeback: faced a 3+ round deficit at some point across the
             # ENTIRE map (not just a first-half proxy, now that full round

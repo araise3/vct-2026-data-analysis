@@ -156,7 +156,7 @@ export function aggregateTeamBuckets(buckets) {
   const t = {
     mP: 0, mW: 0, mapP: 0, mapW: 0, rnd: 0, ratS: 0, ratR: 0, durS: 0, durM: 0,
     atkW: 0, atkP: 0, defW: 0, defP: 0, otM: 0, otW: 0,
-    aeR: 0, aeW: 0, bonusR: 0, bonusW: 0, cbN: 0, cbW: 0,
+    aeR: 0, aeW: 0, ae2R: 0, ae2W: 0, bonusR: 0, bonusW: 0, cbN: 0, cbW: 0,
   }
   // 24 regulation slots + 1 OT catch-all (index 24) -- OT length varies
   // map to map, so per-OT-round alignment isn't meaningful the way
@@ -174,6 +174,7 @@ export function aggregateTeamBuckets(buckets) {
     t.defW += b.defW || 0; t.defP += b.defP || 0
     t.otM += b.otM || 0; t.otW += b.otW || 0
     t.aeR += b.aeR || 0; t.aeW += b.aeW || 0
+    t.ae2R += b.ae2R || 0; t.ae2W += b.ae2W || 0
     t.bonusR += b.bonusR || 0; t.bonusW += b.bonusW || 0
     t.cbN += b.cbN || 0; t.cbW += b.cbW || 0
     if (b.rnP) {
@@ -230,15 +231,36 @@ export function aggregateTeamBuckets(buckets) {
     otMaps: t.otM,
     otWon: t.otW,
     otWinPct: div(t.otW, t.otM),
-    // Round-level stats, now covering the FULL map (both halves + OT) --
-    // anti-eco and pistol-conversion still require economy data, which is
-    // absent for China-region matches (rounds/win-condition data itself
-    // isn't, since it comes from a different page element VLR always
-    // publishes -- see comebackMaps/roundsPlayedByNum below).
+    // Round-level stats, now covering the FULL map (both halves + OT).
+    // Three DIFFERENT things are all legitimately called "anti-eco" or
+    // "bonus round" under different definitions, so each gets its own
+    // field rather than merging any of them:
+    //   - antiEco (aeR/aeW): economy-based -- we're on eco/semi-buy,
+    //     opponent is full-buy, determined from actual loadout value.
+    //     Requires the economy tab, so it's the one still absent for
+    //     China.
+    //   - postPistolAntiEco (ae2R/ae2W): position-based -- round 2/14,
+    //     contingent on having won the preceding pistol. Doesn't need
+    //     economy data at all, so it's available for China same as
+    //     pistol win/loss above.
+    //   - bonus (bonusR/bonusW): round 3/15, contingent on having won
+    //     BOTH the pistol and the post-pistol anti-eco round -- two
+    //     buys deep against a recovering opponent.
+    //
+    // IMPORTANT: as of this commit, `bonusR`/`bonusW` in the exported
+    // JSON still holds what THIS code used to call pistolConv -- round
+    // 2/14 data, not round 3/15 -- because export_from_db.py hasn't been
+    // re-run yet. Once it has been (see that file's own comments), this
+    // field will correctly mean round 3/15 with no further code changes
+    // needed here. Until then, the "Bonus round" card on this site is
+    // showing stale round-2 data under the new label -- re-run the
+    // export and redeploy team_buckets.json to fix that.
     antiEcoRounds: t.aeR,
     antiEcoWinPct: div(t.aeW, t.aeR),
-    pistolConvRounds: t.bonusR,
-    pistolConvWinPct: div(t.bonusW, t.bonusR),
+    postPistolAntiEcoRounds: t.ae2R,
+    postPistolAntiEcoWinPct: div(t.ae2W, t.ae2R),
+    bonusRounds: t.bonusR,
+    bonusWinPct: div(t.bonusW, t.bonusR),
     // Comeback: faced a 3+ round deficit at some point across the entire
     // map and still won it. comebackWon/comebackMaps is a genuine success
     // rate, not just a count.

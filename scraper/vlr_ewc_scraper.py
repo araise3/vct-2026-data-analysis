@@ -525,7 +525,7 @@ def scrape_match_performance(session, conn, match_id: int, match_url: str,
                    multi_2k=?, multi_3k=?, multi_4k=?, multi_5k=?,
                    clutch_1v1=?, clutch_1v2=?, clutch_1v3=?, clutch_1v4=?, clutch_1v5=?,
                    econ=?, plants=?, defuses=?
-                   WHERE match_id=? AND map_index=? AND player=?""",
+                   WHERE match_id=? AND map_index=? AND player=? AND side='both'""",
                 (multi_2k, multi_3k, multi_4k, multi_5k,
                  clutch_1v1, clutch_1v2, clutch_1v3, clutch_1v4, clutch_1v5,
                  econ, plants, defuses,
@@ -709,6 +709,40 @@ def rescrape_all_economy(session, conn, event_ids=None):
             continue
 
 
+def rescrape_all_match_details(session, conn, event_ids=None):
+    """Re-scrapes FULL match detail (Overview + Performance + Economy) for
+    every completed match already in the DB, skipping event-level stats/
+    agents/match-list discovery. Reuses scrape_match_detail() as one atomic
+    unit rather than a narrower partial re-parse, since INSERT OR REPLACE
+    replaces the whole row -- a box-score-only re-insert would silently
+    wipe multi_2k/clutch_*/econ/plants/defuses back to NULL on the
+    existing 'both' row. See vlr_vct_scraper.py for the full writeup."""
+    cur = conn.cursor()
+    if event_ids:
+        placeholders = ",".join("?" * len(event_ids))
+        cur.execute(
+            f"SELECT match_id, event_id, match_url FROM matches "
+            f"WHERE status='completed' AND event_id IN ({placeholders}) ORDER BY match_id",
+            event_ids,
+        )
+    else:
+        cur.execute(
+            "SELECT match_id, event_id, match_url FROM matches WHERE status='completed' ORDER BY match_id"
+        )
+    rows = cur.fetchall()
+    print(f"Re-scraping full match detail for {len(rows)} completed matches...")
+    for i, (match_id, event_id, match_url) in enumerate(rows, 1):
+        try:
+            scrape_match_detail(session, conn, event_id, match_id, match_url)
+            print(f"  [{i}/{len(rows)}] match {match_id} done")
+        except KeyboardInterrupt:
+            print("\nInterrupted — progress saved to DB.")
+            raise
+        except Exception as e:
+            print(f"  !! failed on match {match_id}: {e}")
+            continue
+
+
 def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: str, dump_html: bool = False):
     """See vlr_vct_scraper.py's version of this function for full rationale.
     Score is derived from counting map wins (robust) rather than trusting a
@@ -846,33 +880,43 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
                     span = cell.select_one(f"span.side.{side_class}")
                     return clean(span.get_text()) if span else clean(cell.get_text())
 
-                rating = to_float(cell_val("rating2"))
-                acs = to_float(cell_val("acs"))
-                kills = to_int(cell_val("kills"))
-                deaths = to_int(cell_val("deaths"))
-                assists = to_int(cell_val("assists"))
-                kd_diff_raw = cell_val("kd-diff")
-                kd_diff = to_int(kd_diff_raw.replace("+", "")) if kd_diff_raw else None
-                kast = cell_val("kast")
-                adr = to_float(cell_val("adr"))
-                hs_pct = cell_val("hsp")
-                fk = to_int(cell_val("fb"))
-                fd = to_int(cell_val("fd"))
-                fkfd_diff_raw = cell_val("fk-diff")
-                fkfd_diff = to_int(fkfd_diff_raw.replace("+", "")) if fkfd_diff_raw else None
+                # Every stat cell carries all three side variants as nested
+                # spans (side.mod-both / side.mod-t / side.mod-ct), already
+                # present in the static HTML -- see the matching writeup in
+                # vlr_vct_scraper.py. side='both' is the pre-existing row;
+                # 't' (attack) and 'ct' (defend) are new.
+                for side_class, side_label in (("mod-both", "both"), ("mod-t", "t"), ("mod-ct", "ct")):
+                    rating = to_float(cell_val("rating2", side_class))
+                    acs = to_float(cell_val("acs", side_class))
+                    kills = to_int(cell_val("kills", side_class))
+                    deaths = to_int(cell_val("deaths", side_class))
+                    assists = to_int(cell_val("assists", side_class))
+                    kd_diff_raw = cell_val("kd-diff", side_class)
+                    kd_diff = to_int(kd_diff_raw.replace("+", "")) if kd_diff_raw else None
+                    kast = cell_val("kast", side_class)
+                    adr = to_float(cell_val("adr", side_class))
+                    hs_pct = cell_val("hsp", side_class)
+                    fk = to_int(cell_val("fb", side_class))
+                    fd = to_int(cell_val("fd", side_class))
+                    fkfd_diff_raw = cell_val("fk-diff", side_class)
+                    fkfd_diff = to_int(fkfd_diff_raw.replace("+", "")) if fkfd_diff_raw else None
 
-                cur.execute(
-                    """INSERT OR REPLACE INTO map_player_stats
-                    (match_id, map_index, player, team, agent, rating, acs, kills, deaths,
-                     assists, kd_diff, kast, adr, hs_pct, first_kills, first_deaths,
-                     fk_fd_diff, side)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-                    (
-                        match_id, map_index, player, team_name, agent, rating, acs, kills,
-                        deaths, assists, kd_diff, kast, adr, hs_pct, fk, fd, fkfd_diff, "both",
-                    ),
-                )
-                total_player_rows += 1
+                    if all(v is None for v in (rating, acs, kills, deaths, assists, adr)):
+                        continue
+
+                    cur.execute(
+                        """INSERT OR REPLACE INTO map_player_stats
+                        (match_id, map_index, player, team, agent, rating, acs, kills, deaths,
+                         assists, kd_diff, kast, adr, hs_pct, first_kills, first_deaths,
+                         fk_fd_diff, side)
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                        (
+                            match_id, map_index, player, team_name, agent, rating, acs, kills,
+                            deaths, assists, kd_diff, kast, adr, hs_pct, fk, fd, fkfd_diff, side_label,
+                        ),
+                    )
+                    if side_label == "both":
+                        total_player_rows += 1
 
     if map_index > 0:
         score1, score2 = maps_team1_wins, maps_team2_wins
@@ -963,6 +1007,11 @@ def main():
                               "in the DB (fixes the 'only 12 rounds captured' bug) without "
                               "re-doing event stats/agents or match box scores/performance data. "
                               "Combine with --events to scope to specific events.")
+    parser.add_argument("--redo-match-details", action="store_true",
+                         help="Re-scrape FULL match detail (Overview+Performance+Economy) for "
+                              "every completed match already in the DB. Backfills both the "
+                              "round-economy fix AND the new attack/defense side-split at once. "
+                              "Combine with --events to scope it.")
     parser.add_argument("--db", default=DB_PATH, help="SQLite DB path")
     parser.add_argument("--dump-html", type=int, nargs="*", default=[],
                          help="Match ID(s) to save raw HTML for, e.g. --dump-html 594740 "
@@ -975,6 +1024,12 @@ def main():
 
     if args.economy_only:
         rescrape_all_economy(session, conn, event_ids=args.events)
+        conn.close()
+        print(f"\nDone. Data saved to {args.db}")
+        return
+
+    if args.redo_match_details:
+        rescrape_all_match_details(session, conn, event_ids=args.events)
         conn.close()
         print(f"\nDone. Data saved to {args.db}")
         return

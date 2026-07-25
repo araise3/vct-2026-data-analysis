@@ -111,7 +111,7 @@ export default function Players() {
       // simply aren't captured per side in the source data at all.
       const sideStats = side !== 'both' ? sideStatsByPlayer?.get(player) : null
 
-      out.push({
+      const row = {
         player,
         team: meta.team,
         region: meta.region,
@@ -144,7 +144,21 @@ export default function Players() {
                 totalFirstKills: null, totalFirstDeaths: null,
               }
             : {}),
-      })
+      }
+
+      // Per-round rates, computed after the side-toggle swap above so they
+      // track whichever kill/death/assist counts are actually showing.
+      // roundsPlayed itself is side-invariant (maps played doesn't change
+      // with the toggle -- see the comment above), so it's always a valid
+      // denominator; the numerator is null'd out along with the rest when
+      // there's no side data at all for this player, and null propagates.
+      const rp = row.roundsPlayed
+      row.kpr = rp && row.totalKills != null ? row.totalKills / rp : null
+      row.fkpr = rp && row.totalFirstKills != null ? row.totalFirstKills / rp : null
+      row.fdpr = rp && row.totalFirstDeaths != null ? row.totalFirstDeaths / rp : null
+      row.apr = rp && row.totalAssists != null ? row.totalAssists / rp : null
+
+      out.push(row)
     }
     const q = search.trim().toLowerCase()
     const searched = q
@@ -188,16 +202,14 @@ export default function Players() {
     { key: 'avgHsPct', label: 'HS%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'totalKills', label: 'Kills', align: 'right', format: (v) => num(v) },
     { key: 'totalDeaths', label: 'Deaths', align: 'right', format: (v) => num(v) },
-    { key: 'totalFirstKills', label: 'FK', align: 'right', format: (v) => num(v) },
-    { key: 'total2k', label: '2K', align: 'right', format: (v) => num(v) },
-    { key: 'total3k', label: '3K', align: 'right', format: (v) => num(v) },
+    { key: 'kpr', label: 'KPR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'fkpr', label: 'FKPR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    // Lower is better (fewer first deaths per round), so the color scale is inverted.
+    { key: 'fdpr', label: 'FDPR', align: 'right', colorScale: true, colorInvert: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'apr', label: 'APR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
     { key: 'totalAce', label: 'Ace', align: 'right', format: (v) => num(v) },
     { key: 'totalClutches', label: 'Clutches', align: 'right', format: (v) => num(v) },
-    // Lower SD = steadier map-to-map, so the scale is inverted.
-    { key: 'ratingSd', label: 'Consistency', align: 'right', colorScale: true, colorInvert: true, format: (v) => (v == null ? '—' : v.toFixed(3)) },
     { key: 'avgEcon', label: 'Econ', align: 'right', colorScale: true, format: (v, r) => (r.utilMaps ? Math.round(v) : '—') },
-    { key: 'totalPlants', label: 'Plants', align: 'right', format: (v, r) => (r.utilMaps ? num(v) : '—') },
-    { key: 'totalDefuses', label: 'Defuses', align: 'right', format: (v, r) => (r.utilMaps ? num(v) : '—') },
   ]
 
   return (

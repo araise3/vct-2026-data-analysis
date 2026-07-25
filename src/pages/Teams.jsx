@@ -83,6 +83,18 @@ const TEAM_LEADERS = [
     meta: (r) => `${num(r.mapsWithDuration)} maps`, value: (r) => duration(r.avgMapDurationSeconds),
     note: 'Min. 10 maps with a published duration.',
   },
+  {
+    key: 'roundsPerMap', title: 'Most rounds per map',
+    qualify: (r) => r.mapsPlayed >= 10,
+    meta: (r) => `${num(r.mapsPlayed)} maps`, value: (r) => (r.roundsPerMap == null ? '—' : r.roundsPerMap.toFixed(1)),
+    note: 'Closer maps run longer, on average, than blowouts. Min. 10 maps.',
+  },
+  {
+    key: 'mapsPerSeries', title: 'Most maps per series',
+    qualify: (r) => r.matchesPlayed >= 5,
+    meta: (r) => `${num(r.matchesPlayed)} series`, value: (r) => (r.mapsPerSeries == null ? '—' : r.mapsPerSeries.toFixed(2)),
+    note: 'How often a team\u2019s series go the distance rather than getting swept. Min. 5 series.',
+  },
 ]
 
 export default function Teams() {
@@ -104,6 +116,8 @@ export default function Teams() {
         team,
         region: data.meta[team]?.region ?? '—',
         ...agg,
+        roundsPerMap: agg.mapsPlayed ? agg.roundsPlayed / agg.mapsPlayed : null,
+        mapsPerSeries: agg.matchesPlayed ? agg.mapsPlayed / agg.matchesPlayed : null,
         elimPct: (() => {
           const wc = agg.winConditions
           if (!wc) return null

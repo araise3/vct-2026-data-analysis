@@ -208,11 +208,11 @@ export default function Players() {
     // Lower is better (fewer first deaths per round), so the color scale is inverted.
     { key: 'fdpr', label: 'FDPR', align: 'right', colorScale: true, colorInvert: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
     { key: 'avgHsPct', label: 'HS%', align: 'right', colorScale: true, format: (v) => pct(v) },
-    { key: 'totalKills', label: 'Kills', align: 'right', format: (v) => num(v) },
-    { key: 'totalDeaths', label: 'Deaths', align: 'right', format: (v) => num(v) },
     // Econ isn't a VLR column -- it's ours, placed right after the VLR
     // block rather than mixed into it.
     { key: 'avgEcon', label: 'Econ', align: 'right', colorScale: true, format: (v, r) => (r.utilMaps ? Math.round(v) : '—') },
+    { key: 'totalKills', label: 'Kills', align: 'right', format: (v) => num(v) },
+    { key: 'totalDeaths', label: 'Deaths', align: 'right', format: (v) => num(v) },
     { key: 'totalAce', label: 'Ace', align: 'right', format: (v) => num(v) },
     { key: 'totalClutches', label: 'Clutches', align: 'right', format: (v) => num(v) },
   ]

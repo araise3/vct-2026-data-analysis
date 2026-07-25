@@ -88,7 +88,20 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                 }`}
               >
                 {col.label}
-                {sortKey === col.key && <span className="ml-1 text-accent">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                {/*
+                  The arrow is always rendered, just invisible when this
+                  isn't the active sort column -- reserving its width up
+                  front. Rendering it conditionally (only when active)
+                  made the header cell itself widen the moment a column
+                  became the sort key, since table-layout:auto sizes each
+                  column to its own content and the arrow+margin is real
+                  width that wasn't there before.
+                */}
+                <span
+                  className={`ml-1 text-accent ${sortKey === col.key ? '' : 'invisible'}`}
+                >
+                  {sortKey === col.key && sortDir === 'asc' ? '↑' : '↓'}
+                </span>
               </th>
             ))}
           </tr>

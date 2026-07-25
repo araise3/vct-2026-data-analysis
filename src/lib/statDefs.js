@@ -25,6 +25,17 @@ const fmmss = (v) => {
     : `${m}:${String(sec).padStart(2, '0')}`
 }
 
+// Share of a team's total round wins that ended a given way (elim/defuse/
+// boom/time). null (not 0) when there's no win-condition data at all yet,
+// so it's excluded from a card rather than shown as a misleading 0%.
+function winConditionShare(s, key) {
+  const wc = s.winConditions
+  if (!wc) return null
+  const total = Object.values(wc).reduce((a, b) => a + b, 0)
+  if (!total) return null
+  return (wc[key] ?? 0) / total
+}
+
 const per24 = (count, rounds) => (rounds ? (count / rounds) * 24 : null)
 
 export const PLAYER_STATS = [
@@ -311,6 +322,30 @@ export const TEAM_STATS = [
     compute: (s) => (s.comebackMaps ? s.comebackPct : null),
     format: fpct,
     secondary: (s) => ({ value: s.comebackMaps, label: 'maps down 3+' }),
+  },
+  {
+    key: 'elimPct',
+    label: 'Round wins by elimination %',
+    cardTitle: 'ROUND WINS BY ELIMINATION',
+    compute: (s) => winConditionShare(s, 'elim'),
+    format: fpct,
+    secondary: (s) => ({ value: s.winConditions?.elim ?? 0, label: 'rounds' }),
+  },
+  {
+    key: 'defusePct',
+    label: 'Round wins by defuse %',
+    cardTitle: 'ROUND WINS BY DEFUSE',
+    compute: (s) => winConditionShare(s, 'defuse'),
+    format: fpct,
+    secondary: (s) => ({ value: s.winConditions?.defuse ?? 0, label: 'rounds' }),
+  },
+  {
+    key: 'boomPct',
+    label: 'Round wins by spike detonation %',
+    cardTitle: 'ROUND WINS BY SPIKE DETONATION',
+    compute: (s) => winConditionShare(s, 'boom'),
+    format: fpct,
+    secondary: (s) => ({ value: s.winConditions?.boom ?? 0, label: 'rounds' }),
   },
   {
     key: 'avgRating',

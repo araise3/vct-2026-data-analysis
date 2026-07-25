@@ -41,6 +41,12 @@ export default function Teams() {
         ...agg,
         roundsPerMap: agg.mapsPlayed ? agg.roundsPlayed / agg.mapsPlayed : null,
         mapsPerSeries: agg.matchesPlayed ? agg.mapsPlayed / agg.matchesPlayed : null,
+        elimPct: (() => {
+          const wc = agg.winConditions
+          if (!wc) return null
+          const total = Object.values(wc).reduce((a, b) => a + b, 0)
+          return total ? (wc.elim ?? 0) / total : null
+        })(),
       })
     }
     return out.sort((a, b) => (b.mapWinPct ?? 0) - (a.mapWinPct ?? 0))
@@ -105,6 +111,7 @@ export default function Teams() {
     { key: 'pistolConvWinPct', label: 'Pistol Conv%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'antiEcoWinPct', label: 'Anti-Eco%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'comebackPct', label: 'Comebacks', align: 'right', colorScale: true, format: (v, r) => (r.comebackMaps ? `${r.comebackWon}/${r.comebackMaps}` : '—') },
+    { key: 'elimPct', label: 'Elim%', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : pct(v)) },
     { key: 'avgRating', label: 'Avg Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
   ]
 

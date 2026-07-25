@@ -167,7 +167,6 @@ export default function Players() {
     { key: 'totalKills', label: 'K', align: 'right', format: (v) => num(v) },
     { key: 'totalDeaths', label: 'D', align: 'right', format: (v) => num(v) },
     { key: 'totalAce', label: 'Ace', align: 'right', format: (v) => num(v) },
-    { key: 'totalClutches', label: 'CL', align: 'right', format: (v) => num(v) },
   ]
 
   return (

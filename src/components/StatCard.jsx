@@ -262,7 +262,7 @@ const StatCard = forwardRef(function StatCard(
               }}
             >
               <div style={{ fontWeight: 800, fontSize: 24 }}>
-                {r.secondary?.value?.toLocaleString()}
+                {r.secondary?.value?.toLocaleString('en-US')}
               </div>
               <div style={{ color: C.dim, fontWeight: 600, fontSize: 19 }}>
                 {r.secondary?.label}

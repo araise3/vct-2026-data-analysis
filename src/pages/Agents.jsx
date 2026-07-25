@@ -195,7 +195,7 @@ export default function Agents() {
                 <div key={m.mapName} className="bg-surface2/50 border border-hairline rounded-xl px-4 py-3">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-ink">{m.mapName}</span>
-                    <span className="text-xs text-muted">{m.roundsPlayed.toLocaleString()} rounds</span>
+                    <span className="text-xs text-muted">{m.roundsPlayed.toLocaleString('en-US')} rounds</span>
                   </div>
                   <div className="flex h-2 rounded-full overflow-hidden bg-surface2">
                     <div className="bg-accent" style={{ width: `${m.atkWinPct * 100}%` }} />

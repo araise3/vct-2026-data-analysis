@@ -13,7 +13,7 @@
 
 const f2 = (v) => v.toFixed(2)
 const f1 = (v) => v.toFixed(1)
-const f0 = (v) => Math.round(v).toLocaleString()
+const f0 = (v) => Math.round(v).toLocaleString('en-US')
 const fpct = (v) => `${(v * 100).toFixed(1)}%`
 const fmmss = (v) => {
   const s = Math.round(v)

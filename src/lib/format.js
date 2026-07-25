@@ -13,7 +13,14 @@ export function pct(v, digits = 1) {
 export function num(v, digits = 0) {
   if (v === null || v === undefined || Number.isNaN(v)) return '—'
   const d = Number.isInteger(digits) ? digits : 0
-  return v.toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d })
+  // Locale hardcoded to 'en-US', not left as `undefined` (which defers to
+  // the viewer's own browser/OS locale) -- a German-locale browser
+  // renders toLocaleString(undefined, ...) with a comma decimal
+  // separator ("171,1"), which doesn't match VLR's own always-English
+  // number formatting and reads as a different number entirely at a
+  // glance. This should be dot-decimal for every viewer, not just
+  // English-locale ones.
+  return v.toLocaleString('en-US', { maximumFractionDigits: d, minimumFractionDigits: d })
 }
 
 export function rating(v) {

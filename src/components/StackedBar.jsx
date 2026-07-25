@@ -35,7 +35,7 @@ export default function StackedBar({ tiers }) {
             <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: TIER_COLORS[key] }} />
             <span className="text-muted">{TIER_LABELS[key]}</span>
             <span className="font-body text-ink">
-              {t.rounds.toLocaleString()} rounds · {t.winPct !== null ? `${(t.winPct * 100).toFixed(1)}%` : '—'} won
+              {t.rounds.toLocaleString('en-US')} rounds · {t.winPct !== null ? `${(t.winPct * 100).toFixed(1)}%` : '—'} won
             </span>
           </div>
         ))}

@@ -207,6 +207,16 @@ def init_db(path: str = DB_PATH) -> sqlite3.Connection:
             PRIMARY KEY (match_id, map_index)
         );
 
+        CREATE TABLE IF NOT EXISTS map_round_results (
+            match_id INTEGER,
+            map_index INTEGER,
+            round_num INTEGER,
+            winner TEXT,
+            winner_side TEXT,
+            win_condition TEXT,
+            PRIMARY KEY (match_id, map_index, round_num)
+        );
+
         CREATE TABLE IF NOT EXISTS map_team_economy (
             match_id INTEGER,
             map_index INTEGER,
@@ -967,6 +977,46 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
             (match_id, map_index, map_name, t1_score, t2_score, t1_atk, t1_def, t2_atk, t2_def, duration),
         )
 
+        # Per-round winner + side + win condition, from the ".vlr-rounds"
+        # round-by-round bar in this same Overview-tab fetch (the row of
+        # small squares under the map header). Each round is a
+        # ".vlr-rounds-row-col" holding one ".rnd-sq" per team; the
+        # WINNING team's square gets "mod-win" plus a side class ("mod-t"
+        # = attack, "mod-ct" = defend) -- the losing team's square carries
+        # no side class of its own, but since a round has exactly one
+        # attacker and one defender, their side is simply the winner's
+        # side complement, not stored separately. The square's icon
+        # filename (elim/defuse/boom/time) doubles as the win condition.
+        # Confirmed against a real dumped page: covers every round played
+        # (19 of 19 on a 6-13 map, verified against the final score), not
+        # truncated the way the Economy tab's round table was.
+        rounds_block = game.select_one(".vlr-rounds")
+        if rounds_block:
+            round_cols = rounds_block.select(".vlr-rounds-row-col")[1:]  # first col is the team-name header, not a round
+            for col in round_cols:
+                num_el = col.select_one(".rnd-num")
+                round_num = to_int(clean(num_el.get_text())) if num_el else None
+                if round_num is None:
+                    continue
+                sqs = col.select(".rnd-sq")
+                win_sq = col.select_one(".rnd-sq.mod-win")
+                if win_sq is None or len(sqs) < 2:
+                    continue  # unplayed template slot (VLR always renders a fixed-length row)
+                team_idx = sqs.index(win_sq)
+                winner = team1 if team_idx == 0 else team2
+                win_classes = win_sq.get("class", [])
+                winner_side = "t" if "mod-t" in win_classes else ("ct" if "mod-ct" in win_classes else None)
+                icon_img = win_sq.select_one("img")
+                win_condition = None
+                if icon_img and icon_img.get("src"):
+                    win_condition = icon_img["src"].rsplit("/", 1)[-1].split(".")[0]  # e.g. "elim", "defuse", "boom"
+                cur.execute(
+                    """INSERT OR REPLACE INTO map_round_results
+                    (match_id, map_index, round_num, winner, winner_side, win_condition)
+                    VALUES (?,?,?,?,?,?)""",
+                    (match_id, map_index, round_num, winner, winner_side, win_condition),
+                )
+
         # Player box score: VLR no longer uses <table> elements for this —
         # it's a div-grid: ".ovw-table" (one per team) > ".ovw-row" (one per
         # player, header row has class "mod-head") > ".ovw-cell"/nested
@@ -1179,9 +1229,9 @@ def main():
     parser.add_argument("--redo-match-details", action="store_true",
                          help="Re-scrape FULL match detail (Overview+Performance+Economy) for "
                               "every completed match already in the DB, skipping event-level "
-                              "stats/agents/match-list discovery. Backfills both the round-economy "
-                              "fix AND the new attack/defense side-split at once. Combine with "
-                              "--events to scope it.")
+                              "stats/agents/match-list discovery. Backfills the round-economy fix, "
+                              "the attack/defense side-split, and the per-round winner/side/"
+                              "win-condition table, all at once. Combine with --events to scope it.")
     parser.add_argument("--db", default=DB_PATH, help="SQLite DB path")
     parser.add_argument("--dump-html", type=int, nargs="*", default=[],
                          help="Match ID(s) to save raw HTML for, e.g. --dump-html 594740 594741 "

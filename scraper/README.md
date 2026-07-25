@@ -343,6 +343,83 @@ that already has (broken) round-economy data: the table's primary key is
 this just rewrites rounds 1-12 identically and adds the previously-missing
 13+, without duplicating or corrupting anything.
 
+## Attack/defense side splits (previously assumed impossible -- they aren't)
+
+`map_player_stats.side` used to be the literal string `'both'` on every
+single row -- that was a hardcoded placeholder, not evidence VLR lacks
+per-side stats. It very much does, and it costs nothing extra to get.
+
+Every stat cell in the Overview tab's box score (rating, ACS, K/D/A, KAST,
+ADR, HS%, first kills/deaths) already contains **three** nested spans:
+`<span class="side mod-both">`, `<span class="side mod-t">` (attack),
+`<span class="side mod-ct">` (defend) -- all present in the static HTML at
+all times. VLR's own All/Attack/Defend toggle on the page just shows/hides
+these client-side. Confirmed against a real dumped Overview page and
+cross-checked against a live screenshot: every "defend" value extracted
+matched what was visibly displayed for all 10 players on that page.
+
+The scraper now inserts one row per side per player per map (`'both'`,
+`'t'`, `'ct'`) instead of just `'both'` -- `map_player_stats`'s primary key
+was already `(match_id, map_index, player, side)`, designed for exactly
+this from the start, so no schema change was needed, just actually reading
+the other two spans.
+
+**One thing this required fixing**: `scrape_match_performance`'s UPDATE
+(multi-kills, clutches, ECON, plants, defuses) didn't filter by `side` at
+all. Once `'t'`/`'ct'` rows exist, that same blind UPDATE would silently
+duplicate the all-rounds performance numbers onto the attack-only and
+defense-only rows too -- wrong, not just redundant, since that tab has no
+confirmed per-side breakdown of its own. It's now scoped to
+`WHERE ... AND side='both'` explicitly, so the new rows correctly leave
+those fields `NULL` rather than showing a duplicated value.
+
+## New table: `map_round_results` (per-round winner, side, and win condition)
+
+A better and more complete source for round-level side data than
+`map_round_economy` turned out to already exist in the very same
+Overview-tab fetch: the row of small squares under the map header (the
+`.vlr-rounds` element -- what the site itself renders as a compact
+round-by-round history). Each round is a `.vlr-rounds-row-col` holding one
+`.rnd-sq` per team; the **winning** team's square carries `mod-win` plus a
+side class (`mod-t` = won on attack, `mod-ct` = won on defend) and an
+icon (`elim.webp` / `defuse.webp` / `boom.webp` / etc.) indicating how the
+round ended. The losing team's square carries no side class of its own,
+but since a round has exactly one attacker and one defender, their side is
+simply the winner's side complement -- not stored separately, trivially
+derivable.
+
+Confirmed against a real dumped page: extracted all 19 rounds of a 6-13
+map, matching the final score exactly, with the expected side-swap
+showing up correctly at round 13 (the start of the second half).
+
+Unlike `map_round_economy`, **this covers the entire map, not just the
+first 12 rounds** -- it isn't affected by that bug at all, since it comes
+from a completely different element on the page. New table:
+
+```sql
+CREATE TABLE map_round_results (
+    match_id INTEGER,
+    map_index INTEGER,
+    round_num INTEGER,
+    winner TEXT,          -- raw team name, canonicalized downstream like team1/team2 elsewhere
+    winner_side TEXT,     -- 't' (attack) or 'ct' (defend)
+    win_condition TEXT,   -- 'elim', 'defuse', 'boom', etc. -- from the round-end icon filename
+    PRIMARY KEY (match_id, map_index, round_num)
+);
+```
+
+This opens up stats that weren't cleanly derivable before: true round
+win% by side across the *entire* map (not just the first half), win
+condition breakdown (how often a team closes rounds by elimination vs.
+defusing vs. the spike going off), and -- once joined with
+`map_round_economy` on `(match_id, map_index, round_num)` -- anti-eco or
+pistol-conversion win rates split by side, not just aggregated across
+both.
+
+`--redo-match-details` picks this table up automatically, since it's
+extracted during the same Overview-tab parse as the side-split box scores
+above -- no separate flag needed.
+
 ## Full column reference (as of the economy-tab addition)
 
 | Table | Granularity | Key columns |

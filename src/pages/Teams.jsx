@@ -104,8 +104,6 @@ export default function Teams() {
         team,
         region: data.meta[team]?.region ?? '—',
         ...agg,
-        roundsPerMap: agg.mapsPlayed ? agg.roundsPlayed / agg.mapsPlayed : null,
-        mapsPerSeries: agg.matchesPlayed ? agg.mapsPlayed / agg.matchesPlayed : null,
         elimPct: (() => {
           const wc = agg.winConditions
           if (!wc) return null
@@ -135,23 +133,15 @@ export default function Teams() {
     },
     { key: 'region', label: 'Region', align: 'left' },
     { key: 'matchesPlayed', label: 'Matches', align: 'right', format: (v) => num(v) },
-    { key: 'matchWinPct', label: 'Match Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
-    { key: 'mapsPerSeries', label: 'Maps/Series', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
     { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
-    { key: 'roundsPerMap', label: 'Rounds/Map', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(1)) },
-    { key: 'avgMapDurationSeconds', label: 'Avg Map Time', align: 'right', colorScale: true, format: (v) => duration(v) },
-    { key: 'mapWinPct', label: 'Map Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'avgRating', label: 'Avg Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
+    { key: 'matchWinPct', label: 'Match Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'pistolWinPct', label: 'Pistol Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'atkWinPct', label: 'ATK Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'defWinPct', label: 'DEF Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'otWinPct', label: 'OT Win%', align: 'right', colorScale: true, format: (v, r) => (r.otMaps ? `${r.otWon}/${r.otMaps}` : '—') },
-    { key: 'postPistolAntiEcoWinPct', label: 'Post-Pistol AE%', align: 'right', colorScale: true, format: (v) => pct(v) },
-    { key: 'bonusWinPct', label: 'Bonus Rd%', align: 'right', colorScale: true, format: (v) => pct(v) },
-    { key: 'antiEcoWinPct', label: 'Anti-Eco%', align: 'right', colorScale: true, format: (v) => pct(v) },
-    { key: 'comebackPct', label: 'Comebacks', align: 'right', colorScale: true, format: (v, r) => (r.comebackMaps ? `${r.comebackWon}/${r.comebackMaps}` : '—') },
-    { key: 'elimPct', label: 'Elim%', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : pct(v)) },
-    { key: 'avgRating', label: 'Avg Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
+    { key: 'avgMapDurationSeconds', label: 'Avg Map Time', align: 'right', colorScale: true, format: (v) => duration(v) },
   ]
 
   return (
@@ -218,7 +208,7 @@ export default function Teams() {
             </div>
           </div>
 
-          <DataTable columns={columns} rows={rows} defaultSortKey="mapWinPct" />
+          <DataTable columns={columns} rows={rows} defaultSortKey="avgRating" />
 
           <p className="text-muted text-xs">
             Pistol Win% assumes 2 pistol rounds per map. China teams show — since VLR doesn't

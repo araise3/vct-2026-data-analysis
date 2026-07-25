@@ -15,7 +15,20 @@ export default function App() {
     <BrowserRouter>
       <div className="flex min-h-screen bg-base">
         <Sidebar />
-        <main className="flex-1 px-8 py-8 max-w-[2400px]">
+        {/*
+          min-w-0 is load-bearing here, not decorative. A flex child's
+          default min-width is `auto`, which means it refuses to shrink
+          below its own content's intrinsic width. DataTable deliberately
+          has no fixed column widths (see its own comment), so once enough
+          stat columns pile up its natural width can exceed the viewport --
+          without min-w-0, THIS element grows to match instead of letting
+          DataTable's own overflow-auto wrapper contain the horizontal
+          scroll, dragging the sidebar and everything else off-screen with
+          it. This has already recurred once (new stat cards/columns
+          pushed the page wide again), so don't drop it when refactoring
+          this layout.
+        */}
+        <main className="flex-1 min-w-0 px-8 py-8 max-w-[2400px]">
           <Routes>
             <Route path="/" element={<Overview />} />
             <Route path="/players" element={<Players />} />

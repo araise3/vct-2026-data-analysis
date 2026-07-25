@@ -144,8 +144,12 @@ export function aggregateTeamBuckets(buckets) {
     atkW: 0, atkP: 0, defW: 0, defP: 0, otM: 0, otW: 0,
     aeR: 0, aeW: 0, bonusR: 0, bonusW: 0, cbN: 0, cbW: 0,
   }
-  const roundsPlayedByNum = new Array(12).fill(0)
-  const roundsWonByNum = new Array(12).fill(0)
+  // 24 regulation slots + 1 OT catch-all (index 24) -- OT length varies
+  // map to map, so per-OT-round alignment isn't meaningful the way
+  // per-regulation-round is.
+  const roundsPlayedByNum = new Array(25).fill(0)
+  const roundsWonByNum = new Array(25).fill(0)
+  const winConditions = {}
   for (const b of buckets) {
     t.mP += b.mP || 0; t.mW += b.mW || 0
     t.mapP += b.mapP || 0; t.mapW += b.mapW || 0
@@ -159,10 +163,13 @@ export function aggregateTeamBuckets(buckets) {
     t.bonusR += b.bonusR || 0; t.bonusW += b.bonusW || 0
     t.cbN += b.cbN || 0; t.cbW += b.cbW || 0
     if (b.rnP) {
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 25; i++) {
         roundsPlayedByNum[i] += b.rnP[i] || 0
         roundsWonByNum[i] += b.rnW?.[i] || 0
       }
+    }
+    for (const k in b) {
+      if (k.startsWith('wc_')) winConditions[k.slice(3)] = (winConditions[k.slice(3)] || 0) + b[k]
     }
   }
   const pistolPlayed = t.mapP * 2
@@ -183,9 +190,10 @@ export function aggregateTeamBuckets(buckets) {
     durationSeconds: t.durS,
     mapsWithDuration: t.durM,
     avgMapDurationSeconds: div(t.durS, t.durM),
-    // Attack/defense split (regulation rounds only -- overtime isn't
-    // included in VLR's per-side scores, and atkRounds/defRounds are 0
-    // for maps where the breakdown wasn't published).
+    // Attack/defense split, from the maps table's own atk/def score
+    // header (regulation rounds only -- overtime isn't included in VLR's
+    // per-side scores there). atkRounds/defRounds are 0 for maps where
+    // the breakdown wasn't published.
     atkRounds: t.atkP,
     atkWinPct: div(t.atkW, t.atkP),
     defRounds: t.defP,
@@ -194,15 +202,24 @@ export function aggregateTeamBuckets(buckets) {
     otMaps: t.otM,
     otWon: t.otW,
     otWinPct: div(t.otW, t.otM),
-    // First-half-only stats: VLR's economy tab is scraped for rounds 1-12
-    // only, so these describe the first half, not the whole map.
+    // Round-level stats, now covering the FULL map (both halves + OT) --
+    // anti-eco and pistol-conversion still require economy data, which is
+    // absent for China-region matches (rounds/win-condition data itself
+    // isn't, since it comes from a different page element VLR always
+    // publishes -- see comebackMaps/roundsPlayedByNum below).
     antiEcoRounds: t.aeR,
     antiEcoWinPct: div(t.aeW, t.aeR),
     pistolConvRounds: t.bonusR,
     pistolConvWinPct: div(t.bonusW, t.bonusR),
+    // Comeback: faced a 3+ round deficit at some point across the entire
+    // map and still won it. comebackWon/comebackMaps is a genuine success
+    // rate, not just a count.
     comebackMaps: t.cbN,
     comebackWon: t.cbW,
     comebackPct: div(t.cbW, t.cbN),
+    // How rounds are won: elim / defuse / boom (spike detonated) / time
+    // (defenders ran out the clock). Available even for China matches.
+    winConditions,
     roundsPlayedByNum,
     roundsWonByNum,
   }

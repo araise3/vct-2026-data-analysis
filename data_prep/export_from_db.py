@@ -70,6 +70,7 @@ TABLE_COLUMNS = {
     "map_round_economy": ["match_id", "map_index", "round_num", "team1_bank", "team1_loadout",
                           "team1_buy_type", "team1_round_win", "team2_bank", "team2_loadout",
                           "team2_buy_type", "team2_round_win"],
+    "map_round_results": ["match_id", "map_index", "round_num", "winner", "winner_side", "win_condition"],
     "events": ["event_id", "slug", "name", "region", "stage", "dates", "prize", "location"],
 }
 
@@ -86,7 +87,7 @@ def load_db(path, competition):
     conn = sqlite3.connect(path)
     tables = {}
     for name in ["matches", "maps", "map_player_stats", "map_team_economy", "events",
-                 "map_round_economy"]:
+                 "map_round_economy", "map_round_results"]:
         df = pd.read_sql_query(f"SELECT * FROM {name}", conn)
         df["competition"] = competition
         tables[name] = df
@@ -366,6 +367,7 @@ def main():
     all_mps = pd.concat([vct["map_player_stats"], ewc["map_player_stats"]], ignore_index=True)
     all_mte = pd.concat([vct["map_team_economy"], ewc["map_team_economy"]], ignore_index=True)
     all_mre = pd.concat([vct["map_round_economy"], ewc["map_round_economy"]], ignore_index=True)
+    all_mrr = pd.concat([vct["map_round_results"], ewc["map_round_results"]], ignore_index=True)
     for col in ['kast', 'hs_pct']:
         all_mps[col] = pct_to_float(all_mps[col])
 
@@ -635,107 +637,136 @@ def main():
         d["ratS"] = round(r_sum, 3)
         d["ratR"] = r_rnd
 
-    # --- first-half round stats (from map_round_economy) ---
-    # IMPORTANT: this table only ever contains rounds 1-12 -- verified
-    # exactly 12 rows per map across all 955 maps in both dbs, no
-    # exceptions. VLR's economy tab is first-half-only in the scrape, so
-    # every counter below is explicitly a FIRST-HALF figure and named/
-    # labelled as such rather than pretending to cover a whole map.
-    # (Also empty entirely for China-region matches -- same known VLR gap
-    # as the economy and rating data -- so these are absent, not zero,
-    # for those buckets.)
-    #
-    # Buy types are VLR's own "", "$", "$$", "$$$" (eco / semi-eco /
-    # semi-buy / full-buy). Pistol rounds also come through as "" since
-    # nobody has money yet; harmless for anti-eco (which requires the
-    # OPPONENT on "$$$", impossible in a pistol) but it's why the pistol
-    # is identified by round number instead of buy type.
-    if len(all_mre):
-        # Final map result, to resolve comebacks: a first-half deficit is
-        # only a comeback if the team went on to win the actual map, which
-        # this table can't tell us on its own.
-        map_result = {}
-        for row in map_ctx.itertuples():
-            map_result[(int(row.match_id), int(row.map_index))] = row.winner
-
-        mre = all_mre.merge(
+    # --- round-by-round derived stats ---
+    # map_round_results (winner/side/win_condition) is the authoritative
+    # per-round outcome source: full match coverage confirmed against real
+    # data (row count per map matches the actual final score exactly, 0
+    # mismatches), and unlike map_round_economy it is NOT missing China
+    # matches (284 China maps covered vs 0 in map_round_economy) -- it
+    # comes from a different page element (VLR's compact round-history
+    # bar), not the economy tab. map_round_economy (buy types) is joined
+    # in on (match_id, map_index, round_num) only for the two stats that
+    # actually need buy-type info (anti-eco, pistol conversion); those
+    # remain absent for China since that join has nothing to match there,
+    # same as before.
+    if len(all_mrr):
+        mrr = all_mrr.merge(
             all_matches[['match_id', 'event_id', 'stage', 'match_date', 'c1', 'c2']],
             on='match_id', how='left'
         )
-        mre['date'] = day_col(mre['match_date'])
-        mre = mre.dropna(subset=['c1', 'c2', 'event_id'])
-        mre = mre.sort_values(['match_id', 'map_index', 'round_num'])
+        mrr['date'] = day_col(mrr['match_date'])
+        mrr = mrr.dropna(subset=['c1', 'c2', 'event_id'])
+        mrr = mrr.sort_values(['match_id', 'map_index', 'round_num'])
+        # `winner` is the RAW scraped team name (never canonicalized at
+        # scrape time), but `teams` below is built from c1/c2 (canonical).
+        # Without this, any match involving a team with a raw/canonical
+        # alias (e.g. "ULF Esports" -> "Eternal Fire") would have every
+        # round THAT team won silently fail the `winner in teams` check
+        # further down and get dropped from both teams' round counts --
+        # confirmed and fixed: exactly 4 such rounds existed, all in one
+        # Team Vitality vs ULF Esports match.
+        mrr['winner'] = mrr['winner'].map(name_to_canon).fillna(mrr['winner'])
+
+        # (match_id, map_index, round_num) -> (team1_buy_type, team2_buy_type),
+        # left as None/None when missing rather than coerced to '' -- an
+        # empty string is itself a meaningful signal (confirmed: pistol
+        # rounds 1 and 13 are the only ones where BOTH teams show '', in
+        # exactly 769/769 maps each; OT rounds do NOT reset to this, both
+        # teams get a real buy), so it must stay distinguishable from
+        # "no economy data for this round at all".
+        buy_lookup = {
+            (int(r.match_id), int(r.map_index), int(r.round_num)): (r.team1_buy_type, r.team2_buy_type)
+            for r in all_mre.itertuples()
+        }
 
         ECO_BUYS = ('', '$')
-        HALF_ROUNDS = 12
+        REG_ROUNDS = 24  # regulation length; anything beyond is OT
         round_agg = {}
 
         def bump(key, field, n=1):
             round_agg.setdefault(key, {})
             round_agg[key][field] = round_agg[key].get(field, 0) + n
 
-        for (mid, midx), grp in mre.groupby(['match_id', 'map_index'], sort=False):
+        for (mid, midx), grp in mrr.groupby(['match_id', 'map_index'], sort=False):
             first = grp.iloc[0]
             base = (int(first['event_id']), first['stage'], first['date'])
             teams = [first['c1'], first['c2']]
-            half_score = {t: 0 for t in teams}
+            score = {teams[0]: 0, teams[1]: 0}
+            max_deficit = {teams[0]: 0, teams[1]: 0}
             pistol_winner = None
-            winner = map_result.get((int(mid), int(midx)))
 
             for row in grp.itertuples():
                 rn = int(row.round_num)
-                if rn > HALF_ROUNDS:
-                    continue
-                wins = {teams[0]: int(row.team1_round_win or 0),
-                        teams[1]: int(row.team2_round_win or 0)}
-                buys = {teams[0]: (row.team1_buy_type or ''),
-                        teams[1]: (row.team2_buy_type or '')}
+                winner = row.winner
+                if winner not in teams:
+                    continue  # defensive: shouldn't happen, but never misattribute a round
+
+                buy_t1, buy_t2 = buy_lookup.get((int(mid), int(midx), rn), (None, None))
+                buys = {teams[0]: buy_t1, teams[1]: buy_t2}
 
                 for team in teams:
                     key = (team, *base)
                     opp = teams[1] if team == teams[0] else teams[0]
-                    won = wins[team]
+                    won = (team == winner)
 
-                    # Per-round-number win curve over the 12 first-half
-                    # rounds. Two fixed-length arrays rather than 24
-                    # separate keys -- the key names alone cost more bytes
-                    # than the numbers did.
+                    # Round-number win curve: 24 regulation slots + 1 OT
+                    # catch-all (index 24). OT length varies map to map,
+                    # so per-OT-round alignment isn't meaningful the way
+                    # per-regulation-round is -- lumping it into one
+                    # bucket is more honest than pretending round 26 of
+                    # one map lines up with round 26 of another.
                     slot = round_agg.setdefault(key, {})
                     if 'rnP' not in slot:
-                        slot['rnP'] = [0] * HALF_ROUNDS
-                        slot['rnW'] = [0] * HALF_ROUNDS
-                    slot['rnP'][rn - 1] += 1
+                        slot['rnP'] = [0] * (REG_ROUNDS + 1)
+                        slot['rnW'] = [0] * (REG_ROUNDS + 1)
+                    idx = min(rn, REG_ROUNDS + 1) - 1
+                    slot['rnP'][idx] += 1
                     if won:
-                        slot['rnW'][rn - 1] += 1
+                        slot['rnW'][idx] += 1
+
+                    # Win-condition breakdown (elim/defuse/boom/time),
+                    # counted for the round's winner only.
+                    if won and row.win_condition:
+                        bump(key, f'wc_{row.win_condition}')
 
                     # Anti-eco: we're on eco/semi-eco, they're full-buy.
+                    # `in`/`==` against None is always False, so a round
+                    # with no economy data on either side naturally never
+                    # triggers this -- no separate None-check needed.
                     if buys[team] in ECO_BUYS and buys[opp] == '$$$':
                         bump(key, 'aeR')
                         if won:
                             bump(key, 'aeW')
 
-                    # Pistol conversion: round 2, i.e. the bonus round
-                    # immediately after winning the opening pistol. Only
-                    # the first-half pistol exists in this data.
-                    if rn == 2 and pistol_winner == team:
+                    # Pistol conversion: the bonus round immediately after
+                    # winning a pistol, now covering BOTH halves (the
+                    # truncation bug previously meant only round 1->2 was
+                    # ever visible; round 13->14 exists in the data now).
+                    if rn in (2, 14) and pistol_winner == team:
                         bump(key, 'bonusR')
                         if won:
                             bump(key, 'bonusW')
 
-                for team in teams:
-                    half_score[team] += wins[team]
-                if rn == 1:
-                    pistol_winner = next((t for t in teams if wins[t]), None)
-
-            # Comeback: lost the first half by 3+ rounds (e.g. 4-8 down at
-            # the switch) and still won the map.
-            if winner is not None:
+                score[winner] += 1
                 for team in teams:
                     opp = teams[1] if team == teams[0] else teams[0]
-                    if half_score[opp] - half_score[team] >= 3:
-                        bump((team, *base), 'cbN')
-                        if winner == team:
-                            bump((team, *base), 'cbW')
+                    deficit = score[opp] - score[team]
+                    if deficit > max_deficit[team]:
+                        max_deficit[team] = deficit
+                if rn in (1, 13):
+                    pistol_winner = winner
+
+            # Comeback: faced a 3+ round deficit at some point across the
+            # ENTIRE map (not just a first-half proxy, now that full round
+            # data exists) and still won it. Tracked per team independently
+            # -- comebackWon/comebackMaps gives a comeback SUCCESS RATE,
+            # not just a count of the eventual winner's own history.
+            final_winner = teams[0] if score[teams[0]] > score[teams[1]] else teams[1]
+            for team in teams:
+                if max_deficit[team] >= 3:
+                    bump((team, *base), 'cbN')
+                    if final_winner == team:
+                        bump((team, *base), 'cbW')
 
         for (team, eid, wk, day), fields in round_agg.items():
             canon = name_to_canon.get(team, team)

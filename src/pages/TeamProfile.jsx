@@ -10,6 +10,11 @@ import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
 import TrendChart from '../components/TrendChart'
 
+// win_condition values as scraped straight from VLR's round-end icon
+// filename (elim.webp -> "elim", etc.) -- labeled/ordered for display.
+const WIN_CONDITION_ORDER = ['elim', 'defuse', 'boom', 'time']
+const WIN_CONDITION_LABELS = { elim: 'Elimination', defuse: 'Defuse', boom: 'Spike detonated', time: 'Time expired' }
+
 export default function TeamProfile() {
   const { name } = useParams()
   const decodedName = decodeURIComponent(name)
@@ -31,16 +36,17 @@ export default function TeamProfile() {
 
   // Round-number win curve. TrendChart plots against dates, so round
   // numbers are mapped onto arbitrary consecutive days purely as an
-  // x-axis -- the spacing is what matters, not the actual dates.
+  // x-axis -- the spacing is what matters, not the actual dates. Index 24
+  // is the OT catch-all (see aggregateTeamBuckets), labeled accordingly.
   const roundCurve = useMemo(() => {
     if (!stats) return []
     const out = []
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 25; i++) {
       const played = stats.roundsPlayedByNum[i]
       if (!played) continue
       out.push({
         date: `2000-01-${String(i + 1).padStart(2, '0')}`,
-        label: `Round ${i + 1}`,
+        label: i === 24 ? 'OT' : `Round ${i + 1}`,
         value: stats.roundsWonByNum[i] / played,
         n: played,
       })
@@ -168,12 +174,12 @@ export default function TeamProfile() {
             <KpiCard
               label="Comebacks"
               value={stats.comebackMaps ? `${stats.comebackWon}/${stats.comebackMaps}` : '—'}
-              sub="Won after losing 1st half by 3+"
+              sub="Won after facing a 3+ round deficit"
             />
             <KpiCard
               label="Pistol Conversion"
               value={stats.pistolConvRounds ? pct(stats.pistolConvWinPct) : '—'}
-              sub="Round 2 after winning pistol"
+              sub="Rounds 2 & 14, after winning the pistol"
             />
             <KpiCard
               label="Anti-Eco Win%"
@@ -188,14 +194,40 @@ export default function TeamProfile() {
                 Round win% by round number
               </h3>
               <p className="text-muted text-xs mb-4">
-                First half only — VLR's round economy data covers rounds 1–12. Round 1 is the
-                pistol. Dashed line is 50%.
+                Rounds 1 and 13 are the pistols; OT rounds are lumped into one bucket since OT
+                length varies map to map. Dashed line is 50%.
               </p>
               <TrendChart
                 points={roundCurve}
                 baseline={0.5}
                 format={(v) => `${Math.round(v * 100)}%`}
               />
+            </div>
+          )}
+
+          {Object.keys(stats.winConditions || {}).length > 0 && (
+            <div className="bg-surface border border-hairline rounded-2xl p-5">
+              <h3 className="font-display text-sm font-semibold text-ink mb-1">
+                How this team closes out rounds
+              </h3>
+              <p className="text-muted text-xs mb-4">
+                Share of this team's round wins by how the round ended.
+              </p>
+              <div className="flex gap-4 flex-wrap">
+                {WIN_CONDITION_ORDER.filter((k) => stats.winConditions[k]).map((k) => {
+                  const n = stats.winConditions[k]
+                  const total = Object.values(stats.winConditions).reduce((a, b) => a + b, 0)
+                  return (
+                    <div key={k} className="flex flex-col items-center gap-1 min-w-[80px]">
+                      <div className="text-2xl font-display font-semibold text-ink">
+                        {Math.round((n / total) * 100)}%
+                      </div>
+                      <div className="text-muted text-xs capitalize">{WIN_CONDITION_LABELS[k] || k}</div>
+                      <div className="text-muted/70 text-[11px]">{n} rounds</div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           )}
 

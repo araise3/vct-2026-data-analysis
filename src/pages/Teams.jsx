@@ -11,11 +11,75 @@ import {
 } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
 import HorizontalBarChart from '../components/HorizontalBarChart'
+import LeaderCard, { CardShell, topBy } from '../components/LeaderCard'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
 import { pct, num, rating, duration } from '../lib/format'
 
 
+
+/**
+ * The round-level stats added in d4db14d, as leaderboard cards rather
+ * than the tail end of a 19-column table. Every one of these is a rate
+ * over a denominator that varies wildly between teams, so each card
+ * gates on its own sample size -- see topBy's comment for why.
+ */
+const TEAM_LEADERS = [
+  {
+    key: 'atkWinPct', title: 'Best attack sides',
+    qualify: (r) => r.atkRounds >= 150,
+    meta: (r) => `${num(r.atkRounds)} rds`, value: (r) => pct(r.atkWinPct),
+    note: 'Regulation rounds only — VLR\'s per-side score header excludes overtime. Min. 150 attack rounds.',
+  },
+  {
+    key: 'defWinPct', title: 'Best defence sides',
+    qualify: (r) => r.defRounds >= 150,
+    meta: (r) => `${num(r.defRounds)} rds`, value: (r) => pct(r.defWinPct),
+    note: 'Min. 150 defence rounds in scope.',
+  },
+  {
+    key: 'pistolWinPct', title: 'Best pistol rounds',
+    qualify: (r) => r.pistolPlayed >= 20,
+    meta: (r) => `${r.pistolWon}/${r.pistolPlayed}`, value: (r) => pct(r.pistolWinPct),
+    note: 'Assumes 2 pistol rounds per map. Min. 20 pistols.',
+  },
+  {
+    key: 'pistolConvWinPct', title: 'Best pistol conversions',
+    qualify: (r) => r.pistolConvRounds >= 15,
+    meta: (r) => `${num(r.pistolConvRounds)} rds`, value: (r) => pct(r.pistolConvWinPct),
+    note: 'The bonus round after winning a pistol. Min. 15 such rounds.',
+  },
+  {
+    key: 'antiEcoWinPct', title: 'Best anti-eco',
+    qualify: (r) => r.antiEcoRounds >= 10,
+    meta: (r) => `${num(r.antiEcoRounds)} rds`, value: (r) => pct(r.antiEcoWinPct),
+    note: 'Min. 10 anti-eco rounds.',
+  },
+  {
+    key: 'otWinPct', title: 'Best in overtime',
+    qualify: (r) => r.otMaps >= 4,
+    meta: (r) => `${num(r.otMaps)} maps`, value: (r) => `${r.otWon}/${r.otMaps}`,
+    note: 'Min. 4 maps that reached overtime.',
+  },
+  {
+    key: 'comebackPct', title: 'Best comebacks',
+    qualify: (r) => r.comebackMaps >= 6,
+    meta: (r) => `${num(r.comebackMaps)} maps`, value: (r) => `${r.comebackWon}/${r.comebackMaps}`,
+    note: 'Faced a 3+ round deficit and still won the map. Min. 6 such maps.',
+  },
+  {
+    key: 'elimPct', title: 'Most rounds won by elimination',
+    qualify: (r) => r.mapsPlayed >= 10,
+    meta: (r) => `${num(r.mapsPlayed)} maps`, value: (r) => pct(r.elimPct),
+    note: 'Share of round wins ending in a team wipe rather than defuse/detonation/time.',
+  },
+  {
+    key: 'avgMapDurationSeconds', title: 'Longest maps on average',
+    qualify: (r) => r.mapsWithDuration >= 10,
+    meta: (r) => `${num(r.mapsWithDuration)} maps`, value: (r) => duration(r.avgMapDurationSeconds),
+    note: 'Min. 10 maps with a published duration.',
+  },
+]
 
 export default function Teams() {
   const { data, loading } = useData('team_buckets')
@@ -150,6 +214,35 @@ export default function Teams() {
             </div>
           )}
 
+          <div className="flex flex-col gap-3">
+            <div className="flex items-baseline justify-between gap-4 flex-wrap">
+              <h2 className="font-display text-sm font-semibold text-ink">Round-level leaders</h2>
+              <p className="text-muted text-xs">
+                Same filters as the table below. China-region matches carry no economy data,
+                so those teams are absent from the pistol-conversion and anti-eco cards
+                rather than shown as 0%.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {TEAM_LEADERS.map((c) => (
+                <LeaderCard
+                  key={c.key}
+                  title={c.title}
+                  note={c.note}
+                  rows={topBy(rows, c.key, { qualify: c.qualify })}
+                  renderEntity={(r) => (
+                    <Link to={`/teams/${encodeURIComponent(r.team)}`} className="min-w-0">
+                      <TeamLogo team={r.team} size={18} />
+                    </Link>
+                  )}
+                  meta={c.meta}
+                  value={c.value}
+                  showRank
+                />
+              ))}
+            </div>
+          </div>
+
           {(seriesRows.length > 0 || mapRows.length > 0) && (
             <div className="flex flex-col gap-3">
               <div className="flex justify-end">
@@ -200,8 +293,7 @@ export default function Teams() {
 
 function SeriesList({ title, rows, mode = 'series' }) {
   return (
-    <div className="bg-surface border border-hairline rounded-2xl p-5">
-      <h3 className="font-display text-sm font-semibold text-ink mb-4">{title}</h3>
+    <CardShell title={title}>
       <div className="flex flex-col gap-3">
         {rows.map((r) => (
           <div key={r.id} className="flex items-center gap-3 text-sm">
@@ -219,6 +311,6 @@ function SeriesList({ title, rows, mode = 'series' }) {
           </div>
         ))}
       </div>
-    </div>
+    </CardShell>
   )
 }

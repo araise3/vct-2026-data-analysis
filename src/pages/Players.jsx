@@ -194,7 +194,7 @@ export default function Players() {
     },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
     { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
-    { key: 'avgRating', label: 'Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
+    { key: 'avgRating', label: 'R', align: 'right', colorScale: true, format: (v) => rating(v) },
     { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
     { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },
     { key: 'avgKast', label: 'KAST', align: 'right', colorScale: true, format: (v) => pct(v) },
@@ -211,8 +211,8 @@ export default function Players() {
     // Econ isn't a VLR column -- it's ours, placed right after the VLR
     // block rather than mixed into it.
     { key: 'avgEcon', label: 'Econ', align: 'right', colorScale: true, format: (v, r) => (r.utilMaps ? Math.round(v) : '—') },
-    { key: 'totalKills', label: 'Kills', align: 'right', format: (v) => num(v) },
-    { key: 'totalDeaths', label: 'Deaths', align: 'right', format: (v) => num(v) },
+    { key: 'totalKills', label: 'K', align: 'right', format: (v) => num(v) },
+    { key: 'totalDeaths', label: 'D', align: 'right', format: (v) => num(v) },
     { key: 'totalAce', label: 'Ace', align: 'right', format: (v) => num(v) },
     { key: 'totalClutches', label: 'CL', align: 'right', format: (v) => num(v) },
   ]

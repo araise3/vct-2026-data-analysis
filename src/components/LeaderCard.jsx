@@ -49,7 +49,7 @@ export default function LeaderCard({
               {meta && (
                 <span className="text-muted text-xs shrink-0">{meta(r)}</span>
               )}
-              <span className="font-semibold text-ink shrink-0 w-20 text-right tabular-nums">
+              <span className="font-semibold text-ink shrink-0 w-16 text-right tabular-nums">
                 {value(r)}
               </span>
             </div>

@@ -83,22 +83,26 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
               <th
                 key={col.key}
                 onClick={() => toggleSort(col.key)}
-                className={`px-4 py-3 font-medium text-xs uppercase tracking-wide text-muted cursor-pointer select-none whitespace-nowrap hover:text-ink transition-colors align-middle border-r border-b border-hairline ${
+                className={`relative px-4 py-3 font-medium text-xs uppercase tracking-wide text-muted cursor-pointer select-none whitespace-nowrap hover:text-ink transition-colors align-middle border-r border-b border-hairline ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 }`}
               >
                 {col.label}
                 {/*
-                  The arrow is always rendered, just invisible when this
-                  isn't the active sort column -- reserving its width up
-                  front. Rendering it conditionally (only when active)
-                  made the header cell itself widen the moment a column
-                  became the sort key, since table-layout:auto sizes each
-                  column to its own content and the arrow+margin is real
-                  width that wasn't there before.
+                  Absolutely positioned so it never contributes to the
+                  header cell's own content width -- table-layout:auto
+                  sizes each column off its content, so an arrow sitting
+                  in normal flow (even reserved-but-invisible) either
+                  widened just the active column on sort, or widened
+                  every column at once by reserving space everywhere.
+                  Taking it out of flow entirely means mounting it for
+                  whichever column is active never changes that column's
+                  width, and no width is spent on it when it's absent.
                 */}
                 <span
-                  className={`ml-1 text-accent ${sortKey === col.key ? '' : 'invisible'}`}
+                  className={`absolute right-1.5 top-1/2 -translate-y-1/2 text-accent pointer-events-none ${
+                    sortKey === col.key ? '' : 'invisible'
+                  }`}
                 >
                   {sortKey === col.key && sortDir === 'asc' ? '↑' : '↓'}
                 </span>

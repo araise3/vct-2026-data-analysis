@@ -214,7 +214,7 @@ export default function Players() {
     { key: 'totalKills', label: 'Kills', align: 'right', format: (v) => num(v) },
     { key: 'totalDeaths', label: 'Deaths', align: 'right', format: (v) => num(v) },
     { key: 'totalAce', label: 'Ace', align: 'right', format: (v) => num(v) },
-    { key: 'totalClutches', label: 'Clutches', align: 'right', format: (v) => num(v) },
+    { key: 'totalClutches', label: 'CL', align: 'right', format: (v) => num(v) },
   ]
 
   return (

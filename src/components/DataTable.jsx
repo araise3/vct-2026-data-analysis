@@ -84,7 +84,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                 key={col.key}
                 onClick={() => toggleSort(col.key)}
                 className={`px-5 py-3 font-medium text-xs uppercase tracking-wide cursor-pointer select-none whitespace-nowrap transition-colors align-middle border-r border-b border-hairline ${
-                  col.align === 'right' ? 'text-right' : 'text-left'
+                  col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'
                 } ${sortKey === col.key ? 'text-accent' : 'text-muted hover:text-ink'}`}
               >
                 {/*
@@ -133,7 +133,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                     key={col.key}
                     style={bg ? { backgroundColor: bg } : undefined}
                     className={`px-5 py-2.5 font-body text-[13px] whitespace-nowrap align-middle border-r border-b border-hairline ${
-                      col.align === 'right' ? 'text-right' : 'text-left'
+                      col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'
                     } ${col.key === columns[0].key ? 'text-ink' : 'text-ink/90'}`}
                   >
                     {col.format ? col.format(value, row) : value ?? '—'}

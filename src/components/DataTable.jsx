@@ -87,7 +87,30 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                   col.align === 'right' ? 'text-right' : 'text-left'
                 } ${sortKey === col.key ? 'text-accent' : 'text-muted hover:text-ink'}`}
               >
-                {col.label}
+                {/*
+                  The arrow slot is a fixed-width inline-flex span that's
+                  ALWAYS rendered -- just toggling visibility, never
+                  mounted/unmounted -- so every header reserves the exact
+                  same width for it from the very first render, whether
+                  that column is the active sort or not. That's what
+                  keeps a column's width constant when you click to sort
+                  it: nothing about the header's own content size changes,
+                  only which glyph is visible inside a slot that was
+                  always there. (A previous attempt reserved this space
+                  only on the active column, which grew that column on
+                  click; reserving it on every column from the start,
+                  uniformly, is what avoids that.)
+                */}
+                <span className={`inline-flex items-center gap-1 ${col.align === 'right' ? 'flex-row-reverse' : ''}`}>
+                  <span
+                    className={`inline-block w-2.5 text-[10px] leading-none text-accent ${
+                      sortKey === col.key ? '' : 'invisible'
+                    }`}
+                  >
+                    {sortDir === 'asc' ? '▲' : '▼'}
+                  </span>
+                  {col.label}
+                </span>
               </th>
             ))}
           </tr>

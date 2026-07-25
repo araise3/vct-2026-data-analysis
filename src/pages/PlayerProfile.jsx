@@ -32,21 +32,25 @@ export default function PlayerProfile() {
     [filtered, ratedOnly]
   )
 
-  if (loading) return <div className="text-muted text-sm">Loading…</div>
-
-  const meta = data?.meta?.[decodedName]
-  if (!meta) {
-    return (
-      <div className="flex flex-col gap-4">
-        <Link to="/players" className="text-sm text-accent-bright hover:underline">← Back to Players</Link>
-        <p className="text-muted text-sm">No player found matching "{decodedName}".</p>
-      </div>
-    )
-  }
-
   // Rating over time: one point per day the player actually played,
   // rounds-weighted within the day so a 3-map day isn't averaged flat
   // against a 1-map day.
+  //
+  // This MUST stay above the early returns below, not after them. It
+  // used to sit after `if (loading) return` / `if (!meta) return`, which
+  // is a Rules-of-Hooks violation: on a cold data cache, the first render
+  // has loading=true and bails out before ever calling this hook; once
+  // the fetch resolves, the same component instance re-renders with
+  // loading=false and DOES call it -- a different hook count between two
+  // renders of the same instance, which React throws on. With no error
+  // boundary anywhere in the tree, that throw unmounts the entire app,
+  // which is what showed up as the whole page going blank/dark. It only
+  // reproduced when player_buckets.json hadn't already been fetched in
+  // that tab (a fresh tab, a direct link, anywhere that lands on a
+  // profile without having hit /players first) -- once cached, loading
+  // is false from the very first render and the mismatch never occurs,
+  // which is why "it's fine after a refresh" once the data's warm looked
+  // like a fix rather than a race that happened not to trigger.
   const trend = useMemo(() => {
     const byDate = new Map()
     for (const b of filtered) {
@@ -60,6 +64,18 @@ export default function PlayerProfile() {
       .map(([date, v]) => ({ date, value: v.s / v.r, n: v.maps }))
       .sort((a, b) => a.date.localeCompare(b.date))
   }, [filtered])
+
+  if (loading) return <div className="text-muted text-sm">Loading…</div>
+
+  const meta = data?.meta?.[decodedName]
+  if (!meta) {
+    return (
+      <div className="flex flex-col gap-4">
+        <Link to="/players" className="text-sm text-accent-bright hover:underline">← Back to Players</Link>
+        <p className="text-muted text-sm">No player found matching "{decodedName}".</p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6">

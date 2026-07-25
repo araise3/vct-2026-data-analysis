@@ -20,6 +20,11 @@ USAGE
     python3 vlr_vct_scraper.py --events 2683     # scrape just one event id
     python3 vlr_vct_scraper.py --skip-matches    # stats/agents only (fast)
     python3 vlr_vct_scraper.py --resume          # skip matches already in DB
+    python3 vlr_vct_scraper.py --economy-only    # re-fetch ONLY the economy tab
+                                                   # for matches already in the DB
+                                                   # (2 fetches/match instead of a
+                                                   # full match_detail's 3; add
+                                                   # --events to scope it)
 
 NOTES
 -----
@@ -601,7 +606,10 @@ def scrape_match_economy(session, conn, match_id: int, match_url: str,
 
     Both tables share the same class ("table.wf-table-inset.mod-econ") but
     are structurally distinct: the summary table has a <th> header row, the
-    round-by-round table doesn't (it's one <tr> with one <td> per round).
+    round-by-round table doesn't -- it's split across multiple <tr> rows
+    (one per chunk of up to 12-13 rounds: first half, second half, then OT
+    if any), each with one <td> per round in that chunk. Confirmed against
+    a real dumped page.
     """
     econ_url = match_url.rstrip("/") + "/?tab=economy"
     soup = fetch(econ_url, session)
@@ -653,42 +661,149 @@ def scrape_match_economy(session, conn, match_id: int, match_url: str,
                     )
                     rows_saved += 1
             else:
-                # --- Round-by-round breakdown (single <tr>, one <td> per round) ---
-                tr = table.find("tr")
-                if tr is None:
-                    continue
-                tds = tr.find_all("td")
-                for td in tds[1:]:  # first td is the "(BANK) team1 team2 (BANK)" label column
-                    round_num_el = td.select_one(".round-num")
-                    round_num = to_int(clean(round_num_el.get_text())) if round_num_el else None
-                    if round_num is None:
-                        continue
+                # --- Round-by-round breakdown ---
+                # VLR splits this into MULTIPLE <tr> rows, not one --
+                # confirmed against real matches: a 26-round game (13-13
+                # after OT) came back as three <tr>s of 13+13+3 <td>s each,
+                # which is 12+12+2 actual round cells once the leading
+                # label column in each row is excluded -- exactly matching
+                # that game's own round total. Previously only the first
+                # <tr> was read (table.find("tr") grabs just one), which
+                # silently dropped every map's second half and beyond;
+                # every row in the DB having exactly 12 rounds was that bug,
+                # not a real VLR limitation. Each td is self-labelled with
+                # its own round number via .round-num, so simply visiting
+                # every row's cells is sufficient -- no manual round
+                # counter needed across rows.
+                for tr in table.find_all("tr"):
+                    tds = tr.find_all("td")
+                    for td in tds[1:]:  # first td is the "(BANK) team1 team2 (BANK)" label column
+                        round_num_el = td.select_one(".round-num")
+                        round_num = to_int(clean(round_num_el.get_text())) if round_num_el else None
+                        if round_num is None:
+                            continue
 
-                    banks = td.select(".bank")
-                    rnd_sqs = td.select(".rnd-sq")
-                    t1_bank = clean(banks[0].get_text()) if len(banks) > 0 else None
-                    t2_bank = clean(banks[1].get_text()) if len(banks) > 1 else None
+                        banks = td.select(".bank")
+                        rnd_sqs = td.select(".rnd-sq")
+                        t1_bank = clean(banks[0].get_text()) if len(banks) > 0 else None
+                        t2_bank = clean(banks[1].get_text()) if len(banks) > 1 else None
 
-                    t1_loadout = to_int(rnd_sqs[0].get("title")) if len(rnd_sqs) > 0 else None
-                    t1_buy = clean(rnd_sqs[0].get_text()) if len(rnd_sqs) > 0 else None
-                    t1_win = 1 if len(rnd_sqs) > 0 and "mod-win" in (rnd_sqs[0].get("class") or []) else 0
+                        t1_loadout = to_int(rnd_sqs[0].get("title")) if len(rnd_sqs) > 0 else None
+                        t1_buy = clean(rnd_sqs[0].get_text()) if len(rnd_sqs) > 0 else None
+                        t1_win = 1 if len(rnd_sqs) > 0 and "mod-win" in (rnd_sqs[0].get("class") or []) else 0
 
-                    t2_loadout = to_int(rnd_sqs[1].get("title")) if len(rnd_sqs) > 1 else None
-                    t2_buy = clean(rnd_sqs[1].get_text()) if len(rnd_sqs) > 1 else None
-                    t2_win = 1 if len(rnd_sqs) > 1 and "mod-win" in (rnd_sqs[1].get("class") or []) else 0
+                        t2_loadout = to_int(rnd_sqs[1].get("title")) if len(rnd_sqs) > 1 else None
+                        t2_buy = clean(rnd_sqs[1].get_text()) if len(rnd_sqs) > 1 else None
+                        t2_win = 1 if len(rnd_sqs) > 1 and "mod-win" in (rnd_sqs[1].get("class") or []) else 0
 
-                    cur.execute(
-                        """INSERT OR REPLACE INTO map_round_economy
-                        (match_id, map_index, round_num, team1_bank, team1_loadout,
-                         team1_buy_type, team1_round_win, team2_bank, team2_loadout,
-                         team2_buy_type, team2_round_win)
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
-                        (match_id, map_index, round_num, t1_bank, t1_loadout,
-                         t1_buy, t1_win, t2_bank, t2_loadout, t2_buy, t2_win),
-                    )
-                    rows_saved += 1
+                        cur.execute(
+                            """INSERT OR REPLACE INTO map_round_economy
+                            (match_id, map_index, round_num, team1_bank, team1_loadout,
+                             team1_buy_type, team1_round_win, team2_bank, team2_loadout,
+                             team2_buy_type, team2_round_win)
+                            VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+                            (match_id, map_index, round_num, t1_bank, t1_loadout,
+                             t1_buy, t1_win, t2_bank, t2_loadout, t2_buy, t2_win),
+                        )
+                        rows_saved += 1
     conn.commit()
     return rows_saved
+
+
+def build_game_id_to_map_index(soup):
+    """
+    Reconstructs the data-game-id -> map_index mapping from a match's
+    Overview-tab page, read-only (no DB writes) -- for re-fetching a
+    match's Economy tab without re-scraping/re-parsing its box scores.
+
+    Deliberately duplicates (rather than shares) the same "is this a real,
+    played map" filter scrape_match_detail uses when it originally builds
+    this mapping and writes to `maps`: sharing/refactoring that logic
+    risked introducing a subtle behavior change into the main scrape path,
+    which is already proven correct against real data and shouldn't be
+    touched for a targeted bug-only backfill. If VLR's markup for map
+    name / score selectors ever changes, both copies need updating
+    together -- there's a matching copy of this filter in
+    scrape_match_detail below.
+    """
+    mapping = {}
+    map_index = 0
+    for game in soup.select(".vm-stats-game"):
+        game_id = game.get("data-game-id", "")
+        if game_id == "all":
+            continue
+        map_name_el = game.select_one(".map div > span")
+        raw_map_name = clean(map_name_el.get_text()).split("\n")[0] if map_name_el else None
+        team_scores = game.select(".score")
+        t1_score = to_int(clean(team_scores[0].get_text())) if len(team_scores) > 0 else None
+        t2_score = to_int(clean(team_scores[1].get_text())) if len(team_scores) > 1 else None
+        is_real_map = (
+            raw_map_name and raw_map_name.upper() != "TBD"
+            and t1_score is not None and t2_score is not None
+            and (t1_score > 0 or t2_score > 0)
+        )
+        if not is_real_map:
+            continue
+        map_index += 1
+        mapping[game_id] = map_index
+    return mapping
+
+
+def rescrape_match_economy_only(session, conn, match_id: int, match_url: str) -> int:
+    """
+    Backfills just the round-by-round economy data for a match that's
+    already correctly scraped in every other respect -- used by
+    --economy-only to fix the "only the first <tr>" bug without re-fetching
+    the Performance tab or re-parsing/re-inserting already-correct box
+    scores. Two fetches (Overview + Economy) instead of scrape_match_detail's
+    three (Overview + Performance + Economy).
+    """
+    soup = fetch(match_url, session)
+    if soup is None:
+        print(f"  [warn] match {match_id}: could not re-fetch overview page, skipping")
+        return 0
+
+    teams = soup.select(".match-header-link-name .wf-title-med")
+    team1 = clean(teams[0].get_text()) if len(teams) > 0 else None
+    team2 = clean(teams[1].get_text()) if len(teams) > 1 else None
+
+    game_id_to_map_index = build_game_id_to_map_index(soup)
+    if not game_id_to_map_index:
+        print(f"  [warn] match {match_id}: no maps found on re-fetch, skipping")
+        return 0
+
+    return scrape_match_economy(session, conn, match_id, match_url, game_id_to_map_index, team1, team2)
+
+
+def rescrape_all_economy(session, conn, event_ids=None):
+    """Re-scrapes ONLY the economy tab for every completed match already in
+    the DB (optionally scoped to specific event_ids) -- the targeted fix
+    for the round-by-round bug, without re-doing event stats/agents or
+    match box scores/performance data, none of which the bug touched."""
+    cur = conn.cursor()
+    if event_ids:
+        placeholders = ",".join("?" * len(event_ids))
+        cur.execute(
+            f"SELECT match_id, match_url FROM matches "
+            f"WHERE status='completed' AND event_id IN ({placeholders}) ORDER BY match_id",
+            event_ids,
+        )
+    else:
+        cur.execute(
+            "SELECT match_id, match_url FROM matches WHERE status='completed' ORDER BY match_id"
+        )
+    rows = cur.fetchall()
+    print(f"Re-scraping economy data for {len(rows)} completed matches...")
+    for i, (match_id, match_url) in enumerate(rows, 1):
+        try:
+            n = rescrape_match_economy_only(session, conn, match_id, match_url)
+            print(f"  [{i}/{len(rows)}] match {match_id}: {n} round-economy rows")
+        except KeyboardInterrupt:
+            print("\nInterrupted — progress saved to DB.")
+            raise
+        except Exception as e:
+            print(f"  !! failed on match {match_id}: {e}")
+            continue
 
 
 def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: str, dump_html: bool = False):
@@ -983,6 +1098,11 @@ def main():
     parser.add_argument("--events", type=int, nargs="*", help="Specific event IDs to scrape (default: all)")
     parser.add_argument("--skip-matches", action="store_true", help="Only scrape aggregate stats + agents (fast)")
     parser.add_argument("--resume", action="store_true", help="Skip matches already saved in the DB")
+    parser.add_argument("--economy-only", action="store_true",
+                         help="Re-scrape ONLY the round-by-round economy tab for matches already "
+                              "in the DB (fixes the 'only 12 rounds captured' bug) without "
+                              "re-doing event stats/agents or match box scores/performance data. "
+                              "Combine with --events to scope to specific events.")
     parser.add_argument("--db", default=DB_PATH, help="SQLite DB path")
     parser.add_argument("--dump-html", type=int, nargs="*", default=[],
                          help="Match ID(s) to save raw HTML for, e.g. --dump-html 594740 594741 "
@@ -992,6 +1112,12 @@ def main():
 
     conn = init_db(args.db)
     session = requests.Session()
+
+    if args.economy_only:
+        rescrape_all_economy(session, conn, event_ids=args.events)
+        conn.close()
+        print(f"\nDone. Data saved to {args.db}")
+        return
 
     events = VCT_2026_EVENTS
     if args.events:

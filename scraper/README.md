@@ -303,6 +303,46 @@ Combined with `maps` (map-level scores/sides) and `map_player_stats`
 page (Overview, Performance, Economy — Logs is still marked "Soon" on
 their end as of writing, nothing to scrape there).
 
+## Fixed: `map_round_economy` was silently truncated to 12 rounds per map
+
+If every map in your DB has exactly 12 `map_round_economy` rows regardless
+of the actual score, that's this bug (now fixed, but see below for how to
+backfill an existing DB).
+
+VLR splits the round-by-round economy table across **multiple `<tr>` rows**
+— one row per chunk of up to 12-13 rounds (first half, second half, then
+OT if any) — not a single row with one `<td>` per round like the earlier
+scraper assumed. The old code did `table.find("tr")`, which grabs only the
+*first* row, so every map's second half (round 13 onward) was silently
+dropped. Confirmed against real matches: a 26-round game (13-13, went to
+OT) came back as three `<tr>`s of 13+13+3 `<td>`s each — 12+12+2 = 26 actual
+round cells once each row's leading label column is excluded, matching that
+game's own total exactly.
+
+The fix iterates every `<tr>` in the table instead of just the first. No
+round-counting logic was needed across rows — each `<td>` already
+self-labels its own round number via a `.round-num` element inside it.
+
+**To backfill an already-scraped DB**, use the new `--economy-only` flag
+rather than a full re-scrape:
+
+```
+python3 vlr_vct_scraper.py --economy-only
+python3 vlr_ewc_scraper.py --economy-only
+```
+
+This re-fetches just the Overview tab (to rebuild the map-index mapping)
+and the Economy tab for every match already marked `completed` — 2
+requests per match instead of a full re-scrape's 3, and it skips event
+stats/agents entirely, none of which this bug touched. **`--resume` will
+NOT trigger this fix** — it skips any match already marked `completed`,
+which by now is all of them, so it'll never re-visit the broken data.
+`--economy-only` bypasses that check on purpose. It's safe to run on a DB
+that already has (broken) round-economy data: the table's primary key is
+`(match_id, map_index, round_num)` with `INSERT OR REPLACE`, so re-running
+this just rewrites rounds 1-12 identically and adds the previously-missing
+13+, without duplicating or corrupting anything.
+
 ## Full column reference (as of the economy-tab addition)
 
 | Table | Granularity | Key columns |

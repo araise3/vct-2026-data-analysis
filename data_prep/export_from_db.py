@@ -106,7 +106,17 @@ def main():
     # scope, rather than maintaining two separate pipelines.
     matches = pd.concat([vct["matches"], ewc["matches"]], ignore_index=True)
     maps_df = pd.concat([vct["maps"], ewc["maps"]], ignore_index=True)
+    # side='both' only -- see the matching, more detailed comment on the
+    # other map_player_stats concat (all_mps) further down. This copy feeds
+    # team_stats()/players_out (region/nationality meta only, so mostly
+    # harmless) and the Agents pick-rate pipeline (buckets/agentCounts/
+    # playerRows) -- confirmed that one actually mattered: pick-rate and
+    # win-rate percentages happened to cancel the 3x out mathematically
+    # (numerator and denominator both come from the same row count), but
+    # playerRows is a raw count with nothing to cancel against, and was
+    # showing 3x too many "team-maps in scope" on the Agents page.
     mps = pd.concat([vct["map_player_stats"], ewc["map_player_stats"]], ignore_index=True)
+    mps = mps[mps["side"] == "both"]
     mte = pd.concat([vct["map_team_economy"], ewc["map_team_economy"]], ignore_index=True)
     events = pd.concat([vct["events"], ewc["events"]], ignore_index=True)
 

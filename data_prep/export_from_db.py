@@ -67,6 +67,9 @@ TABLE_COLUMNS = {
     "map_team_economy": ["match_id", "map_index", "team", "pistol_won",
                          "eco_rounds", "eco_won", "semi_eco_rounds", "semi_eco_won",
                          "semi_buy_rounds", "semi_buy_won", "full_buy_rounds", "full_buy_won"],
+    "map_round_economy": ["match_id", "map_index", "round_num", "team1_bank", "team1_loadout",
+                          "team1_buy_type", "team1_round_win", "team2_bank", "team2_loadout",
+                          "team2_buy_type", "team2_round_win"],
     "events": ["event_id", "slug", "name", "region", "stage", "dates", "prize", "location"],
 }
 
@@ -82,7 +85,8 @@ def load_db(path, competition):
                 for name, cols in TABLE_COLUMNS.items()}
     conn = sqlite3.connect(path)
     tables = {}
-    for name in ["matches", "maps", "map_player_stats", "map_team_economy", "events"]:
+    for name in ["matches", "maps", "map_player_stats", "map_team_economy", "events",
+                 "map_round_economy"]:
         df = pd.read_sql_query(f"SELECT * FROM {name}", conn)
         df["competition"] = competition
         tables[name] = df
@@ -361,6 +365,7 @@ def main():
     all_maps = pd.concat([vct["maps"], ewc["maps"]], ignore_index=True)
     all_mps = pd.concat([vct["map_player_stats"], ewc["map_player_stats"]], ignore_index=True)
     all_mte = pd.concat([vct["map_team_economy"], ewc["map_team_economy"]], ignore_index=True)
+    all_mre = pd.concat([vct["map_round_economy"], ewc["map_round_economy"]], ignore_index=True)
     for col in ['kast', 'hs_pct']:
         all_mps[col] = pct_to_float(all_mps[col])
 
@@ -460,6 +465,23 @@ def main():
             "m2": int(g['multi_2k'].fillna(0).sum()), "m3": int(g['multi_3k'].fillna(0).sum()),
             "m4": int(g['multi_4k'].fillna(0).sum()), "m5": int(g['multi_5k'].fillna(0).sum()),
             "cl": int(g[['clutch_1v1','clutch_1v2','clutch_1v3','clutch_1v4','clutch_1v5']].fillna(0).sum().sum()),
+            # Utility/objective play. utN is how many of this bucket's maps
+            # actually carry these fields -- they're null for every
+            # China-region map (same VLR gap as economy data), so the site
+            # divides by utN and shows nothing when it's 0, rather than
+            # showing a misleading 0 plants.
+            "pl": int(g['plants'].fillna(0).sum()),
+            "df": int(g['defuses'].fillna(0).sum()),
+            "ecS": round(float(g['econ'].dropna().sum()), 2),
+            "utN": int(g['econ'].notna().sum()),
+            # Consistency: per-map rating sum and sum of squares (unweighted,
+            # unlike ratS which is rounds-weighted). Storing the squares is
+            # what makes standard deviation computable over *any* filtered
+            # subset by summing buckets -- var = E[x^2] - E[x]^2 -- instead
+            # of needing every individual map's rating on the client.
+            "rmS": round(float(g['rating'].dropna().sum()), 3),
+            "rmSq": round(float((g['rating'].dropna() ** 2).sum()), 4),
+            "rmN": int(g['rating'].notna().sum()),
         }
         # Sparse "unrated maps" delta: only ~21 China matches lack Rating
         # 2.0, so rather than duplicating every field for a rated-only
@@ -494,6 +516,28 @@ def main():
                   f, separators=(',', ':'))
     print(f"player_buckets.json: {len(player_buckets)} buckets")
 
+    # --- per-agent player buckets ---
+    # Same (player, event, week, day) key as player_buckets but split by
+    # agent, so "best Jett players" is filterable exactly like every other
+    # view. Kept to core fields only -- this has ~2x the row count of
+    # player_buckets, so every extra field costs real bytes.
+    agent_buckets = []
+    for (player, agent, event_id, week, day), g in mps_ctx.dropna(subset=['agent']).groupby(
+            ['player', 'agent', 'event_id', 'stage', 'date'], dropna=True):
+        r_sum, r_rnd = wsum(g, 'rating')
+        acs_valid = g['acs'].dropna()
+        agent_buckets.append({
+            "p": player, "ag": agent, "e": int(event_id), "w": week, "d": day,
+            "maps": int(len(g)), "rnd": int(g['rounds_total'].fillna(0).sum()),
+            "ratS": round(r_sum, 3), "ratR": r_rnd,
+            "acsS": round(float(acs_valid.sum()), 2), "acsM": int(len(acs_valid)),
+            "k": int(g['kills'].fillna(0).sum()), "d_": int(g['deaths'].fillna(0).sum()),
+        })
+    with open(f"{OUT}/player_agents.json", "w") as f:
+        json.dump({"events": events_lookup, "meta": player_meta, "buckets": agent_buckets},
+                  f, separators=(',', ':'))
+    print(f"player_agents.json: {len(agent_buckets)} buckets")
+
     # --- teams ---
     completed_all = all_matches[all_matches['status'] == 'completed']
     team_buckets = []
@@ -507,6 +551,26 @@ def main():
     map_ctx = map_ctx.copy()
     map_ctx['date'] = day_col(map_ctx['match_date'])
 
+    # Attack/defense round splits. A team's *_atk_score is rounds WON while
+    # attacking; rounds PLAYED on attack is that plus the opponent's
+    # defense wins (every attack round is someone's defense round).
+    # Verified against real data: atk+def sums exactly to map score on all
+    # 913 regulation maps, 0 mismatches. Overtime rounds are NOT included
+    # in these scores, so they're regulation-only by construction -- which
+    # is why a map is flagged OT separately rather than inferred from a
+    # sum mismatch. OT iff the winner reached 14+ (regulation caps at 13).
+    map_ctx['c1_atkW'] = map_ctx['team1_atk_score']
+    map_ctx['c1_atkP'] = map_ctx['team1_atk_score'] + map_ctx['team2_def_score']
+    map_ctx['c1_defW'] = map_ctx['team1_def_score']
+    map_ctx['c1_defP'] = map_ctx['team1_def_score'] + map_ctx['team2_atk_score']
+    map_ctx['c2_atkW'] = map_ctx['team2_atk_score']
+    map_ctx['c2_atkP'] = map_ctx['team2_atk_score'] + map_ctx['team1_def_score']
+    map_ctx['c2_defW'] = map_ctx['team2_def_score']
+    map_ctx['c2_defP'] = map_ctx['team2_def_score'] + map_ctx['team1_atk_score']
+    map_ctx['is_ot'] = (
+        map_ctx[['team1_score', 'team2_score']].max(axis=1) >= 14
+    ).astype(int)
+
     team_rows = []
     for team_col, opp_col in (('c1', 'c2'), ('c2', 'c1')):
         sub = completed_all[['event_id', 'stage', team_col, 'score1', 'score2', 'match_date']].copy()
@@ -519,9 +583,12 @@ def main():
     map_rows = []
     for team_col in ('c1', 'c2'):
         sub = map_ctx[['event_id', 'stage', team_col, 'winner', 'rounds_total',
-                       'duration_seconds', 'date']].copy()
+                       'duration_seconds', 'date', 'is_ot',
+                       f'{team_col}_atkW', f'{team_col}_atkP',
+                       f'{team_col}_defW', f'{team_col}_defP']].copy()
         sub.columns = ['event_id', 'week', 'team', 'winner', 'rounds_total',
-                       'duration_seconds', 'date']
+                       'duration_seconds', 'date', 'is_ot',
+                       'atkW', 'atkP', 'defW', 'defP']
         map_rows.append(sub)
     map_long = pd.concat(map_rows, ignore_index=True)
 
@@ -541,6 +608,13 @@ def main():
         # so downstream averaging divides by durM, not mapP.
         d["durS"] = int(g['duration_seconds'].fillna(0).sum())
         d["durM"] = int(g['duration_seconds'].notna().sum())
+        # Attack/defense split. atkP/defP are 0 for maps where VLR didn't
+        # publish the per-side breakdown (partial in EWC), so the frontend
+        # divides by the stored *P and shows nothing when it's 0.
+        for k in ('atkW', 'atkP', 'defW', 'defP'):
+            d[k] = int(g[k].fillna(0).sum())
+        d["otM"] = int(g['is_ot'].fillna(0).sum())
+        d["otW"] = int(((g['winner'] == team) & (g['is_ot'] == 1)).sum())
     for (team, eid, wk, day), g in mte_ctx.groupby(['canonical_team', 'event_id', 'stage', 'date'], dropna=True):
         d = agg.setdefault((team, int(eid), wk, day), {})
         d["pisW"] = int(g['pistol_won'].fillna(0).sum())
@@ -561,6 +635,118 @@ def main():
         d["ratS"] = round(r_sum, 3)
         d["ratR"] = r_rnd
 
+    # --- first-half round stats (from map_round_economy) ---
+    # IMPORTANT: this table only ever contains rounds 1-12 -- verified
+    # exactly 12 rows per map across all 955 maps in both dbs, no
+    # exceptions. VLR's economy tab is first-half-only in the scrape, so
+    # every counter below is explicitly a FIRST-HALF figure and named/
+    # labelled as such rather than pretending to cover a whole map.
+    # (Also empty entirely for China-region matches -- same known VLR gap
+    # as the economy and rating data -- so these are absent, not zero,
+    # for those buckets.)
+    #
+    # Buy types are VLR's own "", "$", "$$", "$$$" (eco / semi-eco /
+    # semi-buy / full-buy). Pistol rounds also come through as "" since
+    # nobody has money yet; harmless for anti-eco (which requires the
+    # OPPONENT on "$$$", impossible in a pistol) but it's why the pistol
+    # is identified by round number instead of buy type.
+    if len(all_mre):
+        # Final map result, to resolve comebacks: a first-half deficit is
+        # only a comeback if the team went on to win the actual map, which
+        # this table can't tell us on its own.
+        map_result = {}
+        for row in map_ctx.itertuples():
+            map_result[(int(row.match_id), int(row.map_index))] = row.winner
+
+        mre = all_mre.merge(
+            all_matches[['match_id', 'event_id', 'stage', 'match_date', 'c1', 'c2']],
+            on='match_id', how='left'
+        )
+        mre['date'] = day_col(mre['match_date'])
+        mre = mre.dropna(subset=['c1', 'c2', 'event_id'])
+        mre = mre.sort_values(['match_id', 'map_index', 'round_num'])
+
+        ECO_BUYS = ('', '$')
+        HALF_ROUNDS = 12
+        round_agg = {}
+
+        def bump(key, field, n=1):
+            round_agg.setdefault(key, {})
+            round_agg[key][field] = round_agg[key].get(field, 0) + n
+
+        for (mid, midx), grp in mre.groupby(['match_id', 'map_index'], sort=False):
+            first = grp.iloc[0]
+            base = (int(first['event_id']), first['stage'], first['date'])
+            teams = [first['c1'], first['c2']]
+            half_score = {t: 0 for t in teams}
+            pistol_winner = None
+            winner = map_result.get((int(mid), int(midx)))
+
+            for row in grp.itertuples():
+                rn = int(row.round_num)
+                if rn > HALF_ROUNDS:
+                    continue
+                wins = {teams[0]: int(row.team1_round_win or 0),
+                        teams[1]: int(row.team2_round_win or 0)}
+                buys = {teams[0]: (row.team1_buy_type or ''),
+                        teams[1]: (row.team2_buy_type or '')}
+
+                for team in teams:
+                    key = (team, *base)
+                    opp = teams[1] if team == teams[0] else teams[0]
+                    won = wins[team]
+
+                    # Per-round-number win curve over the 12 first-half
+                    # rounds. Two fixed-length arrays rather than 24
+                    # separate keys -- the key names alone cost more bytes
+                    # than the numbers did.
+                    slot = round_agg.setdefault(key, {})
+                    if 'rnP' not in slot:
+                        slot['rnP'] = [0] * HALF_ROUNDS
+                        slot['rnW'] = [0] * HALF_ROUNDS
+                    slot['rnP'][rn - 1] += 1
+                    if won:
+                        slot['rnW'][rn - 1] += 1
+
+                    # Anti-eco: we're on eco/semi-eco, they're full-buy.
+                    if buys[team] in ECO_BUYS and buys[opp] == '$$$':
+                        bump(key, 'aeR')
+                        if won:
+                            bump(key, 'aeW')
+
+                    # Pistol conversion: round 2, i.e. the bonus round
+                    # immediately after winning the opening pistol. Only
+                    # the first-half pistol exists in this data.
+                    if rn == 2 and pistol_winner == team:
+                        bump(key, 'bonusR')
+                        if won:
+                            bump(key, 'bonusW')
+
+                for team in teams:
+                    half_score[team] += wins[team]
+                if rn == 1:
+                    pistol_winner = next((t for t in teams if wins[t]), None)
+
+            # Comeback: lost the first half by 3+ rounds (e.g. 4-8 down at
+            # the switch) and still won the map.
+            if winner is not None:
+                for team in teams:
+                    opp = teams[1] if team == teams[0] else teams[0]
+                    if half_score[opp] - half_score[team] >= 3:
+                        bump((team, *base), 'cbN')
+                        if winner == team:
+                            bump((team, *base), 'cbW')
+
+        for (team, eid, wk, day), fields in round_agg.items():
+            canon = name_to_canon.get(team, team)
+            d = agg.setdefault((canon, int(eid), wk, day), {})
+            for f, v in fields.items():
+                if isinstance(v, list):
+                    prev = d.get(f)
+                    d[f] = v if prev is None else [a + b for a, b in zip(prev, v)]
+                else:
+                    d[f] = d.get(f, 0) + v
+
     for (team, eid, wk, day), d in agg.items():
         if team == 'TBD':
             continue
@@ -571,6 +757,59 @@ def main():
         json.dump({"events": events_lookup, "meta": team_meta, "buckets": team_buckets},
                   f, separators=(',', ':'))
     print(f"team_buckets.json: {len(team_buckets)} buckets")
+
+    # --- match + map results ---
+    # One row per completed match, with its maps nested. Powers
+    # head-to-head records, biggest upsets and biggest blowouts, none of
+    # which fit the per-entity bucket model (they're about a specific
+    # pairing, not one team's aggregate).
+    #
+    # `strength` is each team's own overall match win rate across all data
+    # present, used purely as an upset proxy -- there's no seeding or
+    # ranking in the scrape, so an "upset" here means a team with a much
+    # worse season record beat one with a better record. Documented on the
+    # page itself so it isn't mistaken for a real ranking upset.
+    team_record = {}
+    for row in completed_all.itertuples():
+        for t, won in ((row.c1, row.score1 > row.score2), (row.c2, row.score2 > row.score1)):
+            rec = team_record.setdefault(t, [0, 0])
+            rec[0] += 1
+            rec[1] += int(bool(won))
+    strength = {t: (w / p) for t, (p, w) in team_record.items() if p >= 3}
+
+    maps_by_match = {}
+    for row in map_ctx.itertuples():
+        maps_by_match.setdefault(int(row.match_id), []).append({
+            "map": row.map_name,
+            "s1": int(row.team1_score) if pd.notna(row.team1_score) else None,
+            "s2": int(row.team2_score) if pd.notna(row.team2_score) else None,
+            "ot": int(row.is_ot),
+        })
+
+    match_rows = []
+    for row in completed_all.itertuples():
+        if row.c1 == 'TBD' or row.c2 == 'TBD':
+            continue
+        s1 = int(row.score1) if pd.notna(row.score1) else None
+        s2 = int(row.score2) if pd.notna(row.score2) else None
+        if s1 is None or s2 is None:
+            continue
+        match_rows.append({
+            "id": int(row.match_id),
+            "team1": row.c1, "team2": row.c2,
+            "s1": s1, "s2": s2,
+            "e": int(row.event_id) if pd.notna(row.event_id) else None,
+            "w": row.stage if pd.notna(row.stage) else '',
+            "date": (row.match_date[:10] if isinstance(row.match_date, str) else None),
+            "str1": round(strength[row.c1], 4) if row.c1 in strength else None,
+            "str2": round(strength[row.c2], 4) if row.c2 in strength else None,
+            "maps": maps_by_match.get(int(row.match_id), []),
+        })
+
+    with open(f"{OUT}/match_results.json", "w") as f:
+        json.dump({"events": events_lookup, "rows": match_rows}, f, separators=(',', ':'))
+    print(f"match_results.json: {len(match_rows)} matches")
+
 
     # --- series (match-level duration leaderboard) ---
     # One row per completed match. A series' total duration is the sum of

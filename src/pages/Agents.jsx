@@ -1,11 +1,14 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
-import { useFacetedFilter } from '../lib/useFacetedFilter'
+import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
+import { expandBuckets, aggregateAgentBuckets } from '../lib/entityBuckets'
 import HorizontalBarChart from '../components/HorizontalBarChart'
 import DataTable from '../components/DataTable'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import AgentIcon from '../components/AgentIcon'
-import { pct, num } from '../lib/format'
+import TeamLogo from '../components/TeamLogo'
+import { pct, num, rating } from '../lib/format'
 
 
 // Sums raw counts first and computes percentages last -- this is what makes
@@ -60,6 +63,9 @@ function aggregate(buckets) {
 
 export default function Agents() {
   const { data, loading } = useData('agents')
+  const { data: agentPlayerData } = useData('player_agents')
+  const [selectedAgent, setSelectedAgent] = useState('')
+  const [minAgentMaps, setMinAgentMaps] = useState(10)
   const buckets = data?.buckets ?? []
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
@@ -81,9 +87,58 @@ export default function Agents() {
     })
   }, [scoped, data])
 
+  // Per-agent player leaderboard, from player_agents.json (same bucket
+  // shape as player_buckets but keyed by agent too). Filtered with the
+  // shared matcher so it tracks the same facets/date range as everything
+  // else on the page.
+  const agentPlayerRecords = useMemo(
+    () => (agentPlayerData ? expandBuckets(agentPlayerData, 'p') : []),
+    [agentPlayerData]
+  )
+
+  const agentNames = useMemo(
+    () => [...new Set(agentPlayerRecords.map((r) => r.ag))].sort(),
+    [agentPlayerRecords]
+  )
+
+  const agentPlayerRows = useMemo(() => {
+    if (!selectedAgent || !agentPlayerData) return []
+    const byPlayer = new Map()
+    for (const r of agentPlayerRecords) {
+      if (r.ag !== selectedAgent) continue
+      if (!matchesFilters(r, FACETS, selections, dateRange)) continue
+      if (!byPlayer.has(r.p)) byPlayer.set(r.p, [])
+      byPlayer.get(r.p).push(r)
+    }
+    const out = []
+    for (const [player, buckets] of byPlayer) {
+      const s = aggregateAgentBuckets(buckets)
+      if (!s || s.mapsPlayed < minAgentMaps) continue
+      out.push({ player, team: agentPlayerData.meta[player]?.team, ...s })
+    }
+    return out.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
+  }, [agentPlayerRecords, agentPlayerData, selectedAgent, selections, dateRange, minAgentMaps])
+
   if (loading || !data) {
     return <div className="text-muted text-sm">Loading…</div>
   }
+
+  const agentPlayerColumns = [
+    {
+      key: 'player', label: 'Player', align: 'left',
+      format: (v) => (
+        <Link to={`/players/${encodeURIComponent(v)}`} className="font-medium hover:text-accent-bright transition-colors">
+          {v}
+        </Link>
+      ),
+    },
+    { key: 'team', label: 'Team', align: 'left', format: (v) => (v ? <TeamLogo team={v} size={18} /> : '—') },
+    { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
+    { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
+    { key: 'avgRating', label: 'Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
+    { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
+    { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },
+  ]
 
   const matrixColumns = [
     { key: 'agent', label: 'Agent', align: 'left', format: (v) => <AgentIcon agent={v} size={20} /> },
@@ -161,6 +216,42 @@ export default function Agents() {
               Reflects the filters above — sorted by overall pick rate in scope.
             </p>
             <DataTable columns={matrixColumns} rows={matrixRows} defaultSortKey={data.mapNames[0]} />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <h3 className="font-display text-sm font-semibold text-ink">Best players by agent</h3>
+            <p className="text-muted text-xs">
+              Each player's record on one specific agent, respecting the filters above.
+            </p>
+            <div className="flex items-center gap-3 flex-wrap mt-1">
+              <select
+                value={selectedAgent}
+                onChange={(e) => setSelectedAgent(e.target.value)}
+                className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-muted"
+              >
+                <option value="">Select an agent…</option>
+                {agentNames.map((a) => <option key={a} value={a}>{a}</option>)}
+              </select>
+              <label className="flex items-center gap-2 text-xs text-muted">
+                Min. maps
+                <input
+                  type="number" min={0} value={minAgentMaps}
+                  onChange={(e) => setMinAgentMaps(Number(e.target.value) || 0)}
+                  className="bg-surface2 border border-hairline rounded-lg px-2 py-1 w-16 text-ink focus:outline-none focus:border-muted [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+              </label>
+            </div>
+            {selectedAgent ? (
+              agentPlayerRows.length ? (
+                <DataTable columns={agentPlayerColumns} rows={agentPlayerRows} defaultSortKey="avgRating" />
+              ) : (
+                <p className="text-muted text-sm mt-2">
+                  No players meet the minimum on {selectedAgent} within these filters.
+                </p>
+              )
+            ) : (
+              <p className="text-muted text-sm mt-2">Pick an agent to see its leaderboard.</p>
+            )}
           </div>
         </>
       )}

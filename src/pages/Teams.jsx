@@ -99,6 +99,12 @@ export default function Teams() {
     { key: 'avgMapDurationSeconds', label: 'Avg Map Time', align: 'right', colorScale: true, format: (v) => duration(v) },
     { key: 'mapWinPct', label: 'Map Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'pistolWinPct', label: 'Pistol Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'atkWinPct', label: 'ATK Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'defWinPct', label: 'DEF Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'otWinPct', label: 'OT Win%', align: 'right', colorScale: true, format: (v, r) => (r.otMaps ? `${r.otWon}/${r.otMaps}` : '—') },
+    { key: 'pistolConvWinPct', label: 'Pistol Conv%', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'antiEcoWinPct', label: 'Anti-Eco%', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'comebackPct', label: 'Comebacks', align: 'right', colorScale: true, format: (v, r) => (r.comebackMaps ? `${r.comebackWon}/${r.comebackMaps}` : '—') },
     { key: 'avgRating', label: 'Avg Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
   ]
 

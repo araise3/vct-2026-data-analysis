@@ -71,6 +71,7 @@ export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
     maps: 0, rnd: 0, ratS: 0, ratR: 0, acsS: 0, acsM: 0,
     kastS: 0, kastR: 0, adrS: 0, adrR: 0, hsS: 0, hsR: 0,
     k: 0, d: 0, a: 0, fk: 0, fd: 0, m2: 0, m3: 0, m4: 0, m5: 0, cl: 0,
+    pl: 0, df: 0, ecS: 0, utN: 0, rmS: 0, rmSq: 0, rmN: 0,
   }
   for (const b of buckets) {
     const u = ratedOnly ? b.u : null
@@ -92,6 +93,20 @@ export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
     t.fk += b.fk - (u?.fk || 0)
     t.fd += b.fd - (u?.fd || 0)
     t.m2 += b.m2; t.m3 += b.m3; t.m4 += b.m4; t.m5 += b.m5; t.cl += b.cl
+    t.pl += b.pl || 0; t.df += b.df || 0
+    t.ecS += b.ecS || 0; t.utN += b.utN || 0
+    t.rmS += b.rmS || 0; t.rmSq += b.rmSq || 0; t.rmN += b.rmN || 0
+  }
+  // Standard deviation of per-map rating, from the stored sum and sum of
+  // squares: var = E[x^2] - E[x]^2. Storing the squares upstream is what
+  // makes this computable over an arbitrary filtered subset by summing
+  // buckets, instead of needing every individual map's rating client-side.
+  // Clamped at 0 because floating-point error can make a genuinely-zero
+  // variance come out very slightly negative.
+  let ratingSd = null
+  if (t.rmN >= 2) {
+    const mean = t.rmS / t.rmN
+    ratingSd = Math.sqrt(Math.max(0, t.rmSq / t.rmN - mean * mean))
   }
   return {
     mapsPlayed: t.maps,
@@ -109,18 +124,46 @@ export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
     totalFirstDeaths: t.fd,
     total2k: t.m2, total3k: t.m3, total4k: t.m4, totalAce: t.m5,
     totalClutches: t.cl,
+    // Utility/objective. utilMaps is how many maps actually carry these
+    // (null for every China-region map), so the site shows nothing rather
+    // than a misleading 0 when it's 0.
+    totalPlants: t.pl,
+    totalDefuses: t.df,
+    avgEcon: div(t.ecS, t.utN),
+    utilMaps: t.utN,
+    // Consistency: lower = steadier map-to-map, higher = boom-or-bust.
+    ratingSd,
+    ratedMaps: t.rmN,
   }
 }
 
 export function aggregateTeamBuckets(buckets) {
   if (!buckets.length) return null
-  const t = { mP: 0, mW: 0, mapP: 0, mapW: 0, rnd: 0, pisW: 0, ratS: 0, ratR: 0, durS: 0, durM: 0 }
+  const t = {
+    mP: 0, mW: 0, mapP: 0, mapW: 0, rnd: 0, pisW: 0, ratS: 0, ratR: 0, durS: 0, durM: 0,
+    atkW: 0, atkP: 0, defW: 0, defP: 0, otM: 0, otW: 0,
+    aeR: 0, aeW: 0, bonusR: 0, bonusW: 0, cbN: 0, cbW: 0,
+  }
+  const roundsPlayedByNum = new Array(12).fill(0)
+  const roundsWonByNum = new Array(12).fill(0)
   for (const b of buckets) {
     t.mP += b.mP || 0; t.mW += b.mW || 0
     t.mapP += b.mapP || 0; t.mapW += b.mapW || 0
     t.rnd += b.rnd || 0; t.pisW += b.pisW || 0
     t.ratS += b.ratS || 0; t.ratR += b.ratR || 0
     t.durS += b.durS || 0; t.durM += b.durM || 0
+    t.atkW += b.atkW || 0; t.atkP += b.atkP || 0
+    t.defW += b.defW || 0; t.defP += b.defP || 0
+    t.otM += b.otM || 0; t.otW += b.otW || 0
+    t.aeR += b.aeR || 0; t.aeW += b.aeW || 0
+    t.bonusR += b.bonusR || 0; t.bonusW += b.bonusW || 0
+    t.cbN += b.cbN || 0; t.cbW += b.cbW || 0
+    if (b.rnP) {
+      for (let i = 0; i < 12; i++) {
+        roundsPlayedByNum[i] += b.rnP[i] || 0
+        roundsWonByNum[i] += b.rnW?.[i] || 0
+      }
+    }
   }
   const pistolPlayed = t.mapP * 2
   return {
@@ -140,7 +183,64 @@ export function aggregateTeamBuckets(buckets) {
     durationSeconds: t.durS,
     mapsWithDuration: t.durM,
     avgMapDurationSeconds: div(t.durS, t.durM),
+    // Attack/defense split (regulation rounds only -- overtime isn't
+    // included in VLR's per-side scores, and atkRounds/defRounds are 0
+    // for maps where the breakdown wasn't published).
+    atkRounds: t.atkP,
+    atkWinPct: div(t.atkW, t.atkP),
+    defRounds: t.defP,
+    defWinPct: div(t.defW, t.defP),
+    // Overtime.
+    otMaps: t.otM,
+    otWon: t.otW,
+    otWinPct: div(t.otW, t.otM),
+    // First-half-only stats: VLR's economy tab is scraped for rounds 1-12
+    // only, so these describe the first half, not the whole map.
+    antiEcoRounds: t.aeR,
+    antiEcoWinPct: div(t.aeW, t.aeR),
+    pistolConvRounds: t.bonusR,
+    pistolConvWinPct: div(t.bonusW, t.bonusR),
+    comebackMaps: t.cbN,
+    comebackWon: t.cbW,
+    comebackPct: div(t.cbW, t.cbN),
+    roundsPlayedByNum,
+    roundsWonByNum,
   }
+}
+
+/**
+ * Aggregates player_agents.json buckets (same shape as player buckets but
+ * split by agent). Separate from aggregatePlayerBuckets because that one
+ * handles the sparse rated-only delta, which this file doesn't carry.
+ */
+export function aggregateAgentBuckets(buckets) {
+  if (!buckets.length) return null
+  let maps = 0, rnd = 0, ratS = 0, ratR = 0, acsS = 0, acsM = 0, k = 0, d = 0
+  for (const b of buckets) {
+    maps += b.maps || 0; rnd += b.rnd || 0
+    ratS += b.ratS || 0; ratR += b.ratR || 0
+    acsS += b.acsS || 0; acsM += b.acsM || 0
+    k += b.k || 0; d += b.d_ || 0
+  }
+  return {
+    mapsPlayed: maps,
+    roundsPlayed: rnd,
+    avgRating: div(ratS, ratR),
+    avgAcs: div(acsS, acsM),
+    totalKills: k,
+    totalDeaths: d,
+    kd: div(k, d),
+  }
+}
+
+/** Expands match_results.json rows (head-to-head, upsets, blowouts). */
+export function expandMatchRows(data) {
+  if (!data) return []
+  const { events, rows } = data
+  return rows.map((r) => ({
+    ...r,
+    ...eventFields(events[r.e] || {}, r.w || ''),
+  }))
 }
 
 /** Groups filtered bucket records by their entity id. */

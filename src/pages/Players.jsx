@@ -89,6 +89,11 @@ export default function Players() {
     { key: 'total3k', label: '3K', align: 'right', format: (v) => num(v) },
     { key: 'totalAce', label: 'Ace', align: 'right', format: (v) => num(v) },
     { key: 'totalClutches', label: 'Clutches', align: 'right', format: (v) => num(v) },
+    // Lower SD = steadier map-to-map, so the scale is inverted.
+    { key: 'ratingSd', label: 'Consistency', align: 'right', colorScale: true, colorInvert: true, format: (v) => (v == null ? '—' : v.toFixed(3)) },
+    { key: 'avgEcon', label: 'Econ', align: 'right', colorScale: true, format: (v, r) => (r.utilMaps ? Math.round(v) : '—') },
+    { key: 'totalPlants', label: 'Plants', align: 'right', format: (v, r) => (r.utilMaps ? num(v) : '—') },
+    { key: 'totalDefuses', label: 'Defuses', align: 'right', format: (v, r) => (r.utilMaps ? num(v) : '—') },
   ]
 
   return (

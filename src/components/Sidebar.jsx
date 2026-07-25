@@ -6,6 +6,7 @@ const items = [
   { to: '/teams', label: 'Teams', icon: TeamsIcon },
   { to: '/agents', label: 'Agents', icon: AgentsIcon },
   { to: '/economy', label: 'Economy', icon: EconomyIcon },
+  { to: '/records', label: 'Records', icon: RecordsIcon },
   { to: '/graphics', label: 'Graphics', icon: GraphicsIcon },
 ]
 
@@ -94,6 +95,16 @@ function GraphicsIcon(props) {
       <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
       <circle cx="5.3" cy="6" r="1.2" stroke="currentColor" strokeWidth="1.1" />
       <path d="M2.5 12l3.5-3.5 2.5 2.5 3-3.5 2 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function RecordsIcon(props) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" {...props}>
+      <path d="M5 2h6v5l-3 2-3-2V2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+      <path d="M8 9.5V13M5.5 13h5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      <path d="M11 3.5h2v1.5a2 2 0 0 1-2 2M5 3.5H3V5a2 2 0 0 0 2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
     </svg>
   )
 }

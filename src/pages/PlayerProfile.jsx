@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
 import { expandBuckets, aggregatePlayerBuckets } from '../lib/entityBuckets'
+import TrendChart from '../components/TrendChart'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
 import TeamLogo from '../components/TeamLogo'
@@ -42,6 +43,23 @@ export default function PlayerProfile() {
       </div>
     )
   }
+
+  // Rating over time: one point per day the player actually played,
+  // rounds-weighted within the day so a 3-map day isn't averaged flat
+  // against a 1-map day.
+  const trend = useMemo(() => {
+    const byDate = new Map()
+    for (const b of filtered) {
+      if (!b.date || !b.ratR) continue
+      const cur = byDate.get(b.date) || { s: 0, r: 0, maps: 0 }
+      cur.s += b.ratS; cur.r += b.ratR; cur.maps += b.maps
+      byDate.set(b.date, cur)
+    }
+    return [...byDate.entries()]
+      .filter(([, v]) => v.r > 0)
+      .map(([date, v]) => ({ date, value: v.s / v.r, n: v.maps }))
+      .sort((a, b) => a.date.localeCompare(b.date))
+  }, [filtered])
 
   return (
     <div className="flex flex-col gap-6">
@@ -99,6 +117,25 @@ export default function PlayerProfile() {
             <KpiCard label="Avg KAST" value={pct(stats.avgKast)} />
             <KpiCard label="Avg ADR" value={num(stats.avgAdr, 0)} />
             <KpiCard label="Avg HS%" value={pct(stats.avgHsPct)} />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <KpiCard
+              label="Consistency (rating SD)"
+              value={stats.ratingSd == null ? '—' : stats.ratingSd.toFixed(3)}
+            />
+            <KpiCard label="Avg Econ" value={stats.utilMaps ? num(stats.avgEcon, 0) : '—'} />
+            <KpiCard label="Plants" value={stats.utilMaps ? num(stats.totalPlants) : '—'} />
+            <KpiCard label="Defuses" value={stats.utilMaps ? num(stats.totalDefuses) : '—'} />
+          </div>
+
+          <div className="bg-surface border border-hairline rounded-2xl p-5">
+            <h3 className="font-display text-sm font-semibold text-ink mb-1">Rating over time</h3>
+            <p className="text-muted text-xs mb-4">
+              One point per match day in scope, rounds-weighted within the day. Dashed line is
+              the 1.00 baseline.
+            </p>
+            <TrendChart points={trend} baseline={1} format={(v) => v.toFixed(2)} />
           </div>
 
           <div className="bg-surface border border-hairline rounded-2xl p-5">

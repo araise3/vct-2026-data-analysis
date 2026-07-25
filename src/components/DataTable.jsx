@@ -2,7 +2,11 @@ import { useMemo, useState } from 'react'
 import { scaleColor } from '../lib/format'
 
 /**
- * columns: [{ key, label, format(v), colorScale?: true, align?: 'left'|'right' }]
+ * columns: [{ key, label, format(v), colorScale?: true, colorInvert?: true, align?: 'left'|'right' }]
+ *
+ * colorInvert flips the scale for stats where lower is better (rating
+ * consistency, first deaths) so "good" still reads as the high end of the
+ * hue range rather than the value literally being large.
  *
  * The color domain for each colorScale column is the min/max of whatever
  * rows are currently displayed -- confirmed against two real vlr.gg
@@ -94,8 +98,13 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
             <tr key={i} className="hover:bg-surface/60 transition-colors">
               {columns.map((col) => {
                 const value = row[col.key]
-                const bg = col.colorScale && colorRanges[col.key]
-                  ? scaleColor(value, colorRanges[col.key][0], colorRanges[col.key][1])
+                const range = col.colorScale && colorRanges[col.key]
+                const bg = range
+                  ? scaleColor(
+                      value,
+                      col.colorInvert ? range[1] : range[0],
+                      col.colorInvert ? range[0] : range[1]
+                    )
                   : undefined
                 return (
                   <td

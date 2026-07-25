@@ -8,6 +8,7 @@ import KpiCard from '../components/KpiCard'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
+import TrendChart from '../components/TrendChart'
 
 export default function TeamProfile() {
   const { name } = useParams()
@@ -27,6 +28,39 @@ export default function TeamProfile() {
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
 
   const stats = useMemo(() => aggregateTeamBuckets(filtered), [filtered])
+
+  // Round-number win curve. TrendChart plots against dates, so round
+  // numbers are mapped onto arbitrary consecutive days purely as an
+  // x-axis -- the spacing is what matters, not the actual dates.
+  const roundCurve = useMemo(() => {
+    if (!stats) return []
+    const out = []
+    for (let i = 0; i < 12; i++) {
+      const played = stats.roundsPlayedByNum[i]
+      if (!played) continue
+      out.push({
+        date: `2000-01-${String(i + 1).padStart(2, '0')}`,
+        label: `Round ${i + 1}`,
+        value: stats.roundsWonByNum[i] / played,
+        n: played,
+      })
+    }
+    return out
+  }, [stats])
+
+  const ratingTrend = useMemo(() => {
+    const byDate = new Map()
+    for (const b of filtered) {
+      if (!b.date || !b.ratR) continue
+      const cur = byDate.get(b.date) || { s: 0, r: 0, maps: 0 }
+      cur.s += b.ratS; cur.r += b.ratR; cur.maps += b.mapP || 0
+      byDate.set(b.date, cur)
+    }
+    return [...byDate.entries()]
+      .filter(([, v]) => v.r > 0)
+      .map(([date, v]) => ({ date, value: v.s / v.r, n: v.maps }))
+      .sort((a, b) => a.date.localeCompare(b.date))
+  }, [filtered])
 
   // Roster reflects the same filter scope: apply the team's active facet
   // selections to the player buckets, keeping only this team's players.
@@ -113,6 +147,64 @@ export default function TeamProfile() {
               value={stats.pistolWon ? pct(stats.pistolWinPct) : '—'}
               sub={stats.pistolWon ? `${stats.pistolWon}/${stats.pistolPlayed}` : 'No economy data (China)'}
             />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <KpiCard
+              label="ATK Win%"
+              value={stats.atkRounds ? pct(stats.atkWinPct) : '—'}
+              sub={stats.atkRounds ? `${stats.atkRounds} rounds` : 'No side data'}
+            />
+            <KpiCard
+              label="DEF Win%"
+              value={stats.defRounds ? pct(stats.defWinPct) : '—'}
+              sub={stats.defRounds ? `${stats.defRounds} rounds` : 'No side data'}
+            />
+            <KpiCard
+              label="Overtime"
+              value={stats.otMaps ? `${stats.otWon}/${stats.otMaps}` : '—'}
+              sub={stats.otMaps ? pct(stats.otWinPct) : 'No OT maps'}
+            />
+            <KpiCard
+              label="Comebacks"
+              value={stats.comebackMaps ? `${stats.comebackWon}/${stats.comebackMaps}` : '—'}
+              sub="Won after losing 1st half by 3+"
+            />
+            <KpiCard
+              label="Pistol Conversion"
+              value={stats.pistolConvRounds ? pct(stats.pistolConvWinPct) : '—'}
+              sub="Round 2 after winning pistol"
+            />
+            <KpiCard
+              label="Anti-Eco Win%"
+              value={stats.antiEcoRounds ? pct(stats.antiEcoWinPct) : '—'}
+              sub={stats.antiEcoRounds ? `${stats.antiEcoRounds} rounds` : 'No economy data'}
+            />
+          </div>
+
+          {roundCurve.length > 0 && (
+            <div className="bg-surface border border-hairline rounded-2xl p-5">
+              <h3 className="font-display text-sm font-semibold text-ink mb-1">
+                Round win% by round number
+              </h3>
+              <p className="text-muted text-xs mb-4">
+                First half only — VLR's round economy data covers rounds 1–12. Round 1 is the
+                pistol. Dashed line is 50%.
+              </p>
+              <TrendChart
+                points={roundCurve}
+                baseline={0.5}
+                format={(v) => `${Math.round(v * 100)}%`}
+              />
+            </div>
+          )}
+
+          <div className="bg-surface border border-hairline rounded-2xl p-5">
+            <h3 className="font-display text-sm font-semibold text-ink mb-1">Rating over time</h3>
+            <p className="text-muted text-xs mb-4">
+              Team's average player rating per match day in scope. Dashed line is 1.00.
+            </p>
+            <TrendChart points={ratingTrend} baseline={1} format={(v) => v.toFixed(2)} />
           </div>
 
           <div className="flex flex-col gap-2">

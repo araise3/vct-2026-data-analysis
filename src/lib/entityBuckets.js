@@ -52,10 +52,24 @@ export function expandBuckets(data, keyField) {
   return buckets.map((b) => ({
     ...b,
     id: b[keyField],
-    // Buckets are keyed per calendar day, so `d` is one exact date -- the
-    // same shape as a match-level row's `date`, which lets date filtering
-    // treat both record kinds identically.
-    date: b.d,
+    // Team buckets are keyed per calendar day, so `d` there really is one
+    // exact date string ('2026-02-07') -- the same shape as a match-level
+    // row's `date`, which lets date filtering treat both record kinds
+    // identically. Player buckets, however, are keyed only by
+    // (player, event, week) with NO day dimension at all, and `d` on
+    // THAT schema is Deaths (a number, e.g. 34) -- a genuine field-name
+    // collision between the two bucket shapes, not the same field.
+    // Blindly aliasing `date: b.d` here attached a deaths count as a
+    // player's "date", which crashed the whole app the first time
+    // something tried to .localeCompare() it (PlayerProfile's rating-
+    // over-time sort). Guarding on typeof means player buckets correctly
+    // end up with date=undefined -- which the trend chart already
+    // handles as "not enough dated data" -- instead of a bogus or
+    // crashing value. Real per-day rating trends for players would need
+    // export_from_db.py to add a day dimension to player buckets like
+    // team buckets already have; this is a data-pipeline gap, not
+    // something the frontend can recover on its own.
+    date: typeof b.d === 'string' ? b.d : undefined,
     ...eventFields(events[b.e] || {}, b.w || ''),
   }))
 }

@@ -1,10 +1,15 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
-import { expandMatchRows, expandSeriesRows, expandMapLengthRows } from '../lib/entityBuckets'
+import {
+  expandMatchRows, expandSeriesRows, expandMapLengthRows,
+  expandBuckets, aggregatePlayerBuckets, groupByEntity,
+} from '../lib/entityBuckets'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
-import { CardShell } from '../components/LeaderCard'
+import LeaderCard, { CardShell, topBy } from '../components/LeaderCard'
 import TeamLogo from '../components/TeamLogo'
+import Flag from '../components/Flag'
 import { pct, duration, num } from '../lib/format'
 
 /**
@@ -22,6 +27,7 @@ export default function Records() {
   const { data, loading } = useData('match_results')
   const { data: seriesData } = useData('series_length')
   const { data: mapLengthData } = useData('map_length')
+  const { data: playerData } = useData('player_buckets')
   const [teamA, setTeamA] = useState('')
   const [teamB, setTeamB] = useState('')
   const [durationView, setDurationView] = useState('series') // 'series' | 'map'
@@ -69,6 +75,26 @@ export default function Records() {
     () => [...activeDurationRows].sort((a, b) => a.durationSeconds - b.durationSeconds).slice(0, 5),
     [activeDurationRows]
   )
+
+  // Ace leaderboard: total aces (5-kill rounds) across every player in
+  // scope, filtered by the same active facet selections as everything
+  // else on this page. A season-long aggregate, unlike the kill-record
+  // cards below (which are single-match records) -- there's no season-
+  // long entity page it fits better on than here.
+  const aceLeaders = useMemo(() => {
+    if (!playerData) return []
+    const filteredPlayers = expandBuckets(playerData, 'p').filter(matchesSelections)
+    const out = []
+    for (const [player, buckets] of groupByEntity(filteredPlayers)) {
+      const meta = playerData.meta[player]
+      if (!meta) continue
+      const s = aggregatePlayerBuckets(buckets)
+      if (!s || !s.totalAce) continue
+      out.push({ player, team: meta.team, countryCode: meta.countryCode,
+                 countryName: meta.countryName, totalAce: s.totalAce, mapsPlayed: s.mapsPlayed })
+    }
+    return out
+  }, [playerData, selections, dateRange])
 
   // Kill records: the single highest individual kill total across an
   // entire series (summed across every map of that match for one
@@ -380,6 +406,31 @@ export default function Records() {
               </span>
             )}
             renderValue={(r) => `${num(r.kills)} kills`}
+          />
+        </div>
+      )}
+
+      {aceLeaders.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <LeaderCard
+            title="Most aces"
+            note="Total 5-kill rounds across every map in scope."
+            rows={topBy(aceLeaders, 'totalAce', { qualify: (r) => r.totalAce > 0 })}
+            renderEntity={(r) => (
+              <>
+                <Flag countryCode={r.countryCode} countryName={r.countryName} size={18} />
+                <Link
+                  to={`/players/${encodeURIComponent(r.player)}`}
+                  className="font-medium text-ink truncate hover:text-accent-bright transition-colors"
+                >
+                  {r.player}
+                </Link>
+                <TeamLogo team={r.team} size={16} />
+              </>
+            )}
+            meta={(r) => `${num(r.mapsPlayed)} maps`}
+            value={(r) => num(r.totalAce)}
+            showRank
           />
         </div>
       )}

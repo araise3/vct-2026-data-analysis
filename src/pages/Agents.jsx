@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import { expandBuckets, aggregateAgentBuckets } from '../lib/entityBuckets'
-import HorizontalBarChart from '../components/HorizontalBarChart'
 import DataTable from '../components/DataTable'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import AgentIcon from '../components/AgentIcon'
@@ -76,8 +75,8 @@ export default function Agents() {
   const matrixRows = useMemo(() => {
     const { pickRates, mapAgentCounts, mapTotalRows } = scoped
     if (!data) return []
-    return pickRates.map(({ agent }) => {
-      const row = { agent }
+    return pickRates.map(({ agent, pickRate }) => {
+      const row = { agent, pickRate }
       for (const mapName of data.mapNames) {
         const slots = (mapTotalRows[mapName] || 0) / 5
         const count = mapAgentCounts[mapName]?.[agent]
@@ -142,6 +141,7 @@ export default function Agents() {
 
   const matrixColumns = [
     { key: 'agent', label: 'Agent', align: 'left', format: (v) => <AgentIcon agent={v} size={20} /> },
+    { key: 'pickRate', label: 'Overall', align: 'right', colorScale: true, format: (v) => pct(v, 0) },
     ...data.mapNames.map((m) => ({
       key: m, label: m, align: 'right', colorScale: true,
       format: (v) => (v === null || v === undefined ? '—' : pct(v, 0)),
@@ -178,15 +178,6 @@ export default function Agents() {
       ) : (
         <>
           <div className="bg-surface border border-hairline rounded-2xl p-5">
-            <h3 className="font-display text-sm font-semibold text-ink mb-4">Top 15 agents by pick rate</h3>
-            <HorizontalBarChart
-              data={scoped.pickRates.slice(0, 15)}
-              labelKey="agent" valueKey="pickRate" formatValue={(v) => pct(v)}
-              renderLabel={(d) => <AgentIcon agent={d.agent} size={18} />}
-            />
-          </div>
-
-          <div className="bg-surface border border-hairline rounded-2xl p-5">
             <h3 className="font-display text-sm font-semibold text-ink mb-3">
               Map win rates (attack vs. defense)
             </h3>
@@ -215,7 +206,7 @@ export default function Agents() {
             <p className="text-muted text-xs">
               Reflects the filters above — sorted by overall pick rate in scope.
             </p>
-            <DataTable columns={matrixColumns} rows={matrixRows} defaultSortKey={data.mapNames[0]} />
+            <DataTable columns={matrixColumns} rows={matrixRows} defaultSortKey="pickRate" />
           </div>
 
           <div className="flex flex-col gap-2">

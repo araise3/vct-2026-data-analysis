@@ -364,7 +364,19 @@ def main():
     all_matches = pd.concat([vct["matches"], ewc["matches"]], ignore_index=True)
     all_events = pd.concat([vct["events"], ewc["events"]], ignore_index=True)
     all_maps = pd.concat([vct["maps"], ewc["maps"]], ignore_index=True)
+    # map_player_stats now has 3 rows per player per map (side='both'/'t'/
+    # 'ct', since the scraper started capturing the attack/defense split --
+    # see the scraper README). Every aggregate stat downstream (player
+    # buckets, team ratings) must only ever use the 'both' row: since
+    # t+ct == both by construction, summing all three would silently
+    # double every counted stat (kills, deaths, rating-rounds, ...) and
+    # triple every *count* (maps, rows) -- confirmed this exact corruption
+    # happened before this filter was added (aspas: kills came out at
+    # exactly 2x and maps at exactly 3x the real totals). The 't'/'ct'
+    # rows aren't used anywhere in this script yet; filtering here means
+    # nothing downstream needs to remember to do it.
     all_mps = pd.concat([vct["map_player_stats"], ewc["map_player_stats"]], ignore_index=True)
+    all_mps = all_mps[all_mps["side"] == "both"]
     all_mte = pd.concat([vct["map_team_economy"], ewc["map_team_economy"]], ignore_index=True)
     all_mre = pd.concat([vct["map_round_economy"], ewc["map_round_economy"]], ignore_index=True)
     all_mrr = pd.concat([vct["map_round_results"], ewc["map_round_results"]], ignore_index=True)

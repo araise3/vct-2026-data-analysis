@@ -101,7 +101,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                   click; reserving it on every column from the start,
                   uniformly, is what avoids that.)
                 */}
-                <span className="inline-flex items-center gap-1">
+                <span className={`inline-flex items-center gap-1 ${col.align === 'right' ? '' : 'flex-row-reverse'}`}>
                   <span
                     className={`inline-block w-2.5 text-[10px] leading-none text-accent ${
                       sortKey === col.key ? '' : 'invisible'

@@ -4,7 +4,7 @@ export default function TeamLogo({ team, size = 20, showName = true, showTag = f
   const entry = teamLogos[team]
 
   return (
-    <span className="inline-flex items-center gap-2 min-w-0">
+    <span className="inline-flex items-center gap-2 min-w-0 align-middle">
       {entry?.logo ? (
         showBg ? (
           <span

@@ -13,7 +13,6 @@ import {
 import { PLAYER_STATS, TEAM_STATS, teamTierExtras } from '../lib/statDefs'
 import FilterPanel, { FACETS, FACET_LABELS, FACET_RENDERERS } from '../components/FilterPanel'
 import StatCard, { CARD_W } from '../components/StatCard'
-import PasswordGate from '../components/PasswordGate'
 
 /**
  * Graphics -- an exportable-infographic builder.
@@ -36,7 +35,7 @@ const labeled = 'text-[11px] uppercase tracking-wide font-medium text-muted'
 const inputCls =
   'bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-muted'
 
-function GraphicsContent() {
+export default function Graphics() {
   const [entity, setEntity] = useState('players')
   const isPlayers = entity === 'players'
 
@@ -420,13 +419,5 @@ function RangeControl({ label, value, onChange, min, max, step, digits }) {
         />
       </div>
     </div>
-  )
-}
-
-export default function Graphics() {
-  return (
-    <PasswordGate gate="graphics" title="Graphics (locked)">
-      <GraphicsContent />
-    </PasswordGate>
   )
 }

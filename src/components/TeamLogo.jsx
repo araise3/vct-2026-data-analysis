@@ -32,7 +32,9 @@ export default function TeamLogo({ team, size = 20, showName = true, showTag = f
         <span className="rounded shrink-0 bg-surface2" style={{ width: size, height: size }} />
       )}
       {showName && <span className="truncate">{team}</span>}
-      {showTag && entry?.tag && <span className="text-muted text-xs shrink-0">{entry.tag}</span>}
+      {showTag && entry?.tag && (
+        <span className={showName ? 'text-muted text-xs shrink-0' : 'truncate'}>{entry.tag}</span>
+      )}
     </span>
   )
 }

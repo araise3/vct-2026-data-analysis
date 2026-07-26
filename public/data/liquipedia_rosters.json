@@ -3,7 +3,7 @@
     "source": "Liquipedia Valorant Wiki",
     "sourceUrl": "https://liquipedia.net/valorant",
     "license": "CC-BY-SA 3.0",
-    "attribution": "Roster and coaching staff data from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0."
+    "attribution": "Roster and staff data from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0."
   },
   "teams": {
     "Nongshim RedForce": {
@@ -27970,7 +27970,7 @@
           "joinDate": "2022-11-10",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "BENCHED"
         },
         {
           "id": "lukxo",

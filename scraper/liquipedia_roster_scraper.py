@@ -98,8 +98,8 @@ DEFAULT_TEAMS = [
     "Natus Vincere", "Nongshim RedForce", "Nova Esports", "PCIFIC Esports",
     "Paper Rex", "Rex Regum Qeon", "Sentinels", "T1", "TYLOO",
     "Team Heretics", "Team Liquid", "Team Secret", "Team Vitality",
-    "Titan Esports Club", "Trace Esports", "VARREL", "Wolves Esports",
-    "Xi Lai Gaming", "ZETA DIVISION",
+    "Titan Esports Club", "Trace Esports", "ULF Esports", "VARREL",
+    "Wolves Esports", "Xi Lai Gaming", "ZETA DIVISION",
 ]
 
 # ---------------------------------------------------------------------------

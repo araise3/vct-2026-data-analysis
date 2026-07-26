@@ -15,23 +15,30 @@ import { rating, pct, num } from '../lib/format'
  * ROTATION/STAND-IN, guessed from each player's share of team maps
  * played) because VLR doesn't publish official starter/sub status.
  * That's gone now, replaced with real data from Liquipedia: a captain/
- * IGL indicator, an Active/Inactive status badge, and a real coaching
- * staff section above the table, all sourced from
- * public/data/liquipedia_rosters.json.
+ * IGL indicator, a Starter/Benched status badge, and a real coaching
+ * staff section, all sourced from public/data/liquipedia_rosters.json.
  *
- * Status is ONLY Liquipedia's own Active/Inactive table split -- a
- * clean, structured, reliable signal. An earlier version additionally
- * tried inferring Starter vs. Stand-in from that team's History/
- * Timeline prose, which is fragile natural-language parsing (still had
- * a meaningful genuinely-undetermined rate, and a couple of real bugs
- * only surfaced by manually checking edge cases against source text).
- * Dropped that inference layer entirely rather than keep maintaining
- * it alongside the reliable table-based signal.
+ * Status is ONLY Liquipedia's own Active/Inactive table split (labeled
+ * Starter/Benched here to match VLR's own terminology) -- a clean,
+ * structured, reliable signal. An earlier version additionally tried
+ * inferring finer-grained status from that team's History/Timeline
+ * prose, which is fragile natural-language parsing; dropped entirely in
+ * favor of the reliable table-based signal alone.
  *
- * Scope deliberately limited to CURRENT roster + coaches only (no
- * historical transfers, no non-coaching staff like managers/streamers/
- * content creators) -- Liquipedia has all of that too, just not surfaced
- * here.
+ * `rows` (this team's roster) comes from OUR OWN VLR match data --
+ * whoever has aggregated stats for this team in the current filter
+ * scope, which is NOT the same question as "who is currently on this
+ * team". A player who left months ago still has real match history
+ * for this team within a wide-enough date range, and would otherwise
+ * show up looking like a normal current member with no indication
+ * they've departed. Liquipedia's Former Players list (NOT displayed
+ * here, only used as a filter) is the ground truth for that: anyone
+ * confirmed departed (present in formerPlayers, absent from the
+ * current Active/Inactive list) is dropped from `rows` entirely rather
+ * than shown unmarked. Confirmed against Natus Vincere specifically --
+ * sociablEE, Filu, ComeBack, and Kolosha all have real match stats in
+ * scope but have since left per Liquipedia, and were showing up
+ * unflagged before this fix.
  */
 
 function shortDate(iso) {
@@ -49,29 +56,17 @@ function activeRange(first, last) {
 }
 
 /**
- * Real status from Liquipedia, NOT the old derived map-share badge.
- * STARTER/BENCHED come straight from Liquipedia's own Active/Inactive
- * table split when available, or -- Liquipedia doesn't have a
- * Starter-vs-Stand-in column anywhere -- inferred from the most recent
- * relevant sentence in that team's History/Timeline section (see
- * compute_player_statuses in the scraper). null means genuinely
- * undetermined: either no history text mentions this player's current
- * stint at all, or the phrasing didn't match any pattern the classifier
- * recognizes. Shown as nothing rather than a guess.
- */
-/**
- * Real status from Liquipedia's own Active/Inactive table split --
- * that's it. An earlier version tried to additionally infer Starter
- * vs. Stand-in from the team's History/Timeline prose, but that's
- * fragile natural-language parsing (still had 18 genuinely
- * undetermined cases and a couple of real bugs found only by manually
- * checking edge cases against source text). Liquipedia's table itself
- * is a clean, structured, 100% reliable signal for Active vs Inactive
- * -- dropped the prose inference entirely rather than keep maintaining
- * both.
+ * Real status from Liquipedia's own Active/Inactive table split, ONLY
+ * -- labeled Starter/Benched to match VLR's own terminology. An earlier
+ * version additionally tried inferring status from that team's
+ * History/Timeline prose (natural-language parsing, fragile, ~7%
+ * genuinely undetermined even after several rounds of bug fixes);
+ * dropped entirely in favor of this reliable table-based signal alone.
+ * No badge shown for an active/starting player -- that's the default,
+ * expected state.
  */
 function statusBadge(status) {
-  if (status === 'INACTIVE') return { label: 'INACTIVE', cls: 'bg-bad/15 text-bad border-bad/30' }
+  if (status === 'BENCHED') return { label: 'BENCHED', cls: 'bg-bad/15 text-bad border-bad/30' }
   return null
 }
 
@@ -83,6 +78,20 @@ export default function RosterTable({ team, rows, liquipedia }) {
   const lqPlayersById = new Map(
     (liquipedia?.players ?? []).map((p) => [p.id.toLowerCase(), p])
   )
+  // Only show players Liquipedia confirms are CURRENTLY on the roster
+  // (its Active or Inactive table) -- not everyone with match stats in
+  // scope. Those aren't the same question: a player who left months ago
+  // still has real match history for this team within a wide-enough
+  // date range. Started as a narrower "exclude anyone confirmed
+  // departed via the Former list" check, but that missed a real case:
+  // Kolosha has actual match stats for Natus Vincere but appears
+  // NOWHERE on their Liquipedia page at all (not Active, not Inactive,
+  // not even Former) -- a 7-day stint Liquipedia apparently never
+  // recorded. There's nothing to blacklist against for a player absent
+  // from the page entirely, so this whitelists against the current
+  // roster instead of trying to blacklist every way someone could be
+  // gone.
+  const currentRows = liquipedia ? rows.filter((p) => lqPlayersById.has(p.player.toLowerCase())) : rows
 
   return (
     <div className="flex flex-col gap-4">
@@ -130,9 +139,9 @@ export default function RosterTable({ team, rows, liquipedia }) {
               </tr>
             </thead>
             <tbody>
-              {rows.map((p, i) => {
+              {currentRows.map((p, i) => {
                 const lq = lqPlayersById.get(p.player.toLowerCase())
-                const last = i === rows.length - 1
+                const last = i === currentRows.length - 1
                 const bd = last ? '' : 'border-b border-hairline'
                 return (
                   <tr key={p.player} className="hover:bg-surface2/40 transition-colors">
@@ -180,7 +189,7 @@ export default function RosterTable({ team, rows, liquipedia }) {
                   </tr>
                 )
               })}
-              {rows.length === 0 && (
+              {currentRows.length === 0 && (
                 <tr>
                   <td className="px-4 py-4 text-muted text-xs" colSpan={10}>
                     No players in this scope.

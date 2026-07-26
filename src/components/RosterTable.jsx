@@ -64,7 +64,7 @@ function activeRange(first, last) {
  * dropped entirely in favor of this reliable table-based signal alone.
  */
 function statusBadge(status) {
-  if (status === 'STARTER') return { label: 'STARTER', cls: 'bg-accent/15 text-accent border-accent/30' }
+  if (status === 'STARTER') return { label: 'STARTER', cls: 'bg-good/15 text-good border-good/30' }
   if (status === 'BENCHED') return { label: 'BENCHED', cls: 'bg-bad/15 text-bad border-bad/30' }
   return null
 }

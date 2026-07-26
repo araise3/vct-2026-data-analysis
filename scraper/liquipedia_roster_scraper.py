@@ -114,6 +114,7 @@ DEFAULT_TEAMS = [
 TEAM_PAGES = {
     "LEVIATÁN": "Leviatán",
     "FNATIC": "Fnatic",
+    "JDG Esports": "JD Gaming",
     "NRG": "NRG",
     "KRÜ Esports": "KRÜ Esports",
     "KIWOOM DRX": "DRX",

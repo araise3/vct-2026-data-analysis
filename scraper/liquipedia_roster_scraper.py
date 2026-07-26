@@ -56,6 +56,7 @@ import time
 from datetime import datetime, timezone
 
 import requests
+from bs4 import BeautifulSoup
 
 API = "https://liquipedia.net/valorant/api.php"
 
@@ -70,6 +71,7 @@ USER_AGENT = (
 )
 
 REQUEST_DELAY = 2.5      # ToU minimum is 2.0s; extra headroom
+PARSE_REQUEST_DELAY = 32  # action=parse is limited to 1 req/30s, not 1/2s -- extra headroom
 MAX_RETRIES = 4
 CACHE_TTL_HOURS = 24
 CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".liquipedia_cache")
@@ -131,13 +133,13 @@ def make_session() -> requests.Session:
     return s
 
 
-def cache_path(title: str) -> str:
+def cache_path(title: str, ext: str = "wikitext") -> str:
     safe = re.sub(r"[^\w.-]", "_", title)
-    return os.path.join(CACHE_DIR, f"{safe}.wikitext")
+    return os.path.join(CACHE_DIR, f"{safe}.{ext}")
 
 
-def read_cache(title: str):
-    p = cache_path(title)
+def read_cache(title: str, ext: str = "wikitext"):
+    p = cache_path(title, ext)
     if not os.path.exists(p):
         return None
     age_h = (time.time() - os.path.getmtime(p)) / 3600
@@ -147,9 +149,9 @@ def read_cache(title: str):
         return f.read()
 
 
-def write_cache(title: str, text: str) -> None:
+def write_cache(title: str, text: str, ext: str = "wikitext") -> None:
     os.makedirs(CACHE_DIR, exist_ok=True)
-    with open(cache_path(title), "w", encoding="utf-8") as f:
+    with open(cache_path(title, ext), "w", encoding="utf-8") as f:
         f.write(text)
 
 
@@ -197,6 +199,74 @@ def fetch_wikitext(session, title: str, use_cache=True):
             print(f"  [error] {title}: {e} (attempt {attempt})")
         time.sleep(2 ** attempt)
     print(f"  [FAILED] {title}")
+    return None
+
+
+def fetch_parsed_html(session, title: str, use_cache=True):
+    """
+    Rendered HTML for a page via action=parse, or None if it doesn't
+    exist.
+
+    This is the piece that raw wikitext (fetch_wikitext, action=query)
+    can't give us: action=parse actually EXECUTES the page's Lua
+    modules server-side, the same as visiting the page in a browser
+    would trigger. Confirmed against Leviatán's page that at least one
+    part of the Organization table (Onur/Jhein/Boia) is assembled at
+    render time from the Infobox's coaches=/manager= fields plus
+    ActiveOrganizationAuto -- neither of which show that merged result
+    in their own wikitext. Whether action=parse's output *also* resolves
+    whatever produces Tostado/LRojo/雨童 (which have no wikitext trace
+    anywhere on the page, and no personal page to auto-resolve from
+    either) is the open question this function exists to test -- if
+    those genuinely come from Liquipedia's internal LPDB rather than
+    anything at all reachable by rendering THIS page's own wikitext,
+    action=parse won't surface them either, since it's still bounded by
+    what this one page's templates can pull in.
+
+    Rate-limited far more conservatively than fetch_wikitext:
+    action=parse is explicitly called out in Liquipedia's ToU as more
+    resource-intensive, capped at 1 request / 30 seconds versus the
+    general 1 / 2 seconds -- PARSE_REQUEST_DELAY (32s) respects that.
+    """
+    if use_cache:
+        cached = read_cache(title, ext="html")
+        if cached is not None:
+            return cached
+
+    params = {
+        "action": "parse",
+        "format": "json",
+        "page": title,
+        "prop": "text",
+        "redirects": 1,
+    }
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            r = session.get(API, params=params, timeout=30)
+            if r.status_code == 200:
+                time.sleep(PARSE_REQUEST_DELAY)
+                data = r.json()
+                if "error" in data:
+                    code = data["error"].get("code")
+                    if code in ("missingtitle",):
+                        return None
+                    print(f"  [api error] {title}: {data['error']}")
+                    return None
+                html = data.get("parse", {}).get("text", {}).get("*")
+                if not html:
+                    return None
+                write_cache(title, html, ext="html")
+                return html
+            if r.status_code == 429:
+                wait = 60 * attempt  # action=parse is the resource-intensive one; back off harder
+                print(f"  [429] rate limited on {title} (parse); sleeping {wait}s")
+                time.sleep(wait)
+                continue
+            print(f"  [{r.status_code}] {title} (parse, attempt {attempt})")
+        except requests.RequestException as e:
+            print(f"  [error] {title} (parse): {e} (attempt {attempt})")
+        time.sleep(2 ** attempt)
+    print(f"  [FAILED] {title} (parse)")
     return None
 
 
@@ -371,6 +441,128 @@ def extract_section(wikitext, wrapper_name):
     return [parse_named_args(a) for a in SQUAD_AUTO_ROW.findall(body)]
 
 
+def extract_roster_from_html(html: str):
+    """
+    Second, independent extraction path: parses action=parse's rendered
+    HTML instead of raw wikitext, looking for the "Player Roster" and
+    "Organization" tables directly by column headers rather than by
+    template name -- there's no template name to key on once a page has
+    already been rendered.
+
+    Section-scoping is hierarchical and deliberately so: a naive "find
+    any heading called Active" approach breaks, because "Active"/
+    "Former" appear as h3 subheadings under BOTH the Player Roster AND
+    Organization h2 sections. A synthetic-fixture test caught this
+    concretely -- an early version matched "Active" generically and
+    ended up pulling the Organization section's rows into the player
+    list, and duplicating the player table (since it matched under both
+    the h2 and its own nested h3). Fixed by finding the h2 section
+    first, then only looking for Active/Former h3s bounded by THAT h2's
+    own extent (up to the next h2).
+
+    UNTESTED against a live fetch as of writing (same caveat as the rest
+    of this file): written against the column-header set visible in the
+    person's own screenshot (ID, Name, Status, Time on Team, Maps
+    Played, Rating for players; ID, Name, Role, Join Date for
+    organization), matching case-insensitively and tolerating missing
+    columns -- but the exact table CSS classes/structure, and whether
+    flag <img alt="..."> text is a country name or an ISO code, haven't
+    been confirmed. Run --test-html-extract on one team first.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    all_headings = soup.find_all(re.compile(r"^h[1-6]$"))
+
+    def section_elements(h2_text):
+        """Every tag between the named h2 and the next h2 (or end of
+        page), i.e. that h2's full section including any h3 subheadings
+        and their tables."""
+        start = None
+        for h in all_headings:
+            if h.name == "h2" and h.get_text(strip=True).lower() == h2_text.lower():
+                start = h
+                break
+        if start is None:
+            return []
+        out = []
+        for sib in start.find_all_next():
+            if sib.name == "h2":
+                break
+            out.append(sib)
+        return out
+
+    def tables_by_status(elements):
+        """Within a section's elements, tag each table by whichever
+        Active/Former h3 (or h4, some pages nest one level deeper) most
+        recently preceded it. Defaults to "active" if no such heading
+        appears before the first table (a page with only one status and
+        no subheading at all)."""
+        status = "active"
+        out = []
+        for el in elements:
+            if re.match(r"^h[3-4]$", el.name or ""):
+                text = el.get_text(strip=True).lower()
+                if "former" in text:
+                    status = "former"
+                elif "active" in text:
+                    status = "active"
+            elif el.name == "table":
+                out.append((el, status))
+        return out
+
+    def rows_by_header(table):
+        headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
+        if not headers:
+            return []
+        rows = []
+        for tr in table.find_all("tr"):
+            cells = tr.find_all("td")
+            if not cells or len(cells) < 2:
+                continue
+            row = {h: clean(td.get_text(" ", strip=True)) for h, td in zip(headers, cells)}
+            # NOT confirmed to be an ISO code -- Liquipedia flag images
+            # commonly use the country NAME as alt text (e.g. alt=
+            # "Argentina"), not a 2-letter code, unlike this site's own
+            # Flag component which needs a code for flagcdn.com URLs.
+            # Stored raw rather than guessed-converted; needs a real
+            # sample to know whether a name->code lookup is required.
+            flag_img = cells[0].find("img")
+            row["_flag_raw"] = flag_img.get("alt") if flag_img else None
+            rows.append(row)
+        return rows
+
+    players, staff = [], []
+    for table, status in tables_by_status(section_elements("Player Roster")):
+        for row in rows_by_header(table):
+            pid = row.get("id") or row.get("player")
+            if not pid:
+                continue
+            players.append({
+                "id": pid,
+                "status": status,
+                "timeOnTeam": row.get("time on team"),
+                "mapsPlayed": row.get("maps played"),
+                "rating": row.get("rating"),
+                "flagRaw": row.get("_flag_raw"),
+            })
+
+    for table, status in tables_by_status(section_elements("Organization")):
+        for row in rows_by_header(table):
+            pid = row.get("id")
+            if not pid:
+                continue
+            staff.append({
+                "id": pid,
+                "name": row.get("name"),
+                "role": row.get("role"),
+                "joinDate": row.get("join date"),
+                "status": status,
+                "flagRaw": row.get("_flag_raw"),
+            })
+
+    coaches = [s for s in staff if s["role"] and "coach" in s["role"].lower()]
+    return {"players": players, "staff": staff, "coaches": coaches}
+
+
 def extract_roster(wikitext: str):
     """
     Real shape, confirmed against a live page (Leviatán, 2026-07-26) --
@@ -463,6 +655,11 @@ def extract_roster(wikitext: str):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--inspect", metavar="TEAM", help="Dump one page's raw wikitext and exit")
+    ap.add_argument("--dump-html", metavar="TEAM", help="Dump one page's action=parse rendered HTML and exit")
+    ap.add_argument("--test-html-extract", metavar="TEAM",
+                    help="Fetch one page's rendered HTML, run extract_roster_from_html, print the result as JSON, and exit -- run this before a full --html run")
+    ap.add_argument("--html", action="store_true",
+                    help="Use action=parse (rendered HTML) instead of wikitext for the full run. Slower (32s/request vs 2.5s) but can surface Lua-module-merged content wikitext alone can't (see extract_roster_from_html's docstring)")
     ap.add_argument("--teams", nargs="*", help="Only these teams (default: all in --team-list)")
     ap.add_argument("--team-list", default="../src/lib/teamLogos.json",
                     help="JSON file whose top-level keys are team names")
@@ -480,6 +677,25 @@ def main():
         if text is None:
             sys.exit(f"No such page: {title}")
         print(text)
+        return
+
+    if args.dump_html:
+        title = page_title(args.dump_html)
+        print(f"# page title: {title}", file=sys.stderr)
+        html = fetch_parsed_html(session, title, use_cache=not args.no_cache)
+        if html is None:
+            sys.exit(f"No such page: {title}")
+        print(html)
+        return
+
+    if args.test_html_extract:
+        title = page_title(args.test_html_extract)
+        print(f"# page title: {title}", file=sys.stderr)
+        html = fetch_parsed_html(session, title, use_cache=not args.no_cache)
+        if html is None:
+            sys.exit(f"No such page: {title}")
+        result = extract_roster_from_html(html)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
         return
 
     if args.teams:
@@ -503,15 +719,26 @@ def main():
     for team in teams:
         title = page_title(team)
         print(f"[{team}] -> {title}")
-        text = fetch_wikitext(session, title, use_cache=not args.no_cache)
-        if text is None:
-            print("  MISSING page")
-            missing.append(team)
-            continue
-        result = extract_roster(text)
-        n_active = sum(1 for p in result["players"] if p["status"] == "active")
-        print(f"  {n_active} active players, {len(result['staff'])} staff, "
-              f"{len(result['coaches'])} coaches, {len(result['manager'])} manager")
+        if args.html:
+            html = fetch_parsed_html(session, title, use_cache=not args.no_cache)
+            if html is None:
+                print("  MISSING page")
+                missing.append(team)
+                continue
+            result = extract_roster_from_html(html)
+            n_active = sum(1 for p in result["players"] if p["status"] == "active")
+            print(f"  {n_active} active players, {len(result['staff'])} staff, "
+                  f"{len(result['coaches'])} coaches")
+        else:
+            text = fetch_wikitext(session, title, use_cache=not args.no_cache)
+            if text is None:
+                print("  MISSING page")
+                missing.append(team)
+                continue
+            result = extract_roster(text)
+            n_active = sum(1 for p in result["players"] if p["status"] == "active")
+            print(f"  {n_active} active players, {len(result['staff'])} staff, "
+                  f"{len(result['coaches'])} coaches, {len(result['manager'])} manager")
         out["teams"][team] = {
             "page": title,
             "url": f"https://liquipedia.net/valorant/{title.replace(' ', '_')}",

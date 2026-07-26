@@ -583,6 +583,9 @@ def extract_roster_from_html(html: str):
             flag_img = cells[0].find("img")
             flag_match = FLAG_SRC_RE.search(flag_img.get("src", "")) if flag_img else None
             row["_flag"] = flag_match.group(1).lower() if flag_match else None
+            # Team captain/IGL marker: <i class="fas fa-crown" title="Captain">
+            # sitting next to the player's name in the first cell.
+            row["_captain"] = bool(cells[0].find("i", class_="fa-crown"))
             rows.append(row)
         return rows
 
@@ -600,6 +603,7 @@ def extract_roster_from_html(html: str):
                 "leaveDate": row.get("leave date"),
                 "newTeam": row.get("new team"),
                 "flag": row.get("_flag"),
+                "captain": row.get("_captain", False),
             })
 
     for table, status in tables_by_status(section_elements("Organization")):

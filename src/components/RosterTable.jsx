@@ -6,25 +6,29 @@ import { rating, pct, num } from '../lib/format'
  * The roster block on a team profile -- the page's headline component.
  *
  * Deliberately NOT built on DataTable: this needs a two-line identity
- * cell (name over role badge), a date-range column, and per-row
- * emphasis that DataTable's uniform single-line cells don't accommodate.
- * Sorting is fixed (rating desc) rather than clickable for the same
- * reason -- a five-to-seven row roster doesn't need it.
+ * cell, a date-range column, and per-row emphasis that DataTable's
+ * uniform single-line cells don't accommodate. Sorting is fixed (rating
+ * desc) rather than clickable for the same reason -- a five-to-seven
+ * row roster doesn't need it.
  *
- * On the "Role" column: this is DERIVED from each player's share of the
- * team's maps in the current filter scope, not official roster data.
- * VLR does publish starter/sub/inactive flags but the scraper doesn't
- * collect them, so inferring from map share is the honest option --
- * hence the footnote under the table rather than an unqualified
- * "STARTER" badge implying it came from the source.
+ * The player table previously had a derived "Role" badge (CORE/
+ * ROTATION/STAND-IN, guessed from each player's share of team maps
+ * played) because VLR doesn't publish official starter/sub status.
+ * That's gone now, replaced with real data from Liquipedia: a captain/
+ * IGL indicator (matched by handle, case-insensitive since VLR and
+ * Liquipedia don't always agree on capitalization) and a real coaching
+ * staff section above the table, both sourced from
+ * public/data/liquipedia_rosters.json. Liquipedia's own roster tables
+ * don't distinguish starter/sub either (just active/former), so there
+ * isn't a like-for-like replacement for the old badge's granularity --
+ * this shows what's actually verifiable instead of re-guessing it a
+ * different way.
+ *
+ * Scope deliberately limited to CURRENT roster + coaches only (no
+ * historical transfers, no non-coaching staff like managers/streamers/
+ * content creators) -- Liquipedia has all of that too, just not surfaced
+ * here.
  */
-
-function roleFor(mapShare) {
-  if (mapShare == null) return null
-  if (mapShare >= 0.8) return { label: 'CORE', cls: 'bg-accent/15 text-accent border-accent/30' }
-  if (mapShare >= 0.3) return { label: 'ROTATION', cls: 'bg-surface2 text-muted border-hairline' }
-  return { label: 'STAND-IN', cls: 'bg-surface2 text-muted/70 border-hairline' }
-}
 
 function shortDate(iso) {
   if (!iso) return null
@@ -43,97 +47,122 @@ function activeRange(first, last) {
 const th = 'px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted whitespace-nowrap'
 const td = 'px-4 py-3 text-sm whitespace-nowrap align-middle'
 
-export default function RosterTable({ team, rows }) {
+export default function RosterTable({ team, rows, liquipedia }) {
+  const coaches = liquipedia?.coaches ?? []
+  const lqPlayersById = new Map(
+    (liquipedia?.players ?? []).map((p) => [p.id.toLowerCase(), p])
+  )
+
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-baseline justify-between gap-4 flex-wrap">
-        <h2 className="font-display text-sm font-semibold text-ink">Players of {team}</h2>
-        <p className="text-muted text-xs">Reflects the filters above.</p>
-      </div>
+    <div className="flex flex-col gap-4">
+      {coaches.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <h2 className="font-display text-sm font-semibold text-ink">Coaching Staff</h2>
+          <div className="bg-surface border border-hairline rounded-2xl divide-y divide-hairline">
+            {coaches.map((c) => (
+              <div key={c.id} className="flex items-center justify-between px-5 py-3">
+                <span className="text-sm text-ink font-medium flex items-center gap-2">
+                  <Flag countryCode={c.flag} countryName={c.name} size={20} />
+                  {c.name || c.id}
+                  {c.name && <span className="text-muted text-xs font-normal">({c.id})</span>}
+                </span>
+                <div className="flex items-center gap-6 text-xs text-muted">
+                  <span>{c.role}</span>
+                  {c.joinDate && <span>Since {shortDate(c.joinDate)}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      <div className="bg-surface border border-hairline rounded-2xl overflow-auto">
-        <table className="w-full border-separate border-spacing-0">
-          <thead>
-            <tr className="bg-surface2">
-              <th className={`${th} text-left border-b border-hairline`}>Player</th>
-              <th className={`${th} text-left border-b border-hairline`}>Role</th>
-              <th className={`${th} text-right border-b border-hairline`}>Active</th>
-              <th className={`${th} text-right border-b border-hairline`}>Maps</th>
-              <th className={`${th} text-right border-b border-hairline`}>Rounds</th>
-              <th className={`${th} text-right border-b border-hairline`}>Rating</th>
-              <th className={`${th} text-right border-b border-hairline`}>ACS</th>
-              <th className={`${th} text-right border-b border-hairline`}>K/D</th>
-              <th className={`${th} text-right border-b border-hairline`}>KAST</th>
-              <th className={`${th} text-right border-b border-hairline`}>ADR</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((p, i) => {
-              const role = roleFor(p.mapShare)
-              const last = i === rows.length - 1
-              const bd = last ? '' : 'border-b border-hairline'
-              return (
-                <tr key={p.player} className="hover:bg-surface2/40 transition-colors">
-                  <td className={`${td} ${bd}`}>
-                    <Link
-                      to={`/players/${encodeURIComponent(p.player)}`}
-                      className="flex items-center gap-2.5 min-w-0 group"
-                    >
-                      <Flag countryCode={p.countryCode} countryName={p.countryName} size={22} />
-                      <span className="font-medium text-ink truncate group-hover:text-accent-bright transition-colors">
-                        {p.player}
-                      </span>
-                    </Link>
-                  </td>
-                  <td className={`${td} ${bd}`}>
-                    {role && (
-                      <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide border ${role.cls}`}>
-                        {role.label}
-                      </span>
-                    )}
-                  </td>
-                  <td className={`${td} ${bd} text-right text-muted text-xs`}>
-                    {activeRange(p.firstDate, p.lastDate)}
-                  </td>
-                  <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>
-                    {num(p.mapsPlayed)}
-                    {p.mapShare != null && (
-                      <span className="text-muted text-xs ml-1.5">{pct(p.mapShare, 0)}</span>
-                    )}
-                  </td>
-                  <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{num(p.roundsPlayed)}</td>
-                  <td className={`${td} ${bd} text-right font-semibold tabular-nums ${
-                    p.avgRating == null ? 'text-muted'
-                      : p.avgRating >= 1 ? 'text-good' : 'text-ink/90'
-                  }`}>
-                    {rating(p.avgRating)}
-                  </td>
-                  <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{num(p.avgAcs, 0)}</td>
-                  <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>
-                    {p.kd == null ? '—' : p.kd.toFixed(2)}
-                  </td>
-                  <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{pct(p.avgKast)}</td>
-                  <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{num(p.avgAdr, 1)}</td>
-                </tr>
-              )
-            })}
-            {rows.length === 0 && (
-              <tr>
-                <td className="px-4 py-4 text-muted text-xs" colSpan={10}>
-                  No players in this scope.
-                </td>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-baseline justify-between gap-4 flex-wrap">
+          <h2 className="font-display text-sm font-semibold text-ink">Players of {team}</h2>
+          <p className="text-muted text-xs">Reflects the filters above.</p>
+        </div>
+
+        <div className="bg-surface border border-hairline rounded-2xl overflow-auto">
+          <table className="w-full border-separate border-spacing-0">
+            <thead>
+              <tr className="bg-surface2">
+                <th className={`${th} text-left border-b border-hairline`}>Player</th>
+                <th className={`${th} text-right border-b border-hairline`}>Active</th>
+                <th className={`${th} text-right border-b border-hairline`}>Maps</th>
+                <th className={`${th} text-right border-b border-hairline`}>Rounds</th>
+                <th className={`${th} text-right border-b border-hairline`}>Rating</th>
+                <th className={`${th} text-right border-b border-hairline`}>ACS</th>
+                <th className={`${th} text-right border-b border-hairline`}>K/D</th>
+                <th className={`${th} text-right border-b border-hairline`}>KAST</th>
+                <th className={`${th} text-right border-b border-hairline`}>ADR</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {rows.map((p, i) => {
+                const lq = lqPlayersById.get(p.player.toLowerCase())
+                const last = i === rows.length - 1
+                const bd = last ? '' : 'border-b border-hairline'
+                return (
+                  <tr key={p.player} className="hover:bg-surface2/40 transition-colors">
+                    <td className={`${td} ${bd}`}>
+                      <Link
+                        to={`/players/${encodeURIComponent(p.player)}`}
+                        className="flex items-center gap-2.5 min-w-0 group"
+                      >
+                        <Flag countryCode={p.countryCode} countryName={p.countryName} size={22} />
+                        <span className="font-medium text-ink truncate group-hover:text-accent-bright transition-colors">
+                          {p.player}
+                        </span>
+                        {lq?.captain && (
+                          <span className="text-accent text-xs shrink-0" title="Team captain / IGL">★</span>
+                        )}
+                      </Link>
+                    </td>
+                    <td className={`${td} ${bd} text-right text-muted text-xs`}>
+                      {activeRange(p.firstDate, p.lastDate)}
+                    </td>
+                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{num(p.mapsPlayed)}</td>
+                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{num(p.roundsPlayed)}</td>
+                    <td className={`${td} ${bd} text-right font-semibold tabular-nums ${
+                      p.avgRating == null ? 'text-muted'
+                        : p.avgRating >= 1 ? 'text-good' : 'text-ink/90'
+                    }`}>
+                      {rating(p.avgRating)}
+                    </td>
+                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{num(p.avgAcs, 0)}</td>
+                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>
+                      {p.kd == null ? '—' : p.kd.toFixed(2)}
+                    </td>
+                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{pct(p.avgKast)}</td>
+                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{num(p.avgAdr, 1)}</td>
+                  </tr>
+                )
+              })}
+              {rows.length === 0 && (
+                <tr>
+                  <td className="px-4 py-4 text-muted text-xs" colSpan={9}>
+                    No players in this scope.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-      <p className="text-muted text-xs leading-relaxed">
-        Role is derived from each player's share of the team's maps in scope, not official roster
-        data — VLR publishes starter/sub flags but the scraper doesn't collect them. Active is the
-        first and last match week the player appeared in for this team, resolved to that week's
-        actual play dates.
-      </p>
+        <p className="text-muted text-xs leading-relaxed">
+          Active is the first and last match week the player appeared in for this team, resolved to
+          that week's actual play dates. Roster/captain/coach data from{' '}
+          <a
+            href="https://liquipedia.net/valorant"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-accent-bright transition-colors underline"
+          >
+            Liquipedia
+          </a>
+          , licensed CC-BY-SA 3.0.
+        </p>
+      </div>
     </div>
   )
 }

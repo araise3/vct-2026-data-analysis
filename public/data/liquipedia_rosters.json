@@ -1,0 +1,3060 @@
+{
+  "_meta": {
+    "source": "Liquipedia Valorant Wiki",
+    "sourceUrl": "https://liquipedia.net/valorant",
+    "license": "CC-BY-SA 3.0",
+    "attribution": "Roster and coaching staff data from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0."
+  },
+  "teams": {
+    "Nongshim RedForce": {
+      "players": [
+        {
+          "id": "Xross",
+          "name": "Jung Hwan",
+          "joinDate": "2024-02-20",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "Dambi",
+          "name": "Lee Hyuk-kyu",
+          "joinDate": "2024-11-26",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "Francis",
+          "name": "Kim Mu-bin",
+          "joinDate": "2024-11-26",
+          "flag": "kr",
+          "captain": true
+        },
+        {
+          "id": "Ivy",
+          "name": "Park Sung-hyeon",
+          "joinDate": "2024-11-26",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "Rb",
+          "name": "Goo Sang-min",
+          "joinDate": "2025-06-17",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "WoohyuN",
+          "name": null,
+          "joinDate": "2026-07-03",
+          "flag": "kr",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "SilKanoN",
+          "name": "Kim Gyeong-min",
+          "role": "Head Coach",
+          "joinDate": "2024-11-26",
+          "flag": "kr"
+        },
+        {
+          "id": "sungmin",
+          "name": "So Seong-min",
+          "role": "Coach",
+          "joinDate": "2025-06-17",
+          "flag": "kr"
+        },
+        {
+          "id": "yoman",
+          "name": "Chae Young-mun",
+          "role": "Coach",
+          "joinDate": "2026-01-05",
+          "flag": "kr"
+        }
+      ]
+    },
+    "MIBR": {
+      "players": [
+        {
+          "id": "aspas",
+          "name": "Erick Santos",
+          "joinDate": "2024-11-27",
+          "flag": "br",
+          "captain": false
+        },
+        {
+          "id": "Verno",
+          "name": "Andrew Maust",
+          "joinDate": "2025-03-20",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "Mazino",
+          "name": "Roberto Francisco Rivas Bugueño",
+          "joinDate": "2025-12-18",
+          "flag": "cl",
+          "captain": true
+        },
+        {
+          "id": "tex",
+          "name": "Ian Botsch",
+          "joinDate": "2025-12-18",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "zekken",
+          "name": "Zachary Jude Patrone",
+          "joinDate": "2025-12-18",
+          "flag": "us",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "fRoD",
+          "name": "Daniel Montaner",
+          "role": "Coach",
+          "joinDate": "2023-10-15",
+          "flag": "us"
+        },
+        {
+          "id": "Happy",
+          "name": "Vincent Cervoni Schopenhauer",
+          "role": "Assistant Coach",
+          "joinDate": "2025-12-18",
+          "flag": "fr"
+        }
+      ]
+    },
+    "KRÜ Esports": {
+      "players": [
+        {
+          "id": "Dantedeu5",
+          "name": "Jesús Federico Larrosa",
+          "joinDate": "2025-07-12",
+          "flag": "ar",
+          "captain": false
+        },
+        {
+          "id": "Less",
+          "name": "Felipe de Loyola Basso",
+          "joinDate": "2025-12-13",
+          "flag": "br",
+          "captain": false
+        },
+        {
+          "id": "mwzera",
+          "name": "Leonardo da Silva Serrati",
+          "joinDate": "2025-12-13",
+          "flag": "br",
+          "captain": false
+        },
+        {
+          "id": "Saadhak",
+          "name": "Matias Delipetro",
+          "joinDate": "2025-12-13",
+          "flag": "ar",
+          "captain": true
+        },
+        {
+          "id": "heat",
+          "name": "Olavo Marcelo Saabi Batista Lemes",
+          "joinDate": "2026-06-26",
+          "flag": "br",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "ZONYK",
+          "name": "Nicolas Carboni",
+          "role": "Head Coach",
+          "joinDate": "2025-11-26",
+          "flag": "cl"
+        },
+        {
+          "id": "arthur",
+          "name": "Arthur Leon",
+          "role": "Performance Coach",
+          "joinDate": "2025-11-26",
+          "flag": "br"
+        }
+      ]
+    },
+    "All Gamers": {
+      "players": [
+        {
+          "id": "K1ra",
+          "name": "Huang Zhihao",
+          "joinDate": "2024-10-16",
+          "flag": "cn",
+          "captain": true
+        },
+        {
+          "id": "Shr1mp",
+          "name": "Yang Yong",
+          "joinDate": "2025-06-28",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "iamgrq",
+          "name": "Gao Ruiqi",
+          "joinDate": "2025-12-25",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "f4ngeer",
+          "name": "Roman Smirnov",
+          "joinDate": "2025-12-27",
+          "flag": "ru",
+          "captain": false
+        },
+        {
+          "id": "Bai",
+          "name": "Zhang Zeyang",
+          "joinDate": "2026-04-29",
+          "flag": "cn",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "ED101",
+          "name": "Han Tianqi",
+          "role": "Head Coach",
+          "joinDate": "2025-06-28",
+          "flag": "cn"
+        },
+        {
+          "id": "Jason",
+          "name": null,
+          "role": "Assistant Coach",
+          "joinDate": "2026-04-02",
+          "flag": "cn"
+        },
+        {
+          "id": "Xu",
+          "name": null,
+          "role": "Assistant Coach",
+          "joinDate": "2026-07-08",
+          "flag": "cn"
+        }
+      ]
+    },
+    "Gen.G": {
+      "players": [
+        {
+          "id": "Ash",
+          "name": "Ha Hyun-cheol",
+          "joinDate": "2025-03-17",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "Karon",
+          "name": "Kim Won-tae",
+          "joinDate": "2025-10-24",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "t3xture",
+          "name": "Kim Na-ra",
+          "joinDate": "2025-10-25",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "Efina",
+          "name": "Kim Nak-yeon",
+          "joinDate": "2026-07-09",
+          "flag": "kr",
+          "captain": true
+        },
+        {
+          "id": "RaxcaL",
+          "name": "Kim Min-seok",
+          "joinDate": "2026-07-09",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "ZynX",
+          "name": "Kim Dong-ha",
+          "joinDate": "2026-01-08",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "Xiesta",
+          "name": "Jung Si-hwan",
+          "joinDate": "2026-02-20",
+          "flag": "kr",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "solo",
+          "name": "Kang Keun-chul",
+          "role": "Head Coach",
+          "joinDate": "2025-10-23",
+          "flag": "kr"
+        },
+        {
+          "id": "HSK",
+          "name": "Kim Hae-seong",
+          "role": "Coach",
+          "joinDate": "2025-10-23",
+          "flag": "kr"
+        },
+        {
+          "id": "peri",
+          "name": "Jung Beom-gi",
+          "role": "Coach",
+          "joinDate": "2025-11-28",
+          "flag": "kr"
+        }
+      ]
+    },
+    "Xi Lai Gaming": {
+      "players": [
+        {
+          "id": "Rarga",
+          "name": "Arthur Churyumov",
+          "joinDate": "2023-12-21",
+          "flag": "ru",
+          "captain": false
+        },
+        {
+          "id": "happywei",
+          "name": "Teng Min-wei",
+          "joinDate": "2024-03-14",
+          "flag": "tw",
+          "captain": false
+        },
+        {
+          "id": "NoMan",
+          "name": "James Man Ga Kit",
+          "joinDate": "2025-06-29",
+          "flag": "hk",
+          "captain": false
+        },
+        {
+          "id": "Lysoar",
+          "name": "Liang Youhao",
+          "joinDate": "2025-11-25",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "WsLeo",
+          "name": "Huang Ping-wei",
+          "joinDate": "2025-12-02",
+          "flag": "tw",
+          "captain": true
+        },
+        {
+          "id": "Sharks",
+          "name": null,
+          "joinDate": "2026-07-13",
+          "flag": "cn",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "hvoya",
+          "name": "Aleksandr Eremin",
+          "role": "Head Coach",
+          "joinDate": "2025-12-01",
+          "flag": "ru"
+        },
+        {
+          "id": "steady",
+          "name": "Dmitry Prutkov",
+          "role": "Assistant Coach",
+          "joinDate": "2026-01-15",
+          "flag": "ru"
+        }
+      ]
+    },
+    "GIANTX": {
+      "players": [
+        {
+          "id": "westside",
+          "name": "Miłosz Tomasz Duda",
+          "joinDate": "2024-11-26",
+          "flag": "pl",
+          "captain": false
+        },
+        {
+          "id": "ara",
+          "name": "Eduard-George Hanceriuc",
+          "joinDate": "2025-04-16",
+          "flag": "ro",
+          "captain": false
+        },
+        {
+          "id": "Flickless",
+          "name": "Karel Ivo Maeckelbergh",
+          "joinDate": "2025-04-16",
+          "flag": "be",
+          "captain": true
+        },
+        {
+          "id": "neT",
+          "name": "Michael Bernet",
+          "joinDate": "2026-07-10",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "Jesse",
+          "name": "Adam Čtvrtníček",
+          "joinDate": "2026-07-25",
+          "flag": "cz",
+          "captain": false
+        },
+        {
+          "id": "tomaszy",
+          "name": "Tomás Machado",
+          "joinDate": "2025-04-16",
+          "flag": "pt",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "pipsoN",
+          "name": "Daniil Meshcheryakov",
+          "role": "Head Coach",
+          "joinDate": "2023-12-14",
+          "flag": "ru"
+        },
+        {
+          "id": "wayLander",
+          "name": "Jan Rahkonen",
+          "role": "Assistant Coach",
+          "joinDate": "2024-11-26",
+          "flag": "fi"
+        }
+      ]
+    },
+    "NRG": {
+      "players": [
+        {
+          "id": "Ethan",
+          "name": "Ethan Cole Arnold",
+          "joinDate": "2023-12-23",
+          "flag": "us",
+          "captain": true
+        },
+        {
+          "id": "mada",
+          "name": "Adam Pampuch",
+          "joinDate": "2024-10-10",
+          "flag": "ca",
+          "captain": false
+        },
+        {
+          "id": "brawk",
+          "name": "Brock Somerhalder",
+          "joinDate": "2025-02-16",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "skuba",
+          "name": "Logan Jenkins",
+          "joinDate": "2025-05-09",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "keiko",
+          "name": "Georgio Sanassy",
+          "joinDate": "2025-11-12",
+          "flag": "gb",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "bonkar",
+          "name": "Malkolm Rench",
+          "role": "Head Coach",
+          "joinDate": "2025-05-09",
+          "flag": "se"
+        },
+        {
+          "id": "mitch",
+          "name": "Mitchell Semago",
+          "role": "Assistant Coach",
+          "joinDate": "2026-04-24",
+          "flag": "us"
+        }
+      ]
+    },
+    "Paper Rex": {
+      "players": [
+        {
+          "id": "d4v41",
+          "name": "Ahmad Khalish Rusyaidee bin Nordin",
+          "joinDate": "2021-02-08",
+          "flag": "my",
+          "captain": true
+        },
+        {
+          "id": "f0rsakeN",
+          "name": "Jason Susanto",
+          "joinDate": "2021-02-08",
+          "flag": "id",
+          "captain": false
+        },
+        {
+          "id": "something",
+          "name": "Ilia Petrov",
+          "joinDate": "2023-03-22",
+          "flag": "ru",
+          "captain": false
+        },
+        {
+          "id": "Jinggg",
+          "name": "Wang Jing Jie",
+          "joinDate": "2024-03-29",
+          "flag": "sg",
+          "captain": false
+        },
+        {
+          "id": "invy",
+          "name": "Adrian Jiggs Aisa Reyes",
+          "joinDate": "2025-12-16",
+          "flag": "ph",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "alecks",
+          "name": "Alexandre Sallé",
+          "role": "Coach",
+          "joinDate": "2021-02-08",
+          "flag": "fr"
+        },
+        {
+          "id": "Wendler",
+          "name": "Ashton Wendler",
+          "role": "Assistant Coach",
+          "joinDate": "2025-11-13",
+          "flag": "us"
+        },
+        {
+          "id": "Panda",
+          "name": "Laijhun Cheng",
+          "role": "Performance Coach",
+          "joinDate": "2025-04-01",
+          "flag": "us"
+        }
+      ]
+    },
+    "Dragon Ranger Gaming": {
+      "players": [
+        {
+          "id": "Nicc",
+          "name": "Shao Yi-chun",
+          "joinDate": "2023-03-22",
+          "flag": "tw",
+          "captain": false
+        },
+        {
+          "id": "vo0kashu",
+          "name": "Ilya Ushakov",
+          "joinDate": "2023-09-06",
+          "flag": "ru",
+          "captain": false
+        },
+        {
+          "id": "SpiritZ1",
+          "name": "Lin Ting-yu",
+          "joinDate": "2024-10-16",
+          "flag": "tw",
+          "captain": false
+        },
+        {
+          "id": "Flex1n",
+          "name": "Luo Rui",
+          "joinDate": "2024-11-28",
+          "flag": "cn",
+          "captain": true
+        },
+        {
+          "id": "Life",
+          "name": "Qu Donghao",
+          "joinDate": "2026-03-23",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Verse",
+          "name": null,
+          "joinDate": "2026-06-28",
+          "flag": "cn",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "NaThanD",
+          "name": "Deng Senqiao",
+          "role": "Head Coach",
+          "joinDate": "2025-03-09",
+          "flag": "cn"
+        },
+        {
+          "id": "JKH",
+          "name": "Han Fei",
+          "role": "Coach",
+          "joinDate": "2024-06-13",
+          "flag": "cn"
+        },
+        {
+          "id": "LT",
+          "name": "Huang Biaohong",
+          "role": "Assistant Coach",
+          "joinDate": "2025-03-10",
+          "flag": "cn"
+        },
+        {
+          "id": "Alti",
+          "name": null,
+          "role": "Performance Coach",
+          "joinDate": "2026-06-30",
+          "flag": "cn"
+        }
+      ]
+    },
+    "Sentinels": {
+      "players": [
+        {
+          "id": "johnqt",
+          "name": "Mohamed Amine Ouarid",
+          "joinDate": "2023-09-13",
+          "flag": "ma",
+          "captain": true
+        },
+        {
+          "id": "cortezia",
+          "name": "Gabriel Araujo Lobo Cortez",
+          "joinDate": "2025-11-01",
+          "flag": "br",
+          "captain": false
+        },
+        {
+          "id": "reduxx",
+          "name": "Yassin Aboulalazm",
+          "joinDate": "2025-11-01",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "JonahP",
+          "name": "Jonah Pulice",
+          "joinDate": "2026-03-06",
+          "flag": "ca",
+          "captain": false
+        },
+        {
+          "id": "Jerrwin",
+          "name": "Gurjiwan Gill",
+          "joinDate": "2026-03-24",
+          "flag": "ca",
+          "captain": false
+        },
+        {
+          "id": "Marved",
+          "name": "Jimmy Nguyen",
+          "joinDate": "2026-07-15",
+          "flag": "ca",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Ewok",
+          "name": "Marthinus Jacobus van der Walt",
+          "role": "Head Coach",
+          "joinDate": "2026-02-22",
+          "flag": "za"
+        },
+        {
+          "id": "GUNTER",
+          "name": "Luke Clives",
+          "role": "Assistant Coach",
+          "joinDate": "2024-10-18",
+          "flag": "gb"
+        }
+      ]
+    },
+    "Team Heretics": {
+      "players": [
+        {
+          "id": "Boo",
+          "name": "Ričardas Lukaševičius",
+          "joinDate": "2022-11-10",
+          "flag": "lt",
+          "captain": true
+        },
+        {
+          "id": "benjyfishy",
+          "name": "Benjy David Fish",
+          "joinDate": "2023-07-12",
+          "flag": "gb",
+          "captain": false
+        },
+        {
+          "id": "RieNs",
+          "name": "Enes Ecirli",
+          "joinDate": "2023-10-10",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "Wo0t",
+          "name": "Mert Alkan",
+          "joinDate": "2023-10-10",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "Koshmaras",
+          "name": "Martynas Namikas",
+          "joinDate": "2026-04-08",
+          "flag": "lt",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "neilzinho",
+          "name": "Neil Finlay",
+          "role": "Head Coach",
+          "joinDate": "2022-11-10",
+          "flag": "gb"
+        },
+        {
+          "id": "weber",
+          "name": "Brandon William Weber",
+          "role": "Coach",
+          "joinDate": "2023-10-10",
+          "flag": "gb"
+        },
+        {
+          "id": "EsportsRyan",
+          "name": "Ryan Scollan",
+          "role": "Perfomance Coach",
+          "joinDate": "2024-12-13",
+          "flag": "gb"
+        }
+      ]
+    },
+    "Rex Regum Qeon": {
+      "players": [
+        {
+          "id": "xffero",
+          "name": "David Sean Michael Monangin",
+          "joinDate": "2022-10-09",
+          "flag": "id",
+          "captain": false
+        },
+        {
+          "id": "Jemkin",
+          "name": "Maksim Batorov",
+          "joinDate": "2023-10-10",
+          "flag": "ru",
+          "captain": false
+        },
+        {
+          "id": "monyet",
+          "name": "I Made Adhi Cahya Nugraha",
+          "joinDate": "2024-05-20",
+          "flag": "id",
+          "captain": false
+        },
+        {
+          "id": "Kushy",
+          "name": "Bryan Carlos Setiawan",
+          "joinDate": "2024-10-10",
+          "flag": "id",
+          "captain": false
+        },
+        {
+          "id": "crazyguy",
+          "name": "Ngô Công Anh",
+          "joinDate": "2025-03-21",
+          "flag": "vn",
+          "captain": true
+        },
+        {
+          "id": "xan",
+          "name": "Xan Ng",
+          "joinDate": "2026-06-26",
+          "flag": "my",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Jovi",
+          "name": "Jovanni Vera",
+          "role": "Head Coach",
+          "joinDate": "2025-11-28",
+          "flag": "us"
+        },
+        {
+          "id": "Warbirds",
+          "name": "Evan Olzem",
+          "role": "Assistant Coach",
+          "joinDate": "2024-10-10",
+          "flag": "us"
+        },
+        {
+          "id": "Rebecca",
+          "name": "Rebecca Wong",
+          "role": "Performance Coach",
+          "joinDate": "2024-07-30",
+          "flag": "my"
+        }
+      ]
+    },
+    "ENVY": {
+      "players": [
+        {
+          "id": "Eggsterr",
+          "name": "Evan Grady",
+          "joinDate": "2025-03-08",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "keznit",
+          "name": "Angelo Mori",
+          "joinDate": "2026-01-09",
+          "flag": "cl",
+          "captain": false
+        },
+        {
+          "id": "Rossy",
+          "name": "Daniel Abedrabbo",
+          "joinDate": "2026-01-09",
+          "flag": "us",
+          "captain": true
+        },
+        {
+          "id": "Demon1",
+          "name": "Maximilian Mazanov",
+          "joinDate": "2026-02-05",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "GLYPH",
+          "name": "Conner Garcia",
+          "joinDate": "2026-06-30",
+          "flag": "ph",
+          "captain": false
+        },
+        {
+          "id": "nightz",
+          "name": "Christian Smith",
+          "joinDate": "2026-07-15",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "ion2x",
+          "name": "Ayan Rastogi",
+          "joinDate": "2025-03-08",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "P0PPIN",
+          "name": "Matteo Weber",
+          "joinDate": "2025-03-08",
+          "flag": "us",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Stunner",
+          "name": "Dakota MacLeod",
+          "role": "Coach",
+          "joinDate": "2025-03-08",
+          "flag": "ca"
+        },
+        {
+          "id": "WKN",
+          "name": "Álvaro Bustos",
+          "role": "Assistant Coach",
+          "joinDate": "2026-01-09",
+          "flag": "cl"
+        }
+      ]
+    },
+    "Team Secret": {
+      "players": [
+        {
+          "id": "kellyS",
+          "name": "Kelly Kent Sedillo",
+          "joinDate": "2025-05-15",
+          "flag": "ph",
+          "captain": false
+        },
+        {
+          "id": "Sylvan",
+          "name": "Ko Young-sub",
+          "joinDate": "2025-10-28",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "naTz",
+          "name": "Jonathan Adiputra",
+          "joinDate": "2026-07-15",
+          "flag": "id",
+          "captain": false
+        },
+        {
+          "id": "STYRON",
+          "name": "Tidus Goh Zhen Wei",
+          "joinDate": "2026-07-15",
+          "flag": "sg",
+          "captain": true
+        },
+        {
+          "id": "Zeus",
+          "name": "Jhian Zeus Dela Vega",
+          "joinDate": "2026-07-15",
+          "flag": "ph",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Spin",
+          "name": "Peter Bradford",
+          "role": "Head Coach",
+          "joinDate": "2026-07-15",
+          "flag": "gb"
+        },
+        {
+          "id": "skyeSG",
+          "name": "Felipe Skye Lim",
+          "role": "Coach",
+          "joinDate": "2026-07-15",
+          "flag": "sg"
+        }
+      ]
+    },
+    "FULL SENSE": {
+      "players": [
+        {
+          "id": "JitboyS",
+          "name": "Jittana Nokngam",
+          "joinDate": "2025-12-08",
+          "flag": "th",
+          "captain": false
+        },
+        {
+          "id": "killua",
+          "name": "Tanate Teerasawad",
+          "joinDate": "2025-12-08",
+          "flag": "th",
+          "captain": false
+        },
+        {
+          "id": "Primmie",
+          "name": "Papaphat Sriprapha",
+          "joinDate": "2025-12-08",
+          "flag": "th",
+          "captain": false
+        },
+        {
+          "id": "Crws",
+          "name": "Thanamethk Mahatthananuyut",
+          "joinDate": "2026-04-03",
+          "flag": "th",
+          "captain": true
+        },
+        {
+          "id": "seph1roth",
+          "name": "Chinnakrit Phoojaroen",
+          "joinDate": "2026-07-03",
+          "flag": "th",
+          "captain": false
+        },
+        {
+          "id": "Leviathan",
+          "name": "Thanyathon Nakmee",
+          "joinDate": "2026-07-03",
+          "flag": "th",
+          "captain": false
+        },
+        {
+          "id": "thyy",
+          "name": "Anupong Preamsak",
+          "joinDate": "2025-12-08",
+          "flag": "th",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "FrosT",
+          "name": "Hector Rosario",
+          "role": "Head Coach",
+          "joinDate": "2026-07-04",
+          "flag": "us"
+        },
+        {
+          "id": "sushiboys",
+          "name": "Panyawat Subsiriroj",
+          "role": "Assistant Coach",
+          "joinDate": "2026-03-27",
+          "flag": "th"
+        },
+        {
+          "id": "THEE",
+          "name": "Thanaphat Limpaphan",
+          "role": "Assistant Coach",
+          "joinDate": "2026-07-04",
+          "flag": "th"
+        }
+      ]
+    },
+    "Bilibili Gaming": {
+      "players": [
+        {
+          "id": "whz",
+          "name": "Wang Haozhe",
+          "joinDate": "2023-02-20",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Knight",
+          "name": "Liu Yuxiang",
+          "joinDate": "2023-04-25",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "nephh",
+          "name": "Marcus Tan Kai Wen",
+          "joinDate": "2024-06-05",
+          "flag": "sg",
+          "captain": true
+        },
+        {
+          "id": "rushia",
+          "name": "Wang Xiaojie",
+          "joinDate": "2024-10-31",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "bud",
+          "name": "Yang Renyu",
+          "joinDate": "2026-01-06",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "yilai",
+          "name": "Gu Yiming",
+          "joinDate": "2026-03-09",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "FT",
+          "name": "Yan Shuaibo",
+          "joinDate": "2026-06-30",
+          "flag": "cn",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Anaks",
+          "name": "Ye Sang-jun",
+          "role": "Head Coach",
+          "joinDate": "2026-06-30",
+          "flag": "kr"
+        },
+        {
+          "id": "JeXeN",
+          "name": "Wang Linxiao",
+          "role": "Coach",
+          "joinDate": "2024-01-19",
+          "flag": "cn"
+        }
+      ]
+    },
+    "Gentle Mates": {
+      "players": [
+        {
+          "id": "Minny",
+          "name": "Patrik Hušek",
+          "joinDate": "2024-12-04",
+          "flag": "cz",
+          "captain": false
+        },
+        {
+          "id": "bipo",
+          "name": "Taranvir Singh",
+          "joinDate": "2025-11-20",
+          "flag": "it",
+          "captain": false
+        },
+        {
+          "id": "marteen",
+          "name": "Martin Pátek",
+          "joinDate": "2025-11-20",
+          "flag": "cz",
+          "captain": false
+        },
+        {
+          "id": "starxo",
+          "name": "Patryk Kopczyński",
+          "joinDate": "2025-11-20",
+          "flag": "pl",
+          "captain": true
+        },
+        {
+          "id": "Proxh",
+          "name": "Yusuf Emre Tunc",
+          "joinDate": "2026-06-08",
+          "flag": "de",
+          "captain": false
+        },
+        {
+          "id": "Click",
+          "name": "Haydem Ali",
+          "joinDate": "2024-12-04",
+          "flag": "de",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "KUNDIKUNDI",
+          "name": "Jiri Honkala",
+          "role": "Head Coach",
+          "joinDate": "2026-05-06",
+          "flag": "fi"
+        },
+        {
+          "id": "Mavera",
+          "name": "Erim Sasal",
+          "role": "Assistant Coach",
+          "joinDate": "2026-04-05",
+          "flag": "tr"
+        }
+      ]
+    },
+    "Nova Esports": {
+      "players": [
+        {
+          "id": "GuanG",
+          "name": "Guang Honglin",
+          "joinDate": "2024-01-14",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Ezeir",
+          "name": "Zhao Zejun",
+          "joinDate": "2024-06-11",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Green",
+          "name": "Chiu Chien-chih",
+          "joinDate": "2025-11-09",
+          "flag": "tw",
+          "captain": false
+        },
+        {
+          "id": "qiutiaN",
+          "name": "Bijan Moeinzadeh",
+          "joinDate": "2026-03-22",
+          "flag": "tw",
+          "captain": false
+        },
+        {
+          "id": "swagzor",
+          "name": "Mikhail Vanyushin",
+          "joinDate": "2026-03-28",
+          "flag": "ru",
+          "captain": false
+        },
+        {
+          "id": "kodeth",
+          "name": "Bo Li",
+          "joinDate": "2026-05-05",
+          "flag": "de",
+          "captain": false
+        },
+        {
+          "id": "cb",
+          "name": "Wang Qingchuan",
+          "joinDate": "2026-07-04",
+          "flag": "cn",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "24K",
+          "name": "Shao Yubo",
+          "role": "Head Coach",
+          "joinDate": "2026-06-10",
+          "flag": "cn"
+        },
+        {
+          "id": "WJpang",
+          "name": "Piao Wenjie",
+          "role": "Coach",
+          "joinDate": "2025-12-11",
+          "flag": "cn"
+        }
+      ]
+    },
+    "VARREL": {
+      "players": [
+        {
+          "id": "C1ndeR",
+          "name": "Go Jae-hyuk",
+          "joinDate": "2025-12-12",
+          "flag": "kr",
+          "captain": true
+        },
+        {
+          "id": "Klaus",
+          "name": "Kim Min-hyuk",
+          "joinDate": "2025-12-12",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "oonzmlp",
+          "name": "Shin Sang-beom",
+          "joinDate": "2025-12-12",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "XuNa",
+          "name": "Kim Tae-geon",
+          "joinDate": "2025-12-12",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "zexy",
+          "name": "Jang Suk-hyun",
+          "joinDate": "2025-12-12",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "Foxy9",
+          "name": "Jung Jae-sung",
+          "joinDate": "2026-05-13",
+          "flag": "kr",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "TK9",
+          "name": "Goo Tae-kyun",
+          "role": "Head Coach",
+          "joinDate": "2025-12-12",
+          "flag": "kr"
+        }
+      ]
+    },
+    "DetonatioN FocusMe": {
+      "players": [
+        {
+          "id": "Meiy",
+          "name": "Ibuki Seki",
+          "joinDate": "2023-11-28",
+          "flag": "jp",
+          "captain": false
+        },
+        {
+          "id": "akame",
+          "name": "Yu Gwang-hui",
+          "joinDate": "2024-10-15",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "SSeeS",
+          "name": "Tomonori Okimura",
+          "joinDate": "2025-07-16",
+          "flag": "jp",
+          "captain": true
+        },
+        {
+          "id": "Caedye",
+          "name": "Amon Mateus Okakura",
+          "joinDate": "2026-01-01",
+          "flag": "jp",
+          "captain": false
+        },
+        {
+          "id": "yatsuka",
+          "name": "Kazuya Ikeda",
+          "joinDate": "2026-01-01",
+          "flag": "jp",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Vorz",
+          "name": "Kakeru Ikarashi",
+          "role": "Head Coach",
+          "joinDate": "2026-01-01",
+          "flag": "jp"
+        },
+        {
+          "id": "Melofovia",
+          "name": "Hirotaka Okazaki",
+          "role": "Coach",
+          "joinDate": "2023-11-28",
+          "flag": "jp"
+        },
+        {
+          "id": "NorthernLights",
+          "name": "Tsubasa Ando",
+          "role": "Coach",
+          "joinDate": "2024-02-05",
+          "flag": "jp"
+        }
+      ]
+    },
+    "Karmine Corp": {
+      "players": [
+        {
+          "id": "avez",
+          "name": "Hazem Khaled",
+          "joinDate": "2024-11-09",
+          "flag": "eg",
+          "captain": true
+        },
+        {
+          "id": "SUYGETSU",
+          "name": "Dmitrii Iliushin",
+          "joinDate": "2024-11-09",
+          "flag": "non",
+          "captain": false
+        },
+        {
+          "id": "dos9",
+          "name": "Dastan Zhumagali",
+          "joinDate": "2026-01-07",
+          "flag": "kz",
+          "captain": false
+        },
+        {
+          "id": "LêwN",
+          "name": "Burak Alkan",
+          "joinDate": "2026-01-07",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "N4RRATE",
+          "name": "Marshall Massey",
+          "joinDate": "2026-03-17",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "Sheydos",
+          "name": "Bogdan Naumov",
+          "joinDate": "2026-01-07",
+          "flag": "ru",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "ZE1SH",
+          "name": "Ahmed El Sheikh",
+          "role": "Head Coach",
+          "joinDate": "2026-05-01",
+          "flag": "fr"
+        },
+        {
+          "id": "simoz",
+          "name": "Simone Giovannini",
+          "role": "Assistant Coach",
+          "joinDate": "2026-05-??",
+          "flag": "it"
+        },
+        {
+          "id": "Youenn",
+          "name": "Youenn Rocaboy",
+          "role": "Performance Coach",
+          "joinDate": "2024-01-19",
+          "flag": "fr"
+        },
+        {
+          "id": "Ferra",
+          "name": "Victor Francal",
+          "role": "Head of Coaching Development",
+          "joinDate": "2025-10-12",
+          "flag": "fr"
+        }
+      ]
+    },
+    "Eternal Fire": {
+      "players": [
+        {
+          "id": "audaz",
+          "name": "Soner Ekiz",
+          "joinDate": "2026-03-20",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "echo",
+          "name": "Ömür Serkan Şenol",
+          "joinDate": "2026-03-20",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "Favian",
+          "name": "Enes Yiğiter",
+          "joinDate": "2026-03-20",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "nekky",
+          "name": "Anıl Dağdeviren",
+          "joinDate": "2026-03-20",
+          "flag": "tr",
+          "captain": true
+        },
+        {
+          "id": "Spear",
+          "name": "Arda Burak Kartal",
+          "joinDate": "2026-07-22",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "Izzy",
+          "name": "Baran Yılmaz",
+          "joinDate": "2024-10-14",
+          "flag": "tr",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Afr0nfire",
+          "name": "Hakan Pınarbaşı",
+          "role": "Head Coach",
+          "joinDate": "2026-03-20",
+          "flag": "tr"
+        },
+        {
+          "id": "casteLL0",
+          "name": "Hazım Orhun Dalbeyler",
+          "role": "Assistant Coach",
+          "joinDate": "2026-07-09",
+          "flag": "tr"
+        }
+      ]
+    },
+    "LEVIATÁN": {
+      "players": [
+        {
+          "id": "kiNgg",
+          "name": "Francisco Alberto Aravena",
+          "joinDate": "2021-11-18",
+          "flag": "cl",
+          "captain": true
+        },
+        {
+          "id": "Sato",
+          "name": "Eduardo Kenzo Nagahama Sato",
+          "joinDate": "2025-05-14",
+          "flag": "br",
+          "captain": false
+        },
+        {
+          "id": "blowz",
+          "name": "Guilherme Oliveira",
+          "joinDate": "2025-11-21",
+          "flag": "br",
+          "captain": false
+        },
+        {
+          "id": "Neon",
+          "name": "Bruno Rodríguez",
+          "joinDate": "2025-11-21",
+          "flag": "ar",
+          "captain": false
+        },
+        {
+          "id": "spikeziN",
+          "name": "Rodrigo Lombardi",
+          "joinDate": "2025-11-21",
+          "flag": "br",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Onur",
+          "name": "Rodrigo Milton Dalmagro",
+          "role": "Head Coach",
+          "joinDate": "2025-11-21",
+          "flag": "ar"
+        },
+        {
+          "id": "Jhein",
+          "name": "Cristian Camaño",
+          "role": "Assistant Coach",
+          "joinDate": "2025-11-21",
+          "flag": "ar"
+        }
+      ]
+    },
+    "FUT Esports": {
+      "players": [
+        {
+          "id": "yetujey",
+          "name": "Eray Budak",
+          "joinDate": "2023-10-12",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "xeus",
+          "name": "Yusuf Doğan Gözgen",
+          "joinDate": "2024-10-19",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "KROSTALY",
+          "name": "Okan Alaçam",
+          "joinDate": "2025-11-18",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "s0pp",
+          "name": "Efe Tur",
+          "joinDate": "2026-03-28",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "sociablEE",
+          "name": "Volkan Yönal",
+          "joinDate": "2026-04-01",
+          "flag": "tr",
+          "captain": true
+        },
+        {
+          "id": "MrFaliN",
+          "name": "Furkan Yeğen",
+          "joinDate": "2022-01-06",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "ATA KAPTAN",
+          "name": "Ata Tan",
+          "joinDate": "2025-10-05",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "baha",
+          "name": "Baha Gözmen",
+          "joinDate": "2025-11-19",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "qRaxs",
+          "name": "Doğukan Balaban",
+          "joinDate": "2026-02-06",
+          "flag": "tr",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Vlad",
+          "name": "Berke Kantürk",
+          "role": "Head Coach",
+          "joinDate": "2026-03-27",
+          "flag": "tr"
+        },
+        {
+          "id": "Bambino",
+          "name": "Tyler Jay",
+          "role": "Assistant Coach",
+          "joinDate": "2025-11-17",
+          "flag": "gb"
+        }
+      ]
+    },
+    "Natus Vincere": {
+      "players": [
+        {
+          "id": "hiro",
+          "name": "Emirhan Kat",
+          "joinDate": "2024-12-03",
+          "flag": "nl",
+          "captain": false
+        },
+        {
+          "id": "Ruxic",
+          "name": "Uğur Güç",
+          "joinDate": "2024-12-03",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "chloric",
+          "name": "Caide Heaton",
+          "joinDate": "2026-04-01",
+          "flag": "us",
+          "captain": true
+        },
+        {
+          "id": "ExiT",
+          "name": "Abdullah Al-Twaijri",
+          "joinDate": "2026-04-01",
+          "flag": "sa",
+          "captain": false
+        },
+        {
+          "id": "CyvOph",
+          "name": "Clément Millard",
+          "joinDate": "2026-06-25",
+          "flag": "fr",
+          "captain": false
+        },
+        {
+          "id": "Shao",
+          "name": "Andrei Kiprskii",
+          "joinDate": "2022-11-08",
+          "flag": "non",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "ANGE1",
+          "name": "Kyrylo Karasov",
+          "role": "Head Coach",
+          "joinDate": "2025-12-03",
+          "flag": "ua"
+        },
+        {
+          "id": "Salah",
+          "name": "Salah Barakat",
+          "role": "Assistant Coach",
+          "joinDate": "2026-06-25",
+          "flag": "gb"
+        },
+        {
+          "id": "Shiji_mm",
+          "name": "Zuzanna Hejduk-Mostowy",
+          "role": "Performance Coach",
+          "joinDate": "2024-12-06",
+          "flag": "pl"
+        }
+      ]
+    },
+    "Team Liquid": {
+      "players": [
+        {
+          "id": "nAts",
+          "name": "Ayaz Akhmetshin",
+          "joinDate": "2022-11-11",
+          "flag": "ru",
+          "captain": true
+        },
+        {
+          "id": "kamo",
+          "name": "Kamil Frąckowiak",
+          "joinDate": "2024-10-15",
+          "flag": "pl",
+          "captain": false
+        },
+        {
+          "id": "purp0",
+          "name": "Semyon Borchev",
+          "joinDate": "2025-12-12",
+          "flag": "ru",
+          "captain": false
+        },
+        {
+          "id": "Kicks",
+          "name": "Kimmie Laasner",
+          "joinDate": "2026-06-26",
+          "flag": "ee",
+          "captain": false
+        },
+        {
+          "id": "trexx",
+          "name": "Nikita Cherednichenko",
+          "joinDate": "2026-06-26",
+          "flag": "ru",
+          "captain": false
+        },
+        {
+          "id": "MiniBoo",
+          "name": "Dominykas Lukaševičius",
+          "joinDate": "2025-12-12",
+          "flag": "lt",
+          "captain": false
+        },
+        {
+          "id": "wayne",
+          "name": "Wayne Chang Wei Jie",
+          "joinDate": "2025-12-12",
+          "flag": "sg",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "LohaN",
+          "name": "Ivo Renato Da Silva Santos Albino",
+          "role": "Head Coach",
+          "joinDate": "2024-10-15",
+          "flag": "pt"
+        },
+        {
+          "id": "yaotziN",
+          "name": "Daniel Roczniak",
+          "role": "Assistant Coach",
+          "joinDate": "2024-10-15",
+          "flag": "pl"
+        },
+        {
+          "id": "7Teen",
+          "name": "Tanner Curtis",
+          "role": "Performance Coach",
+          "joinDate": "2022-06-01",
+          "flag": "us"
+        }
+      ]
+    },
+    "FNATIC": {
+      "players": [
+        {
+          "id": "Boaster",
+          "name": "Jake Howlett",
+          "joinDate": "2021-02-03",
+          "flag": "gb",
+          "captain": true
+        },
+        {
+          "id": "Alfajer",
+          "name": "Emir Ali Beder",
+          "joinDate": "2022-05-09",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "kaajak",
+          "name": "Kajetan Haremski",
+          "joinDate": "2024-10-31",
+          "flag": "pl",
+          "captain": false
+        },
+        {
+          "id": "crashies",
+          "name": "Austin Roberts",
+          "joinDate": "2024-12-11",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "Cloud",
+          "name": "Kirill Nekhozhin",
+          "joinDate": "2026-06-17",
+          "flag": "ru",
+          "captain": false
+        },
+        {
+          "id": "Veqaj",
+          "name": "Sylvain Jean-Pierre Pattyn",
+          "joinDate": "2025-11-09",
+          "flag": "fr",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Engh",
+          "name": "Andrey Sholokhov",
+          "role": "Head Coach",
+          "joinDate": "2026-05-29",
+          "flag": "ru"
+        },
+        {
+          "id": "Desmo",
+          "name": "Casper Rasmussen",
+          "role": "Assistant Coach",
+          "joinDate": "2025-12-01",
+          "flag": "dk"
+        },
+        {
+          "id": "Szed",
+          "name": "Philipp Schickor",
+          "role": "Performance Coach",
+          "joinDate": "2025-03-17",
+          "flag": "de"
+        }
+      ]
+    },
+    "ZETA DIVISION": {
+      "players": [
+        {
+          "id": "SugarZ3ro",
+          "name": "Shota Watanabe",
+          "joinDate": "2021-12-01",
+          "flag": "jp",
+          "captain": true
+        },
+        {
+          "id": "Xdll",
+          "name": "Yuto Mizomori",
+          "joinDate": "2024-10-16",
+          "flag": "jp",
+          "captain": false
+        },
+        {
+          "id": "eKo",
+          "name": "Yeom Wang-ryong",
+          "joinDate": "2025-11-28",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "Absol",
+          "name": "Kazuki Fujinoki",
+          "joinDate": "2025-12-16",
+          "flag": "jp",
+          "captain": false
+        },
+        {
+          "id": "SyouTa",
+          "name": "Shota Aoki",
+          "joinDate": "2025-12-16",
+          "flag": "jp",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "ryota-",
+          "name": "Ryota Okayama",
+          "role": "Head Coach",
+          "joinDate": "2026-04-02",
+          "flag": "jp"
+        },
+        {
+          "id": "XQQ",
+          "name": "Hibiki Motoyama",
+          "role": "Assistant Coach",
+          "joinDate": "2026-04-02",
+          "flag": "jp"
+        },
+        {
+          "id": "mini",
+          "name": "Jacob Harris",
+          "role": "Coaching Advisor",
+          "joinDate": "2025-12-15",
+          "flag": "gb"
+        }
+      ]
+    },
+    "Global Esports": {
+      "players": [
+        {
+          "id": "Kr1stal",
+          "name": "Savva Fedorov",
+          "joinDate": "2024-10-31",
+          "flag": "ru",
+          "captain": false
+        },
+        {
+          "id": "UdoTan",
+          "name": "Go Kyung-won",
+          "joinDate": "2024-10-31",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "autumn",
+          "name": "Kale Dunne",
+          "joinDate": "2025-12-03",
+          "flag": "au",
+          "captain": false
+        },
+        {
+          "id": "xavi8k",
+          "name": "Xavier Juan",
+          "joinDate": "2025-12-14",
+          "flag": "ph",
+          "captain": true
+        },
+        {
+          "id": "PatMen",
+          "name": "John Patrick Ramos Mendoza",
+          "joinDate": "2025-12-15",
+          "flag": "ph",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Platoon",
+          "name": "Daniel Zhou",
+          "role": "Head Coach",
+          "joinDate": "2026-06-26",
+          "flag": "ca"
+        },
+        {
+          "id": "Aimix",
+          "name": "Derren dela Cruz",
+          "role": "Assistant Coach",
+          "joinDate": "2026-07-20",
+          "flag": "ph"
+        }
+      ]
+    },
+    "JDG Esports": {
+      "players": [
+        {
+          "id": "jkuro",
+          "name": "Yeung Ho Chung",
+          "joinDate": "2024-01-16",
+          "flag": "hk",
+          "captain": false
+        },
+        {
+          "id": "Yuicaw",
+          "name": "Huang Yung-chieh",
+          "joinDate": "2025-11-07",
+          "flag": "tw",
+          "captain": false
+        },
+        {
+          "id": "zhe",
+          "name": "Niu Zhe",
+          "joinDate": "2025-11-07",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "BerLIN",
+          "name": "Chang Po-lin",
+          "joinDate": "2026-06-24",
+          "flag": "tw",
+          "captain": false
+        },
+        {
+          "id": "crownfisher",
+          "name": "Li Ao",
+          "joinDate": "2026-06-24",
+          "flag": "cn",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "bail",
+          "name": "Lee Sung-jae",
+          "role": "Head Coach",
+          "joinDate": "2025-11-07",
+          "flag": "kr"
+        },
+        {
+          "id": "Desire",
+          "name": "Peng Siji",
+          "role": "Assistant Coach",
+          "joinDate": "2026-01-10",
+          "flag": "cn"
+        }
+      ]
+    },
+    "Titan Esports Club": {
+      "players": [
+        {
+          "id": "Haodong",
+          "name": "Guo Haodong",
+          "joinDate": "2024-10-19",
+          "flag": "cn",
+          "captain": true
+        },
+        {
+          "id": "dynamite",
+          "name": "Zhao Zihao",
+          "joinDate": "2024-12-25",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "CoCo",
+          "name": "Ding Dajian",
+          "joinDate": "2025-03-09",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "lucas",
+          "name": "Lu Yunkun",
+          "joinDate": "2025-06-26",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Spitfires",
+          "name": "Xin Mingyang",
+          "joinDate": "2026-03-25",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "ra1ny",
+          "name": null,
+          "joinDate": "2026-06-28",
+          "flag": "tw",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "AfteR",
+          "name": "Lo Wen-hsin",
+          "role": "Head Coach",
+          "joinDate": "2025-01-03",
+          "flag": "tw"
+        },
+        {
+          "id": "Muggle",
+          "name": "Tang Shijun",
+          "role": "Coach",
+          "joinDate": "2026-06-28",
+          "flag": "cn"
+        },
+        {
+          "id": "3water",
+          "name": "Liu Miao",
+          "role": "Assistant Coach",
+          "joinDate": "2025-01-03",
+          "flag": "cn"
+        }
+      ]
+    },
+    "G2 Esports": {
+      "players": [
+        {
+          "id": "trent",
+          "name": "Trent Cairns",
+          "joinDate": "2023-09-22",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "valyn",
+          "name": "Jacob Batio",
+          "joinDate": "2023-09-22",
+          "flag": "us",
+          "captain": true
+        },
+        {
+          "id": "leaf",
+          "name": "Nathan Orf",
+          "joinDate": "2023-10-25",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "jawgemo",
+          "name": "Alexander Mor",
+          "joinDate": "2024-10-07",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "babybay",
+          "name": "Andrej Francisty",
+          "joinDate": "2025-11-13",
+          "flag": "us",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "JoshRT",
+          "name": "Josh Lee",
+          "role": "Head Coach",
+          "joinDate": "2023-09-22",
+          "flag": "us"
+        },
+        {
+          "id": "shhhack",
+          "name": "Peter Belej",
+          "role": "Assistant Coach",
+          "joinDate": "2024-02-18",
+          "flag": "sk"
+        },
+        {
+          "id": "Robert Yip",
+          "name": "Robert Yip",
+          "role": "Performance Coach",
+          "joinDate": "2026-01-09",
+          "flag": "ie"
+        }
+      ]
+    },
+    "KIWOOM DRX": {
+      "players": [
+        {
+          "id": "MaKo",
+          "name": "Kim Myeong-kwan",
+          "joinDate": "2022-01-07",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "free1ng",
+          "name": "No Ha-jun",
+          "joinDate": "2024-10-11",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "HYUNMIN",
+          "name": "Song Hyun-min",
+          "joinDate": "2024-10-11",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "BeYN",
+          "name": "Kang Ha-bin",
+          "joinDate": "2025-01-05",
+          "flag": "kr",
+          "captain": true
+        },
+        {
+          "id": "Yong",
+          "name": "Kim Ho-yong",
+          "joinDate": "2026-03-17",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "Flicker",
+          "name": "Yoon Tae-hee",
+          "joinDate": "2026-07-14",
+          "flag": "kr",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "termi",
+          "name": "Pyeon Seon-ho",
+          "role": "Head Coach",
+          "joinDate": "2022-01-07",
+          "flag": "kr"
+        },
+        {
+          "id": "Argency",
+          "name": "Kwon Soon-woo",
+          "role": "Coach",
+          "joinDate": "2022-01-07",
+          "flag": "kr"
+        },
+        {
+          "id": "glow",
+          "name": "Kim Min-soo",
+          "role": "Coach",
+          "joinDate": "2022-01-07",
+          "flag": "kr"
+        }
+      ]
+    },
+    "ULF Esports": {
+      "players": [],
+      "coaches": []
+    },
+    "PCIFIC Esports": {
+      "players": [
+        {
+          "id": "al0rante",
+          "name": "Felix Brandl",
+          "joinDate": "2026-01-20",
+          "flag": "de",
+          "captain": false
+        },
+        {
+          "id": "NINJA",
+          "name": "Patryk Koczyba",
+          "joinDate": "2026-01-20",
+          "flag": "pl",
+          "captain": false
+        },
+        {
+          "id": "qpert",
+          "name": "Mateja Mijović",
+          "joinDate": "2026-01-20",
+          "flag": "rs",
+          "captain": true
+        },
+        {
+          "id": "seven",
+          "name": "Johann Hernandez",
+          "joinDate": "2026-01-20",
+          "flag": "mx",
+          "captain": false
+        },
+        {
+          "id": "waddle",
+          "name": "Wadir Taraki",
+          "joinDate": "2026-07-14",
+          "flag": "gb",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "thinkii",
+          "name": "Manuel Martínez",
+          "role": "Head Coach",
+          "joinDate": "2026-04-02",
+          "flag": "es"
+        },
+        {
+          "id": "ZaeS",
+          "name": "Dario Gomez",
+          "role": "Assistant Coach",
+          "joinDate": "2026-04-02",
+          "flag": "es"
+        }
+      ]
+    },
+    "100 Thieves": {
+      "players": [
+        {
+          "id": "Asuna",
+          "name": "Peter Mazuryk",
+          "joinDate": "2025-11-05",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "Cryocells",
+          "name": "Matthew Dylan Panganiban",
+          "joinDate": "2025-11-05",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "Timotino",
+          "name": "Timothée Lavigne Dupont",
+          "joinDate": "2025-11-06",
+          "flag": "ca",
+          "captain": false
+        },
+        {
+          "id": "vora",
+          "name": "Jordan Pulwer",
+          "joinDate": "2025-11-06",
+          "flag": "us",
+          "captain": true
+        },
+        {
+          "id": "bang",
+          "name": "Sean Christian Bezerra",
+          "joinDate": "2025-11-07",
+          "flag": "us",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Nbs",
+          "name": "Laurynas Kisielius",
+          "role": "Head Coach",
+          "joinDate": "2025-11-06",
+          "flag": "lt"
+        },
+        {
+          "id": "d00mbr0s",
+          "name": "Carl Erik Victor William Sandgren",
+          "role": "Assistant Coach",
+          "joinDate": "2025-11-06",
+          "flag": "se"
+        }
+      ]
+    },
+    "Evil Geniuses": {
+      "players": [
+        {
+          "id": "supamen",
+          "name": "Phat Le",
+          "joinDate": "2024-01-26",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "bao",
+          "name": "Bao Nguyen",
+          "joinDate": "2025-11-21",
+          "flag": "vn",
+          "captain": false
+        },
+        {
+          "id": "dgzin",
+          "name": "Douglas De Santana Da Silva",
+          "joinDate": "2025-11-21",
+          "flag": "br",
+          "captain": false
+        },
+        {
+          "id": "Paincakes",
+          "name": "Jake Hass",
+          "joinDate": "2026-05-07",
+          "flag": "us",
+          "captain": true
+        },
+        {
+          "id": "zerona",
+          "name": "Javan Varela",
+          "joinDate": "2026-05-07",
+          "flag": "mx",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "potter",
+          "name": "Christine Chi",
+          "role": "Head Coach",
+          "joinDate": "2021-08-20",
+          "flag": "us"
+        },
+        {
+          "id": "pho",
+          "name": "Mike Panza",
+          "role": "Assistant Coach",
+          "joinDate": "2024-01-26",
+          "flag": "us"
+        },
+        {
+          "id": "Faded",
+          "name": "Daniel Hwang",
+          "role": "Assistant Coach",
+          "joinDate": "2026-05-07",
+          "flag": "us"
+        }
+      ]
+    },
+    "EDward Gaming": {
+      "players": [
+        {
+          "id": "CHICHOO",
+          "name": "Wan Shunzhi",
+          "joinDate": "2021-05-01",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "nobody",
+          "name": "Wang Senxu",
+          "joinDate": "2021-09-07",
+          "flag": "cn",
+          "captain": true
+        },
+        {
+          "id": "ZmjjKK",
+          "name": "Zheng Yongkang",
+          "joinDate": "2021-09-09",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Smoggy",
+          "name": "Zhang Zhao",
+          "joinDate": "2022-07-16",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Jieni7",
+          "name": "Zhang Juntai",
+          "joinDate": "2025-03-18",
+          "flag": "cn",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Autumn",
+          "name": "Yoon Eu-teum",
+          "role": "Coach",
+          "joinDate": "2025-11-26",
+          "flag": "kr"
+        },
+        {
+          "id": "indigo",
+          "name": "Seol Do-hoon",
+          "role": "Coach",
+          "joinDate": "2026-03-28",
+          "flag": "kr"
+        },
+        {
+          "id": "signed",
+          "name": "Dale Tang",
+          "role": "Coach",
+          "joinDate": "2026-05-29",
+          "flag": "nz"
+        }
+      ]
+    },
+    "T1": {
+      "players": [
+        {
+          "id": "iZu",
+          "name": "Ham Woo-Joo",
+          "joinDate": "2023-09-12",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "stax",
+          "name": "Kim Gu-taek",
+          "joinDate": "2024-06-07",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "Meteor",
+          "name": "Kim Tae-oh",
+          "joinDate": "2024-10-12",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "BuZz",
+          "name": "Yu Byung-chul",
+          "joinDate": "2024-10-15",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "Munchkin",
+          "name": "Byeon Sang-beom",
+          "joinDate": "2025-11-28",
+          "flag": "kr",
+          "captain": false
+        },
+        {
+          "id": "DH",
+          "name": "Kang Dong-ho",
+          "joinDate": "2026-07-06",
+          "flag": "kr",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "KDG",
+          "name": "Kim Dong-gun",
+          "role": "Head Coach",
+          "joinDate": "2025-10-29",
+          "flag": "kr"
+        },
+        {
+          "id": "CheongGak",
+          "name": "Lee Il-ho",
+          "role": "Assistant Coach",
+          "joinDate": "2024-10-08",
+          "flag": "kr"
+        }
+      ]
+    },
+    "FURIA": {
+      "players": [
+        {
+          "id": "artzin",
+          "name": "Arthur Araujo",
+          "joinDate": "2025-12-01",
+          "flag": "br",
+          "captain": true
+        },
+        {
+          "id": "koalanoob",
+          "name": "GianFranco Potestio",
+          "joinDate": "2025-12-01",
+          "flag": "ca",
+          "captain": false
+        },
+        {
+          "id": "basic",
+          "name": "Luiz Henrique Ferlin Tessaro",
+          "joinDate": "2026-07-01",
+          "flag": "br",
+          "captain": false
+        },
+        {
+          "id": "Shyy",
+          "name": "Fabian Usnayo",
+          "joinDate": "2026-07-02",
+          "flag": "cl",
+          "captain": false
+        },
+        {
+          "id": "C0M",
+          "name": "Corbin Daniel Lee",
+          "joinDate": "2026-07-19",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "eeiu",
+          "name": "Daniel Vucenovic",
+          "joinDate": "2025-12-01",
+          "flag": "ca",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "shaW",
+          "name": "Ian Jardim",
+          "role": "Head Coach",
+          "joinDate": "2025-07-15",
+          "flag": "br"
+        },
+        {
+          "id": "Kamino",
+          "name": "Lucas Kamino",
+          "role": "Assistant Coach",
+          "joinDate": "2025-07-15",
+          "flag": "br"
+        }
+      ]
+    },
+    "FunPlus Phoenix": {
+      "players": [
+        {
+          "id": "AAAAY",
+          "name": "Zhang Yang",
+          "joinDate": "2023-01-09",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Setrod",
+          "name": "Ou Tai-keng",
+          "joinDate": "2025-11-11",
+          "flag": "tw",
+          "captain": false
+        },
+        {
+          "id": "kovaQ",
+          "name": "Blendi Kovaci",
+          "joinDate": "2026-03-12",
+          "flag": "ch",
+          "captain": true
+        },
+        {
+          "id": "coconut",
+          "name": "Colin Patrick Chung",
+          "joinDate": "2026-06-25",
+          "flag": "hk",
+          "captain": false
+        },
+        {
+          "id": "Xlele",
+          "name": "Zhao Yanbo",
+          "joinDate": "2026-06-25",
+          "flag": "cn",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "LEGIJA",
+          "name": "Nikola Ninić",
+          "role": "Head Coach",
+          "joinDate": "2025-06-26",
+          "flag": "de"
+        }
+      ]
+    },
+    "Trace Esports": {
+      "players": [
+        {
+          "id": "FengF",
+          "name": "Song Xuefeng",
+          "joinDate": "2023-06-23",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Kai",
+          "name": "Lu Zhinan",
+          "joinDate": "2023-09-06",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "LuoK1ng",
+          "name": "Zhang Zhanpeng",
+          "joinDate": "2024-03-27",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "deLb",
+          "name": "Delbert Tanoto",
+          "joinDate": "2025-11-11",
+          "flag": "id",
+          "captain": false
+        },
+        {
+          "id": "Abo",
+          "name": "Han Bohao",
+          "joinDate": "2026-03-24",
+          "flag": "cn",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "destroyeR",
+          "name": "Gu Jiaming",
+          "role": "Coach",
+          "joinDate": "2023-06-30",
+          "flag": "cn"
+        },
+        {
+          "id": "Yiyee",
+          "name": "Zhang Tianyuan",
+          "role": "Assistant Coach",
+          "joinDate": "2024-03-27",
+          "flag": "cn"
+        },
+        {
+          "id": "Viva",
+          "name": "Ran Lifan",
+          "role": "Assistant Coach",
+          "joinDate": "2026-06-27",
+          "flag": "cn"
+        }
+      ]
+    },
+    "LOUD": {
+      "players": [
+        {
+          "id": "cauanzin",
+          "name": "Cauan Pereira",
+          "joinDate": "2022-11-10",
+          "flag": "br",
+          "captain": false
+        },
+        {
+          "id": "lukxo",
+          "name": "Lucca Travaioli",
+          "joinDate": "2025-01-15",
+          "flag": "br",
+          "captain": false
+        },
+        {
+          "id": "Darker",
+          "name": "Sebastián Castro Cicuamia",
+          "joinDate": "2025-12-05",
+          "flag": "co",
+          "captain": false
+        },
+        {
+          "id": "erde",
+          "name": "Roberto Lobos",
+          "joinDate": "2026-03-04",
+          "flag": "cl",
+          "captain": true
+        },
+        {
+          "id": "tkzin",
+          "name": "Enzo Zimiani",
+          "joinDate": "2026-07-15",
+          "flag": "br",
+          "captain": false
+        },
+        {
+          "id": "DaviH",
+          "name": "David Cruz",
+          "joinDate": "2026-07-16",
+          "flag": "pt",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Romanilly",
+          "name": "Gonzalo Manzano",
+          "role": "Head Coach",
+          "joinDate": "2025-12-06",
+          "flag": "ar"
+        },
+        {
+          "id": "Bati",
+          "name": "Miguel Batista",
+          "role": "Assistant Coach",
+          "joinDate": "2026-04-01",
+          "flag": "pt"
+        }
+      ]
+    },
+    "BBL Esports": {
+      "players": [
+        {
+          "id": "Crewen",
+          "name": "Ali Eren Sargin",
+          "joinDate": "2025-11-27",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "Lar0k",
+          "name": "Yusuf Kaan Kanber",
+          "joinDate": "2025-11-27",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "Loita",
+          "name": "Utku Kart",
+          "joinDate": "2025-11-27",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "lovers rock",
+          "name": "Umut Pekdoğan",
+          "joinDate": "2025-11-27",
+          "flag": "tr",
+          "captain": false
+        },
+        {
+          "id": "Rosé",
+          "name": "Eren Erzan",
+          "joinDate": "2025-11-27",
+          "flag": "tr",
+          "captain": true
+        }
+      ],
+      "coaches": [
+        {
+          "id": "KEY",
+          "name": "Mert Çelebi",
+          "role": "Head Coach",
+          "joinDate": "2025-11-27",
+          "flag": "tr"
+        },
+        {
+          "id": "Viento",
+          "name": "Göktuğ Alp Çebi",
+          "role": "Assistant Coach",
+          "joinDate": "2025-12-19",
+          "flag": "tr"
+        }
+      ]
+    },
+    "Team Vitality": {
+      "players": [
+        {
+          "id": "Derke",
+          "name": "Nikita Sirmitev",
+          "joinDate": "2024-10-21",
+          "flag": "fi",
+          "captain": false
+        },
+        {
+          "id": "Sayonara",
+          "name": "Ștefan Mîtcu",
+          "joinDate": "2025-03-18",
+          "flag": "md",
+          "captain": false
+        },
+        {
+          "id": "Chronicle",
+          "name": "Timofey Khromov",
+          "joinDate": "2025-10-25",
+          "flag": "ru",
+          "captain": false
+        },
+        {
+          "id": "Jamppi",
+          "name": "Elias Olkkonen",
+          "joinDate": "2025-11-23",
+          "flag": "fi",
+          "captain": true
+        },
+        {
+          "id": "PROFEK",
+          "name": "Dawid Święć",
+          "joinDate": "2025-11-23",
+          "flag": "pl",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "PAL",
+          "name": "Gregor Morton",
+          "role": "Head Coach",
+          "joinDate": "2025-11-24",
+          "flag": null
+        },
+        {
+          "id": "Scuttt",
+          "name": "Benjamin Hutchinson",
+          "role": "Assistant Coach",
+          "joinDate": "2025-11-24",
+          "flag": "ie"
+        },
+        {
+          "id": "Psych_chek",
+          "name": "Edgar Chekera",
+          "role": "Performance Coach",
+          "joinDate": "2025-05-07",
+          "flag": "gb"
+        },
+        {
+          "id": "Bernie",
+          "name": "Bernadette Ramaker",
+          "role": "Performance Coach",
+          "joinDate": "2026-03-27",
+          "flag": "nl"
+        }
+      ]
+    },
+    "Cloud9": {
+      "players": [
+        {
+          "id": "OXY",
+          "name": "Francis Hoang",
+          "joinDate": "2023-09-29",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "Zellsis",
+          "name": "Jordan Montemurro",
+          "joinDate": "2025-10-30",
+          "flag": "us",
+          "captain": true
+        },
+        {
+          "id": "Jackk",
+          "name": "Jack Foote",
+          "joinDate": "2026-05-02",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "FireBallOps",
+          "name": "Cameron Tomaselli",
+          "joinDate": "2026-05-29",
+          "flag": "us",
+          "captain": false
+        },
+        {
+          "id": "v1c",
+          "name": "Victor Truong",
+          "joinDate": "2026-07-10",
+          "flag": "us",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "Immi",
+          "name": "Ian Harding",
+          "role": "Head Coach",
+          "joinDate": "2023-09-29",
+          "flag": "gb"
+        },
+        {
+          "id": "Veer",
+          "name": "Wyatt Blevins",
+          "role": "Assistant Coach",
+          "joinDate": "2026-04-07",
+          "flag": "us"
+        }
+      ]
+    },
+    "TYLOO": {
+      "players": [
+        {
+          "id": "slowly",
+          "name": "Sun Kelun",
+          "joinDate": "2024-12-21",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Scales",
+          "name": "Zhang Zhen",
+          "joinDate": "2025-04-09",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Splash",
+          "name": "Moses Christophe Jonathan",
+          "joinDate": "2025-08-26",
+          "flag": "id",
+          "captain": false
+        },
+        {
+          "id": "Erv",
+          "name": "Shen Zhiwei",
+          "joinDate": "2025-12-28",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "SiuFatBB",
+          "name": "Pong Ka Hei",
+          "joinDate": "2026-06-26",
+          "flag": "hk",
+          "captain": false
+        },
+        {
+          "id": "xihe",
+          "name": null,
+          "joinDate": "2026-07-01",
+          "flag": "cn",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "hypnotizing",
+          "name": "Xie Haozhi",
+          "role": "Head Coach",
+          "joinDate": "2025-06-30",
+          "flag": "cn"
+        },
+        {
+          "id": "Billyo",
+          "name": "Li Xinyu",
+          "role": "Assistant Coach",
+          "joinDate": "2024-12-24",
+          "flag": "cn"
+        },
+        {
+          "id": "sword9",
+          "name": "Li Wei",
+          "role": "Assistant Coach",
+          "joinDate": "2026-06-30",
+          "flag": "cn"
+        }
+      ]
+    },
+    "Wolves Esports": {
+      "players": [
+        {
+          "id": "Spring",
+          "name": "Liu Chun-ting",
+          "joinDate": "2024-01-17",
+          "flag": "tw",
+          "captain": false
+        },
+        {
+          "id": "yosemite",
+          "name": "Wang Lei",
+          "joinDate": "2025-11-07",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "glacier",
+          "name": "Liang Zhe-kai",
+          "joinDate": "2026-03-31",
+          "flag": "tw",
+          "captain": false
+        },
+        {
+          "id": "aluba",
+          "name": "Zhong Haojun",
+          "joinDate": "2026-06-28",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "nothing",
+          "name": null,
+          "joinDate": "2026-07-02",
+          "flag": "cn",
+          "captain": false
+        },
+        {
+          "id": "Deryeon",
+          "name": "Derrick Yee Dong Ting",
+          "joinDate": "2026-07-05",
+          "flag": "sg",
+          "captain": false
+        }
+      ],
+      "coaches": [
+        {
+          "id": "alexRr",
+          "name": "Alexander Frisch",
+          "role": "Head Coach",
+          "joinDate": "2026-05-19",
+          "flag": "de"
+        }
+      ]
+    }
+  }
+}

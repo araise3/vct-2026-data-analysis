@@ -20,6 +20,7 @@ export default function TeamProfile() {
   const decodedName = decodeURIComponent(name)
   const { data: teamData, loading: teamsLoading } = useData('team_buckets')
   const { data: playerData, loading: playersLoading } = useData('player_buckets')
+  const { data: liquipediaData } = useData('liquipedia_rosters')
 
   // Scope to this team first, so facet options only show events this
   // team actually played in.
@@ -224,7 +225,7 @@ export default function TeamProfile() {
             />
           </div>
 
-          <RosterTable team={decodedName} rows={roster} />
+          <RosterTable team={decodedName} rows={roster} liquipedia={liquipediaData?.teams?.[decodedName]} />
 
           {roundCurve.length > 0 && (
             <div className="bg-surface border border-hairline rounded-2xl p-5">

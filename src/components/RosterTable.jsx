@@ -62,10 +62,9 @@ function activeRange(first, last) {
  * History/Timeline prose (natural-language parsing, fragile, ~7%
  * genuinely undetermined even after several rounds of bug fixes);
  * dropped entirely in favor of this reliable table-based signal alone.
- * No badge shown for an active/starting player -- that's the default,
- * expected state.
  */
 function statusBadge(status) {
+  if (status === 'STARTER') return { label: 'STARTER', cls: 'bg-accent/15 text-accent border-accent/30' }
   if (status === 'BENCHED') return { label: 'BENCHED', cls: 'bg-bad/15 text-bad border-bad/30' }
   return null
 }

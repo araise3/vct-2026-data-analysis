@@ -367,23 +367,35 @@ export function groupByEntity(records) {
  * single static value -- meta.team is only ever one fixed answer (their
  * most recent team overall), which is wrong the moment a filter narrows
  * to a period before their latest transfer. Each player bucket carries
- * its own team (the `t` field, added specifically for this), so this
- * takes a rounds-weighted majority across whichever buckets are
- * actually in scope: robust against a single cameo map for a different
- * team skewing the result, and correctly reflects a mid-season
- * transfer once the filter is narrow enough that only one team's
- * buckets remain in scope.
+ * its own team (the `t` field, added specifically for this).
+ *
+ * When scope spans multiple teams, shows whichever team is NEWEST (the
+ * team of the most recent event in scope), not a rounds-weighted
+ * majority -- a player who transferred mid-season should show their new
+ * team even if they'd played far more total rounds for their old one.
+ * Rounds only break a tie among buckets that share the single latest
+ * event id.
  *
  * Falls back to `fallbackTeam` (normally meta.team) if buckets is empty
  * or none of them carry a `t` field.
  */
 export function teamInScope(buckets, fallbackTeam) {
+  // Event id increases roughly chronologically (same assumption already
+  // relied on elsewhere for match_id ordering) -- player buckets don't
+  // carry a real per-bucket date (`d` is Deaths, not a date), so this is
+  // the best available signal for "which team is newest" within scope.
+  // Rounds only break a tie among buckets that share the single latest
+  // event id (the rare case of a team switch mid-event).
+  let maxEvent = -Infinity
+  for (const b of buckets) {
+    if (b.t && b.e > maxEvent) maxEvent = b.e
+  }
+  if (maxEvent === -Infinity) return fallbackTeam
+
   const rounds = new Map()
   for (const b of buckets) {
-    if (!b.t) continue
-    rounds.set(b.t, (rounds.get(b.t) || 0) + (b.rnd || 0))
+    if (b.t && b.e === maxEvent) rounds.set(b.t, (rounds.get(b.t) || 0) + (b.rnd || 0))
   }
-  if (rounds.size === 0) return fallbackTeam
   let best = fallbackTeam, bestRounds = -1
   for (const [team, r] of rounds) {
     if (r > bestRounds) { best = team; bestRounds = r }

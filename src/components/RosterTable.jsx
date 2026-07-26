@@ -74,7 +74,13 @@ const th = 'px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted whi
 const td = 'px-4 py-3 text-sm whitespace-nowrap align-middle'
 
 export default function RosterTable({ team, rows, liquipedia }) {
-  const coaches = liquipedia?.coaches ?? []
+  // Head Coach only -- drop Assistant Coach/Analyst/other coaching
+  // roles, and only ever show one slot even if Liquipedia's Organization
+  // section currently lists more than one "Head Coach"-titled entry
+  // (e.g. a coaching change caught mid-transition). Takes the first
+  // match rather than trying to disambiguate which one is "really"
+  // current.
+  const headCoach = (liquipedia?.coaches ?? []).find((c) => (c.role || '').toLowerCase().includes('head coach'))
   const lqPlayersById = new Map(
     (liquipedia?.players ?? []).map((p) => [p.id.toLowerCase(), p])
   )
@@ -95,23 +101,21 @@ export default function RosterTable({ team, rows, liquipedia }) {
 
   return (
     <div className="flex flex-col gap-4">
-      {coaches.length > 0 && (
+      {headCoach && (
         <div className="flex flex-col gap-2">
           <h2 className="font-display text-sm font-semibold text-ink">Coaching Staff</h2>
           <div className="bg-surface border border-hairline rounded-2xl divide-y divide-hairline">
-            {coaches.map((c) => (
-              <div key={c.id} className="flex items-center justify-between px-5 py-3">
-                <span className="text-sm text-ink font-medium flex items-center gap-2">
-                  <Flag countryCode={c.flag} countryName={c.name} size={20} />
-                  {c.name || c.id}
-                  {c.name && <span className="text-muted text-xs font-normal">({c.id})</span>}
-                </span>
-                <div className="flex items-center gap-6 text-xs text-muted">
-                  <span>{c.role}</span>
-                  {c.joinDate && <span>Since {shortDate(c.joinDate)}</span>}
-                </div>
+            <div className="flex items-center justify-between px-5 py-3">
+              <span className="text-sm text-ink font-medium flex items-center gap-2">
+                <Flag countryCode={headCoach.flag} countryName={headCoach.name} size={20} />
+                {headCoach.id}
+                {headCoach.name && <span className="text-muted text-xs font-normal">({headCoach.name})</span>}
+              </span>
+              <div className="flex items-center gap-6 text-xs text-muted">
+                <span>Head Coach</span>
+                {headCoach.joinDate && <span>Since {shortDate(headCoach.joinDate)}</span>}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       )}

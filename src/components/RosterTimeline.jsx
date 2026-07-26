@@ -128,7 +128,7 @@ export default function RosterTimeline({ timeline }) {
           return (
             <g key={r.id}>
               <text x={pad.l - 8} y={cy + 3} textAnchor="end" className="fill-current text-ink/80" style={{ fontSize: 10 }}>
-                {r.name || r.id}
+                {r.id}
               </text>
               {r.stints.map((s, j) => {
                 const x1 = x(s.start)
@@ -139,7 +139,7 @@ export default function RosterTimeline({ timeline }) {
                     x={x1} y={cy - 5} width={Math.max(2, x2 - x1)} height={10} rx={2}
                     fill={STATUS_COLOR[s.status] || STATUS_COLOR.former}
                   >
-                    <title>{`${r.name || r.id}: ${s.start} \u2013 ${s.end || 'present'} (${s.status})`}</title>
+                    <title>{`${r.id}: ${s.start} \u2013 ${s.end || 'present'} (${s.status})`}</title>
                   </rect>
                 )
               })}

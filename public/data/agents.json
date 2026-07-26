@@ -7316,24 +7316,26 @@
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 2",
-      "playerRows": 80,
+      "playerRows": 120,
       "agentCounts": {
-        "Omen": 12,
-        "Neon": 10,
-        "Sova": 10,
-        "Phoenix": 9,
-        "Viper": 7,
-        "Fade": 6,
-        "Cypher": 6,
-        "Chamber": 4,
-        "Jett": 4,
-        "Kayo": 4,
-        "Harbor": 2,
-        "Waylay": 2,
-        "Astra": 1,
-        "Sage": 1,
+        "Omen": 16,
+        "Sova": 14,
+        "Neon": 13,
+        "Viper": 12,
+        "Phoenix": 10,
+        "Fade": 9,
+        "Cypher": 8,
+        "Chamber": 6,
+        "Jett": 6,
+        "Harbor": 5,
+        "Kayo": 5,
+        "Astra": 3,
+        "Sage": 3,
+        "Waylay": 3,
+        "Raze": 3,
+        "Vyse": 2,
         "Brimstone": 1,
-        "Raze": 1
+        "Skye": 1
       },
       "mapStats": {
         "Ascent": {
@@ -7342,14 +7344,19 @@
           "defWinRounds": 13
         },
         "Breeze": {
-          "rounds": 26,
-          "atkWinRounds": 16,
-          "defWinRounds": 8
+          "rounds": 60,
+          "atkWinRounds": 28,
+          "defWinRounds": 30
         },
         "Haven": {
           "rounds": 17,
           "atkWinRounds": 12,
           "defWinRounds": 5
+        },
+        "Lotus": {
+          "rounds": 19,
+          "atkWinRounds": 12,
+          "defWinRounds": 7
         },
         "Split": {
           "rounds": 31,
@@ -7362,9 +7369,9 @@
           "defWinRounds": 15
         },
         "Sunset": {
-          "rounds": 34,
-          "atkWinRounds": 14,
-          "defWinRounds": 20
+          "rounds": 53,
+          "atkWinRounds": 22,
+          "defWinRounds": 31
         }
       },
       "mapAgentCounts": {
@@ -7376,11 +7383,17 @@
           "Omen": 2
         },
         "Breeze": {
-          "Harbor": 2,
-          "Jett": 2,
-          "Sova": 2,
-          "Kayo": 2,
-          "Viper": 2
+          "Sova": 6,
+          "Harbor": 5,
+          "Viper": 5,
+          "Jett": 4,
+          "Kayo": 3,
+          "Astra": 2,
+          "Neon": 1,
+          "Chamber": 1,
+          "Waylay": 1,
+          "Phoenix": 1,
+          "Cypher": 1
         },
         "Haven": {
           "Sova": 2,
@@ -7390,6 +7403,13 @@
           "Chamber": 1,
           "Omen": 1,
           "Cypher": 1
+        },
+        "Lotus": {
+          "Viper": 2,
+          "Omen": 2,
+          "Fade": 2,
+          "Vyse": 2,
+          "Raze": 2
         },
         "Split": {
           "Viper": 4,
@@ -7411,15 +7431,16 @@
           "Brimstone": 1
         },
         "Sunset": {
-          "Neon": 4,
-          "Omen": 4,
-          "Cypher": 2,
+          "Neon": 6,
+          "Omen": 6,
+          "Cypher": 3,
+          "Fade": 3,
+          "Chamber": 3,
+          "Sage": 3,
           "Sova": 2,
-          "Fade": 2,
-          "Chamber": 2,
           "Phoenix": 2,
           "Viper": 1,
-          "Sage": 1
+          "Skye": 1
         }
       }
     },

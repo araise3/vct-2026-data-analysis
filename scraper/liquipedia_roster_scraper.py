@@ -82,6 +82,27 @@ ATTRIBUTION = (
 )
 
 # ---------------------------------------------------------------------------
+# The 48 VCT 2026 tier-1 teams, embedded directly rather than read from a
+# sibling file in the main repo (src/lib/teamLogos.json) -- that file only
+# exists inside the full repo checkout. Running this scraper from a
+# standalone folder (just this .py file, as intended) shouldn't depend on
+# a relative path into a completely different project.
+# ---------------------------------------------------------------------------
+DEFAULT_TEAMS = [
+    "100 Thieves", "All Gamers", "BBL Esports", "Bilibili Gaming", "Cloud9",
+    "DetonatioN FocusMe", "Dragon Ranger Gaming", "EDward Gaming", "ENVY",
+    "Eternal Fire", "Evil Geniuses", "FNATIC", "FULL SENSE", "FURIA",
+    "FUT Esports", "FunPlus Phoenix", "G2 Esports", "GIANTX", "Gen.G",
+    "Gentle Mates", "Global Esports", "JDG Esports", "KIWOOM DRX",
+    "KRÜ Esports", "Karmine Corp", "LEVIATÁN", "LOUD", "MIBR", "NRG",
+    "Natus Vincere", "Nongshim RedForce", "Nova Esports", "PCIFIC Esports",
+    "Paper Rex", "Rex Regum Qeon", "Sentinels", "T1", "TYLOO",
+    "Team Heretics", "Team Liquid", "Team Secret", "Team Vitality",
+    "Titan Esports Club", "Trace Esports", "VARREL", "Wolves Esports",
+    "Xi Lai Gaming", "ZETA DIVISION",
+]
+
+# ---------------------------------------------------------------------------
 # Our team names come from VLR and don't always match Liquipedia page
 # titles. Anything not listed here falls back to using the team name
 # verbatim as the page title.
@@ -706,9 +727,9 @@ def main():
                     help="Fetch one page's rendered HTML, run extract_roster_from_html, print the result as JSON, and exit -- run this before a full --html run")
     ap.add_argument("--html", action="store_true",
                     help="Use action=parse (rendered HTML) instead of wikitext for the full run. Slower (32s/request vs 2.5s) but can surface Lua-module-merged content wikitext alone can't (see extract_roster_from_html's docstring)")
-    ap.add_argument("--teams", nargs="*", help="Only these teams (default: all in --team-list)")
-    ap.add_argument("--team-list", default="../src/lib/teamLogos.json",
-                    help="JSON file whose top-level keys are team names")
+    ap.add_argument("--teams", nargs="*", help="Only these teams (default: all 48 in DEFAULT_TEAMS)")
+    ap.add_argument("--team-list", default=None,
+                    help="Optional JSON file whose top-level keys are team names, overriding the embedded DEFAULT_TEAMS list")
     ap.add_argument("--out", default="../data_prep/liquipedia_rosters.json")
     ap.add_argument("--no-cache", action="store_true", help="Ignore the on-disk cache")
     args = ap.parse_args()
@@ -746,9 +767,11 @@ def main():
 
     if args.teams:
         teams = args.teams
-    else:
+    elif args.team_list:
         with open(os.path.join(here, args.team_list), encoding="utf-8") as f:
             teams = sorted(json.load(f).keys())
+    else:
+        teams = DEFAULT_TEAMS
 
     out = {
         "_meta": {

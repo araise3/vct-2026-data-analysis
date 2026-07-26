@@ -14,7 +14,7 @@
           "joinDate": "2024-02-20",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Dambi",
@@ -22,7 +22,7 @@
           "joinDate": "2024-11-26",
           "flag": "kr",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Francis",
@@ -30,7 +30,7 @@
           "joinDate": "2024-11-26",
           "flag": "kr",
           "captain": true,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Ivy",
@@ -38,7 +38,7 @@
           "joinDate": "2024-11-26",
           "flag": "kr",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Rb",
@@ -46,7 +46,7 @@
           "joinDate": "2025-06-17",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "WoohyuN",
@@ -54,7 +54,7 @@
           "joinDate": "2026-07-03",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -355,7 +355,7 @@
           "joinDate": "2024-11-27",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Verno",
@@ -363,7 +363,7 @@
           "joinDate": "2025-03-20",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Mazino",
@@ -371,7 +371,7 @@
           "joinDate": "2025-12-18",
           "flag": "cl",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "tex",
@@ -379,7 +379,7 @@
           "joinDate": "2025-12-18",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "zekken",
@@ -387,7 +387,7 @@
           "joinDate": "2025-12-18",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -721,7 +721,7 @@
           "joinDate": "2025-07-12",
           "flag": "ar",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Less",
@@ -729,7 +729,7 @@
           "joinDate": "2025-12-13",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "mwzera",
@@ -737,7 +737,7 @@
           "joinDate": "2025-12-13",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Saadhak",
@@ -745,7 +745,7 @@
           "joinDate": "2025-12-13",
           "flag": "ar",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "heat",
@@ -753,7 +753,7 @@
           "joinDate": "2026-06-26",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -1175,7 +1175,7 @@
           "joinDate": "2024-10-16",
           "flag": "cn",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Shr1mp",
@@ -1183,7 +1183,7 @@
           "joinDate": "2025-06-28",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "iamgrq",
@@ -1191,7 +1191,7 @@
           "joinDate": "2025-12-25",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "f4ngeer",
@@ -1199,7 +1199,7 @@
           "joinDate": "2025-12-27",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Bai",
@@ -1207,7 +1207,7 @@
           "joinDate": "2026-04-29",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -1532,7 +1532,7 @@
           "joinDate": "2025-03-17",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Karon",
@@ -1540,7 +1540,7 @@
           "joinDate": "2025-10-24",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "t3xture",
@@ -1548,7 +1548,7 @@
           "joinDate": "2025-10-25",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Efina",
@@ -1556,7 +1556,7 @@
           "joinDate": "2026-07-09",
           "flag": "kr",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "RaxcaL",
@@ -1564,7 +1564,7 @@
           "joinDate": "2026-07-09",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "ZynX",
@@ -1572,7 +1572,7 @@
           "joinDate": "2026-01-08",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         },
         {
           "id": "Xiesta",
@@ -1580,7 +1580,7 @@
           "joinDate": "2026-02-20",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -2113,7 +2113,7 @@
           "joinDate": "2023-12-21",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "happywei",
@@ -2121,7 +2121,7 @@
           "joinDate": "2024-03-14",
           "flag": "tw",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "NoMan",
@@ -2129,7 +2129,7 @@
           "joinDate": "2025-06-29",
           "flag": "hk",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Lysoar",
@@ -2137,7 +2137,7 @@
           "joinDate": "2025-11-25",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "WsLeo",
@@ -2145,7 +2145,7 @@
           "joinDate": "2025-12-02",
           "flag": "tw",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Sharks",
@@ -2153,7 +2153,7 @@
           "joinDate": "2026-07-13",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -2439,7 +2439,7 @@
           "joinDate": "2024-11-26",
           "flag": "pl",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "ara",
@@ -2447,7 +2447,7 @@
           "joinDate": "2025-04-16",
           "flag": "ro",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Flickless",
@@ -2455,7 +2455,7 @@
           "joinDate": "2025-04-16",
           "flag": "be",
           "captain": true,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "neT",
@@ -2463,7 +2463,7 @@
           "joinDate": "2026-07-10",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Jesse",
@@ -2471,7 +2471,7 @@
           "joinDate": "2026-07-25",
           "flag": "cz",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "tomaszy",
@@ -2479,7 +2479,7 @@
           "joinDate": "2025-04-16",
           "flag": "pt",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -2733,7 +2733,7 @@
           "joinDate": "2023-12-23",
           "flag": "us",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "mada",
@@ -2741,7 +2741,7 @@
           "joinDate": "2024-10-10",
           "flag": "ca",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "brawk",
@@ -2749,7 +2749,7 @@
           "joinDate": "2025-02-16",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "skuba",
@@ -2757,7 +2757,7 @@
           "joinDate": "2025-05-09",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "keiko",
@@ -2765,7 +2765,7 @@
           "joinDate": "2025-11-12",
           "flag": "gb",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -3227,7 +3227,7 @@
           "joinDate": "2021-02-08",
           "flag": "my",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "f0rsakeN",
@@ -3235,7 +3235,7 @@
           "joinDate": "2021-02-08",
           "flag": "id",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "something",
@@ -3243,7 +3243,7 @@
           "joinDate": "2023-03-22",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Jinggg",
@@ -3251,7 +3251,7 @@
           "joinDate": "2024-03-29",
           "flag": "sg",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "invy",
@@ -3259,7 +3259,7 @@
           "joinDate": "2025-12-16",
           "flag": "ph",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -3576,7 +3576,7 @@
           "joinDate": "2023-03-22",
           "flag": "tw",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "vo0kashu",
@@ -3584,7 +3584,7 @@
           "joinDate": "2023-09-06",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "SpiritZ1",
@@ -3592,7 +3592,7 @@
           "joinDate": "2024-10-16",
           "flag": "tw",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Flex1n",
@@ -3600,7 +3600,7 @@
           "joinDate": "2024-11-28",
           "flag": "cn",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Life",
@@ -3608,7 +3608,7 @@
           "joinDate": "2026-03-23",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Verse",
@@ -3616,7 +3616,7 @@
           "joinDate": "2026-06-28",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -3988,7 +3988,7 @@
           "joinDate": "2023-09-13",
           "flag": "ma",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "cortezia",
@@ -3996,7 +3996,7 @@
           "joinDate": "2025-11-01",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "reduxx",
@@ -4004,7 +4004,7 @@
           "joinDate": "2025-11-01",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "JonahP",
@@ -4012,7 +4012,7 @@
           "joinDate": "2026-03-06",
           "flag": "ca",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Jerrwin",
@@ -4020,7 +4020,7 @@
           "joinDate": "2026-03-24",
           "flag": "ca",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Marved",
@@ -4028,7 +4028,7 @@
           "joinDate": "2026-07-15",
           "flag": "ca",
           "captain": false,
-          "playerStatus": "STAND-IN"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -4490,7 +4490,7 @@
           "joinDate": "2022-11-10",
           "flag": "lt",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "benjyfishy",
@@ -4498,7 +4498,7 @@
           "joinDate": "2023-07-12",
           "flag": "gb",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "RieNs",
@@ -4506,7 +4506,7 @@
           "joinDate": "2023-10-10",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Wo0t",
@@ -4514,7 +4514,7 @@
           "joinDate": "2023-10-10",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Koshmaras",
@@ -4522,7 +4522,7 @@
           "joinDate": "2026-04-08",
           "flag": "lt",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -5063,7 +5063,7 @@
           "joinDate": "2022-10-09",
           "flag": "id",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Jemkin",
@@ -5071,7 +5071,7 @@
           "joinDate": "2023-10-10",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "monyet",
@@ -5079,7 +5079,7 @@
           "joinDate": "2024-05-20",
           "flag": "id",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Kushy",
@@ -5087,7 +5087,7 @@
           "joinDate": "2024-10-10",
           "flag": "id",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "crazyguy",
@@ -5095,7 +5095,7 @@
           "joinDate": "2025-03-21",
           "flag": "vn",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "xan",
@@ -5103,7 +5103,7 @@
           "joinDate": "2026-06-26",
           "flag": "my",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -5412,7 +5412,7 @@
           "joinDate": "2025-03-08",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "keznit",
@@ -5420,7 +5420,7 @@
           "joinDate": "2026-01-09",
           "flag": "cl",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Rossy",
@@ -5428,7 +5428,7 @@
           "joinDate": "2026-01-09",
           "flag": "us",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Demon1",
@@ -5436,7 +5436,7 @@
           "joinDate": "2026-02-05",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "GLYPH",
@@ -5444,7 +5444,7 @@
           "joinDate": "2026-06-30",
           "flag": "ph",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "nightz",
@@ -5452,7 +5452,7 @@
           "joinDate": "2026-07-15",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "ion2x",
@@ -5460,7 +5460,7 @@
           "joinDate": "2025-03-08",
           "flag": "us",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         },
         {
           "id": "P0PPIN",
@@ -5468,7 +5468,7 @@
           "joinDate": "2025-03-08",
           "flag": "us",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -5770,7 +5770,7 @@
           "joinDate": "2025-05-15",
           "flag": "ph",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Sylvan",
@@ -5778,7 +5778,7 @@
           "joinDate": "2025-10-28",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "naTz",
@@ -5786,7 +5786,7 @@
           "joinDate": "2026-07-15",
           "flag": "id",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "STYRON",
@@ -5794,7 +5794,7 @@
           "joinDate": "2026-07-15",
           "flag": "sg",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Zeus",
@@ -5802,7 +5802,7 @@
           "joinDate": "2026-07-15",
           "flag": "ph",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -6144,7 +6144,7 @@
           "joinDate": "2025-12-08",
           "flag": "th",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "killua",
@@ -6152,7 +6152,7 @@
           "joinDate": "2025-12-08",
           "flag": "th",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Primmie",
@@ -6160,7 +6160,7 @@
           "joinDate": "2025-12-08",
           "flag": "th",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Crws",
@@ -6168,7 +6168,7 @@
           "joinDate": "2026-04-03",
           "flag": "th",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "seph1roth",
@@ -6176,7 +6176,7 @@
           "joinDate": "2026-07-03",
           "flag": "th",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Leviathan",
@@ -6184,7 +6184,7 @@
           "joinDate": "2026-07-03",
           "flag": "th",
           "captain": false,
-          "playerStatus": "STAND-IN"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "thyy",
@@ -6192,7 +6192,7 @@
           "joinDate": "2025-12-08",
           "flag": "th",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -6773,7 +6773,7 @@
           "joinDate": "2023-02-20",
           "flag": "cn",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Knight",
@@ -6781,7 +6781,7 @@
           "joinDate": "2023-04-25",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "nephh",
@@ -6789,7 +6789,7 @@
           "joinDate": "2024-06-05",
           "flag": "sg",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "rushia",
@@ -6797,7 +6797,7 @@
           "joinDate": "2024-10-31",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "bud",
@@ -6805,7 +6805,7 @@
           "joinDate": "2026-01-06",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "yilai",
@@ -6813,7 +6813,7 @@
           "joinDate": "2026-03-09",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "FT",
@@ -6821,7 +6821,7 @@
           "joinDate": "2026-06-30",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -7123,7 +7123,7 @@
           "joinDate": "2024-12-04",
           "flag": "cz",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "bipo",
@@ -7131,7 +7131,7 @@
           "joinDate": "2025-11-20",
           "flag": "it",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "marteen",
@@ -7139,7 +7139,7 @@
           "joinDate": "2025-11-20",
           "flag": "cz",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "starxo",
@@ -7147,7 +7147,7 @@
           "joinDate": "2025-11-20",
           "flag": "pl",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Proxh",
@@ -7155,7 +7155,7 @@
           "joinDate": "2026-06-08",
           "flag": "de",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Click",
@@ -7163,7 +7163,7 @@
           "joinDate": "2024-12-04",
           "flag": "de",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -7521,7 +7521,7 @@
           "joinDate": "2024-01-14",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Ezeir",
@@ -7529,7 +7529,7 @@
           "joinDate": "2024-06-11",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Green",
@@ -7537,7 +7537,7 @@
           "joinDate": "2025-11-09",
           "flag": "tw",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "qiutiaN",
@@ -7545,7 +7545,7 @@
           "joinDate": "2026-03-22",
           "flag": "tw",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "swagzor",
@@ -7553,7 +7553,7 @@
           "joinDate": "2026-03-28",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "kodeth",
@@ -7561,7 +7561,7 @@
           "joinDate": "2026-05-05",
           "flag": "de",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "cb",
@@ -7569,7 +7569,7 @@
           "joinDate": "2026-07-04",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -7839,7 +7839,7 @@
           "joinDate": "2025-12-12",
           "flag": "kr",
           "captain": true,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Klaus",
@@ -7847,7 +7847,7 @@
           "joinDate": "2025-12-12",
           "flag": "kr",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "oonzmlp",
@@ -7855,7 +7855,7 @@
           "joinDate": "2025-12-12",
           "flag": "kr",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "XuNa",
@@ -7863,7 +7863,7 @@
           "joinDate": "2025-12-12",
           "flag": "kr",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "zexy",
@@ -7871,7 +7871,7 @@
           "joinDate": "2025-12-12",
           "flag": "kr",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Foxy9",
@@ -7879,7 +7879,7 @@
           "joinDate": "2026-05-13",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -8238,7 +8238,7 @@
           "joinDate": "2023-11-28",
           "flag": "jp",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "akame",
@@ -8246,7 +8246,7 @@
           "joinDate": "2024-10-15",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "SSeeS",
@@ -8254,7 +8254,7 @@
           "joinDate": "2025-07-16",
           "flag": "jp",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Caedye",
@@ -8262,7 +8262,7 @@
           "joinDate": "2026-01-01",
           "flag": "jp",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "yatsuka",
@@ -8270,7 +8270,7 @@
           "joinDate": "2026-01-01",
           "flag": "jp",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -8643,7 +8643,7 @@
           "joinDate": "2024-11-09",
           "flag": "eg",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "SUYGETSU",
@@ -8651,7 +8651,7 @@
           "joinDate": "2024-11-09",
           "flag": "non",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "dos9",
@@ -8659,7 +8659,7 @@
           "joinDate": "2026-01-07",
           "flag": "kz",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "LêwN",
@@ -8667,7 +8667,7 @@
           "joinDate": "2026-01-07",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "N4RRATE",
@@ -8675,7 +8675,7 @@
           "joinDate": "2026-03-17",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Sheydos",
@@ -8683,7 +8683,7 @@
           "joinDate": "2026-01-07",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -9127,7 +9127,7 @@
           "joinDate": "2026-03-20",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "echo",
@@ -9135,7 +9135,7 @@
           "joinDate": "2026-03-20",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Favian",
@@ -9143,7 +9143,7 @@
           "joinDate": "2026-03-20",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "nekky",
@@ -9151,7 +9151,7 @@
           "joinDate": "2026-03-20",
           "flag": "tr",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Spear",
@@ -9159,7 +9159,7 @@
           "joinDate": "2026-07-22",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Izzy",
@@ -9167,7 +9167,7 @@
           "joinDate": "2024-10-14",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -9605,7 +9605,7 @@
           "joinDate": "2021-11-18",
           "flag": "cl",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Sato",
@@ -9613,7 +9613,7 @@
           "joinDate": "2025-05-14",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "blowz",
@@ -9621,7 +9621,7 @@
           "joinDate": "2025-11-21",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Neon",
@@ -9629,7 +9629,7 @@
           "joinDate": "2025-11-21",
           "flag": "ar",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "spikeziN",
@@ -9637,7 +9637,7 @@
           "joinDate": "2025-11-21",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -10051,7 +10051,7 @@
           "joinDate": "2023-10-12",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "xeus",
@@ -10059,7 +10059,7 @@
           "joinDate": "2024-10-19",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "KROSTALY",
@@ -10067,7 +10067,7 @@
           "joinDate": "2025-11-18",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "s0pp",
@@ -10075,7 +10075,7 @@
           "joinDate": "2026-03-28",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "sociablEE",
@@ -10083,7 +10083,7 @@
           "joinDate": "2026-04-01",
           "flag": "tr",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "MrFaliN",
@@ -10091,7 +10091,7 @@
           "joinDate": "2022-01-06",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         },
         {
           "id": "ATA KAPTAN",
@@ -10099,7 +10099,7 @@
           "joinDate": "2025-10-05",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         },
         {
           "id": "baha",
@@ -10107,7 +10107,7 @@
           "joinDate": "2025-11-19",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         },
         {
           "id": "qRaxs",
@@ -10115,7 +10115,7 @@
           "joinDate": "2026-02-06",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -10601,7 +10601,7 @@
           "joinDate": "2024-12-03",
           "flag": "nl",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Ruxic",
@@ -10609,7 +10609,7 @@
           "joinDate": "2024-12-03",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "chloric",
@@ -10617,7 +10617,7 @@
           "joinDate": "2026-04-01",
           "flag": "us",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "ExiT",
@@ -10625,7 +10625,7 @@
           "joinDate": "2026-04-01",
           "flag": "sa",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "CyvOph",
@@ -10633,7 +10633,7 @@
           "joinDate": "2026-06-25",
           "flag": "fr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Shao",
@@ -10641,7 +10641,7 @@
           "joinDate": "2022-11-08",
           "flag": "non",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -11046,7 +11046,7 @@
           "joinDate": "2022-11-11",
           "flag": "ru",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "kamo",
@@ -11054,7 +11054,7 @@
           "joinDate": "2024-10-15",
           "flag": "pl",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "purp0",
@@ -11062,7 +11062,7 @@
           "joinDate": "2025-12-12",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Kicks",
@@ -11070,7 +11070,7 @@
           "joinDate": "2026-06-26",
           "flag": "ee",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "trexx",
@@ -11078,7 +11078,7 @@
           "joinDate": "2026-06-26",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "MiniBoo",
@@ -11086,7 +11086,7 @@
           "joinDate": "2025-12-12",
           "flag": "lt",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         },
         {
           "id": "wayne",
@@ -11094,7 +11094,7 @@
           "joinDate": "2025-12-12",
           "flag": "sg",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -11515,7 +11515,7 @@
           "joinDate": "2021-02-03",
           "flag": "gb",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Alfajer",
@@ -11523,7 +11523,7 @@
           "joinDate": "2022-05-09",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "kaajak",
@@ -11531,7 +11531,7 @@
           "joinDate": "2024-10-31",
           "flag": "pl",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "crashies",
@@ -11539,7 +11539,7 @@
           "joinDate": "2024-12-11",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Cloud",
@@ -11547,7 +11547,7 @@
           "joinDate": "2026-06-17",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Veqaj",
@@ -11555,7 +11555,7 @@
           "joinDate": "2025-11-09",
           "flag": "fr",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -12072,7 +12072,7 @@
           "joinDate": "2021-12-01",
           "flag": "jp",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Xdll",
@@ -12080,7 +12080,7 @@
           "joinDate": "2024-10-16",
           "flag": "jp",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "eKo",
@@ -12088,7 +12088,7 @@
           "joinDate": "2025-11-28",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Absol",
@@ -12096,7 +12096,7 @@
           "joinDate": "2025-12-16",
           "flag": "jp",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "SyouTa",
@@ -12104,7 +12104,7 @@
           "joinDate": "2025-12-16",
           "flag": "jp",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -12621,7 +12621,7 @@
           "joinDate": "2024-10-31",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "UdoTan",
@@ -12629,7 +12629,7 @@
           "joinDate": "2024-10-31",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "autumn",
@@ -12637,7 +12637,7 @@
           "joinDate": "2025-12-03",
           "flag": "au",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "xavi8k",
@@ -12645,7 +12645,7 @@
           "joinDate": "2025-12-14",
           "flag": "ph",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "PatMen",
@@ -12653,7 +12653,7 @@
           "joinDate": "2025-12-15",
           "flag": "ph",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -13131,7 +13131,7 @@
           "joinDate": "2024-01-16",
           "flag": "hk",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Yuicaw",
@@ -13139,7 +13139,7 @@
           "joinDate": "2025-11-07",
           "flag": "tw",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "zhe",
@@ -13147,7 +13147,7 @@
           "joinDate": "2025-11-07",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "BerLIN",
@@ -13155,7 +13155,7 @@
           "joinDate": "2026-06-24",
           "flag": "tw",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "crownfisher",
@@ -13163,7 +13163,7 @@
           "joinDate": "2026-06-24",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -13497,7 +13497,7 @@
           "joinDate": "2024-10-19",
           "flag": "cn",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "dynamite",
@@ -13505,7 +13505,7 @@
           "joinDate": "2024-12-25",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "CoCo",
@@ -13513,7 +13513,7 @@
           "joinDate": "2025-03-09",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "lucas",
@@ -13521,7 +13521,7 @@
           "joinDate": "2025-06-26",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Spitfires",
@@ -13529,7 +13529,7 @@
           "joinDate": "2026-03-25",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "ra1ny",
@@ -13537,7 +13537,7 @@
           "joinDate": "2026-06-28",
           "flag": "tw",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -13798,7 +13798,7 @@
           "joinDate": "2023-09-22",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "valyn",
@@ -13806,7 +13806,7 @@
           "joinDate": "2023-09-22",
           "flag": "us",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "leaf",
@@ -13814,7 +13814,7 @@
           "joinDate": "2023-10-25",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "jawgemo",
@@ -13822,7 +13822,7 @@
           "joinDate": "2024-10-07",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "babybay",
@@ -13830,7 +13830,7 @@
           "joinDate": "2025-11-13",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -14275,7 +14275,7 @@
           "joinDate": "2022-01-07",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "free1ng",
@@ -14283,7 +14283,7 @@
           "joinDate": "2024-10-11",
           "flag": "kr",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "HYUNMIN",
@@ -14291,7 +14291,7 @@
           "joinDate": "2024-10-11",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "BeYN",
@@ -14299,7 +14299,7 @@
           "joinDate": "2025-01-05",
           "flag": "kr",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Yong",
@@ -14307,7 +14307,7 @@
           "joinDate": "2026-03-17",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Flicker",
@@ -14315,7 +14315,7 @@
           "joinDate": "2026-07-14",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -14790,7 +14790,7 @@
           "joinDate": "2026-01-20",
           "flag": "de",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "NINJA",
@@ -14798,7 +14798,7 @@
           "joinDate": "2026-01-20",
           "flag": "pl",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "qpert",
@@ -14806,7 +14806,7 @@
           "joinDate": "2026-01-20",
           "flag": "rs",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "seven",
@@ -14814,7 +14814,7 @@
           "joinDate": "2026-01-20",
           "flag": "mx",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "waddle",
@@ -14822,7 +14822,7 @@
           "joinDate": "2026-07-14",
           "flag": "gb",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -15148,7 +15148,7 @@
           "joinDate": "2025-11-05",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Cryocells",
@@ -15156,7 +15156,7 @@
           "joinDate": "2025-11-05",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Timotino",
@@ -15164,7 +15164,7 @@
           "joinDate": "2025-11-06",
           "flag": "ca",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "vora",
@@ -15172,7 +15172,7 @@
           "joinDate": "2025-11-06",
           "flag": "us",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "bang",
@@ -15180,7 +15180,7 @@
           "joinDate": "2025-11-07",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -15658,7 +15658,7 @@
           "joinDate": "2024-01-26",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "bao",
@@ -15666,7 +15666,7 @@
           "joinDate": "2025-11-21",
           "flag": "vn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "dgzin",
@@ -15674,7 +15674,7 @@
           "joinDate": "2025-11-21",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Paincakes",
@@ -15682,7 +15682,7 @@
           "joinDate": "2026-05-07",
           "flag": "us",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "zerona",
@@ -15690,7 +15690,7 @@
           "joinDate": "2026-05-07",
           "flag": "mx",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -16119,7 +16119,7 @@
           "joinDate": "2021-05-01",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "nobody",
@@ -16127,7 +16127,7 @@
           "joinDate": "2021-09-07",
           "flag": "cn",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "ZmjjKK",
@@ -16135,7 +16135,7 @@
           "joinDate": "2021-09-09",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Smoggy",
@@ -16143,7 +16143,7 @@
           "joinDate": "2022-07-16",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Jieni7",
@@ -16151,7 +16151,7 @@
           "joinDate": "2025-03-18",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -16452,7 +16452,7 @@
           "joinDate": "2023-09-12",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "stax",
@@ -16460,7 +16460,7 @@
           "joinDate": "2024-06-07",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Meteor",
@@ -16468,7 +16468,7 @@
           "joinDate": "2024-10-12",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "BuZz",
@@ -16476,7 +16476,7 @@
           "joinDate": "2024-10-15",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Munchkin",
@@ -16484,7 +16484,7 @@
           "joinDate": "2025-11-28",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "DH",
@@ -16492,7 +16492,7 @@
           "joinDate": "2026-07-06",
           "flag": "kr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -16938,7 +16938,7 @@
           "joinDate": "2025-12-01",
           "flag": "br",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "koalanoob",
@@ -16946,7 +16946,7 @@
           "joinDate": "2025-12-01",
           "flag": "ca",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "basic",
@@ -16954,7 +16954,7 @@
           "joinDate": "2026-07-01",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Shyy",
@@ -16962,7 +16962,7 @@
           "joinDate": "2026-07-02",
           "flag": "cl",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "C0M",
@@ -16970,7 +16970,7 @@
           "joinDate": "2026-07-19",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "eeiu",
@@ -16978,7 +16978,7 @@
           "joinDate": "2025-12-01",
           "flag": "ca",
           "captain": false,
-          "playerStatus": "BENCHED"
+          "playerStatus": "INACTIVE"
         }
       ],
       "coaches": [
@@ -17496,7 +17496,7 @@
           "joinDate": "2023-01-09",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Setrod",
@@ -17504,7 +17504,7 @@
           "joinDate": "2025-11-11",
           "flag": "tw",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "kovaQ",
@@ -17512,7 +17512,7 @@
           "joinDate": "2026-03-12",
           "flag": "ch",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "coconut",
@@ -17520,7 +17520,7 @@
           "joinDate": "2026-06-25",
           "flag": "hk",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Xlele",
@@ -17528,7 +17528,7 @@
           "joinDate": "2026-06-25",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -17911,7 +17911,7 @@
           "joinDate": "2023-06-23",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Kai",
@@ -17919,7 +17919,7 @@
           "joinDate": "2023-09-06",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "LuoK1ng",
@@ -17927,7 +17927,7 @@
           "joinDate": "2024-03-27",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "deLb",
@@ -17935,7 +17935,7 @@
           "joinDate": "2025-11-11",
           "flag": "id",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Abo",
@@ -17943,7 +17943,7 @@
           "joinDate": "2026-03-24",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -18156,7 +18156,7 @@
           "joinDate": "2022-11-10",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "lukxo",
@@ -18164,7 +18164,7 @@
           "joinDate": "2025-01-15",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Darker",
@@ -18172,7 +18172,7 @@
           "joinDate": "2025-12-05",
           "flag": "co",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "erde",
@@ -18180,7 +18180,7 @@
           "joinDate": "2026-03-04",
           "flag": "cl",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "tkzin",
@@ -18188,7 +18188,7 @@
           "joinDate": "2026-07-15",
           "flag": "br",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "DaviH",
@@ -18196,7 +18196,7 @@
           "joinDate": "2026-07-16",
           "flag": "pt",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -18482,7 +18482,7 @@
           "joinDate": "2025-11-27",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Lar0k",
@@ -18490,7 +18490,7 @@
           "joinDate": "2025-11-27",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Loita",
@@ -18498,7 +18498,7 @@
           "joinDate": "2025-11-27",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "lovers rock",
@@ -18506,7 +18506,7 @@
           "joinDate": "2025-11-27",
           "flag": "tr",
           "captain": false,
-          "playerStatus": null
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Rosé",
@@ -18514,7 +18514,7 @@
           "joinDate": "2025-11-27",
           "flag": "tr",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -19016,7 +19016,7 @@
           "joinDate": "2024-10-21",
           "flag": "fi",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Sayonara",
@@ -19024,7 +19024,7 @@
           "joinDate": "2025-03-18",
           "flag": "md",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Chronicle",
@@ -19032,7 +19032,7 @@
           "joinDate": "2025-10-25",
           "flag": "ru",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Jamppi",
@@ -19040,7 +19040,7 @@
           "joinDate": "2025-11-23",
           "flag": "fi",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "PROFEK",
@@ -19048,7 +19048,7 @@
           "joinDate": "2025-11-23",
           "flag": "pl",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -19676,7 +19676,7 @@
           "joinDate": "2023-09-29",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Zellsis",
@@ -19684,7 +19684,7 @@
           "joinDate": "2025-10-30",
           "flag": "us",
           "captain": true,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Jackk",
@@ -19692,7 +19692,7 @@
           "joinDate": "2026-05-02",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "FireBallOps",
@@ -19700,7 +19700,7 @@
           "joinDate": "2026-05-29",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "v1c",
@@ -19708,7 +19708,7 @@
           "joinDate": "2026-07-10",
           "flag": "us",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -20202,7 +20202,7 @@
           "joinDate": "2024-12-21",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Scales",
@@ -20210,7 +20210,7 @@
           "joinDate": "2025-04-09",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Splash",
@@ -20218,7 +20218,7 @@
           "joinDate": "2025-08-26",
           "flag": "id",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Erv",
@@ -20226,7 +20226,7 @@
           "joinDate": "2025-12-28",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "SiuFatBB",
@@ -20234,7 +20234,7 @@
           "joinDate": "2026-06-26",
           "flag": "hk",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "xihe",
@@ -20242,7 +20242,7 @@
           "joinDate": "2026-07-01",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [
@@ -20687,7 +20687,7 @@
           "joinDate": "2024-01-17",
           "flag": "tw",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "yosemite",
@@ -20695,7 +20695,7 @@
           "joinDate": "2025-11-07",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "glacier",
@@ -20703,7 +20703,7 @@
           "joinDate": "2026-03-31",
           "flag": "tw",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "aluba",
@@ -20711,7 +20711,7 @@
           "joinDate": "2026-06-28",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "nothing",
@@ -20719,7 +20719,7 @@
           "joinDate": "2026-07-02",
           "flag": "cn",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         },
         {
           "id": "Deryeon",
@@ -20727,7 +20727,7 @@
           "joinDate": "2026-07-05",
           "flag": "sg",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "ACTIVE"
         }
       ],
       "coaches": [

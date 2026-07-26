@@ -15,14 +15,18 @@ import { rating, pct, num } from '../lib/format'
  * ROTATION/STAND-IN, guessed from each player's share of team maps
  * played) because VLR doesn't publish official starter/sub status.
  * That's gone now, replaced with real data from Liquipedia: a captain/
- * IGL indicator (matched by handle, case-insensitive since VLR and
- * Liquipedia don't always agree on capitalization) and a real coaching
- * staff section above the table, both sourced from
- * public/data/liquipedia_rosters.json. Liquipedia's own roster tables
- * don't distinguish starter/sub either (just active/former), so there
- * isn't a like-for-like replacement for the old badge's granularity --
- * this shows what's actually verifiable instead of re-guessing it a
- * different way.
+ * IGL indicator, an Active/Inactive status badge, and a real coaching
+ * staff section above the table, all sourced from
+ * public/data/liquipedia_rosters.json.
+ *
+ * Status is ONLY Liquipedia's own Active/Inactive table split -- a
+ * clean, structured, reliable signal. An earlier version additionally
+ * tried inferring Starter vs. Stand-in from that team's History/
+ * Timeline prose, which is fragile natural-language parsing (still had
+ * a meaningful genuinely-undetermined rate, and a couple of real bugs
+ * only surfaced by manually checking edge cases against source text).
+ * Dropped that inference layer entirely rather than keep maintaining
+ * it alongside the reliable table-based signal.
  *
  * Scope deliberately limited to CURRENT roster + coaches only (no
  * historical transfers, no non-coaching staff like managers/streamers/
@@ -55,10 +59,19 @@ function activeRange(first, last) {
  * stint at all, or the phrasing didn't match any pattern the classifier
  * recognizes. Shown as nothing rather than a guess.
  */
+/**
+ * Real status from Liquipedia's own Active/Inactive table split --
+ * that's it. An earlier version tried to additionally infer Starter
+ * vs. Stand-in from the team's History/Timeline prose, but that's
+ * fragile natural-language parsing (still had 18 genuinely
+ * undetermined cases and a couple of real bugs found only by manually
+ * checking edge cases against source text). Liquipedia's table itself
+ * is a clean, structured, 100% reliable signal for Active vs Inactive
+ * -- dropped the prose inference entirely rather than keep maintaining
+ * both.
+ */
 function statusBadge(status) {
-  if (status === 'STARTER') return { label: 'STARTER', cls: 'bg-accent/15 text-accent border-accent/30' }
-  if (status === 'BENCHED') return { label: 'BENCHED', cls: 'bg-bad/15 text-bad border-bad/30' }
-  if (status === 'STAND-IN') return { label: 'STAND-IN', cls: 'bg-surface2 text-muted border-hairline' }
+  if (status === 'INACTIVE') return { label: 'INACTIVE', cls: 'bg-bad/15 text-bad border-bad/30' }
   return null
 }
 
@@ -180,8 +193,7 @@ export default function RosterTable({ team, rows, liquipedia }) {
 
         <p className="text-muted text-xs leading-relaxed">
           Active is the first and last match week the player appeared in for this team, resolved to
-          that week's actual play dates. Status is Starter/Benched/Stand-in inferred from Liquipedia's
-          roster tables and transaction history -- shown blank where that history doesn't clearly say.
+          that week's actual play dates. Status is Liquipedia's own Active/Inactive roster split.
           Roster/captain/coach/status data from{' '}
           <a
             href="https://liquipedia.net/valorant"

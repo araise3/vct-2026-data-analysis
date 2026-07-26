@@ -10,6 +10,7 @@ import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
 import TeamLogo from '../components/TeamLogo'
 import RosterTable from '../components/RosterTable'
+import RosterTimeline from '../components/RosterTimeline'
 import { rating, pct, num } from '../lib/format'
 import TrendChart from '../components/TrendChart'
 
@@ -229,6 +230,15 @@ export default function TeamProfile() {
           </div>
 
           <RosterTable team={decodedName} rows={roster} liquipedia={liquipediaData?.teams?.[decodedName]} />
+
+          {liquipediaData?.teams?.[decodedName]?.timeline?.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <h2 className="font-display text-sm font-semibold text-ink">Roster timeline of {decodedName}</h2>
+              <div className="bg-surface border border-hairline rounded-2xl p-5">
+                <RosterTimeline timeline={liquipediaData.teams[decodedName].timeline} />
+              </div>
+            </div>
+          )}
 
           {roundCurve.length > 0 && (
             <div className="bg-surface border border-hairline rounded-2xl p-5">

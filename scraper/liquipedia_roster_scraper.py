@@ -344,12 +344,17 @@ def first_of(params, *keys):
 
 
 def clean(v):
-    """Strip wiki markup that shows up in name/role fields."""
+    """Strip wiki markup that shows up in name/role fields, and
+    citation-reference markers (e.g. "2021-11-18 [ 7 ]", sometimes
+    several in a row) that ride along in date cells once BeautifulSoup's
+    get_text() flattens the superscript reference link's bracket/number/
+    bracket spans back into plain text."""
     if not v:
         return None
     v = re.sub(r"\[\[(?:[^\|\]]*\|)?([^\]]*)\]\]", r"\1", v)  # [[A|B]] -> B
     v = re.sub(r"''+", "", v)
     v = re.sub(r"<[^>]+>", "", v)
+    v = re.sub(r"(\s*\[\s*\d+\s*\])+\s*$", "", v)  # trailing citation markers
     v = re.sub(r"\s+", " ", v).strip()
     return v or None
 
@@ -445,32 +450,56 @@ def extract_roster_from_html(html: str):
     """
     Second, independent extraction path: parses action=parse's rendered
     HTML instead of raw wikitext, looking for the "Player Roster" and
-    "Organization" tables directly by column headers rather than by
-    template name -- there's no template name to key on once a page has
-    already been rendered.
+    "Organization" tables directly, since there's no template name to
+    key on once a page has already been rendered.
 
-    Section-scoping is hierarchical and deliberately so: a naive "find
-    any heading called Active" approach breaks, because "Active"/
-    "Former" appear as h3 subheadings under BOTH the Player Roster AND
-    Organization h2 sections. A synthetic-fixture test caught this
-    concretely -- an early version matched "Active" generically and
-    ended up pulling the Organization section's rows into the player
-    list, and duplicating the player table (since it matched under both
-    the h2 and its own nested h3). Fixed by finding the h2 section
-    first, then only looking for Active/Former h3s bounded by THAT h2's
-    own extent (up to the next h2).
+    Confirmed against Leviatán's actual dumped HTML (2026-07-26). Real
+    table shapes, each using class table2__table:
+      Player Roster / Active:   ID, Name, Join Date
+      Player Roster / Former:   ID, Name, Join Date, Leave Date, New Team
+      Organization  / Active:   ID, Name, <empty header>, Join Date
+      Organization  / Former:   ID, Name, <empty header>, Join Date,
+                                 Leave Date, New Team
 
-    UNTESTED against a live fetch as of writing (same caveat as the rest
-    of this file): written against the column-header set visible in the
-    person's own screenshot (ID, Name, Status, Time on Team, Maps
-    Played, Rating for players; ID, Name, Role, Join Date for
-    organization), matching case-insensitively and tolerating missing
-    columns -- but the exact table CSS classes/structure, and whether
-    flag <img alt="..."> text is a country name or an ISO code, haven't
-    been confirmed. Run --test-html-extract on one team first.
+    Three real bugs an earlier version had, all traced to the SAME root
+    cause and fixed together:
+
+    1. role was always None (so coaches always came back empty): the
+       Organization tables' role/position column has a genuinely EMPTY
+       <th></th> -- not missing, not named something unexpected, just
+       blank text. Matching headers by their text meant this column
+       silently had no name to key on at all. Fixed by filling that
+       specific empty header positionally (see infer_headers).
+
+    2. Player timeOnTeam/mapsPlayed/rating were always None: these
+       columns don't exist on this table at all -- the real Player
+       Roster table is just ID/Name/Join Date (Former adds Leave Date/
+       New Team). Those fields were guessed from a screenshot that
+       likely wasn't this page's own default template. Removed rather
+       than left permanently null.
+
+    3. Several players appeared to be exact duplicates (adverso, Melser,
+       vaiZ, ...): checked directly against the real HTML -- they are
+       NOT duplicates. adverso has two real Former rows: one for the
+       original 2021-11-18 join, one for a 2022-09-27 move to
+       "Inactive" status (that status text lived in the same
+       empty-header column bug #1 was silently dropping, which is
+       exactly why both rows looked identical -- once that column is
+       captured, they're visibly different entries again). No
+       deduplication needed; the underlying data already correctly
+       distinguishes multiple stints/status changes as separate rows.
+
+    Flags: extracted from the <img> src filename (e.g. ".../Cl_hd.png"
+    -> "cl"), not the alt text. Confirmed the alt text is a full country
+    name ("Chile"), which would need a large, error-prone name -> ISO
+    code lookup table to use directly; the filename already IS the ISO
+    3166-1 alpha-2 code, verified against 11 different countries in the
+    real file (Ar/Br/Bg/Cl/Cn/Co/Dk/Fr/Es/Us/Vn -> all correct 2-letter
+    codes once lowercased).
     """
     soup = BeautifulSoup(html, "html.parser")
     all_headings = soup.find_all(re.compile(r"^h[1-6]$"))
+    FLAG_SRC_RE = re.compile(r"/([A-Za-z]{2,3})_hd\.png")
 
     def section_elements(h2_text):
         """Every tag between the named h2 and the next h2 (or end of
@@ -494,8 +523,7 @@ def extract_roster_from_html(html: str):
         """Within a section's elements, tag each table by whichever
         Active/Former h3 (or h4, some pages nest one level deeper) most
         recently preceded it. Defaults to "active" if no such heading
-        appears before the first table (a page with only one status and
-        no subheading at all)."""
+        appears before the first table."""
         status = "active"
         out = []
         for el in elements:
@@ -509,8 +537,19 @@ def extract_roster_from_html(html: str):
                 out.append((el, status))
         return out
 
+    def infer_headers(headers):
+        """Fill in the Organization tables' unlabeled role/position
+        column. Confirmed real header rows are always one of:
+        [id, name, join date] / [id, name, join date, leave date, new team]
+          (Player Roster -- no empty column, left untouched)
+        [id, name, "", join date] / [id, name, "", join date, leave date, new team]
+          (Organization -- 3rd column blank, always the role/position)
+        so an empty header at index 2 is unambiguous.
+        """
+        return ["role" if h == "" and i == 2 else h for i, h in enumerate(headers)]
+
     def rows_by_header(table):
-        headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
+        headers = infer_headers([th.get_text(strip=True).lower() for th in table.find_all("th")])
         if not headers:
             return []
         rows = []
@@ -519,14 +558,9 @@ def extract_roster_from_html(html: str):
             if not cells or len(cells) < 2:
                 continue
             row = {h: clean(td.get_text(" ", strip=True)) for h, td in zip(headers, cells)}
-            # NOT confirmed to be an ISO code -- Liquipedia flag images
-            # commonly use the country NAME as alt text (e.g. alt=
-            # "Argentina"), not a 2-letter code, unlike this site's own
-            # Flag component which needs a code for flagcdn.com URLs.
-            # Stored raw rather than guessed-converted; needs a real
-            # sample to know whether a name->code lookup is required.
             flag_img = cells[0].find("img")
-            row["_flag_raw"] = flag_img.get("alt") if flag_img else None
+            flag_match = FLAG_SRC_RE.search(flag_img.get("src", "")) if flag_img else None
+            row["_flag"] = flag_match.group(1).lower() if flag_match else None
             rows.append(row)
         return rows
 
@@ -538,11 +572,12 @@ def extract_roster_from_html(html: str):
                 continue
             players.append({
                 "id": pid,
+                "name": row.get("name"),
                 "status": status,
-                "timeOnTeam": row.get("time on team"),
-                "mapsPlayed": row.get("maps played"),
-                "rating": row.get("rating"),
-                "flagRaw": row.get("_flag_raw"),
+                "joinDate": row.get("join date"),
+                "leaveDate": row.get("leave date"),
+                "newTeam": row.get("new team"),
+                "flag": row.get("_flag"),
             })
 
     for table, status in tables_by_status(section_elements("Organization")):
@@ -554,9 +589,11 @@ def extract_roster_from_html(html: str):
                 "id": pid,
                 "name": row.get("name"),
                 "role": row.get("role"),
-                "joinDate": row.get("join date"),
                 "status": status,
-                "flagRaw": row.get("_flag_raw"),
+                "joinDate": row.get("join date"),
+                "leaveDate": row.get("leave date"),
+                "newTeam": row.get("new team"),
+                "flag": row.get("_flag"),
             })
 
     coaches = [s for s in staff if s["role"] and "coach" in s["role"].lower()]

@@ -424,9 +424,31 @@ def extract_roster(wikitext: str):
             "status": status,
         })
 
-    # Coaches/manager: infobox fields only, no tenure/stats data available
-    # on the team page at all -- see module docstring.
-    coaches = extract_infobox_field(wikitext, "coaches")
+    # Coaches: anyone in the Organization section whose role contains
+    # "coach" (Head Coach, Assistant Coach, ...), not the Infobox
+    # |coaches= field. The Organization table carries real join/leave
+    # dates and full names; the Infobox field is just names. Confirmed
+    # from the rendered page (not just the raw wikitext excerpt pasted
+    # earlier, which didn't happen to include the coach rows) that
+    # coaches live in ActiveOrganizationAuto/FormerOrganizationAuto
+    # alongside CEO/manager/social-media-manager-type rows, distinguished
+    # only by their role text -- there's no separate coach-only template.
+    coaches = [s for s in staff if s["role"] and "coach" in s["role"].lower()]
+
+    # Infobox |coaches=/|manager= kept as a fallback merge for any team
+    # whose Organization section doesn't list coaches at all -- adds
+    # anyone not already captured above, with only a name/flag (no
+    # dates, since the infobox field doesn't have them).
+    seen_coach_ids = {c["id"] for c in coaches}
+    for person in extract_infobox_field(wikitext, "coaches"):
+        if person["id"] not in seen_coach_ids:
+            coaches.append({
+                "id": person["id"], "name": None, "flag": person["flag"],
+                "role": "Coach (from infobox, no Organization-section entry)",
+                "joinDate": None, "leaveDate": None, "status": "active",
+            })
+            seen_coach_ids.add(person["id"])
+
     manager = extract_infobox_field(wikitext, "manager")
 
     return {

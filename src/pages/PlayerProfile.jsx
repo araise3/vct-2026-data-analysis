@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
-import { expandBuckets, aggregatePlayerBuckets } from '../lib/entityBuckets'
+import { expandBuckets, aggregatePlayerBuckets, teamInScope } from '../lib/entityBuckets'
 import TrendChart from '../components/TrendChart'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
@@ -68,6 +68,7 @@ export default function PlayerProfile() {
   if (loading) return <div className="text-muted text-sm">Loading…</div>
 
   const meta = data?.meta?.[decodedName]
+  const displayTeam = meta ? teamInScope(filtered, meta.team) : null
   if (!meta) {
     return (
       <div className="flex flex-col gap-4">
@@ -88,10 +89,10 @@ export default function PlayerProfile() {
         <div className="flex flex-col justify-center">
           <h1 className="font-display text-2xl font-semibold text-ink">{decodedName}</h1>
           <Link
-            to={`/teams/${encodeURIComponent(meta.team)}`}
+            to={`/teams/${encodeURIComponent(displayTeam)}`}
             className="text-muted text-sm hover:text-accent-bright w-fit"
           >
-            <TeamLogo team={meta.team} size={18} />
+            <TeamLogo team={displayTeam} size={18} />
           </Link>
         </div>
       </div>

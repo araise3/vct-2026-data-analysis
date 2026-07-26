@@ -363,6 +363,35 @@ export function groupByEntity(records) {
 }
 
 /**
+ * A player's team, but derived from THIS filtered scope rather than a
+ * single static value -- meta.team is only ever one fixed answer (their
+ * most recent team overall), which is wrong the moment a filter narrows
+ * to a period before their latest transfer. Each player bucket carries
+ * its own team (the `t` field, added specifically for this), so this
+ * takes a rounds-weighted majority across whichever buckets are
+ * actually in scope: robust against a single cameo map for a different
+ * team skewing the result, and correctly reflects a mid-season
+ * transfer once the filter is narrow enough that only one team's
+ * buckets remain in scope.
+ *
+ * Falls back to `fallbackTeam` (normally meta.team) if buckets is empty
+ * or none of them carry a `t` field.
+ */
+export function teamInScope(buckets, fallbackTeam) {
+  const rounds = new Map()
+  for (const b of buckets) {
+    if (!b.t) continue
+    rounds.set(b.t, (rounds.get(b.t) || 0) + (b.rnd || 0))
+  }
+  if (rounds.size === 0) return fallbackTeam
+  let best = fallbackTeam, bestRounds = -1
+  for (const [team, r] of rounds) {
+    if (r > bestRounds) { best = team; bestRounds = r }
+  }
+  return best
+}
+
+/**
  * Expands series_length.json's match-level rows the same way expandBuckets
  * does for player/team buckets (attaching region/event/phase/week/
  * competition from the shared events lookup) -- but there's no bucket

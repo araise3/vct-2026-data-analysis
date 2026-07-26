@@ -4,7 +4,7 @@ import { useData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandMatchRows, expandSeriesRows, expandMapLengthRows,
-  expandBuckets, aggregatePlayerBuckets, groupByEntity,
+  expandBuckets, aggregatePlayerBuckets, groupByEntity, teamInScope,
 } from '../lib/entityBuckets'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import LeaderCard, { CardShell, topBy } from '../components/LeaderCard'
@@ -90,7 +90,7 @@ export default function Records() {
       if (!meta) continue
       const s = aggregatePlayerBuckets(buckets)
       if (!s || !s.totalAce) continue
-      out.push({ player, team: meta.team, countryCode: meta.countryCode,
+      out.push({ player, team: teamInScope(buckets, meta.team), countryCode: meta.countryCode,
                  countryName: meta.countryName, totalAce: s.totalAce, mapsPlayed: s.mapsPlayed })
     }
     return out

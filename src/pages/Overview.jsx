@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
-  expandBuckets, aggregatePlayerBuckets, aggregateTeamBuckets,
+  expandBuckets, aggregatePlayerBuckets, aggregateTeamBuckets, teamInScope,
   aggregateOverview, groupByEntity,
 } from '../lib/entityBuckets'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
@@ -94,7 +94,7 @@ export default function Overview() {
       const s = aggregatePlayerBuckets(buckets)
       if (!s || s.mapsPlayed < MIN_MAPS || s.avgRating == null) continue
       const meta = pData.meta[player] || {}
-      out.push({ player, team: meta.team, countryCode: meta.countryCode,
+      out.push({ player, team: teamInScope(buckets, meta.team), countryCode: meta.countryCode,
                  countryName: meta.countryName, rating: s.avgRating, mapsPlayed: s.mapsPlayed })
     }
     return out.sort((a, b) => b.rating - a.rating).slice(0, 10)
@@ -123,7 +123,7 @@ export default function Overview() {
       if (!meta) continue
       const s = aggregatePlayerBuckets(buckets)
       if (!s || !s.mapsPlayed) continue
-      out.push({ player, team: meta.team, countryCode: meta.countryCode,
+      out.push({ player, team: teamInScope(buckets, meta.team), countryCode: meta.countryCode,
                  countryName: meta.countryName, ...s })
     }
     return out

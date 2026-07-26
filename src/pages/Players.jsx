@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
-import { expandBuckets, aggregatePlayerBuckets, aggregateSideBuckets, groupByEntity } from '../lib/entityBuckets'
+import { expandBuckets, aggregatePlayerBuckets, aggregateSideBuckets, groupByEntity, teamInScope } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
@@ -66,7 +66,7 @@ export default function Players() {
 
       const row = {
         player,
-        team: meta.team,
+        team: teamInScope(buckets, meta.team),
         region: meta.region,
         isChina: meta.isChina,
         countryCode: meta.countryCode,

@@ -9,7 +9,7 @@ import {
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
 import RankedList from '../components/RankedList'
-import LeaderCard, { topBy } from '../components/LeaderCard'
+import LeaderCard, { topBy, dynamicQualify } from '../components/LeaderCard'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
@@ -30,17 +30,17 @@ const PLAYER_LEADERS = [
     // Rating 2.0, so a player can have 33 maps but only 14 that feed the
     // SD. Using mapsPlayed here let a 14-rated-map player onto the card
     // with an artificially tiny spread.
-    qualify: (r) => r.ratedMaps >= 15,
+    sampleKey: 'ratedMaps', sampleMin: 15,
     meta: (r) => `${num(r.ratedMaps)} rated`,
     value: (r) => r.ratingSd.toFixed(3),
-    note: 'Standard deviation of Rating 2.0 across individual maps — lower is steadier. Min. 15 rated maps.',
+    note: 'Standard deviation of Rating 2.0 across individual maps — lower is steadier. Min. 15 rated maps (scaled down for a smaller filter scope).',
   },
   {
     key: 'avgEcon', title: 'Highest econ rating',
-    qualify: (r) => r.utilMaps >= 15,
+    sampleKey: 'utilMaps', sampleMin: 15,
     meta: (r) => `${num(r.utilMaps)} maps`,
     value: (r) => num(r.avgEcon),
-    note: 'Min. 15 maps with economy data.',
+    note: 'Min. 15 maps with economy data (scaled down for a smaller filter scope).',
   },
   {
     key: 'totalClutches', title: 'Most clutches',
@@ -219,7 +219,12 @@ export default function Overview() {
                 key={c.key}
                 title={c.title}
                 note={c.note}
-                rows={topBy(leaderRows, c.key, { qualify: c.qualify, invert: c.invert })}
+                rows={topBy(leaderRows, c.key, {
+                  qualify: c.sampleKey
+                    ? dynamicQualify(leaderRows, c.sampleKey, { fixed: c.sampleMin })
+                    : c.qualify,
+                  invert: c.invert,
+                })}
                 renderEntity={(r) => (
                   <>
                     <Flag countryCode={r.countryCode} countryName={r.countryName} size={18} />

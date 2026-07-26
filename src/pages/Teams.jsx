@@ -9,7 +9,7 @@ import {
 } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
 import HorizontalBarChart from '../components/HorizontalBarChart'
-import LeaderCard, { topBy } from '../components/LeaderCard'
+import LeaderCard, { topBy, dynamicQualify } from '../components/LeaderCard'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
 import { pct, num, rating, duration } from '../lib/format'
@@ -25,73 +25,73 @@ import { pct, num, rating, duration } from '../lib/format'
 const TEAM_LEADERS = [
   {
     key: 'atkWinPct', title: 'Best attack sides',
-    qualify: (r) => r.atkRounds >= 150,
+    sampleKey: 'atkRounds', sampleMin: 150,
     meta: (r) => `${num(r.atkRounds)} rds`, value: (r) => pct(r.atkWinPct),
-    note: 'Regulation rounds only — VLR\'s per-side score header excludes overtime. Min. 150 attack rounds.',
+    note: 'Regulation rounds only — VLR\'s per-side score header excludes overtime. Min. 150 attack rounds (scaled down when the current filter scope doesn\'t have that much volume).',
   },
   {
     key: 'defWinPct', title: 'Best defence sides',
-    qualify: (r) => r.defRounds >= 150,
+    sampleKey: 'defRounds', sampleMin: 150,
     meta: (r) => `${num(r.defRounds)} rds`, value: (r) => pct(r.defWinPct),
-    note: 'Min. 150 defence rounds in scope.',
+    note: 'Min. 150 defence rounds in scope (scaled down for a smaller filter scope).',
   },
   {
     key: 'pistolWinPct', title: 'Best pistol rounds',
-    qualify: (r) => r.pistolPlayed >= 20,
+    sampleKey: 'pistolPlayed', sampleMin: 20,
     meta: (r) => `${r.pistolWon}/${r.pistolPlayed}`, value: (r) => pct(r.pistolWinPct),
-    note: 'Assumes 2 pistol rounds per map. Min. 20 pistols.',
+    note: 'Assumes 2 pistol rounds per map. Min. 20 pistols (scaled down for a smaller filter scope).',
   },
   {
     key: 'postPistolAntiEcoWinPct', title: 'Best post-pistol anti-eco',
-    qualify: (r) => r.postPistolAntiEcoRounds >= 15,
+    sampleKey: 'postPistolAntiEcoRounds', sampleMin: 15,
     meta: (r) => `${num(r.postPistolAntiEcoRounds)} rds`, value: (r) => pct(r.postPistolAntiEcoWinPct),
-    note: 'Round 2/14, having just won the pistol. Distinct from the economy-based Anti-eco card below. Min. 15 such rounds.',
+    note: 'Round 2/14, having just won the pistol. Distinct from the economy-based Anti-eco card below. Min. 15 such rounds (scaled down for a smaller filter scope).',
   },
   {
     key: 'bonusWinPct', title: 'Best bonus round',
-    qualify: (r) => r.bonusRounds >= 15,
+    sampleKey: 'bonusRounds', sampleMin: 15,
     meta: (r) => `${num(r.bonusRounds)} rds`, value: (r) => pct(r.bonusWinPct),
-    note: 'Round 3/15, having won both the pistol and the round after it. Min. 15 such rounds.',
+    note: 'Round 3/15, having won both the pistol and the round after it. Min. 15 such rounds (scaled down for a smaller filter scope).',
   },
   {
     key: 'antiEcoWinPct', title: 'Best anti-eco',
-    qualify: (r) => r.antiEcoRounds >= 10,
+    sampleKey: 'antiEcoRounds', sampleMin: 10,
     meta: (r) => `${num(r.antiEcoRounds)} rds`, value: (r) => pct(r.antiEcoWinPct),
-    note: 'Economy-based (eco/semi-buy vs. a full-buy opponent), any round. Min. 10 anti-eco rounds.',
+    note: 'Economy-based (eco/semi-buy vs. a full-buy opponent), any round. Min. 10 anti-eco rounds (scaled down for a smaller filter scope).',
   },
   {
     key: 'otWinPct', title: 'Best in overtime',
-    qualify: (r) => r.otMaps >= 4,
+    sampleKey: 'otMaps', sampleMin: 4,
     meta: (r) => `${num(r.otMaps)} maps`, value: (r) => `${r.otWon}/${r.otMaps}`,
-    note: 'Min. 4 maps that reached overtime.',
+    note: 'Min. 4 maps that reached overtime (scaled down for a smaller filter scope).',
   },
   {
     key: 'comebackPct', title: 'Best comebacks',
-    qualify: (r) => r.comebackMaps >= 6,
+    sampleKey: 'comebackMaps', sampleMin: 6,
     meta: (r) => `${num(r.comebackMaps)} maps`, value: (r) => `${r.comebackWon}/${r.comebackMaps}`,
-    note: 'Faced a 3+ round deficit and still won the map. Min. 6 such maps.',
+    note: 'Faced a 3+ round deficit and still won the map. Min. 6 such maps (scaled down for a smaller filter scope).',
   },
   {
     key: 'elimPct', title: 'Most rounds won by elimination',
-    qualify: (r) => r.mapsPlayed >= 10,
+    sampleKey: 'mapsPlayed', sampleMin: 10,
     meta: (r) => `${num(r.mapsPlayed)} maps`, value: (r) => pct(r.elimPct),
     note: 'Share of round wins ending in a team wipe rather than defuse/detonation/time.',
   },
   {
     key: 'avgMapDurationSeconds', title: 'Longest maps on average',
-    qualify: (r) => r.mapsWithDuration >= 10,
+    sampleKey: 'mapsWithDuration', sampleMin: 10,
     meta: (r) => `${num(r.mapsWithDuration)} maps`, value: (r) => duration(r.avgMapDurationSeconds),
-    note: 'Min. 10 maps with a published duration.',
+    note: 'Min. 10 maps with a published duration (scaled down for a smaller filter scope).',
   },
   {
     key: 'roundsPerMap', title: 'Most rounds per map',
-    qualify: (r) => r.mapsPlayed >= 10,
+    sampleKey: 'mapsPlayed', sampleMin: 10,
     meta: (r) => `${num(r.mapsPlayed)} maps`, value: (r) => (r.roundsPerMap == null ? '—' : r.roundsPerMap.toFixed(1)),
-    note: 'Closer maps run longer, on average, than blowouts. Min. 10 maps.',
+    note: 'Closer maps run longer, on average, than blowouts. Min. 10 maps (scaled down for a smaller filter scope).',
   },
   {
     key: 'mapsPerSeries', title: 'Most maps per series',
-    qualify: (r) => r.matchesPlayed >= 5,
+    sampleKey: 'matchesPlayed', sampleMin: 5,
     meta: (r) => `${num(r.matchesPlayed)} series`, value: (r) => (r.mapsPerSeries == null ? '—' : r.mapsPerSeries.toFixed(2)),
     note: 'How often a team\u2019s series go the distance rather than getting swept. Min. 5 series.',
   },
@@ -208,7 +208,10 @@ export default function Teams() {
                   key={c.key}
                   title={c.title}
                   note={c.note}
-                  rows={topBy(rows, c.key, { qualify: c.qualify })}
+                  rows={topBy(rows, c.key, {
+                    qualify: dynamicQualify(rows, c.sampleKey, { fixed: c.sampleMin }),
+                    invert: c.invert,
+                  })}
                   renderEntity={(r) => (
                     <Link to={`/teams/${encodeURIComponent(r.team)}`} className="min-w-0">
                       <TeamLogo team={r.team} size={18} />

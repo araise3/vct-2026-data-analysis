@@ -78,3 +78,30 @@ export function topBy(rows, key, { qualify, invert = false, limit = 5 } = {}) {
     .sort((a, b) => (invert ? a[key] - b[key] : b[key] - a[key]))
     .slice(0, limit)
 }
+
+/**
+ * A fixed minimum sample size (e.g. "min. 150 attack rounds") is
+ * calibrated against a full season's worth of data. Narrow the filter
+ * scope down to one stage of one region -- or anything else with far
+ * less volume -- and NO row can ever clear that bar, so every card on
+ * the page goes empty at once instead of just showing fewer/lower-
+ * confidence entries.
+ *
+ * This scales the bar down to a fraction of whatever the current
+ * LEADER in scope has actually accumulated, capped at the original
+ * fixed threshold as a ceiling (so full-season scope behaves exactly
+ * as before -- this only ever loosens the gate, never tightens it
+ * beyond what was already calibrated). Self-normalizing per stat and
+ * per scope: no separate "how big is a full season" constant to
+ * maintain, since it's always relative to whatever's actually in view
+ * right now.
+ *
+ * `floor` keeps a small amount of gate even in a near-empty scope --
+ * without it, a single team with 1 attack round would qualify as soon
+ * as everyone else has 0, which defeats the point of gating at all.
+ */
+export function dynamicQualify(rows, key, { fixed, fraction = 0.5, floor = 1 } = {}) {
+  const maxVal = rows.reduce((m, r) => (r[key] > m ? r[key] : m), 0)
+  const threshold = Math.max(floor, Math.min(fixed, Math.round(maxVal * fraction)))
+  return (r) => r[key] >= threshold
+}

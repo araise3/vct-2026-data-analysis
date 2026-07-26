@@ -284,53 +284,157 @@ def clean(v):
     return v or None
 
 
-PLAYER_TEMPLATE_HINT = re.compile(r"(squadplayer|teamroster/player|player\b|roster)", re.I)
+SQUAD_AUTO_ROW = re.compile(r"\{\{SquadAutoRow\|([^}]*)\}\}")
+
+
+def parse_named_args(arg_str):
+    """{{SquadAutoRow|a=1|b=2}}'s inner string -> {"a": "1", "b": "2"}."""
+    out = {}
+    for part in arg_str.split("|"):
+        if "=" in part:
+            k, _, v = part.partition("=")
+            out[k.strip().lower()] = v.strip()
+    return out
+
+
+def extract_infobox_field(wikitext, field):
+    """
+    |coaches=, |manager=, |igl= aren't templates -- they're plain Infobox
+    field values containing {{Flag|xx}} + [[PlayerName]] pairs (possibly
+    several, <br>-separated). Returns a list of {"flag": ..., "name": ...}.
+    """
+    m = re.search(rf"\|\s*{field}\s*=\s*(.+)", wikitext)
+    if not m:
+        return []
+    # Field value runs to end of line (Infobox params are one per line)
+    value = m.group(1).split("\n")[0]
+    people = []
+    for chunk in re.split(r"<br\s*/?>", value):
+        flag_m = re.search(r"\{\{Flag\|(\w+)\}\}", chunk, re.I)
+        name_m = re.search(r"\[\[([^\|\]]+)(?:\|[^\]]*)?\]\]", chunk)
+        if name_m:
+            people.append({
+                "id": name_m.group(1).strip(),
+                "flag": flag_m.group(1).lower() if flag_m else None,
+            })
+    return people
+
+
+def find_template_body(text, name):
+    """
+    Body of the first {{name ...}} template, brace-depth aware so
+    nested templates (SquadAutoRow rows inside a wrapper) don't confuse
+    it, and so a template with NO body at all ({{FormerSquadAuto}},
+    closing immediately with no args) correctly returns "" rather than
+    a regex scanning forward past it into unrelated content -- which is
+    exactly what broke the first version of this against real data:
+    an empty {{FormerSquadAuto}} matched all the way to the NEXT
+    wrapper's closing brace instead.
+
+    Returns None if the template isn't present at all, "" if present
+    but empty, or the body string otherwise.
+    """
+    start = re.search(r"\{\{\s*" + re.escape(name) + r"\b", text)
+    if not start:
+        return None
+    i = start.end()
+    depth = 1
+    while i < len(text) - 1:
+        if text[i] == "{" and text[i + 1] == "{":
+            depth += 1
+            i += 2
+            continue
+        if text[i] == "}" and text[i + 1] == "}":
+            depth -= 1
+            i += 2
+            if depth == 0:
+                return text[start.end():i - 2]
+            continue
+        i += 1
+    return None  # unbalanced -- malformed page, treat as absent
+
+
+def extract_section(wikitext, wrapper_name):
+    """
+    All {{SquadAutoRow|...}} rows nested inside {{wrapper_name ... }},
+    e.g. wrapper_name="ActiveSquadAuto" or "FormerOrganizationAuto".
+    Returns [] if the wrapper is empty or absent -- notably, this is
+    EXPECTED for FormerSquadAuto on many team pages: unlike
+    ActiveSquadAuto, it appears to auto-resolve from Liquipedia's
+    internal database at render time rather than storing rows in the
+    page's own wikitext, so an empty result there doesn't mean "no
+    former players", it means "not recoverable this way".
+    """
+    body = find_template_body(wikitext, wrapper_name)
+    if not body:
+        return []
+    return [parse_named_args(a) for a in SQUAD_AUTO_ROW.findall(body)]
 
 
 def extract_roster(wikitext: str):
     """
-    Pull players + staff out of a team page's wikitext.
-
-    DEFENSIVE BY DESIGN: matches any template whose name looks
-    player/squad/roster-ish and reads a union of the parameter names
-    those templates use across Liquipedia wikis, rather than hardcoding
-    one exact template signature. This is because the exact Valorant-wiki
-    template shape could not be verified from the environment this was
-    written in -- run --inspect and tighten this once you can see real
-    output.
+    Real shape, confirmed against a live page (Leviatán, 2026-07-26) --
+    see the module docstring for what's NOT recoverable this way.
     """
-    players, staff = [], []
-    seen = set()
+    active_players = extract_section(wikitext, "ActiveSquadAuto")
+    former_players = extract_section(wikitext, "FormerSquadAuto")  # usually [] -- see above
+    active_staff = extract_section(wikitext, "ActiveOrganizationAuto")
+    former_staff = extract_section(wikitext, "FormerOrganizationAuto")
 
-    for name, params in parse_templates(wikitext):
-        if not PLAYER_TEMPLATE_HINT.search(name):
+    igl_ids = {p["id"] for p in extract_infobox_field(wikitext, "igl")}
+
+    players = []
+    for row in active_players:
+        pid = row.get("id")
+        if not pid:
             continue
-        handle = clean(first_of(params, "id", "player", "nick", "nickname"))
-        if not handle:
+        players.append({
+            "id": pid,
+            "captain": row.get("captain") == "true",
+            "igl": pid in igl_ids,
+            "joinDate": row.get("joindate"),
+            "leaveDate": None,
+            "status": "active",
+        })
+    for row in former_players:
+        pid = row.get("id")
+        if not pid:
             continue
+        players.append({
+            "id": pid,
+            "captain": row.get("captain") == "true",
+            "igl": False,
+            "joinDate": row.get("joindate"),
+            "leaveDate": row.get("leavedate"),
+            "status": "former",
+        })
 
-        role = (clean(first_of(params, "role", "pos", "position")) or "").lower()
-        entry = {
-            "id": handle,
-            "name": clean(first_of(params, "name", "fullname", "realname")),
-            "flag": (first_of(params, "flag", "country", "nationality") or "").lower() or None,
-            "joinDate": first_of(params, "joindate", "date_join", "join"),
-            "leaveDate": first_of(params, "leavedate", "date_leave", "leave"),
-            "role": clean(first_of(params, "role", "pos", "position")),
-            "inactive": bool(first_of(params, "inactive")),
-        }
-        key = (handle, entry["role"])
-        if key in seen:
+    staff = []
+    for row, status in [(r, "active") for r in active_staff] + [(r, "former") for r in former_staff]:
+        pid = row.get("id")
+        if not pid:
             continue
-        seen.add(key)
+        staff.append({
+            "id": pid,
+            "name": clean(row.get("name")),
+            "flag": (row.get("flag") or "").lower() or None,
+            "role": clean(row.get("role")),
+            "joinDate": row.get("joindate") or None,
+            "leaveDate": row.get("leavedate") or None,
+            "status": status,
+        })
 
-        # Coaches/managers/analysts land in staff, everyone else roster
-        if any(w in role for w in ("coach", "manager", "analyst", "staff")):
-            staff.append(entry)
-        else:
-            players.append(entry)
+    # Coaches/manager: infobox fields only, no tenure/stats data available
+    # on the team page at all -- see module docstring.
+    coaches = extract_infobox_field(wikitext, "coaches")
+    manager = extract_infobox_field(wikitext, "manager")
 
-    return players, staff
+    return {
+        "players": players,
+        "staff": staff,
+        "coaches": coaches,
+        "manager": manager,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -382,13 +486,14 @@ def main():
             print("  MISSING page")
             missing.append(team)
             continue
-        players, staff = extract_roster(text)
-        print(f"  {len(players)} players, {len(staff)} staff")
+        result = extract_roster(text)
+        n_active = sum(1 for p in result["players"] if p["status"] == "active")
+        print(f"  {n_active} active players, {len(result['staff'])} staff, "
+              f"{len(result['coaches'])} coaches, {len(result['manager'])} manager")
         out["teams"][team] = {
             "page": title,
             "url": f"https://liquipedia.net/valorant/{title.replace(' ', '_')}",
-            "players": players,
-            "staff": staff,
+            **result,
         }
 
     dest = os.path.join(here, args.out)

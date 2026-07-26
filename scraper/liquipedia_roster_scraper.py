@@ -653,6 +653,15 @@ def extract_roster(wikitext: str):
 
 # ---------------------------------------------------------------------------
 def main():
+    # Windows consoles default to a codepage like cp1252, which can't
+    # represent every character these pages contain (Chinese handles,
+    # certain accented names) -- and print() inherits that encoding even
+    # when stdout is redirected to a file with `>`, since redirection
+    # doesn't change what encoding Python thinks the stream wants.
+    # Forcing UTF-8 here fixes it regardless of the OS/locale.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--inspect", metavar="TEAM", help="Dump one page's raw wikitext and exit")
     ap.add_argument("--dump-html", metavar="TEAM", help="Dump one page's action=parse rendered HTML and exit")

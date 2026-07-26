@@ -280,8 +280,17 @@ def main():
     intl_rows = mps_vct[(mps_vct['player'].isin(china_players_set)) & (mps_vct['region'] == 'International')]
     players_with_intl = set(intl_rows['player'].unique())
 
+    # keep='last' (most recent match), not 'first' -- meta.team is meant
+    # to answer "what team is this player on now", and using their
+    # very-first-ever match's team meant anyone who transferred mid-
+    # season (confirmed: Cloud GIANTX->FNATIC, CyvOph FNATIC->Natus
+    # Vincere, both for Stage 2) showed their OLD team everywhere this
+    # field is read (Players/Overview/Records tables, PlayerProfile's
+    # team link) even long after leaving. Doesn't affect
+    # player_buckets.json's own per-bucket "t" field, which already
+    # correctly reflects each bucket's own team regardless of this.
     players_first = mps_vct.sort_values(['match_id', 'map_index'])[['player', 'canonical_team']] \
-        .drop_duplicates(subset='player', keep='first')
+        .drop_duplicates(subset='player', keep='last')
 
     def player_stats(sub):
         if len(sub) == 0:

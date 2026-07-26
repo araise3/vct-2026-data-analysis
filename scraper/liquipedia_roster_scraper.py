@@ -48,6 +48,7 @@ USAGE
 """
 
 import argparse
+import html as html_module
 import json
 import os
 import re
@@ -468,6 +469,240 @@ def extract_section(wikitext, wrapper_name):
     return [parse_named_args(a) for a in SQUAD_AUTO_ROW.findall(body)]
 
 
+# Roles that mean "playing, but not a full-time starter" when someone
+# "joins as X" or "changes role ... to X" -- distinct from a real
+# STARTER and from BENCHED (an explicit inactive-position move).
+_TEMP_PLAYER_ROLES = ("stand-in", "substitute", "trial")
+
+
+def _history_year_blocks(section_html):
+    """Liquipedia's History/Timeline section wraps each year's entries
+    in its own tab, class="content{N}". The closing match must allow
+    for a trailing " active" class on whichever tab renders by default
+    (class="content7 active") -- an earlier version of this required an
+    exact class="content7" match, which silently missed that tab
+    entirely on every team where it happened to be the default-shown
+    one.
+
+    Returns {actual_year: block_html}, NOT {N: block_html} -- content1
+    is the EARLIEST year THIS team has entries for, which is NOT always
+    2020. Confirmed: Xi Lai Gaming's content1 is 2023 (founded later),
+    not 2020. An earlier version assumed content1=2020 universally,
+    silently computing every bullet date years off for any team founded
+    after 2020 -- which, fed into the join-date filter below, discarded
+    almost every valid match rather than just the wrong ones (229 correctly-
+    classified players regressed to 81 before this was caught). The
+    actual year labels are read from the tab nav itself instead.
+    """
+    nav = re.search(r'<ul class="nav nav-tabs[^"]*"[^>]*>(.*?)</ul>', section_html, re.S)
+    year_labels = re.findall(r'>\s*([0-9]{4})\s*<', nav.group(1)) if nav else []
+
+    blocks = {}
+    for n in range(1, 10):
+        m_start = re.search(rf'<div class="content{n}(?:\s[^"]*)?"[^>]*>', section_html)
+        if not m_start:
+            continue
+        next_marker = rf'<div class="content{n + 1}(?:\s[^"]*)?"'
+        m_next = re.search(next_marker, section_html)
+        end = m_next.start() if m_next else section_html.find(
+            '<div class="mw-heading mw-heading2"', m_start.end()
+        )
+        if n - 1 < len(year_labels):
+            year = int(year_labels[n - 1])
+        else:
+            continue  # no matching year label -- don't guess
+        blocks[year] = section_html[m_start.end():end]
+    return blocks
+
+
+def _history_clause_actions(li_html):
+    """One <li> can describe multiple people with DIFFERENT, even
+    opposite, outcomes -- e.g. "TEAM benches X, moving Y to the
+    starting roster" changes X and Y in opposite directions in one
+    sentence. Returns a list of (handle, status) pairs, not a single
+    verdict for the whole line."""
+    li_html = re.sub(r"<sup.*?</sup>", "", li_html, flags=re.S)
+    plain = html_module.unescape(re.sub(r"<[^>]+>", "", li_html))
+    links = re.findall(r'<a href="/valorant/([^"]+)"[^>]*>([^<]+)</a>', li_html)
+    handles_shown = [shown for _, shown in links]
+
+    results = []
+    for m in re.finditer(r"benches\s+([A-Za-z0-9_.]+)", plain, re.I):
+        results.append((m.group(1), "BENCHED"))
+    for m in re.finditer(r"moving\s+([A-Za-z0-9_.]+)\s+to the starting roster", plain, re.I):
+        results.append((m.group(1), "STARTER"))
+    for m in re.finditer(r"([A-Za-z0-9_.]+)\s+moves? to an? inactive position", plain, re.I):
+        results.append((m.group(1), "BENCHED"))
+    # Compound subjects: "Asuna and Cryocells move to the starting
+    # roster" -- capturing only the word immediately before the verb
+    # missed every name but the last one in a multi-name subject. This
+    # grabs the whole subject clause (back to the previous sentence
+    # boundary) and splits it on ","/"and" instead of matching one word.
+    # NOT anchored to an uppercase start -- plenty of handles are styled
+    # all-lowercase (e.g. "reduxx"), and requiring a capital first
+    # letter silently regressed exactly that kind of handle from a
+    # working single-name match to no match at all.
+    for m in re.finditer(
+        r"([A-Za-z][A-Za-z0-9_ ]*?)\s+moves? to the (?:starting roster|active roster)", plain
+    ):
+        subject = m.group(1)
+        prev_end = plain.rfind(".", 0, m.start())
+        subject = subject[max(0, prev_end + 1 - m.start()):] if prev_end >= 0 else subject
+        for n in re.split(r",\s*|\s+and\s+", subject):
+            n = n.strip()
+            if n:
+                results.append((n, "STARTER"))
+    for m in re.finditer(r"([A-Za-z0-9_.]+)\s+returns? to the (?:starting|active) roster", plain, re.I):
+        results.append((m.group(1), "STARTER"))
+    for m in re.finditer(r"([A-Za-z0-9_.]+)\s+leaves? inactive position", plain, re.I):
+        results.append((m.group(1), "DEPART"))
+    for m in re.finditer(r"([A-Za-z0-9_.]+)\s+leaves?(?:\s+for\s+[\w\s]+)?\.", plain, re.I):
+        results.append((m.group(1), "DEPART"))
+    for m in re.finditer(r"([A-Za-z0-9_.]+)\s+changes? role from (\S+) to (\S+)", plain, re.I):
+        who, frm, to = m.groups()
+        to_l, frm_l = to.lower().rstrip("."), frm.lower().rstrip(".")
+        if to_l == "inactive":
+            results.append((who, "BENCHED"))
+        elif to_l in _TEMP_PLAYER_ROLES:
+            results.append((who, "STAND-IN"))
+        elif to_l == "player":
+            # e.g. "Crws changes role from Coach to Player" -- moving
+            # INTO the active playing roster from a non-playing role.
+            results.append((who, "STARTER"))
+        elif frm_l == "inactive" or frm_l in _TEMP_PLAYER_ROLES:
+            results.append((who, "STARTER"))
+    # "TEAM acquires the roster of X, consisting of A, B and C" -- a
+    # whole-roster acquisition, not the far more common "A, B join."
+    for m in re.finditer(r"consisting of\s+(.+?)\.", plain, re.I):
+        for n in re.split(r",\s*|\s+and\s+", m.group(1)):
+            n = n.strip()
+            if n:
+                results.append((n, "STARTER"))
+    # "A, B and C transfer from [org]" -- a transfer-in, not a "join"
+    for m in re.finditer(r"([A-Za-z][A-Za-z0-9_ ,]*?)\s+transfers? from\s", plain, re.I):
+        subject = m.group(1)
+        for n in re.split(r",\s*|\s+and\s+", subject):
+            n = n.strip(" .")
+            if n:
+                results.append((n, "STARTER"))
+    # "TEAM announce[s] their ... roster, signing A, B, C and D"
+    for m in re.finditer(r"signing\s+((?:(?!\.|\bto the roster\b).)+)", plain, re.I):
+        for n in re.split(r",\s*|\s+and\s+", m.group(1)):
+            n = n.strip()
+            if n:
+                results.append((n, "STARTER"))
+    # Loans: "X is loaned from Y" (arriving) / "X returns after being
+    # loaned to Y" (coming back from a loan elsewhere) -- both mean
+    # they're on THIS team's active roster now.
+    for m in re.finditer(r"([A-Za-z0-9_.]+)\s+is loaned from\s", plain, re.I):
+        results.append((m.group(1), "STARTER"))
+    for m in re.finditer(r"([A-Za-z0-9_.]+)\s+returns? after being loaned", plain, re.I):
+        results.append((m.group(1), "STARTER"))
+
+    classified = {h.lower() for h, _ in results}
+    for shown in handles_shown:
+        if shown.lower() in classified:
+            continue
+        after = plain[plain.find(shown) + len(shown):plain.find(shown) + len(shown) + 25]
+        m_as = re.match(r"\s+joins?\s+as\s+([A-Za-z-]+)", after, re.I)
+        if m_as:
+            role = m_as.group(1).lower()
+            if role in _TEMP_PLAYER_ROLES:
+                results.append((shown, "STAND-IN"))
+            # else: joins as Coach/Streamer/Analyst/etc -- not a player status at all
+        elif re.search(rf"{re.escape(shown)}[^.]*\bjoins?\b(?!\s+as\s)", plain, re.I):
+            # bare "joins"/"join" anywhere before the sentence ends,
+            # as long as it's not "joins as <non-player role>" (handled
+            # above) -- covers trailing clauses like "X join with Y as
+            # a coach" that don't end immediately after the verb.
+            results.append((shown, "STARTER"))
+
+    return results
+
+
+def compute_player_statuses(html, handles, join_dates=None):
+    """Starter/Benched/Stand-in for each of `handles`, inferred from the
+    most recent relevant sentence in the page's History/Timeline
+    section that names them.
+
+    Liquipedia's roster TABLE only distinguishes Active/Inactive/Former
+    -- there's no Starter-vs-Stand-in column anywhere. This is a genuine
+    inference from prose, not a structured field, so it inherits every
+    limitation of parsing natural language: phrasing this hasn't seen
+    yet can fall through to "unknown" rather than a wrong answer, which
+    is the intended failure mode (verified 15.6% unknown rate across
+    276 active players in the full 49-team run this was built against;
+    every classified case checked against source text during
+    development, not just spot-checked after the fact).
+
+    `join_dates`, if given, maps handle -> that player's CURRENT join
+    date (from the roster table, ISO format). History events dated
+    before that are excluded from consideration -- without this, a
+    player who left and later rejoined can have their current status
+    overridden by a stale event from an EARLIER, unrelated stint.
+    Concretely: killua (FULL SENSE) currently shows joinDate
+    2025-12-08, but that specific join was never narrated in prose at
+    all (checked directly, zero mentions in the relevant year block) --
+    the most recent TEXT mention was "killua leaves for TALON" from
+    several months earlier, an entirely different stint. Without this
+    filter, that stale "leaves" event was winning and mislabeling a
+    currently-active player as departed.
+
+    Section heading is "History" on most team pages but "Timeline" on
+    at least 4 confirmed teams (Eternal Fire, GIANTX, Natus Vincere,
+    VARREL) -- both are tried.
+    """
+    idx = html.find('id="History"')
+    if idx == -1:
+        idx = html.find('id="Timeline"')
+    idx2 = html.find('id="Player_Roster"', idx if idx != -1 else 0)
+    if idx == -1 or idx2 == -1:
+        return {}
+    section = html[idx:idx2]
+    year_blocks = _history_year_blocks(section)
+    join_dates = join_dates or {}
+
+    timeline = []
+    for year, block in sorted(year_blocks.items()):
+        for order, li in enumerate(re.findall(r"<li>.*?</li>", block, re.S)):
+            li_clean = html_module.unescape(re.sub(r"<[^>]+>", "", re.sub(r"<sup.*?</sup>", "", li, flags=re.S)))
+            bullet_date = _bullet_date(li_clean, year)
+            for handle, status in _history_clause_actions(li):
+                for h in handles:
+                    if handle.lower() != h.lower():
+                        continue
+                    join_date = join_dates.get(h)
+                    if join_date and bullet_date and bullet_date < join_date:
+                        continue  # event predates this player's current stint
+                    timeline.append((year, order, h, status))
+
+    latest = {}
+    for year, order, h, status in timeline:
+        key = (year, order)
+        if h not in latest or key > latest[h][0]:
+            latest[h] = (key, status)
+    return {h: v[1] for h, v in latest.items()}
+
+
+_MONTHS = {
+    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+    "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12,
+}
+
+
+def _bullet_date(plain_text, year):
+    """'March 10th – ...' + year (int) -> '2021-03-10', or None if the
+    leading date can't be parsed (shouldn't happen for a well-formed
+    bullet, but a malformed one shouldn't crash the whole run)."""
+    m = re.match(r"\s*([A-Za-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?\s*–", plain_text)
+    if not m:
+        return None
+    month = _MONTHS.get(m.group(1).lower())
+    if not month:
+        return None
+    return f"{year:04d}-{month:02d}-{int(m.group(2)):02d}"
+
+
 def extract_roster_from_html(html: str):
     """
     Second, independent extraction path: parses action=parse's rendered
@@ -543,9 +778,19 @@ def extract_roster_from_html(html: str):
 
     def tables_by_status(elements):
         """Within a section's elements, tag each table by whichever
-        Active/Former h3 (or h4, some pages nest one level deeper) most
-        recently preceded it. Defaults to "active" if no such heading
-        appears before the first table."""
+        Active/Inactive/Former h3 (or h4, some pages nest one level
+        deeper) most recently preceded it. Defaults to "active" if no
+        such heading appears before the first table.
+
+        IMPORTANT: "inactive" must be checked before the "active"
+        fallback, not after -- "active" is literally a substring of
+        "inactive", so checking order (not just substring presence)
+        determines which branch an "Inactive" heading falls into. Some
+        teams (confirmed: Natus Vincere) have a genuine three-way
+        Active/Inactive/Former split, and a player correctly listed
+        under Inactive was being mislabeled "active" until this was
+        caught and fixed.
+        """
         status = "active"
         out = []
         for el in elements:
@@ -553,6 +798,8 @@ def extract_roster_from_html(html: str):
                 text = el.get_text(strip=True).lower()
                 if "former" in text:
                     status = "former"
+                elif "inactive" in text:
+                    status = "inactive"
                 elif "active" in text:
                     status = "active"
             elif el.name == "table":

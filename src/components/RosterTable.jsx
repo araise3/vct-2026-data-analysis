@@ -44,6 +44,24 @@ function activeRange(first, last) {
   return a === b ? a : `${a} – ${b}`
 }
 
+/**
+ * Real status from Liquipedia, NOT the old derived map-share badge.
+ * STARTER/BENCHED come straight from Liquipedia's own Active/Inactive
+ * table split when available, or -- Liquipedia doesn't have a
+ * Starter-vs-Stand-in column anywhere -- inferred from the most recent
+ * relevant sentence in that team's History/Timeline section (see
+ * compute_player_statuses in the scraper). null means genuinely
+ * undetermined: either no history text mentions this player's current
+ * stint at all, or the phrasing didn't match any pattern the classifier
+ * recognizes. Shown as nothing rather than a guess.
+ */
+function statusBadge(status) {
+  if (status === 'STARTER') return { label: 'STARTER', cls: 'bg-accent/15 text-accent border-accent/30' }
+  if (status === 'BENCHED') return { label: 'BENCHED', cls: 'bg-bad/15 text-bad border-bad/30' }
+  if (status === 'STAND-IN') return { label: 'STAND-IN', cls: 'bg-surface2 text-muted border-hairline' }
+  return null
+}
+
 const th = 'px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted whitespace-nowrap'
 const td = 'px-4 py-3 text-sm whitespace-nowrap align-middle'
 
@@ -87,6 +105,7 @@ export default function RosterTable({ team, rows, liquipedia }) {
             <thead>
               <tr className="bg-surface2">
                 <th className={`${th} text-left border-b border-hairline`}>Player</th>
+                <th className={`${th} text-left border-b border-hairline`}>Status</th>
                 <th className={`${th} text-right border-b border-hairline`}>Active</th>
                 <th className={`${th} text-right border-b border-hairline`}>Maps</th>
                 <th className={`${th} text-right border-b border-hairline`}>Rounds</th>
@@ -118,6 +137,16 @@ export default function RosterTable({ team, rows, liquipedia }) {
                         )}
                       </Link>
                     </td>
+                    <td className={`${td} ${bd}`}>
+                      {(() => {
+                        const badge = statusBadge(lq?.playerStatus)
+                        return badge && (
+                          <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide border ${badge.cls}`}>
+                            {badge.label}
+                          </span>
+                        )
+                      })()}
+                    </td>
                     <td className={`${td} ${bd} text-right text-muted text-xs`}>
                       {activeRange(p.firstDate, p.lastDate)}
                     </td>
@@ -140,7 +169,7 @@ export default function RosterTable({ team, rows, liquipedia }) {
               })}
               {rows.length === 0 && (
                 <tr>
-                  <td className="px-4 py-4 text-muted text-xs" colSpan={9}>
+                  <td className="px-4 py-4 text-muted text-xs" colSpan={10}>
                     No players in this scope.
                   </td>
                 </tr>
@@ -151,7 +180,9 @@ export default function RosterTable({ team, rows, liquipedia }) {
 
         <p className="text-muted text-xs leading-relaxed">
           Active is the first and last match week the player appeared in for this team, resolved to
-          that week's actual play dates. Roster/captain/coach data from{' '}
+          that week's actual play dates. Status is Starter/Benched/Stand-in inferred from Liquipedia's
+          roster tables and transaction history -- shown blank where that history doesn't clearly say.
+          Roster/captain/coach/status data from{' '}
           <a
             href="https://liquipedia.net/valorant"
             target="_blank"

@@ -2,7 +2,10 @@ import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
-import { expandBuckets, aggregateTeamBuckets, aggregatePlayerBuckets, groupByEntity } from '../lib/entityBuckets'
+import {
+  expandBuckets, aggregateTeamBuckets, aggregatePlayerBuckets, groupByEntity,
+  expandMatchRows,
+} from '../lib/entityBuckets'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
 import TeamLogo from '../components/TeamLogo'

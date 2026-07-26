@@ -109,7 +109,6 @@ export default function RosterTable({ team, rows, liquipedia }) {
               <span className="text-sm text-ink font-medium flex items-center gap-2">
                 <Flag countryCode={headCoach.flag} countryName={headCoach.name} size={20} />
                 {headCoach.id}
-                {headCoach.name && <span className="text-muted text-xs font-normal">({headCoach.name})</span>}
               </span>
               <div className="flex items-center gap-6 text-xs text-muted">
                 <span>Head Coach</span>

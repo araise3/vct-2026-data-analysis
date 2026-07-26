@@ -6,7 +6,7 @@ import { expandBuckets, aggregateTeamBuckets, aggregatePlayerBuckets, groupByEnt
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
 import TeamLogo from '../components/TeamLogo'
-import Flag from '../components/Flag'
+import RosterTable from '../components/RosterTable'
 import { rating, pct, num } from '../lib/format'
 import TrendChart from '../components/TrendChart'
 
@@ -77,6 +77,19 @@ export default function TeamProfile() {
         .filter(([, m]) => m.team === decodedName)
         .map(([p]) => p)
     )
+    // (event|week) -> [earliest, latest] date THIS team actually played
+    // in that week. Player buckets are keyed per (player, event, week)
+    // with no day dimension of their own -- `d` on that schema is
+    // Deaths, not a date -- so a player's active window has to come from
+    // the team's own buckets, which are keyed per calendar day and do
+    // carry a real date string.
+    const weekDates = new Map()
+    for (const r of filtered) {
+      if (typeof r.d !== 'string') continue
+      const k = `${r.e}|${r.w}`
+      const cur = weekDates.get(k)
+      weekDates.set(k, cur ? [cur[0] < r.d ? cur[0] : r.d, cur[1] > r.d ? cur[1] : r.d] : [r.d, r.d])
+    }
     const scopedKeys = new Set(filtered.map((r) => `${r.e}|${r.w}`))
     const recs = expandBuckets(playerData, 'p').filter(
       (r) => rosterNames.has(r.id) && scopedKeys.has(`${r.e}|${r.w}`)
@@ -86,10 +99,28 @@ export default function TeamProfile() {
       const s = aggregatePlayerBuckets(buckets)
       if (!s || !s.mapsPlayed) continue
       const m = playerData.meta[player]
-      out.push({ player, ...s, countryCode: m.countryCode, countryName: m.countryName })
+      let firstDate = null, lastDate = null
+      for (const b of buckets) {
+        const win = weekDates.get(`${b.e}|${b.w}`)
+        if (!win) continue
+        if (!firstDate || win[0] < firstDate) firstDate = win[0]
+        if (!lastDate || win[1] > lastDate) lastDate = win[1]
+      }
+      out.push({
+        player, ...s,
+        countryCode: m.countryCode, countryName: m.countryName,
+        firstDate, lastDate,
+      })
+    }
+    // Share of the team's own maps in scope -- the denominator is the
+    // team's map count, not the roster's busiest player, so a team
+    // where everyone rotated doesn't get a spurious 100% at the top.
+    const teamMaps = stats?.mapsPlayed ?? 0
+    for (const p of out) {
+      p.mapShare = teamMaps ? Math.min(1, p.mapsPlayed / teamMaps) : null
     }
     return out.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
-  }, [playerData, decodedName, filtered])
+  }, [playerData, decodedName, filtered, stats])
 
   if (teamsLoading || playersLoading) return <div className="text-muted text-sm">Loading…</div>
 
@@ -193,6 +224,8 @@ export default function TeamProfile() {
             />
           </div>
 
+          <RosterTable team={decodedName} rows={roster} />
+
           {roundCurve.length > 0 && (
             <div className="bg-surface border border-hairline rounded-2xl p-5">
               <h3 className="font-display text-sm font-semibold text-ink mb-1">
@@ -242,34 +275,6 @@ export default function TeamProfile() {
               Team's average player rating per match day in scope. Dashed line is 1.00.
             </p>
             <TrendChart points={ratingTrend} baseline={1} format={(v) => v.toFixed(2)} />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <h3 className="font-display text-sm font-semibold text-ink">Roster</h3>
-            <p className="text-muted text-xs">
-              Players on this team, ranked by rating — reflects the filters above.
-            </p>
-            <div className="bg-surface border border-hairline rounded-2xl divide-y divide-hairline">
-              {roster.map((p) => (
-                <Link
-                  key={p.player}
-                  to={`/players/${encodeURIComponent(p.player)}`}
-                  className="flex items-center justify-between px-5 py-3 hover:bg-surface2/50 transition-colors"
-                >
-                  <span className="text-sm text-ink font-medium flex items-center gap-2">
-                    <Flag countryCode={p.countryCode} countryName={p.countryName} size={22} />
-                    {p.player}
-                  </span>
-                  <div className="flex items-center gap-6 text-xs text-muted">
-                    <span>{p.mapsPlayed} maps</span>
-                    <span className="text-good font-body font-medium">{rating(p.avgRating)}</span>
-                  </div>
-                </Link>
-              ))}
-              {roster.length === 0 && (
-                <p className="text-muted text-xs px-5 py-4">No players in this scope.</p>
-              )}
-            </div>
           </div>
         </>
       )}

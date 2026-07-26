@@ -77,11 +77,6 @@ export default function TeamProfile() {
   // selections to the player buckets, keeping only this team's players.
   const roster = useMemo(() => {
     if (!playerData) return []
-    const rosterNames = new Set(
-      Object.entries(playerData.meta)
-        .filter(([, m]) => m.team === decodedName)
-        .map(([p]) => p)
-    )
     // (event|week) -> [earliest, latest] date THIS team actually played
     // in that week. Player buckets are keyed per (player, event, week)
     // with no day dimension of their own -- `d` on that schema is
@@ -96,8 +91,18 @@ export default function TeamProfile() {
       weekDates.set(k, cur ? [cur[0] < r.d ? cur[0] : r.d, cur[1] > r.d ? cur[1] : r.d] : [r.d, r.d])
     }
     const scopedKeys = new Set(filtered.map((r) => `${r.e}|${r.w}`))
+    // Filter by each BUCKET's own team field, not the player's single
+    // static meta.team -- a player who switches teams mid-season (e.g.
+    // Cloud: GIANTX -> FNATIC for Stage 2) has buckets under BOTH teams,
+    // and meta.team only ever reflects whichever team their first-ever
+    // match happened to be for. Using meta.team here meant Cloud was
+    // completely absent from FNATIC's roster despite having real,
+    // correctly-team-tagged Stage 2 buckets -- and would show as
+    // permanently on GIANTX even after leaving. Filtering per-bucket
+    // means a mid-season transfer correctly shows up on BOTH team pages,
+    // each only for the buckets that actually belong to it.
     const recs = expandBuckets(playerData, 'p').filter(
-      (r) => rosterNames.has(r.id) && scopedKeys.has(`${r.e}|${r.w}`)
+      (r) => r.t === decodedName && scopedKeys.has(`${r.e}|${r.w}`)
     )
     const out = []
     for (const [player, buckets] of groupByEntity(recs)) {

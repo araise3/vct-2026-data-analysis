@@ -478,6 +478,17 @@ def main():
         acs_valid = g['acs'].dropna()
         row = {
             "p": player, "e": int(event_id), "w": week, "d": day,
+            # Real per-bucket team, not just the player's single global
+            # meta.team -- a player who switches teams mid-season (e.g.
+            # Cloud: GIANTX -> FNATIC for Stage 2, CyvOph: FNATIC ->
+            # Natus Vincere) has buckets under BOTH teams, and each one
+            # needs to know which team it actually belongs to. Takes the
+            # first row's team per group rather than groupby-ing on team
+            # too, since a player is on exactly one team for any single
+            # (event, week, day) in practice and this avoids silently
+            # splitting a bucket into two half-populated ones on the
+            # rare chance a group's rows disagree.
+            "t": g['canonical_team'].iloc[0],
             "maps": int(len(g)), "rnd": int(g['rounds_total'].fillna(0).sum()),
             "ratS": round(r_sum, 3), "ratR": r_rnd,
             "acsS": round(float(acs_valid.sum()), 2), "acsM": int(len(acs_valid)),

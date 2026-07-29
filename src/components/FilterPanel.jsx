@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import FacetGroup from './FacetGroup'
 import { unscopeValue } from '../lib/entityBuckets'
+import { eventLabel } from '../lib/format'
 
 /**
  * `eventPhase` / `eventWeek` hold event-scoped values ("Vct 2026 Americas
@@ -48,8 +49,6 @@ function orderOptions(facet, opts) {
     return ai - bi
   })
 }
-
-const eventLabel = (e) => e.replace(/^Vct\b/, 'VCT')
 
 // Week values carry their phase as a prefix ("Group Stage: Week 2") to be
 // unique within an event; the phase is its own chip group, so strip it.

@@ -28,6 +28,36 @@ export function rating(v) {
   return v.toFixed(2)
 }
 
+// Event names come out of the scrape title-cased ("Vct 2026 Emea Stage
+// 1"), which reads wrong for the acronyms in them. Lives here rather than
+// in FilterPanel because the match history and Tournaments page label the
+// same events outside the filter UI.
+//
+// Note the region acronym is fixed anywhere in the string, not just at the
+// start like "Vct" -- it appears mid-name ("Vct 2026 Emea Kickoff"), and
+// the word boundaries keep it from touching a real word that merely starts
+// with those letters.
+export function eventLabel(name) {
+  return (name || '')
+    .replace(/^Vct\b/, 'VCT')
+    .replace(/\bEmea\b/g, 'EMEA')
+}
+
+// A match's `w` is "Phase: Round" ("Playoffs: Grand Final") -- the phase is
+// usually already shown as its own grouping, so this pulls out just the
+// round half. Values with no colon (a bare "Week 2") pass through whole.
+export function roundLabel(w) {
+  if (!w) return ''
+  const i = w.indexOf(': ')
+  return i === -1 ? w : w.slice(i + 2)
+}
+
+export function phaseLabel(w) {
+  if (!w) return ''
+  const i = w.indexOf(': ')
+  return i === -1 ? w : w.slice(0, i)
+}
+
 // Clock-time duration in seconds -> "44:31" or "1:01:51" once past an hour,
 // matching VLR's own .map-duration display convention.
 export function duration(v) {

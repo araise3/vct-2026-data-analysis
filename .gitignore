@@ -5,3 +5,10 @@ dist
 
 # Liquipedia API response cache (ToU asks callers to cache; not source)
 scraper/.liquipedia_cache/
+
+# Session context for Claude Code -- kept locally updated, never committed/pushed
+CLAUDE.md
+
+# Machine-local Claude Code permission grants (absolute paths, per-machine).
+# .claude/launch.json IS committed -- it's the shared dev-server config.
+.claude/settings.local.json

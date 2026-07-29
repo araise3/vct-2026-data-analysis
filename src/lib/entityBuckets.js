@@ -333,25 +333,45 @@ export function aggregateSideBuckets(buckets) {
 /**
  * Aggregates player_agents.json buckets (same shape as player buckets but
  * split by agent). Separate from aggregatePlayerBuckets because that one
- * handles the sparse rated-only delta, which this file doesn't carry.
+ * handles the sparse rated-only delta, which this file doesn't carry, and
+ * this one has no multi-kill/clutch/utility fields to sum -- a player
+ * plays exactly one agent per map, so those are already exposed at the
+ * source per map_player_stats row, but aren't broken out here since
+ * nothing on the site currently needs them by agent.
  */
 export function aggregateAgentBuckets(buckets) {
   if (!buckets.length) return null
-  let maps = 0, rnd = 0, ratS = 0, ratR = 0, acsS = 0, acsM = 0, k = 0, d = 0
+  let maps = 0, rnd = 0, ratS = 0, ratR = 0, acsS = 0, acsM = 0,
+      kastS = 0, kastR = 0, adrS = 0, adrR = 0, hsS = 0, hsR = 0,
+      k = 0, d = 0, a = 0, fk = 0, fd = 0
   for (const b of buckets) {
     maps += b.maps || 0; rnd += b.rnd || 0
     ratS += b.ratS || 0; ratR += b.ratR || 0
     acsS += b.acsS || 0; acsM += b.acsM || 0
+    kastS += b.kastS || 0; kastR += b.kastR || 0
+    adrS += b.adrS || 0; adrR += b.adrR || 0
+    hsS += b.hsS || 0; hsR += b.hsR || 0
     k += b.k || 0; d += b.d_ || 0
+    a += b.a || 0; fk += b.fk || 0; fd += b.fd || 0
   }
   return {
     mapsPlayed: maps,
     roundsPlayed: rnd,
     avgRating: div(ratS, ratR),
     avgAcs: div(acsS, acsM),
+    avgKast: div(kastS, kastR),
+    avgAdr: div(adrS, adrR),
+    avgHsPct: div(hsS, hsR),
     totalKills: k,
     totalDeaths: d,
     kd: div(k, d),
+    totalAssists: a,
+    totalFirstKills: fk,
+    totalFirstDeaths: fd,
+    kpr: div(k, rnd),
+    apr: div(a, rnd),
+    fkpr: div(fk, rnd),
+    fdpr: div(fd, rnd),
   }
 }
 
@@ -363,6 +383,25 @@ export function expandMatchRows(data) {
     ...r,
     ...eventFields(events[r.e] || {}, r.w || ''),
   }))
+}
+
+/**
+ * Groups match_players.json rows by match id, so a match history row can
+ * hand its scoreboard the ten players of that one match.
+ *
+ * Unlike the bucket files there's nothing to expand here -- these rows are
+ * already final per-match values and carry no event/week key of their own
+ * (the match record they're joined to has it). Filtering therefore happens
+ * on the *match* records, and this map is only ever a lookup.
+ */
+export function groupMatchPlayers(data) {
+  const out = new Map()
+  if (!data?.rows) return out
+  for (const r of data.rows) {
+    if (!out.has(r.m)) out.set(r.m, [])
+    out.get(r.m).push(r)
+  }
+  return out
 }
 
 /** Groups filtered bucket records by their entity id. */

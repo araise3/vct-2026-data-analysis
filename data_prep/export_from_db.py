@@ -12,9 +12,9 @@ import sqlite3
 import numpy as np
 import pandas as pd
 
-DB_PATH = "/mnt/user-data/uploads/vlr_vct_2026.db"
-EWC_DB_PATH = "/mnt/user-data/uploads/vlr_ewc_2026.db"
-OUT = "/home/claude/vct-site/public/data"
+DB_PATH = "C:/Users/leona/Desktop/scrape vlr/vlr_vct_2026.db"
+EWC_DB_PATH = "C:/Users/leona/Desktop/scrape vlr/vlr_ewc_2026.db"
+OUT = "C:/Users/leona/Desktop/vct-2026-data-analysis/public/data"
 
 CHINA_TEAMS = ['All Gamers', 'Bilibili Gaming', 'Dragon Ranger Gaming', 'EDward Gaming',
                'FunPlus Phoenix', 'JDG Esports', 'Nova Esports', 'TYLOO',
@@ -579,6 +579,44 @@ def main():
     for col in ['kast', 'hs_pct']:
         mps_sides[col] = pct_to_float(mps_sides[col])
 
+    # Drop 't'/'ct' pairs that aren't a real split.
+    #
+    # Some maps have no attack/defense breakdown published, but the scraper
+    # still emits both rows for them -- each filled with the map TOTAL for
+    # kills/deaths/assists and null for every rate stat. Taken at face value
+    # that isn't merely empty, it's wrong in two ways: the pair
+    # double-counts (t.k == ct.k == both.k, so any aggregate over sides
+    # reports twice the player's real kills on the Players page's Attack/
+    # Defend toggle), and a match page renders identical Attack and Defend
+    # columns as though that were a finding.
+    #
+    # Measured scope, so nobody widens this into a region rule: 42 of 1091
+    # maps are affected, ALL of them in China events -- but this is NOT
+    # "China has no side data". 2510 of China's 2930 player-maps (86%) have
+    # a perfectly good split; the gap is 14%, concentrated in a handful of
+    # specific weeks. It's also all-or-nothing per map (42 maps fully
+    # missing, 0 partially), and 3 matches have it on some maps but not
+    # others. Contrast the multi-kill/clutch/econ/objective columns, which
+    # ARE a clean region-wide gap: 0 of 3440 China rows across both DBs.
+    #
+    # The test is the invariant a genuine split must satisfy: the two sides
+    # partition the map, so t + ct == both exactly. Checking that rather
+    # than region, or "is rating null?", is what keeps the 86% that works.
+    _both = (mps_ctx[['match_id', 'map_index', 'player', 'kills', 'deaths']]
+             .rename(columns={'kills': '_bk', 'deaths': '_bd'}))
+    _sums = (mps_sides.groupby(['match_id', 'map_index', 'player'], dropna=True)[['kills', 'deaths']]
+             .sum().reset_index().rename(columns={'kills': '_sk', 'deaths': '_sd'}))
+    _check = _sums.merge(_both, on=['match_id', 'map_index', 'player'], how='inner')
+    _check['_ok'] = (_check['_sk'] == _check['_bk']) & (_check['_sd'] == _check['_bd'])
+    _before = len(mps_sides)
+    mps_sides = mps_sides.merge(
+        _check[['match_id', 'map_index', 'player', '_ok']],
+        on=['match_id', 'map_index', 'player'], how='left'
+    )
+    mps_sides = mps_sides[mps_sides['_ok'].fillna(False)].drop(columns=['_ok'])
+    print(f"side rows: kept {len(mps_sides)}/{_before} "
+          f"(dropped {_before - len(mps_sides)} non-partitioning t/ct rows)")
+
     side_buckets = []
     for (player, event_id, week, day, side), g in mps_sides.groupby(
             ['player', 'event_id', 'stage', 'date', 'side'], dropna=True):
@@ -607,19 +645,33 @@ def main():
     # --- per-agent player buckets ---
     # Same (player, event, week, day) key as player_buckets but split by
     # agent, so "best Jett players" is filterable exactly like every other
-    # view. Kept to core fields only -- this has ~2x the row count of
-    # player_buckets, so every extra field costs real bytes.
+    # view. Carries the same headline stats as player_buckets (KAST/ADR/
+    # HS%/assists/first kills/first deaths, on top of rating/ACS/kills/
+    # deaths) -- a player plays exactly one agent per map, so every one of
+    # map_player_stats' per-map columns is already "per agent" at the
+    # source; there's no aggregation ambiguity in exposing them here too.
+    # Multi-kills/clutches/economy/plants/defuses are deliberately left out
+    # -- nothing on the site currently breaks those out by agent, and they
+    # can be added the same way (via wsum/fillna(0).sum()) if that changes.
     agent_buckets = []
     for (player, agent, event_id, week, day), g in mps_ctx.dropna(subset=['agent']).groupby(
             ['player', 'agent', 'event_id', 'stage', 'date'], dropna=True):
         r_sum, r_rnd = wsum(g, 'rating')
+        k_sum, k_rnd = wsum(g, 'kast')
+        a_sum, a_rnd = wsum(g, 'adr')
+        h_sum, h_rnd = wsum(g, 'hs_pct')
         acs_valid = g['acs'].dropna()
         agent_buckets.append({
             "p": player, "ag": agent, "e": int(event_id), "w": week, "d": day,
             "maps": int(len(g)), "rnd": int(g['rounds_total'].fillna(0).sum()),
             "ratS": round(r_sum, 3), "ratR": r_rnd,
             "acsS": round(float(acs_valid.sum()), 2), "acsM": int(len(acs_valid)),
+            "kastS": round(k_sum, 4), "kastR": k_rnd,
+            "adrS": round(a_sum, 3), "adrR": a_rnd,
+            "hsS": round(h_sum, 4), "hsR": h_rnd,
             "k": int(g['kills'].fillna(0).sum()), "d_": int(g['deaths'].fillna(0).sum()),
+            "a": int(g['assists'].fillna(0).sum()),
+            "fk": int(g['first_kills'].fillna(0).sum()), "fd": int(g['first_deaths'].fillna(0).sum()),
         })
     with open(f"{OUT}/player_agents.json", "w") as f:
         json.dump({"events": events_lookup, "meta": player_meta, "buckets": agent_buckets},
@@ -982,6 +1034,301 @@ def main():
     with open(f"{OUT}/match_results.json", "w") as f:
         json.dump({"events": events_lookup, "rows": match_rows}, f, separators=(',', ':'))
     print(f"match_results.json: {len(match_rows)} matches")
+
+
+    # --- per-match player scoreboards (match_players.json) ---
+    # One row per (match, player): the box score VLR shows on a match
+    # page, aggregated across every map of that series.
+    #
+    # Unlike every bucket file, these are FINAL computed values, not
+    # (value x rounds) sums. A single match is the smallest unit this data
+    # is ever viewed at -- there's no filter combination for the client to
+    # re-aggregate over -- so storing sums would cost bytes for an
+    # arithmetic step nothing performs. Rounds-weighting for Rating/KAST/
+    # ADR/HS% and the flat per-map mean for ACS follow the same
+    # VLR-verified convention as player_stats() above.
+    #
+    # Restricted to the same match set as match_results.json (completed,
+    # both teams known, both scores present) so the scoreboard file can
+    # never contain a match the match list doesn't.
+    scoreboard_match_ids = {r["id"] for r in match_rows}
+
+    # Precision is deliberately capped at what the UI actually renders
+    # (Rating 2dp, ACS/K/D/A integer, KAST/HS% 3dp -> 0.1pp, ADR 1dp)
+    # rather than pandas' full float. These are terminal display values,
+    # not inputs to any further client-side arithmetic, so extra digits are
+    # pure file size -- worth ~7% here across 5k rows.
+    def scoreboard_stats(g, with_totals=True):
+        def w(col, nd):
+            s, r = wsum(g, col)
+            return round(s / r, nd) if r else None
+        acs_valid = g['acs'].dropna()
+        out = {
+            "r": w('rating', 2),
+            "acs": round(float(acs_valid.mean())) if len(acs_valid) else None,
+            "k": int(g['kills'].fillna(0).sum()),
+            "d": int(g['deaths'].fillna(0).sum()),
+            "a": int(g['assists'].fillna(0).sum()),
+            "kast": w('kast', 3),
+            "adr": w('adr', 1),
+            "hs": w('hs_pct', 3),
+            "fk": int(g['first_kills'].fillna(0).sum()),
+            "fd": int(g['first_deaths'].fillna(0).sum()),
+        }
+        if with_totals:
+            out["mp"] = int(len(g))
+            out["rnd"] = int(g['rounds_total'].fillna(0).sum())
+        return out
+
+    # Attack/defense split, mirroring VLR's own All/Attack/Defend toggle on
+    # a match page. Same caveat as player_sides.json: `rounds_total` is the
+    # whole map's round count for both the 't' and 'ct' rows, so a
+    # multi-map series weights each map equally across sides rather than by
+    # rounds actually played on that side. Within a single match that only
+    # affects how maps are weighted against each other, not the numbers
+    # themselves, which is why the simpler shared denominator is kept here.
+    side_scoreboards = {}
+    for (match_id, player, side), g in mps_sides.groupby(
+            ['match_id', 'player', 'side'], dropna=True):
+        if int(match_id) not in scoreboard_match_ids:
+            continue
+        side_scoreboards[(int(match_id), player, side)] = scoreboard_stats(g, with_totals=False)
+
+    match_player_rows = []
+    for (match_id, player), g in mps_ctx.groupby(['match_id', 'player'], dropna=True):
+        match_id = int(match_id)
+        if match_id not in scoreboard_match_ids:
+            continue
+        g = g.sort_values('map_index')
+        row = {
+            "m": match_id,
+            "p": player,
+            "t": g['canonical_team'].iloc[0],
+            # One agent per map, in map order -- a player plays exactly one
+            # agent per map, so this doubles as the per-map agent list the
+            # scoreboard renders next to the player's name.
+            "ag": [a for a in g['agent'].tolist() if isinstance(a, str)],
+            **scoreboard_stats(g),
+        }
+        for side, key in (('t', 'atk'), ('ct', 'def')):
+            s = side_scoreboards.get((match_id, player, side))
+            if s is not None:
+                row[key] = s
+        match_player_rows.append(row)
+
+    # Nationality only -- just enough for the scoreboard to render a flag
+    # next to each name. Deliberately NOT the full player_meta block the
+    # bucket files carry: team comes from each row's own `t` (correct for
+    # mid-season transfers, unlike a single global meta.team), and
+    # region/isChina aren't shown on a scoreboard. Keeping this trimmed is
+    # what lets the Tournaments page render scoreboards without pulling in
+    # player_buckets.json purely for flags.
+    scoreboard_meta = {
+        p: {"cc": m["countryCode"], "cn": m["countryName"]}
+        for p, m in player_meta.items()
+        if m.get("countryCode")
+    }
+
+    with open(f"{OUT}/match_players.json", "w") as f:
+        json.dump({"meta": scoreboard_meta, "rows": match_player_rows},
+                  f, separators=(',', ':'))
+    print(f"match_players.json: {len(match_player_rows)} player-match rows, "
+          f"{len(scoreboard_meta)} with nationality")
+
+
+    # --- per-match detail files (matches/{id}.json) ---
+    # One file per match rather than one big file, because this is the only
+    # dataset on the site with a natural single-record access pattern: a
+    # match page needs exactly one match and never scans across them. Kept
+    # inline it would be ~8MB (per-map x per-player x per-side, plus
+    # round-by-round), which every page would pay for to serve one. Split
+    # this way a match page fetches ~15KB.
+    #
+    # match_players.json stays as the lightweight index the history lists
+    # scan; this is the drill-down. The series-level rows here are the SAME
+    # values that file already carries, duplicated deliberately so a match
+    # page is a single fetch.
+    matches_dir = f"{OUT}/matches"
+    os.makedirs(matches_dir, exist_ok=True)
+
+    def iv(v):
+        """int or None -- NaN/NaT-safe."""
+        return int(v) if pd.notna(v) else None
+
+    def rv(v, nd):
+        """rounded float or None."""
+        return round(float(v), nd) if pd.notna(v) else None
+
+    # Per-map, per-player. Unlike the series rows there's nothing to
+    # aggregate -- map_player_stats already has exactly one row per
+    # (player, map, side), so these are read straight off it.
+    def map_player_stats(r):
+        out = {
+            "p": r.player, "t": r.canonical_team,
+            "r": rv(r.rating, 2), "acs": iv(r.acs),
+            "k": iv(r.kills), "d": iv(r.deaths), "a": iv(r.assists),
+            "kast": rv(r.kast, 3), "adr": rv(r.adr, 1), "hs": rv(r.hs_pct, 3),
+            "fk": iv(r.first_kills), "fd": iv(r.first_deaths),
+        }
+        if isinstance(getattr(r, 'agent', None), str):
+            out["ag"] = r.agent
+        # Multi-kills, clutches, economy and objective play: absent for
+        # every China-region map (VLR never publishes them there), so
+        # omitted entirely rather than written as 0 -- the frontend can
+        # then tell "no data" from "genuinely zero aces".
+        for key, col in (("m2", 'multi_2k'), ("m3", 'multi_3k'), ("m4", 'multi_4k'),
+                         ("m5", 'multi_5k'), ("ec", 'econ'), ("pl", 'plants'),
+                         ("df", 'defuses')):
+            v = getattr(r, col, None)
+            if pd.notna(v):
+                out[key] = int(v)
+        # Clutches won, 1v1 through 1v5 collapsed into one count. Emitted
+        # whenever the source columns exist at all, including when the
+        # total is 0 -- gating on truthiness instead would make "played the
+        # map, clutched nothing" indistinguishable from "China map, no
+        # clutch data published", which is exactly the distinction every
+        # other field here is careful to preserve.
+        clutch_cols = ('clutch_1v1', 'clutch_1v2', 'clutch_1v3', 'clutch_1v4', 'clutch_1v5')
+        if any(pd.notna(getattr(r, c, None)) for c in clutch_cols):
+            out["cl"] = sum(int(getattr(r, c)) for c in clutch_cols
+                            if pd.notna(getattr(r, c, None)))
+        return out
+
+    # Side rows carry the same columns, minus the ones with no side meaning
+    # (agent is per-map; multi-kills/econ/objectives aren't split by side in
+    # the source at all).
+    def map_side_stats(r):
+        return {
+            "r": rv(r.rating, 2), "acs": iv(r.acs),
+            "k": iv(r.kills), "d": iv(r.deaths), "a": iv(r.assists),
+            "kast": rv(r.kast, 3), "adr": rv(r.adr, 1), "hs": rv(r.hs_pct, 3),
+            "fk": iv(r.first_kills), "fd": iv(r.first_deaths),
+        }
+
+    # Pre-grouped lookups, built once. Filtering the full frames inside the
+    # per-match loop instead would be ~525 full scans of a 13k-row table
+    # each, which is the difference between seconds and minutes here.
+    players_by_map = {}
+    for r in mps_ctx.itertuples():
+        players_by_map.setdefault((int(r.match_id), int(r.map_index)), []).append(map_player_stats(r))
+
+    sides_by_map = {}
+    for r in mps_sides.itertuples():
+        sides_by_map[(int(r.match_id), int(r.map_index), r.player, r.side)] = map_side_stats(r)
+
+    all_mrr['canonical_winner'] = all_mrr['winner'].map(name_to_canon).fillna(all_mrr['winner'])
+    rounds_by_map = {}
+    for r in all_mrr.sort_values(['match_id', 'map_index', 'round_num']).itertuples():
+        rounds_by_map.setdefault((int(r.match_id), int(r.map_index)), []).append({
+            "n": iv(r.round_num),
+            "w": r.canonical_winner if pd.notna(r.canonical_winner) else None,
+            # Which side the winning team was on, and how the round ended
+            # (elim / defuse / boom / time) -- straight off VLR's own
+            # round-end icon.
+            "s": r.winner_side if pd.notna(r.winner_side) else None,
+            "c": r.win_condition if pd.notna(r.win_condition) else None,
+        })
+
+    econ_by_map = {}
+    for r in all_mte.itertuples():
+        econ_by_map.setdefault((int(r.match_id), int(r.map_index)), []).append({
+            "t": r.canonical_team,
+            "pistol": iv(r.pistol_won),
+            # [rounds, won] per buy tier.
+            "eco": [iv(r.eco_rounds), iv(r.eco_won)],
+            "semiEco": [iv(r.semi_eco_rounds), iv(r.semi_eco_won)],
+            "semiBuy": [iv(r.semi_buy_rounds), iv(r.semi_buy_won)],
+            "fullBuy": [iv(r.full_buy_rounds), iv(r.full_buy_won)],
+        })
+
+    maps_by_match_full = {}
+    for r in am.sort_values(['match_id', 'map_index']).itertuples():
+        maps_by_match_full.setdefault(int(r.match_id), []).append(r)
+
+    series_by_match = {}
+    for row in match_player_rows:
+        series_by_match.setdefault(row["m"], []).append(row)
+
+    written = 0
+    for m in match_rows:
+        mid = m["id"]
+        ev = events_lookup.get(m["e"], {})
+        maps_out = []
+        for r in maps_by_match_full.get(mid, []):
+            idx = int(r.map_index)
+            players = players_by_map.get((mid, idx), [])
+            for p in players:
+                for side, key in (('t', 'atk'), ('ct', 'def')):
+                    s = sides_by_map.get((mid, idx, p["p"], side))
+                    if s is not None:
+                        p[key] = s
+            maps_out.append({
+                "i": idx,
+                "name": r.map_name if pd.notna(r.map_name) else None,
+                "s1": iv(r.team1_score), "s2": iv(r.team2_score),
+                # Per-side half scores as VLR prints them in the map header
+                # (regulation only -- overtime isn't included there).
+                "atk1": iv(r.team1_atk_score), "def1": iv(r.team1_def_score),
+                "atk2": iv(r.team2_atk_score), "def2": iv(r.team2_def_score),
+                "dur": iv(r.duration_seconds),
+                "winner": r.winner if pd.notna(r.winner) else None,
+                "players": players,
+                "rounds": rounds_by_map.get((mid, idx), []),
+                "econ": econ_by_map.get((mid, idx), []),
+            })
+
+        # Series-level extras. match_player_rows (shared with
+        # match_players.json) deliberately omits multi-kills/clutches/
+        # objectives to keep that index lean -- nothing in a history list
+        # shows them. A match page's "All maps" view uses the same columns
+        # as a single map, though, so they're folded back in here from the
+        # per-map rows rather than bloating the index for every other page.
+        # Econ is a per-map rating, so it averages; the rest are counts and
+        # sum.
+        series_rows = [dict(r) for r in series_by_match.get(mid, [])]
+        extras_by_player = {}
+        for mp in maps_out:
+            for p in mp["players"]:
+                acc = extras_by_player.setdefault(p["p"], {"ec": []})
+                for k in ("m2", "m3", "m4", "m5", "cl", "pl", "df"):
+                    if k in p:
+                        acc[k] = acc.get(k, 0) + p[k]
+                if "ec" in p:
+                    acc["ec"].append(p["ec"])
+        for r in series_rows:
+            acc = extras_by_player.get(r["p"])
+            if not acc:
+                continue
+            for k in ("m2", "m3", "m4", "m5", "cl", "pl", "df"):
+                if k in acc:
+                    r[k] = acc[k]
+            if acc["ec"]:
+                r["ec"] = round(sum(acc["ec"]) / len(acc["ec"]))
+
+        with open(f"{matches_dir}/{mid}.json", "w") as f:
+            json.dump({
+                "id": mid,
+                "e": m["e"],
+                "event": ev.get("name"),
+                "region": ev.get("region"),
+                "stage": ev.get("stage"),
+                "competition": ev.get("competition"),
+                "w": m["w"],
+                "date": m["date"],
+                "team1": m["team1"], "team2": m["team2"],
+                "s1": m["s1"], "s2": m["s2"],
+                "maps": maps_out,
+                # Series totals -- this match's rows from
+                # match_players.json plus the folded-in extras above,
+                # inlined so the page is one fetch.
+                "series": series_rows,
+                "meta": {p["p"]: scoreboard_meta[p["p"]]
+                         for p in series_rows
+                         if p["p"] in scoreboard_meta},
+            }, f, separators=(',', ':'))
+        written += 1
+
+    print(f"matches/: {written} per-match detail files")
 
 
     # --- series (match-level duration leaderboard) ---

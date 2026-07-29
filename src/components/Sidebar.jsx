@@ -5,6 +5,7 @@ const items = [
   { to: '/players', label: 'Players', icon: PlayersIcon },
   { to: '/teams', label: 'Teams', icon: TeamsIcon },
   { to: '/agents', label: 'Agents', icon: AgentsIcon },
+  { to: '/tournaments', label: 'Tournaments', icon: TournamentsIcon },
   { to: '/economy', label: 'Economy', icon: EconomyIcon },
   { to: '/records', label: 'Records', icon: RecordsIcon },
   { to: '/graphics', label: 'Graphics', icon: GraphicsIcon },
@@ -85,6 +86,18 @@ function AgentsIcon(props) {
       <circle cx="8" cy="5.2" r="3" stroke="currentColor" strokeWidth="1.3" />
       <path d="M8 8.2c-2.8 0-4.5 1.6-5 4.2h10c-.5-2.6-2.2-4.2-5-4.2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
       <path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.4" />
+    </svg>
+  )
+}
+
+// Bracket glyph -- two seeds merging into a match, then into a final.
+function TournamentsIcon(props) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" {...props}>
+      <path d="M1.5 3.5h3.5v4h3.5M1.5 12.5h3.5v-4" stroke="currentColor" strokeWidth="1.3"
+            strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8.5 7.5h2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      <circle cx="12.8" cy="7.5" r="1.7" stroke="currentColor" strokeWidth="1.3" />
     </svg>
   )
 }

@@ -141,10 +141,15 @@ export default function Players() {
               totalFirstDeaths: sideStats.totalFirstDeaths,
             }
           : side !== 'both'
-            ? // No side data at all for this player in scope (rare -- would
-              // mean every round they played was somehow on the other
-              // side). Null out rather than show stale 'both' numbers
-              // under an Attack/Defend heading.
+            ? // No side data at all for this player in scope. Rare, and
+              // NOT a China-wide thing -- 86% of China player-maps have a
+              // real split. It happens when every map in scope is one of
+              // the 42 (of 1091) whose t/ct rows the export drops for
+              // carrying the map total on BOTH sides rather than a genuine
+              // split (see the "non-partitioning t/ct" filter in
+              // export_from_db.py -- left in, they double-counted those
+              // players' kills under this toggle). Null out rather than
+              // show stale 'both' numbers under an Attack/Defend heading.
               {
                 avgRating: null, avgAcs: null, kd: null, avgKast: null, avgAdr: null,
                 avgHsPct: null, totalKills: null, totalDeaths: null, totalAssists: null,

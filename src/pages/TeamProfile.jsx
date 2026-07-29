@@ -1,13 +1,14 @@
 import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
-import { useFacetedFilter } from '../lib/useFacetedFilter'
+import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandBuckets, aggregateTeamBuckets, aggregatePlayerBuckets, groupByEntity,
-  expandMatchRows,
+  expandMatchRows, groupMatchPlayers,
 } from '../lib/entityBuckets'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
+import MatchHistory from '../components/MatchHistory'
 import TeamLogo from '../components/TeamLogo'
 import RosterTable from '../components/RosterTable'
 import RosterTimeline from '../components/RosterTimeline'
@@ -25,6 +26,8 @@ export default function TeamProfile() {
   const { data: teamData, loading: teamsLoading } = useData('team_buckets')
   const { data: playerData, loading: playersLoading } = useData('player_buckets')
   const { data: liquipediaData } = useData('liquipedia_rosters')
+  const { data: matchData } = useData('match_results')
+  const { data: matchPlayerData } = useData('match_players')
 
   // Scope to this team first, so facet options only show events this
   // team actually played in.
@@ -131,6 +134,20 @@ export default function TeamProfile() {
     }
     return out.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
   }, [playerData, decodedName, filtered, stats])
+
+  // Match history, filtered by the same active facets as everything else
+  // on the page. Matched on team1/team2 rather than on the scoreboard rows'
+  // own team, so a match still lists even if its box score was never
+  // published -- its match page then shows the empty-state.
+  const playersByMatch = useMemo(() => groupMatchPlayers(matchPlayerData), [matchPlayerData])
+  const matchRows = useMemo(() => {
+    if (!matchData) return []
+    return expandMatchRows(matchData).filter(
+      (m) =>
+        (m.team1 === decodedName || m.team2 === decodedName) &&
+        matchesFilters(m, FACETS, selections, dateRange)
+    )
+  }, [matchData, decodedName, selections, dateRange])
 
   if (teamsLoading || playersLoading) return <div className="text-muted text-sm">Loading…</div>
 
@@ -294,6 +311,18 @@ export default function TeamProfile() {
               Team's average player rating per match day in scope. Dashed line is 1.00.
             </p>
             <TrendChart points={ratingTrend} baseline={1} format={(v) => v.toFixed(2)} />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <h3 className="font-display text-sm font-semibold text-ink">Match history</h3>
+            <p className="text-muted text-xs">
+              Every {decodedName} match in scope — click a row for map scores and the full scoreboard.
+            </p>
+            <MatchHistory
+              matches={matchRows}
+              playersByMatch={playersByMatch}
+              perspective={{ type: 'team', name: decodedName }}
+            />
           </div>
         </>
       )}

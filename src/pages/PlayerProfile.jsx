@@ -1,19 +1,28 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
-import { useFacetedFilter } from '../lib/useFacetedFilter'
-import { expandBuckets, aggregatePlayerBuckets, teamInScope } from '../lib/entityBuckets'
+import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
+import {
+  expandBuckets, aggregatePlayerBuckets, aggregateAgentBuckets, teamInScope,
+  expandMatchRows, groupMatchPlayers,
+} from '../lib/entityBuckets'
 import TrendChart from '../components/TrendChart'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
+import DataTable from '../components/DataTable'
+import MatchHistory from '../components/MatchHistory'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
+import AgentIcon from '../components/AgentIcon'
 import { rating, pct, num } from '../lib/format'
 
 export default function PlayerProfile() {
   const { name } = useParams()
   const decodedName = decodeURIComponent(name)
   const { data, loading } = useData('player_buckets')
+  const { data: agentData } = useData('player_agents')
+  const { data: matchData } = useData('match_results')
+  const { data: matchPlayerData } = useData('match_players')
   const [ratedOnly, setRatedOnly] = useState(false)
 
   // Scope to this player first, so the facet options only ever show
@@ -27,10 +36,76 @@ export default function PlayerProfile() {
           dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
 
+  // Default the standard scope to the player's most recent event rather
+  // than every event they've ever played -- applied once, after this
+  // player's own records are actually available (they're empty on the
+  // very first render, before player_buckets.json resolves), so it can't
+  // fight a user who's already changed the Event filter. Derived from
+  // `filtered`, not the raw per-player `records`, so "most recent" respects
+  // the page's other active defaults (Competition: VCT) instead of picking
+  // e.g. an EWC event that the VCT filter would then immediately conflict
+  // with and zero out. `e` (event id) increases roughly chronologically,
+  // same assumption teamInScope already relies on for "which team is
+  // newest".
+  const appliedDefaultEvent = useRef(false)
+  useEffect(() => {
+    if (appliedDefaultEvent.current || filtered.length === 0) return
+    appliedDefaultEvent.current = true
+    let maxE = -Infinity
+    let latestEvent = null
+    for (const r of filtered) {
+      if (r.e > maxE) { maxE = r.e; latestEvent = r.event }
+    }
+    if (latestEvent) setFacet('event', [latestEvent])
+  }, [filtered, setFacet])
+
   const stats = useMemo(
     () => aggregatePlayerBuckets(filtered, { ratedOnly }),
     [filtered, ratedOnly]
   )
+
+  // Per-agent breakdown, filtered by the same active facet selections as
+  // the rest of the page. player_agents.json is a deliberately lean
+  // schema (see export_from_db.py) -- only maps/rounds/rating/ACS/kills/
+  // deaths are tracked per (player, agent, event, week), so KAST/ADR/HS%/
+  // multi-kills/econ aren't available broken out by agent the way they
+  // are on the Players table.
+  const agentRecords = useMemo(
+    () => (agentData ? expandBuckets(agentData, 'p').filter((r) => r.id === decodedName) : []),
+    [agentData, decodedName]
+  )
+  const agentRows = useMemo(() => {
+    const inScope = agentRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange))
+    const grouped = new Map()
+    for (const r of inScope) {
+      if (!grouped.has(r.ag)) grouped.set(r.ag, [])
+      grouped.get(r.ag).push(r)
+    }
+    const out = []
+    for (const [agent, buckets] of grouped) {
+      const s = aggregateAgentBuckets(buckets)
+      if (!s || !s.mapsPlayed) continue
+      out.push({ agent, ...s })
+    }
+    return out.sort((a, b) => b.mapsPlayed - a.mapsPlayed)
+  }, [agentRecords, selections, dateRange])
+
+  // Match history. The scoreboard rows carry no event/week of their own,
+  // so the filtering happens on the match records (which expandMatchRows
+  // gives the same facet fields as every bucket record) and the scoreboard
+  // map is a pure lookup keyed by match id.
+  const playersByMatch = useMemo(() => groupMatchPlayers(matchPlayerData), [matchPlayerData])
+  const matchRows = useMemo(() => {
+    if (!matchData || !matchPlayerData) return []
+    // Which matches this player actually appeared in -- derived from the
+    // scoreboard rows rather than from their buckets, so a match can only
+    // list here if there's a box score behind it.
+    const mine = new Set()
+    for (const r of matchPlayerData.rows) if (r.p === decodedName) mine.add(r.m)
+    return expandMatchRows(matchData).filter(
+      (m) => mine.has(m.id) && matchesFilters(m, FACETS, selections, dateRange)
+    )
+  }, [matchData, matchPlayerData, decodedName, selections, dateRange])
 
   // Rating over time: one point per day the player actually played,
   // rounds-weighted within the day so a 3-map day isn't averaged flat
@@ -69,6 +144,31 @@ export default function PlayerProfile() {
 
   const meta = data?.meta?.[decodedName]
   const displayTeam = meta ? teamInScope(filtered, meta.team) : null
+
+  const agentColumns = [
+    {
+      key: 'agent', label: 'Agent', align: 'left', noPadding: true,
+      format: (v) => (
+        <span className="flex items-center gap-2 px-5 py-2.5">
+          <AgentIcon agent={v} size={24} />
+          <span className="font-body font-medium">{v}</span>
+        </span>
+      ),
+    },
+    { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
+    { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
+    { key: 'avgRating', label: 'R', align: 'right', colorScale: true, format: (v) => rating(v) },
+    { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
+    { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },
+    { key: 'avgKast', label: 'KAST', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'avgAdr', label: 'ADR', align: 'right', colorScale: true, format: (v) => num(v, 1) },
+    { key: 'kpr', label: 'KPR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'apr', label: 'APR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'fkpr', label: 'FKPR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'fdpr', label: 'FDPR', align: 'right', colorScale: true, colorInvert: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'avgHsPct', label: 'HS%', align: 'right', colorScale: true, format: (v) => pct(v) },
+  ]
+
   if (!meta) {
     return (
       <div className="flex flex-col gap-4">
@@ -115,6 +215,17 @@ export default function PlayerProfile() {
           Only maps with a Rating 2.0
         </label>
       </FilterPanel>
+
+      {agentRows.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <h3 className="font-display text-sm font-semibold text-ink">Agents</h3>
+          <p className="text-muted text-xs">
+            Per-agent breakdown for the current scope, same columns as the Players table minus
+            Kills/Deaths/Ace/Econ.
+          </p>
+          <DataTable columns={agentColumns} rows={agentRows} defaultSortKey="mapsPlayed" />
+        </div>
+      )}
 
       {!stats ? (
         <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
@@ -169,6 +280,18 @@ export default function PlayerProfile() {
               <Stat label="Ace" value={num(stats.totalAce)} />
               <Stat label="Clutches Won" value={num(stats.totalClutches)} />
             </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <h3 className="font-display text-sm font-semibold text-ink">Match history</h3>
+            <p className="text-muted text-xs">
+              {decodedName}'s line in every match in scope — click a row for the full scoreboard.
+            </p>
+            <MatchHistory
+              matches={matchRows}
+              playersByMatch={playersByMatch}
+              perspective={{ type: 'player', name: decodedName }}
+            />
           </div>
 
           {meta.isChina && (

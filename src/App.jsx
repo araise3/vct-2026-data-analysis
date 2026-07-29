@@ -6,6 +6,8 @@ import PlayerProfile from './pages/PlayerProfile'
 import Teams from './pages/Teams'
 import TeamProfile from './pages/TeamProfile'
 import Agents from './pages/Agents'
+import Tournaments from './pages/Tournaments'
+import MatchPage from './pages/MatchPage'
 import Economy from './pages/Economy'
 import Graphics from './pages/Graphics'
 import Records from './pages/Records'
@@ -36,6 +38,8 @@ export default function App() {
             <Route path="/teams" element={<Teams />} />
             <Route path="/teams/:name" element={<TeamProfile />} />
             <Route path="/agents" element={<Agents />} />
+            <Route path="/tournaments" element={<Tournaments />} />
+            <Route path="/matches/:id" element={<MatchPage />} />
             <Route path="/economy" element={<Economy />} />
             <Route path="/records" element={<Records />} />
             <Route path="/graphics" element={<Graphics />} />

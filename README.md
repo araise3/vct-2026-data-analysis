@@ -41,7 +41,10 @@ fold in **Esports World Cup (EWC) 2026** results alongside the main VCT season.
 ```
 vct-site/
 ├── public/
-│   ├── data/            JSON data files (generated -- see below)
+│   ├── data/            JSON data files (generated -- see below).
+│   │                    data/matches/{id}.json is one file per match
+│   │                    (525 of them) so a match page fetches ~15KB
+│   │                    instead of an ~10MB combined file
 │   ├── logos/           A few team logos re-hosted locally after
 │   │                    pixel-level fixes (contrast/visibility), rather
 │   │                    than pointing back at the original CDN
@@ -51,7 +54,8 @@ vct-site/
 │   │                    RoundSquares, TeamLogo, AgentIcon, FilterChips,
 │   │                    MultiFilterChips, KpiCard, RankedList, Sidebar
 │   ├── pages/            Overview, Players, Teams, Agents, Economy,
-│   │                    PlayerProfile, TeamProfile
+│   │                    Records, Graphics, Tournaments, PlayerProfile,
+│   │                    TeamProfile, MatchPage
 │   ├── lib/              useData.js (fetch+cache hook), format.js
 │   │                    (number/percent/color-scale helpers),
 │   │                    agentIcons.json, teamLogos.json
@@ -116,3 +120,14 @@ rather than silently producing misleading numbers:
   from per-map player data, not VLR's own aggregate page — verified to
   match VLR's own published percentages exactly (once accounting for a
   rounding-convention difference) everywhere a fair comparison was possible.
+- **Attack/defense splits are missing on 42 of 1091 maps.** All 42 sit in
+  China events, but this is emphatically *not* "China has no side data" —
+  86% of China player-maps (2510 of 2930) have a perfectly good split, and
+  every other region is at 100%. The gap is all-or-nothing per map (never
+  per player), and 3 matches have a split on some maps but not others.
+  The scraper still writes `t`/`ct` rows for the missing ones, filled with
+  the map *total* on both sides; the export drops any pair failing
+  `t + ct == both`, since leaving them in double-counted those players'
+  kills under the Players page's Attack/Defend toggle. A match page hides
+  the side toggle for maps without a split, and warns when a series' side
+  totals cover only some of its maps.

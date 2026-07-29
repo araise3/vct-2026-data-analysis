@@ -5,21 +5,29 @@
  * know what's normal for someone doing the same job), rebuilt on the stats
  * this dataset actually carries.
  *
- * Two things it deliberately does NOT do:
+ * Three things it deliberately does NOT do:
  *
  *  - It doesn't average pre-computed per-player averages to get the peer
- *    average. Every peer's stats come from aggregatePlayerBuckets() over
- *    their own in-scope buckets (sum-then-divide, per the bucket model),
- *    and the peer "average" is then the MEDIAN of those, not the mean --
- *    a median isn't dragged around by the handful of extreme small-sample
- *    players that any filtered scope produces, and it's what "a typical
- *    player at this position" actually means.
+ *    average. Every peer's stats come from summing their own in-scope
+ *    buckets (sum-then-divide, per the bucket model), and the peer
+ *    "average" is then the MEDIAN of those, not the mean -- a median
+ *    isn't dragged around by the handful of extreme small-sample players
+ *    that any filtered scope produces, and it's what "a typical player at
+ *    this position" actually means.
  *
  *  - It doesn't rank against everyone in the file. Peers must clear a
  *    minimum workload in the *current* scope, otherwise a player with two
  *    maps and a hot rating outranks a whole split's worth of real work.
+ *
+ *  - When ranking by role, it doesn't use a player's whole-career stats.
+ *    "Compare to other Duelists" means each player's DUELIST-AGENT stats
+ *    specifically (summed across every Duelist they played, via
+ *    player_agents.json), not their full player_buckets.json line that
+ *    happens to include maps on an off-role agent. A flex player who
+ *    spent a few maps on a Sentinel is judged as a Duelist only on their
+ *    Duelist maps, both for themself and for every peer.
  */
-import { aggregatePlayerBuckets, groupByEntity } from './entityBuckets'
+import { aggregatePlayerBuckets, aggregateAgentBuckets, groupByEntity } from './entityBuckets'
 import agentRoles from './agentRoles.json'
 
 /**
@@ -123,46 +131,69 @@ export const COMPARISON_STATS = [
 /**
  * Builds the comparison rows for one player.
  *
- * `peerBuckets` is every in-scope player bucket (all players, already
- * filtered by the page's active facets) -- NOT just this player's, since
- * the whole point is the surrounding distribution.
+ * `peerBuckets` is every in-scope player bucket, `peerAgentRecords` every
+ * in-scope player_agents row -- both for ALL players, not just this one,
+ * since the whole point is the surrounding distribution.
+ *
+ * When `role` is set, every player's stats (subject and peers alike) come
+ * from summing ONLY their `peerAgentRecords` rows whose agent maps to
+ * that role -- e.g. a Duelist comparison uses each player's Jett+Raze+
+ * Phoenix+... line, not their whole-career player_buckets.json line.
+ * `player_agents.json` doesn't carry multi-kill/clutch/econ data (see
+ * export_from_db.py), so `multiKillsPerMap` simply comes back undefined
+ * for everyone in role mode and its row is dropped below -- not shown as
+ * a fake zero.
+ *
+ * When `role` is null ("All players" mode, or a player whose role
+ * couldn't be inferred), stats come from the full player_buckets.json
+ * aggregate instead, since there's no agent-role slice to take.
  *
  * Returns null when the player themselves doesn't clear the round
  * threshold or there aren't enough peers to rank against, so the UI can
  * hide the section rather than show a rank of "1st of 1".
  */
 export function buildPeerComparison({
-  playerName, peerBuckets, ratedOnly = false, role = null, rolesByPlayer = null,
+  playerName, peerBuckets, peerAgentRecords = [], ratedOnly = false,
+  role = null, rolesByPlayer = null,
 }) {
-  const grouped = groupByEntity(peerBuckets)
-
-  // Pass 1: everyone's in-scope stats, so the qualification bar can be
-  // derived from the scope itself rather than assumed.
-  const all = []
-  let subject = null
-  for (const [name, buckets] of grouped) {
-    const s = aggregatePlayerBuckets(buckets, { ratedOnly })
-    if (!s || !s.mapsPlayed) continue
-    if (name === playerName) subject = s
-    all.push({ name, stats: s })
+  // Per-player stats, from whichever source this comparison uses.
+  const statsByPlayer = new Map()
+  if (role) {
+    const byPlayer = new Map()
+    for (const r of peerAgentRecords) {
+      if (agentRoles[r.ag] !== role) continue
+      if (!byPlayer.has(r.id)) byPlayer.set(r.id, [])
+      byPlayer.get(r.id).push(r)
+    }
+    for (const [name, buckets] of byPlayer) {
+      const s = aggregateAgentBuckets(buckets)
+      if (s && s.mapsPlayed) statsByPlayer.set(name, s)
+    }
+  } else {
+    for (const [name, buckets] of groupByEntity(peerBuckets)) {
+      const s = aggregatePlayerBuckets(buckets, { ratedOnly })
+      if (s && s.mapsPlayed) statsByPlayer.set(name, s)
+    }
   }
+
+  const subject = statsByPlayer.get(playerName)
   if (!subject) return null
+
+  // Candidate pool for the qualification bar and the ranking itself:
+  // players whose DOMINANT in-scope role matches (role mode only -- the
+  // dominance test is the same one that decided the subject's own role,
+  // so a flex player who dabbled in Duelist for two maps doesn't drag the
+  // Duelist median down just because they show up in statsByPlayer above).
+  const candidates = [...statsByPlayer.entries()]
+    .filter(([name]) => !role || !rolesByPlayer || rolesByPlayer.get(name) === role)
+    .map(([name, stats]) => ({ name, stats }))
 
   const minRounds = Math.max(
     MIN_PEER_ROUNDS,
-    Math.round(QUALIFY_SHARE * (median(all.map((p) => p.stats.roundsPlayed)) ?? 0))
+    Math.round(QUALIFY_SHARE * (median(candidates.map((p) => p.stats.roundsPlayed)) ?? 0))
   )
 
-  // Pass 2: the qualified peer group.
-  const peers = all.filter((p) => {
-    if (p.stats.roundsPlayed < minRounds) return false
-    // Role filtering uses the SAME in-scope inference as the subject's
-    // own role, so "Duelists" means "players whose in-scope agent pool is
-    // mostly Duelists", not a static career label.
-    if (role && rolesByPlayer && rolesByPlayer.get(p.name) !== role) return false
-    return true
-  })
-
+  const peers = candidates.filter((p) => p.stats.roundsPlayed >= minRounds)
   if (peers.length < 3) return null
 
   // The threshold exists to keep tiny samples out of the MEDIAN and the
@@ -196,9 +227,9 @@ export function buildPeerComparison({
     }
   })
 
-  // Drop stats nobody in scope has data for at all -- otherwise a
-  // China-only scope shows "Multi-kills / map — vs —" rows, since VLR
-  // publishes no multi-kill/clutch data for that region.
+  // Drop stats nobody in scope has data for at all -- otherwise a role
+  // comparison (or a China-only scope) shows "Multi-kills / map — vs —"
+  // rows for data that was never going to exist on either side.
   const rows = allRows.filter((r) => r.value !== null || r.peer !== null)
 
   return { rows, peerCount: ranked.length, minRounds, subjectQualified }

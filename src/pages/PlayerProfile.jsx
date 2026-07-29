@@ -81,10 +81,13 @@ export default function PlayerProfile() {
     () => (agentData ? expandBuckets(agentData, 'p').filter((r) => r.id === decodedName) : []),
     [agentData, decodedName]
   )
+  const agentInScope = useMemo(
+    () => agentRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange)),
+    [agentRecords, selections, dateRange]
+  )
   const agentRows = useMemo(() => {
-    const inScope = agentRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange))
     const grouped = new Map()
-    for (const r of inScope) {
+    for (const r of agentInScope) {
       if (!grouped.has(r.ag)) grouped.set(r.ag, [])
       grouped.get(r.ag).push(r)
     }
@@ -95,7 +98,18 @@ export default function PlayerProfile() {
       out.push({ agent, ...s })
     }
     return out.sort((a, b) => b.mapsPlayed - a.mapsPlayed)
-  }, [agentRecords, selections, dateRange])
+  }, [agentInScope])
+
+  // "Overall" row pinned above the per-agent breakdown: aggregateAgentBuckets
+  // over the SAME ungrouped agentInScope rows the per-agent rows are built
+  // from (not a re-sum of the already-divided per-agent percentages), so
+  // it's exactly consistent with the per-agent rows -- Maps/Rounds/wins
+  // sum exactly, Win%/Rating/etc. are the true rounds-weighted totals
+  // rather than an average-of-averages.
+  const agentOverall = useMemo(() => {
+    const s = aggregateAgentBuckets(agentInScope)
+    return s ? { agent: 'Overall', ...s } : null
+  }, [agentInScope])
 
   // --- peer comparison (the "vs. other <role>s" panel) ---
   // Unlike every other derivation on this page, this one needs EVERY
@@ -108,15 +122,17 @@ export default function PlayerProfile() {
     return expandBuckets(data, 'p').filter((r) => matchesFilters(r, FACETS, selections, dateRange))
   }, [data, selections, dateRange])
 
-  // Same idea for agents: role inference needs the whole field's agent
-  // pools, since the peer group is "players whose in-scope agent pool is
-  // mostly <role>", not just this player's own.
-  const rolesByPlayer = useMemo(() => {
-    if (!agentData) return new Map()
-    const inScope = expandBuckets(agentData, 'p')
+  // Same idea for agents: role inference AND the role-filtered comparison
+  // below both need the whole field's agent pools, since "compare to
+  // other Duelists" means both the peer GROUP and the peer STATS are
+  // restricted to players' Duelist agents -- not just this player's own.
+  const peerAgentRecords = useMemo(() => {
+    if (!agentData) return []
+    return expandBuckets(agentData, 'p')
       .filter((r) => matchesFilters(r, FACETS, selections, dateRange))
-    return rolesInScope(inScope)
   }, [agentData, selections, dateRange])
+
+  const rolesByPlayer = useMemo(() => rolesInScope(peerAgentRecords), [peerAgentRecords])
 
   const role = rolesByPlayer.get(decodedName) ?? null
   const effectivePeerMode = role ? peerMode : 'all'
@@ -125,11 +141,12 @@ export default function PlayerProfile() {
     () => buildPeerComparison({
       playerName: decodedName,
       peerBuckets,
+      peerAgentRecords,
       ratedOnly,
       role: effectivePeerMode === 'role' ? role : null,
       rolesByPlayer,
     }),
-    [decodedName, peerBuckets, ratedOnly, effectivePeerMode, role, rolesByPlayer]
+    [decodedName, peerBuckets, peerAgentRecords, ratedOnly, effectivePeerMode, role, rolesByPlayer]
   )
 
   // Agents in this player's pool that carry no role classification, so
@@ -447,7 +464,7 @@ export default function PlayerProfile() {
             Rank and median across every player in the current scope with at least{' '}
             {num(comparison.minRounds)} rounds
             {effectivePeerMode === 'role' && role
-              ? `, whose agent pool is mostly ${role}`
+              ? ` on ${role} agents, among players whose agent pool is mostly ${role}`
               : ''}
             . Green means better than the median — for first deaths per round, lower is better.
             {!comparison.subjectQualified
@@ -471,9 +488,14 @@ export default function PlayerProfile() {
           <h3 className="font-display text-sm font-semibold text-ink">Agents</h3>
           <p className="text-muted text-xs">
             Per-agent breakdown for the current scope, same columns as the Players table minus
-            Kills/Deaths/Ace/Econ.
+            Kills/Deaths/Ace/Econ. Overall row is every agent combined.
           </p>
-          <DataTable columns={agentColumns} rows={agentRows} defaultSortKey="mapsPlayed" />
+          <DataTable
+            columns={agentColumns}
+            rows={agentRows}
+            summaryRow={agentOverall}
+            defaultSortKey="mapsPlayed"
+          />
         </div>
       )}
 
@@ -486,17 +508,11 @@ export default function PlayerProfile() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KpiCard label="Maps Played" value={num(stats.mapsPlayed)} />
-            <KpiCard label="Rounds Played" value={num(stats.roundsPlayed)} />
-            <KpiCard label="Avg Rating" value={rating(stats.avgRating)} />
-            <KpiCard label="Avg ACS" value={num(stats.avgAcs, 0)} />
-            <KpiCard label="K/D" value={stats.kd ? stats.kd.toFixed(2) : '—'} />
-            <KpiCard label="Avg KAST" value={pct(stats.avgKast)} />
-            <KpiCard label="Avg ADR" value={num(stats.avgAdr, 0)} />
-            <KpiCard label="Avg HS%" value={pct(stats.avgHsPct)} />
-          </div>
-
+          {/* Maps/Rounds/Rating/ACS/K-D/KAST/ADR/HS% used to duplicate a
+              KPI-card grid here -- they're now the Agents table's Overall
+              row above, so only the stats that table CAN'T show (no
+              multi-kill/econ/objective data in player_agents.json) live
+              in cards. */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <KpiCard
               label="Consistency (rating SD)"

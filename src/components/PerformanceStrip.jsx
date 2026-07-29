@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import TeamLogo from './TeamLogo'
-import { rating as fmtRating } from '../lib/format'
+import { rating as fmtRating, vlrMatchUrl } from '../lib/format'
 
 /**
  * Per-match performance bars -- the analogue of rft.gg's "Performances"
@@ -38,8 +37,6 @@ function heightPct(r) {
 }
 
 export default function PerformanceStrip({ matches, playersByMatch, playerName }) {
-  const navigate = useNavigate()
-
   // Oldest -> newest, left to right, so the strip reads like a timeline.
   const bars = useMemo(() => {
     const out = []
@@ -88,19 +85,23 @@ export default function PerformanceStrip({ matches, playersByMatch, playerName }
             className="absolute left-0 right-0 border-t border-dashed border-hairline pointer-events-none"
             style={{ bottom: `${baselineBottom}%` }}
           />
+          {/* A real <a> rather than a button+navigate: these now leave the
+              site for vlr.gg, and an anchor is what makes middle-click and
+              "open in new tab" work on a bar. */}
           {bars.map((b) => (
-            <button
+            <a
               key={b.id}
-              type="button"
-              onClick={() => navigate(`/matches/${b.id}`)}
-              title={`${b.date} — vs ${b.opponent} ${b.score} — Rating ${fmtRating(b.r)} (${b.k}/${b.d}/${b.a})`}
+              href={vlrMatchUrl(b.id)}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`${b.date} — vs ${b.opponent} ${b.score} — Rating ${fmtRating(b.r)} (${b.k}/${b.d}/${b.a}) — open on vlr.gg`}
               className="group relative flex-1 min-w-[10px] max-w-[26px] h-full flex items-end"
             >
               <span
                 className={`w-full rounded-sm transition-opacity group-hover:opacity-80 ${toneFor(b.r)}`}
                 style={{ height: `${Math.max(2, heightPct(b.r))}%` }}
               />
-            </button>
+            </a>
           ))}
         </div>
 
@@ -129,7 +130,7 @@ export default function PerformanceStrip({ matches, playersByMatch, playerName }
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-sm bg-bad inline-block" /> under 0.95
         </span>
-        <span className="ml-auto">Dashed line is 1.00 · click a bar for the match</span>
+        <span className="ml-auto">Dashed line is 1.00 · click a bar for the match on vlr.gg</span>
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
 import DataTable from '../components/DataTable'
@@ -74,7 +74,29 @@ export default function Agents() {
           dateRange, setDateRange, dateBounds } =
     useFacetedFilter(buckets, FACETS, { competition: ['VCT'] })
 
+  // Map columns are shared verbatim between the two matrix tables below
+  // (same `matrixColumns` array passed to both), so reordering them applies
+  // to both at once. Triggered by clicking the ATK WIN / DEF WIN row label
+  // itself rather than a separate control -- sorting the two win-rate ROWS
+  // the normal DataTable way is barely useful with only two rows, but
+  // sorting the map COLUMNS by one of those rows' values (best attack map
+  // first, etc.) is the thing that's actually useful for either table.
+  const [mapSort, setMapSort] = useState({ key: null, dir: 'desc' })
+
+  function toggleMapSort(key) {
+    setMapSort((prev) => (prev.key === key ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'desc' }))
+  }
+
   const scoped = useMemo(() => aggregate(filtered), [filtered])
+
+  const orderedMapNames = useMemo(() => {
+    if (!data) return []
+    if (!mapSort.key) return data.mapNames
+    const statKey = mapSort.key === 'atkWin' ? 'atkWinPct' : 'defWinPct'
+    const rates = Object.fromEntries(scoped.mapWinRates.map((m) => [m.mapName, m[statKey]]))
+    const sorted = [...data.mapNames].sort((a, b) => (rates[b] ?? -1) - (rates[a] ?? -1))
+    return mapSort.dir === 'asc' ? sorted.reverse() : sorted
+  }, [data, scoped, mapSort])
 
   // Two small rows (ATK WIN, DEF WIN) shaped exactly like an agent row --
   // an "Overall" value plus one value per map -- so they can render through
@@ -110,6 +132,8 @@ export default function Agents() {
     })
   }, [scoped, data])
 
+  const mapColumnWidth = 120
+
   if (loading || !data) {
     return <div className="text-muted text-sm">Loading…</div>
   }
@@ -117,19 +141,36 @@ export default function Agents() {
   const matrixColumns = [
     {
       key: 'label', label: '', align: 'left', noPadding: true,
-      format: (v, row) => (
-        row.rowType === 'agent'
-          ? (
+      format: (v, row) => {
+        if (row.rowType === 'agent') {
+          return (
             <span className="flex items-center justify-center">
               <AgentIcon agent={v} size={36} />
             </span>
           )
-          : <span className="font-semibold text-ink text-xs tracking-wide block px-5 py-2.5">{v}</span>
-      ),
+        }
+        // ATK WIN / DEF WIN rows: the label itself is the sort trigger for
+        // the map COLUMNS (see mapSort above), so it gets the same arrow
+        // treatment DataTable gives a sortable column header.
+        const active = mapSort.key === row.rowType
+        return (
+          <button
+            onClick={() => toggleMapSort(row.rowType)}
+            className={`w-full flex items-center gap-1.5 px-5 py-2.5 text-left text-xs font-semibold tracking-wide cursor-pointer select-none transition-colors ${
+              active ? 'text-accent' : 'text-ink hover:text-accent-bright'
+            }`}
+          >
+            {v}
+            <span className={`inline-block w-2.5 text-[10px] leading-none text-accent ${active ? '' : 'invisible'}`}>
+              {mapSort.dir === 'asc' ? '▲' : '▼'}
+            </span>
+          </button>
+        )
+      },
     },
     { key: 'overall', label: 'Overall', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : pct(v, 1)) },
-    ...data.mapNames.map((m) => ({
-      key: m, label: m, align: 'right', colorScale: true,
+    ...orderedMapNames.map((m) => ({
+      key: m, label: m, align: 'right', colorScale: true, width: mapColumnWidth,
       format: (v) => (v === null || v === undefined ? '—' : pct(v, 1)),
     })),
   ]
@@ -166,7 +207,9 @@ export default function Agents() {
           <div className="flex flex-col gap-2">
             <h3 className="font-display text-sm font-semibold text-ink">Map win rates (attack vs. defense)</h3>
             <p className="text-muted text-xs">
-              Round-weighted, not a naive average across buckets. Reflects the filters above.
+              Round-weighted, not a naive average across buckets. Reflects the filters above. Click
+              ATK WIN or DEF WIN to sort maps by that rate — the order also applies to the pick
+              rate table below.
             </p>
             <DataTable columns={matrixColumns} rows={winRateRows} />
           </div>

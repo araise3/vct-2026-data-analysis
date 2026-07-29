@@ -88,11 +88,14 @@ export default function Tournaments() {
     return out.sort((a, b) => (b.lastDate || '').localeCompare(a.lastDate || ''))
   }, [filtered])
 
-  // Most recent tournament open by default -- an all-collapsed page gives
-  // no sense of what's inside, and expanding every one at once would mount
-  // ~500 match rows.
-  const [expanded, setExpanded] = useState(null)
-  const openEvent = expanded === null ? tournaments[0]?.event : expanded
+  // All collapsed by default -- expanding every tournament at once would
+  // mount ~500 match rows, and auto-opening "the most recent one" meant the
+  // same card (currently Pacific Stage 2, since tournaments are sorted by
+  // last match date) kept expanding itself back open on every visit even
+  // after the user had collapsed it, since `expanded` only ever tracked
+  // an explicit override and reset on reload.
+  const [expanded, setExpanded] = useState('')
+  const openEvent = expanded
 
   if (loading) return <div className="text-muted text-sm">Loading…</div>
 

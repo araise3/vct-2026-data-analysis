@@ -78,6 +78,21 @@ export function phaseLabel(w) {
   return i === -1 ? w : w.slice(0, i)
 }
 
+// Every match id in this dataset IS the vlr.gg match id -- it's the primary
+// key the scraper pulled the match under, and the scraper's own stored
+// `match_url` is exactly this id plus a descriptive slug
+// ("/594740/natus-vincere-vs-karmine-corp-vct-2026-emea-kickoff-ur1").
+// vlr.gg resolves the bare-id form and redirects to the full slug, so the
+// link needs no scraped URL carried through the export -- confirmed against
+// live vlr.gg, /712809 resolves to the right series.
+//
+// This replaced the site's own per-match pages: rebuilding VLR's match view
+// meant shipping 525 per-match JSON files (9.5MB, 45% of all site data) to
+// show something VLR already shows better and keeps live.
+export function vlrMatchUrl(id) {
+  return `https://www.vlr.gg/${id}`
+}
+
 // Clock-time duration in seconds -> "44:31" or "1:01:51" once past an hour,
 // matching VLR's own .map-duration display convention.
 export function duration(v) {

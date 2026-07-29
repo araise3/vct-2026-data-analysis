@@ -14,6 +14,14 @@ import { scaleColor } from '../lib/format'
  * format() wants to size/pad its own content (e.g. an icon meant to fill
  * the cell) rather than sit inside the standard text padding.
  *
+ * width (px number) pins a column to a fixed width via inline style on
+ * both th and td, applied uniformly rather than through table-layout:fixed
+ * (see the note below on why that mode is avoided globally) -- for a
+ * handful of columns that are known to hold short, similarly-shaped
+ * content (e.g. one map name per column, repeated identically across two
+ * separate <table> elements) and need to line up with each other rather
+ * than each auto-sizing independently to its own table's content.
+ *
  * colorInvert flips the scale for stats where lower is better (rating
  * consistency, first deaths) so "good" still reads as the high end of the
  * hue range rather than the value literally being large.
@@ -93,6 +101,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
               <th
                 key={col.key}
                 onClick={() => toggleSort(col.key)}
+                style={col.width ? { width: col.width, minWidth: col.width } : undefined}
                 className={`${col.noPadding ? 'px-2' : 'px-5'} py-3 font-medium text-xs uppercase tracking-wide cursor-pointer select-none whitespace-nowrap transition-colors align-middle border-r border-b border-hairline ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 } ${sortKey === col.key ? 'text-accent' : 'text-muted hover:text-ink'}`}
@@ -131,6 +140,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
               {columns.map((col) => (
                 <td
                   key={col.key}
+                  style={col.width ? { width: col.width, minWidth: col.width } : undefined}
                   className={`${col.noPadding ? '' : 'px-5 py-2.5'} font-body text-[13px] whitespace-nowrap align-middle border-r border-b-2 border-hairline ${
                     col.align === 'right' ? 'text-right' : 'text-left'
                   } text-ink`}
@@ -152,10 +162,13 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                       col.colorInvert ? range[0] : range[1]
                     )
                   : undefined
+                const style = {}
+                if (bg) style.backgroundColor = bg
+                if (col.width) { style.width = col.width; style.minWidth = col.width }
                 return (
                   <td
                     key={col.key}
-                    style={bg ? { backgroundColor: bg } : undefined}
+                    style={Object.keys(style).length ? style : undefined}
                     className={`${col.noPadding ? '' : 'px-5 py-2.5'} font-body text-[13px] whitespace-nowrap align-middle border-r border-b border-hairline ${
                       col.align === 'right' ? 'text-right' : 'text-left'
                     } ${col.key === columns[0].key ? 'text-ink' : 'text-ink/90'}`}

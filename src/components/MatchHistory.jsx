@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import TeamLogo from './TeamLogo'
-import { rating, pct, num, eventLabel, roundLabel } from '../lib/format'
+import { rating, pct, num, eventLabel, roundLabel, vlrMatchUrl } from '../lib/format'
 
 /**
  * Chronological match log, shared by the player profile, the team profile
@@ -14,11 +14,18 @@ import { rating, pct, num, eventLabel, roundLabel } from '../lib/format'
  *   - null                     -> a neutral "team1 vs team2" row, which is
  *     what the Tournaments page wants since neither side is the subject
  *
- * Rows navigate to /matches/:id rather than expanding in place. The full
- * detail (per-map scoreboards, round-by-round, economy) lives in its own
- * per-match JSON file and would be a second fetch per row here -- and the
- * map selector and side toggle need somewhere to live that isn't inside a
- * table row.
+ * Rows open the match on vlr.gg in a new tab. This site used to render its
+ * own /matches/:id page instead, which cost 525 per-match JSON files (9.5MB,
+ * 45% of all site data) to reproduce a view VLR already serves, keeps live,
+ * and shows more of (VODs, comments, pick/ban). Series shape stays visible
+ * here in the Maps column so the common question ("2-0 or 2-1, which maps?")
+ * still answers without leaving.
+ *
+ * The row is clickable AND the trailing cell is a real <a>: the anchor is
+ * what gives link semantics -- middle-click, "open in new tab", a visible
+ * target URL on hover -- none of which a bare onClick handler provides. It
+ * stops propagation so clicking it doesn't also fire the row handler and
+ * open two tabs.
  */
 
 /** Signed difference, colored like VLR's own +/- columns. */
@@ -28,12 +35,14 @@ function Diff({ value }) {
   return <span className={cls}>{value > 0 ? `+${value}` : value}</span>
 }
 
-/** Right-pointing chevron marking a row as navigable. */
-function GoChevron() {
+/** Box-with-arrow glyph, marking a row as leaving the site for vlr.gg. */
+function ExternalIcon() {
   return (
     <svg viewBox="0 0 16 16" width="13" height="13" fill="none" className="shrink-0 inline-block">
-      <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6"
+      <path d="M9 3h4v4M12.5 3.5L7 9" stroke="currentColor" strokeWidth="1.6"
             strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12 10v2.5a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1H6"
+            stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -67,7 +76,6 @@ function ResultBadge({ won }) {
 export default function MatchHistory({
   matches, playersByMatch, perspective = null, showEvent = true, emptyLabel,
 }) {
-  const navigate = useNavigate()
   const isPlayer = perspective?.type === 'player'
 
   // Newest first. `date` is YYYY-MM-DD so lexicographic ordering is
@@ -160,7 +168,7 @@ export default function MatchHistory({
             return (
               <tr
                 key={m.id}
-                onClick={() => navigate(`/matches/${m.id}`)}
+                onClick={() => window.open(vlrMatchUrl(m.id), '_blank', 'noopener,noreferrer')}
                 className="cursor-pointer transition-colors hover:bg-surface2/30"
               >
                 <td className="px-4 py-2.5 border-b border-hairline text-muted whitespace-nowrap">
@@ -240,9 +248,9 @@ export default function MatchHistory({
                     {playerStats ? c.render(playerStats) : <span className="text-muted">—</span>}
                   </td>
                 ))}
-                {/* Map scores inline -- the row is now a link rather than
-                    an expander, so this is the only place the series shape
-                    (2-0 vs 2-1, which maps) shows without navigating. */}
+                {/* Map scores inline -- the row leaves the site entirely
+                    now, so this is the only place the series shape (2-0 vs
+                    2-1, which maps) shows without a round trip to VLR. */}
                 <td className="px-3 py-2.5 border-b border-hairline whitespace-nowrap">
                   <span className="flex items-center gap-1.5">
                     {m.maps?.map((mp, i) => (
@@ -256,8 +264,17 @@ export default function MatchHistory({
                     ))}
                   </span>
                 </td>
-                <td className="px-3 py-2.5 border-b border-hairline text-muted text-right">
-                  <GoChevron />
+                <td className="px-3 py-2.5 border-b border-hairline text-right">
+                  <a
+                    href={vlrMatchUrl(m.id)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    title="View this match on vlr.gg"
+                    className="text-muted hover:text-accent-bright transition-colors inline-flex"
+                  >
+                    <ExternalIcon />
+                  </a>
                 </td>
               </tr>
             )

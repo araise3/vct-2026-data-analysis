@@ -37,6 +37,26 @@ export default {
         xl: '0.625rem',
         '2xl': '0.875rem',
       },
+      maxWidth: {
+        // rft.gg's own `max-w-content` token, read off their live stylesheet:
+        // 1152px (72rem). Paired everywhere with `mx-auto px-4 md:px-6`,
+        // exactly as they do it -- their navbar's inner row and their main
+        // content wrapper both use that same trio, which is what makes the
+        // nav links sit flush with the content beneath them.
+        //
+        // Single source of truth for the site width: <main>, the footer, and
+        // TopNav's inner row all reference it, so this one value widens or
+        // narrows the whole site.
+        //
+        // The site used to be full-bleed (max-w-[2400px], effectively the
+        // viewport), which is why it read as sprawling next to rft.gg.
+        // Constraining it means the widest tables (the Agents matrix runs
+        // ~1700px with every map column) now scroll inside their own
+        // DataTable overflow-auto wrapper rather than stretching the page --
+        // the intended behaviour, see DataTable's comment on why it has no
+        // fixed column widths.
+        content: '1152px',
+      },
     },
   },
   plugins: [],

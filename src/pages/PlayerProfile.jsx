@@ -6,18 +6,17 @@ import {
   expandBuckets, aggregatePlayerBuckets, aggregateAgentBuckets, teamInScope,
   expandMatchRows, groupMatchPlayers,
 } from '../lib/entityBuckets'
-import { buildPeerComparison, rolesInScope, unknownRoleAgents } from '../lib/peerComparison'
+import { rolesInScope } from '../lib/peerComparison'
 import TrendChart from '../components/TrendChart'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
 import DataTable from '../components/DataTable'
 import MatchHistory from '../components/MatchHistory'
-import ComparisonTable from '../components/ComparisonTable'
 import PerformanceStrip from '../components/PerformanceStrip'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import AgentIcon from '../components/AgentIcon'
-import { rating, pct, num, ratingTier } from '../lib/format'
+import { rating, pct, num, ratingTier, vlrMatchUrl } from '../lib/format'
 
 export default function PlayerProfile() {
   const { name } = useParams()
@@ -27,10 +26,6 @@ export default function PlayerProfile() {
   const { data: matchData } = useData('match_results')
   const { data: matchPlayerData } = useData('match_players')
   const [ratedOnly, setRatedOnly] = useState(false)
-  // Which group the comparison table ranks against. 'role' is the default
-  // (the point of the panel is comparing like with like), but it falls
-  // back to 'all' automatically when this player's role can't be inferred.
-  const [peerMode, setPeerMode] = useState('role')
 
   // Scope to this player first, so the facet options only ever show
   // events/weeks this player actually appeared in.
@@ -111,21 +106,12 @@ export default function PlayerProfile() {
     return s ? { agent: 'Overall', ...s } : null
   }, [agentInScope])
 
-  // --- peer comparison (the "vs. other <role>s" panel) ---
-  // Unlike every other derivation on this page, this one needs EVERY
-  // player's buckets, not just this player's -- a rank and a peer median
-  // are properties of the surrounding field. So it re-filters the full
-  // dataset against the same active selections rather than reusing
-  // `filtered`, which was already narrowed to one player upstream.
-  const peerBuckets = useMemo(() => {
-    if (!data) return []
-    return expandBuckets(data, 'p').filter((r) => matchesFilters(r, FACETS, selections, dateRange))
-  }, [data, selections, dateRange])
-
-  // Same idea for agents: role inference AND the role-filtered comparison
-  // below both need the whole field's agent pools, since "compare to
-  // other Duelists" means both the peer GROUP and the peer STATS are
-  // restricted to players' Duelist agents -- not just this player's own.
+  // Role badge next to the player's name (see render below): inferred from
+  // the whole field's agent pools in the current scope, same as the peer
+  // comparison panel used to need -- "compare to other Duelists" required
+  // both the peer GROUP and peer STATS restricted to Duelist agents, but
+  // the role inference itself is still useful on its own as a label even
+  // without that panel.
   const peerAgentRecords = useMemo(() => {
     if (!agentData) return []
     return expandBuckets(agentData, 'p')
@@ -135,27 +121,6 @@ export default function PlayerProfile() {
   const rolesByPlayer = useMemo(() => rolesInScope(peerAgentRecords), [peerAgentRecords])
 
   const role = rolesByPlayer.get(decodedName) ?? null
-  const effectivePeerMode = role ? peerMode : 'all'
-
-  const comparison = useMemo(
-    () => buildPeerComparison({
-      playerName: decodedName,
-      peerBuckets,
-      peerAgentRecords,
-      ratedOnly,
-      role: effectivePeerMode === 'role' ? role : null,
-      rolesByPlayer,
-    }),
-    [decodedName, peerBuckets, peerAgentRecords, ratedOnly, effectivePeerMode, role, rolesByPlayer]
-  )
-
-  // Agents in this player's pool that carry no role classification, so
-  // the UI can say why a role might be missing or look off rather than
-  // silently mis-grouping them.
-  const unclassifiedAgents = useMemo(
-    () => unknownRoleAgents(agentRows.map((r) => r.agent)),
-    [agentRows]
-  )
 
   // Match history. The scoreboard rows carry no event/week of their own,
   // so the filtering happens on the match records (which expandMatchRows
@@ -183,10 +148,10 @@ export default function PlayerProfile() {
   )
 
   // Highest-kill series in scope -- the analogue of rft.gg's "Most Kills
-  // in 1 Game" card. Series totals, not per-map: match_players.json is
-  // one row per player per MATCH, and the per-map breakdown only exists
-  // in the individual matches/{id}.json files, which this page never
-  // fetches (525 of them). Ties keep the earliest match encountered.
+  // in 1 Game" card. Series totals, not per-map, and necessarily so:
+  // match_players.json is one row per player per MATCH, and the site no
+  // longer ships a per-map breakdown at all (those files were dropped when
+  // match pages became vlr.gg links). Ties keep the earliest match.
   const bestKillMatch = useMemo(() => {
     let best = null
     for (const m of matchRows) {
@@ -384,8 +349,11 @@ export default function PlayerProfile() {
             </span>
             {bestKillMatch ? (
               <>
-                <Link
-                  to={`/matches/${bestKillMatch.id}`}
+                <a
+                  href={vlrMatchUrl(bestKillMatch.id)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="View this match on vlr.gg"
                   className="flex items-baseline gap-2.5 hover:text-accent-bright transition-colors w-fit"
                 >
                   <span className="font-display text-3xl font-semibold text-ink">
@@ -394,7 +362,7 @@ export default function PlayerProfile() {
                   <span className="text-muted text-xs">
                     over {bestKillMatch.maps} {bestKillMatch.maps === 1 ? 'map' : 'maps'}
                   </span>
-                </Link>
+                </a>
                 <span className="text-muted text-xs flex items-center gap-1.5 flex-wrap">
                   vs <TeamLogo team={bestKillMatch.opponent} size={16} />
                   {bestKillMatch.agents.length > 0 && (
@@ -429,56 +397,6 @@ export default function PlayerProfile() {
             matches={allMatchRows}
             playersByMatch={playersByMatch}
             playerName={decodedName}
-          />
-        </div>
-      )}
-
-      {comparison && (
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <h3 className="font-display text-sm font-semibold text-ink">
-              How {decodedName} compares
-            </h3>
-            {role && (
-              <div className="flex items-center gap-1 text-xs">
-                {[
-                  { id: 'role', label: `${role}s` },
-                  { id: 'all', label: 'All players' },
-                ].map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => setPeerMode(opt.id)}
-                    className={`px-2.5 py-1 rounded transition-colors ${
-                      effectivePeerMode === opt.id
-                        ? 'bg-accent/20 text-accent-bright'
-                        : 'bg-surface2 text-muted hover:text-ink'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <p className="text-muted text-xs">
-            Rank and median across every player in the current scope with at least{' '}
-            {num(comparison.minRounds)} rounds
-            {effectivePeerMode === 'role' && role
-              ? ` on ${role} agents, among players whose agent pool is mostly ${role}`
-              : ''}
-            . Green means better than the median — for first deaths per round, lower is better.
-            {!comparison.subjectQualified
-              && ` ${decodedName} is under that bar in this scope (${num(stats?.roundsPlayed)} rounds), so treat these ranks as a small sample.`}
-            {!role && ' Role could not be inferred for this player, so this compares against everyone.'}
-            {unclassifiedAgents.length > 0 && (
-              <> Not role-classified: {unclassifiedAgents.join(', ')}.</>
-            )}
-          </p>
-          <ComparisonTable
-            playerName={decodedName}
-            peerLabel={effectivePeerMode === 'role' && role ? `${role}s` : 'All players'}
-            rows={comparison.rows}
-            peerCount={comparison.peerCount}
           />
         </div>
       )}

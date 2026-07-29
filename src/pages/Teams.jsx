@@ -143,8 +143,8 @@ export default function Teams() {
     { key: 'matchesPlayed', label: 'Matches', align: 'right', format: (v) => num(v) },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
     { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
-    { key: 'avgRating', label: 'Avg Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
     { key: 'matchWinPct', label: 'Match Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'avgRating', label: 'Avg Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
     { key: 'pistolWinPct', label: 'Pistol Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'atkWinPct', label: 'ATK Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'defWinPct', label: 'DEF Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
@@ -175,7 +175,7 @@ export default function Teams() {
         </div>
       ) : (
         <>
-          <DataTable columns={columns} rows={rows} defaultSortKey="avgRating" />
+          <DataTable columns={columns} rows={rows} defaultSortKey="matchWinPct" />
 
           <div className="flex flex-col gap-3">
             <div className="flex items-baseline justify-between gap-4 flex-wrap">

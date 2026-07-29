@@ -32,6 +32,12 @@ export function unscopeValue(scoped) {
     : { event: scoped.slice(0, i), value: scoped.slice(i + SCOPE_SEP.length) }
 }
 
+// Split values that exist on events (Champions, EWC's "Main Event"/
+// "Qualifier") but aren't offered as Split filter chips -- Main Event and
+// Masters specifically, per product decision, even though the underlying
+// events remain fully filterable via Competition/Region/Event as before.
+const HIDDEN_SPLITS = new Set(['Main Event', 'Masters'])
+
 /** Shared derivation of the filterable fields hanging off an event + week. */
 function eventFields(ev, week) {
   const event = ev.name
@@ -44,6 +50,13 @@ function eventFields(ev, week) {
     eventPhase: scopeValue(event, phase),
     eventWeek: scopeValue(event, week),
     competition: ev.competition,
+    // Season split (Kickoff / Stage 1 / Stage 2 / Masters / Champions) --
+    // already on each event in events.json, just not surfaced as a
+    // filterable field before. Distinct from `phase` (Group Stage/
+    // Playoffs, a sub-division *within* one event): this spans every
+    // region's event of the same split at once, e.g. selecting "Stage 1"
+    // matches Americas/EMEA/China/Pacific Stage 1 all together.
+    split: HIDDEN_SPLITS.has(ev.stage) ? undefined : ev.stage,
   }
 }
 

@@ -9,10 +9,10 @@ import { unscopeValue } from '../lib/entityBuckets'
  * that week across all of them at once. They're rendered as a sub-group per
  * selected event instead of one flat chip list.
  */
-export const FACETS = ['competition', 'region', 'event', 'eventPhase', 'eventWeek']
+export const FACETS = ['competition', 'region', 'split', 'event', 'eventPhase', 'eventWeek']
 
 /** Facets shown as flat chip groups, in order, above the per-event section. */
-const TOP_FACETS = ['competition', 'region', 'event']
+const TOP_FACETS = ['competition', 'region', 'split', 'event']
 
 /** Facets scoped to a specific event, shown only once events are selected. */
 const SCOPED_FACETS = ['eventPhase', 'eventWeek']
@@ -20,9 +20,33 @@ const SCOPED_FACETS = ['eventPhase', 'eventWeek']
 export const FACET_LABELS = {
   competition: 'Competition',
   region: 'Region',
+  split: 'Split',
   event: 'Event',
   eventPhase: 'Phase',
   eventWeek: 'Week / Round',
+}
+
+// Explicit chip order for facets where alphabetical (the hook's default)
+// reads wrong -- Split's season progression, not alphabetized, with
+// Qualifier (an EWC-only concept, orthogonal to the VCT Kickoff/Stage 1/
+// Stage 2 progression) pushed to the end rather than sorting ahead of
+// "Stage" alphabetically. Values not listed here keep their place at the
+// end, in whatever order the hook already sorted them.
+const FACET_ORDER = {
+  split: ['Kickoff', 'Stage 1', 'Stage 2', 'Qualifier'],
+}
+
+function orderOptions(facet, opts) {
+  const order = FACET_ORDER[facet]
+  if (!order) return opts
+  return [...opts].sort((a, b) => {
+    const ai = order.indexOf(a.value)
+    const bi = order.indexOf(b.value)
+    if (ai === -1 && bi === -1) return 0
+    if (ai === -1) return 1
+    if (bi === -1) return -1
+    return ai - bi
+  })
 }
 
 const eventLabel = (e) => e.replace(/^Vct\b/, 'VCT')
@@ -103,7 +127,7 @@ export default function FilterPanel({
 
   const renderFlatFacet = (f) => {
     const sel = selections[f] || []
-    const opts = options[f] || []
+    const opts = orderOptions(f, options[f] || [])
     if (opts.length === 0) return null
     const isCollapsed = collapsed.has(f) && sel.length === 0
     return (

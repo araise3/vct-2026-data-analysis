@@ -1,8 +1,14 @@
 /**
  * A single faceted filter dimension: a labelled group of multi-selectable
- * chips. Options that aren't reachable given the *other* active filters are
- * shown disabled rather than hidden, so the set of chips doesn't jump
- * around as you select things.
+ * chips. Every option renders identically regardless of whether it's
+ * currently "reachable" given other active filters -- no dimming, no
+ * disabling. `options` still carries an `available` flag from
+ * useFacetedFilter (other code may still want it), but this component
+ * deliberately ignores it: dimming a chip based on other facets read as a
+ * bug (e.g. picking a specific VCT-only event dimmed the EWC chip in
+ * Competition, which is multi-select/OR'd -- clicking EWC there doesn't
+ * replace VCT, it adds to it, so it was never actually unreachable). Every
+ * chip just stays clickable and lets the result set speak for itself.
  */
 export default function FacetGroup({ label, options, selected, onChange, renderLabel, hideLabel = false }) {
   function toggle(value) {
@@ -31,19 +37,16 @@ export default function FacetGroup({ label, options, selected, onChange, renderL
       </div>
       )}
       <div className="flex flex-wrap gap-1.5">
-        {options.map(({ value, available }) => {
+        {options.map(({ value }) => {
           const active = selected.includes(value)
           return (
             <button
               key={value}
               onClick={() => toggle(value)}
-              disabled={!available && !active}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                 active
                   ? 'bg-accent/20 text-accent-bright border-accent/50'
-                  : available
-                    ? 'bg-surface text-muted border-hairline hover:text-ink hover:border-muted'
-                    : 'bg-surface/40 text-muted/30 border-hairline/40 cursor-not-allowed'
+                  : 'bg-surface text-muted border-hairline hover:text-ink hover:border-muted'
               }`}
             >
               {renderLabel ? renderLabel(value) : value}

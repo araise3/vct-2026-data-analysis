@@ -41,10 +41,7 @@ fold in **Esports World Cup (EWC) 2026** results alongside the main VCT season.
 ```
 vct-site/
 ├── public/
-│   ├── data/            JSON data files (generated -- see below).
-│   │                    data/matches/{id}.json is one file per match
-│   │                    (525 of them) so a match page fetches ~15KB
-│   │                    instead of an ~10MB combined file
+│   ├── data/            JSON data files (generated -- see below)
 │   ├── logos/           A few team logos re-hosted locally after
 │   │                    pixel-level fixes (contrast/visibility), rather
 │   │                    than pointing back at the original CDN
@@ -52,10 +49,11 @@ vct-site/
 ├── src/
 │   ├── components/      DataTable, HorizontalBarChart, StackedBar,
 │   │                    RoundSquares, TeamLogo, AgentIcon, FilterChips,
-│   │                    MultiFilterChips, KpiCard, RankedList, Sidebar
+│   │                    MultiFilterChips, KpiCard, RankedList, TopNav,
+│   │                    SearchBar, MatchHistory, PerformanceStrip
 │   ├── pages/            Overview, Players, Teams, Agents, Economy,
 │   │                    Records, Graphics, Tournaments, PlayerProfile,
-│   │                    TeamProfile, MatchPage
+│   │                    TeamProfile, MatchRedirect
 │   ├── lib/              useData.js (fetch+cache hook), format.js
 │   │                    (number/percent/color-scale helpers),
 │   │                    agentIcons.json, teamLogos.json
@@ -128,6 +126,7 @@ rather than silently producing misleading numbers:
   The scraper still writes `t`/`ct` rows for the missing ones, filled with
   the map *total* on both sides; the export drops any pair failing
   `t + ct == both`, since leaving them in double-counted those players'
-  kills under the Players page's Attack/Defend toggle. A match page hides
-  the side toggle for maps without a split, and warns when a series' side
-  totals cover only some of its maps.
+  kills under the Players page's Attack/Defend toggle. (The local match
+  page that used to hide the side toggle for such maps, and warn when a
+  series' side totals covered only some of its maps, has been replaced by
+  links out to vlr.gg -- nothing surfaces that per-series caveat now.)

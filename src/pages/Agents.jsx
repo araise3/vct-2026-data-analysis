@@ -1,13 +1,10 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
 import { useData } from '../lib/useData'
-import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
-import { expandBuckets, aggregateAgentBuckets } from '../lib/entityBuckets'
+import { useFacetedFilter } from '../lib/useFacetedFilter'
 import DataTable from '../components/DataTable'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import AgentIcon from '../components/AgentIcon'
-import TeamLogo from '../components/TeamLogo'
-import { pct, num, rating } from '../lib/format'
+import { pct, num } from '../lib/format'
 
 
 // Sums raw counts first and computes percentages last -- this is what makes
@@ -20,6 +17,9 @@ function aggregate(buckets) {
   const mapAgentCounts = {}
   const mapTotalRows = {}
   let totalRows = 0
+  let totalMapRounds = 0
+  let totalAtkWinRounds = 0
+  let totalDefWinRounds = 0
 
   for (const b of buckets) {
     totalRows += b.playerRows
@@ -31,6 +31,9 @@ function aggregate(buckets) {
       mapStats[mapName].rounds += s.rounds
       mapStats[mapName].atkWinRounds += s.atkWinRounds
       mapStats[mapName].defWinRounds += s.defWinRounds
+      totalMapRounds += s.rounds
+      totalAtkWinRounds += s.atkWinRounds
+      totalDefWinRounds += s.defWinRounds
     }
     for (const [mapName, counts] of Object.entries(b.mapAgentCounts || {})) {
       if (!mapAgentCounts[mapName]) mapAgentCounts[mapName] = {}
@@ -55,16 +58,17 @@ function aggregate(buckets) {
     }))
     .sort((a, b) => b.roundsPlayed - a.roundsPlayed)
 
-  return { pickRates, mapWinRates, mapAgentCounts, mapTotalRows, totalRows }
+  return {
+    pickRates, mapWinRates, mapAgentCounts, mapTotalRows, totalRows,
+    overallAtkWinPct: totalMapRounds ? totalAtkWinRounds / totalMapRounds : null,
+    overallDefWinPct: totalMapRounds ? totalDefWinRounds / totalMapRounds : null,
+  }
 }
 
 
 
 export default function Agents() {
   const { data, loading } = useData('agents')
-  const { data: agentPlayerData } = useData('player_agents')
-  const [selectedAgent, setSelectedAgent] = useState('')
-  const [minAgentMaps, setMinAgentMaps] = useState(10)
   const buckets = data?.buckets ?? []
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
@@ -72,11 +76,31 @@ export default function Agents() {
 
   const scoped = useMemo(() => aggregate(filtered), [filtered])
 
+  // Two small rows (ATK WIN, DEF WIN) shaped exactly like an agent row --
+  // an "Overall" value plus one value per map -- so they can render through
+  // the same matrixColumns/DataTable as the agent pick-rate table just
+  // below, as its own tiny table rather than mixed into that one.
+  const winRateRows = useMemo(() => {
+    const { mapWinRates, overallAtkWinPct, overallDefWinPct } = scoped
+    if (!data) return []
+
+    const atkRow = { rowType: 'atkWin', label: 'ATK WIN', overall: overallAtkWinPct }
+    const defRow = { rowType: 'defWin', label: 'DEF WIN', overall: overallDefWinPct }
+    for (const m of mapWinRates) {
+      atkRow[m.mapName] = m.atkWinPct
+      defRow[m.mapName] = m.defWinPct
+    }
+
+    return [atkRow, defRow]
+  }, [scoped, data])
+
+  // Agent-major: one row per agent, pick rate per map.
   const matrixRows = useMemo(() => {
     const { pickRates, mapAgentCounts, mapTotalRows } = scoped
     if (!data) return []
+
     return pickRates.map(({ agent, pickRate }) => {
-      const row = { agent, pickRate }
+      const row = { rowType: 'agent', label: agent, overall: pickRate }
       for (const mapName of data.mapNames) {
         const slots = (mapTotalRows[mapName] || 0) / 5
         const count = mapAgentCounts[mapName]?.[agent]
@@ -86,65 +110,27 @@ export default function Agents() {
     })
   }, [scoped, data])
 
-  // Per-agent player leaderboard, from player_agents.json (same bucket
-  // shape as player_buckets but keyed by agent too). Filtered with the
-  // shared matcher so it tracks the same facets/date range as everything
-  // else on the page.
-  const agentPlayerRecords = useMemo(
-    () => (agentPlayerData ? expandBuckets(agentPlayerData, 'p') : []),
-    [agentPlayerData]
-  )
-
-  const agentNames = useMemo(
-    () => [...new Set(agentPlayerRecords.map((r) => r.ag))].sort(),
-    [agentPlayerRecords]
-  )
-
-  const agentPlayerRows = useMemo(() => {
-    if (!selectedAgent || !agentPlayerData) return []
-    const byPlayer = new Map()
-    for (const r of agentPlayerRecords) {
-      if (r.ag !== selectedAgent) continue
-      if (!matchesFilters(r, FACETS, selections, dateRange)) continue
-      if (!byPlayer.has(r.p)) byPlayer.set(r.p, [])
-      byPlayer.get(r.p).push(r)
-    }
-    const out = []
-    for (const [player, buckets] of byPlayer) {
-      const s = aggregateAgentBuckets(buckets)
-      if (!s || s.mapsPlayed < minAgentMaps) continue
-      out.push({ player, team: agentPlayerData.meta[player]?.team, ...s })
-    }
-    return out.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
-  }, [agentPlayerRecords, agentPlayerData, selectedAgent, selections, dateRange, minAgentMaps])
-
   if (loading || !data) {
     return <div className="text-muted text-sm">Loading…</div>
   }
 
-  const agentPlayerColumns = [
+  const matrixColumns = [
     {
-      key: 'player', label: 'Player', align: 'left',
-      format: (v) => (
-        <Link to={`/players/${encodeURIComponent(v)}`} className="font-medium hover:text-accent-bright transition-colors">
-          {v}
-        </Link>
+      key: 'label', label: '', align: 'left', noPadding: true,
+      format: (v, row) => (
+        row.rowType === 'agent'
+          ? (
+            <span className="flex items-center justify-center">
+              <AgentIcon agent={v} size={36} />
+            </span>
+          )
+          : <span className="font-semibold text-ink text-xs tracking-wide block px-5 py-2.5">{v}</span>
       ),
     },
-    { key: 'team', label: 'Team', align: 'left', format: (v) => (v ? <TeamLogo team={v} size={18} /> : '—') },
-    { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
-    { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
-    { key: 'avgRating', label: 'Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
-    { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
-    { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },
-  ]
-
-  const matrixColumns = [
-    { key: 'agent', label: 'Agent', align: 'left', format: (v) => <AgentIcon agent={v} size={20} /> },
-    { key: 'pickRate', label: 'Overall', align: 'right', colorScale: true, format: (v) => pct(v, 0) },
+    { key: 'overall', label: 'Overall', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : pct(v, 1)) },
     ...data.mapNames.map((m) => ({
       key: m, label: m, align: 'right', colorScale: true,
-      format: (v) => (v === null || v === undefined ? '—' : pct(v, 0)),
+      format: (v) => (v === null || v === undefined ? '—' : pct(v, 1)),
     })),
   ]
 
@@ -177,28 +163,12 @@ export default function Agents() {
         </div>
       ) : (
         <>
-          <div className="bg-surface border border-hairline rounded-2xl p-5">
-            <h3 className="font-display text-sm font-semibold text-ink mb-3">
-              Map win rates (attack vs. defense)
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {scoped.mapWinRates.map((m) => (
-                <div key={m.mapName} className="bg-surface2/50 border border-hairline rounded-xl px-4 py-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-ink">{m.mapName}</span>
-                    <span className="text-xs text-muted">{m.roundsPlayed.toLocaleString('en-US')} rounds</span>
-                  </div>
-                  <div className="flex h-2 rounded-full overflow-hidden bg-surface2">
-                    <div className="bg-accent" style={{ width: `${m.atkWinPct * 100}%` }} />
-                    <div className="bg-good" style={{ width: `${m.defWinPct * 100}%` }} />
-                  </div>
-                  <div className="flex justify-between text-[11px] text-muted mt-1.5">
-                    <span>ATK {pct(m.atkWinPct)}</span>
-                    <span>DEF {pct(m.defWinPct)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="flex flex-col gap-2">
+            <h3 className="font-display text-sm font-semibold text-ink">Map win rates (attack vs. defense)</h3>
+            <p className="text-muted text-xs">
+              Round-weighted, not a naive average across buckets. Reflects the filters above.
+            </p>
+            <DataTable columns={matrixColumns} rows={winRateRows} />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -206,43 +176,7 @@ export default function Agents() {
             <p className="text-muted text-xs">
               Reflects the filters above — sorted by overall pick rate in scope.
             </p>
-            <DataTable columns={matrixColumns} rows={matrixRows} defaultSortKey="pickRate" />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <h3 className="font-display text-sm font-semibold text-ink">Best players by agent</h3>
-            <p className="text-muted text-xs">
-              Each player's record on one specific agent, respecting the filters above.
-            </p>
-            <div className="flex items-center gap-3 flex-wrap mt-1">
-              <select
-                value={selectedAgent}
-                onChange={(e) => setSelectedAgent(e.target.value)}
-                className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-muted"
-              >
-                <option value="">Select an agent…</option>
-                {agentNames.map((a) => <option key={a} value={a}>{a}</option>)}
-              </select>
-              <label className="flex items-center gap-2 text-xs text-muted">
-                Min. maps
-                <input
-                  type="number" min={0} value={minAgentMaps}
-                  onChange={(e) => setMinAgentMaps(Number(e.target.value) || 0)}
-                  className="bg-surface2 border border-hairline rounded-lg px-2 py-1 w-16 text-ink focus:outline-none focus:border-muted [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                />
-              </label>
-            </div>
-            {selectedAgent ? (
-              agentPlayerRows.length ? (
-                <DataTable columns={agentPlayerColumns} rows={agentPlayerRows} defaultSortKey="avgRating" />
-              ) : (
-                <p className="text-muted text-sm mt-2">
-                  No players meet the minimum on {selectedAgent} within these filters.
-                </p>
-              )
-            ) : (
-              <p className="text-muted text-sm mt-2">Pick an agent to see its leaderboard.</p>
-            )}
+            <DataTable columns={matrixColumns} rows={matrixRows} defaultSortKey="overall" />
           </div>
         </>
       )}

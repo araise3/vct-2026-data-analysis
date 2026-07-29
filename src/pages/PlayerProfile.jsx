@@ -84,7 +84,7 @@ export default function PlayerProfile() {
 
       <div className="flex items-stretch gap-4">
         <div className="w-16 rounded-xl bg-surface2 border border-hairline flex items-center justify-center shrink-0">
-          <Flag countryCode={meta.countryCode} countryName={meta.countryName} size={34} />
+          <Flag countryCode={meta.countryCode} countryName={meta.countryName} size={28} />
         </div>
         <div className="flex flex-col justify-center">
           <h1 className="font-display text-2xl font-semibold text-ink">{decodedName}</h1>
@@ -92,7 +92,7 @@ export default function PlayerProfile() {
             to={`/teams/${encodeURIComponent(displayTeam)}`}
             className="text-muted text-sm hover:text-accent-bright w-fit"
           >
-            <TeamLogo team={displayTeam} size={18} />
+            <TeamLogo team={displayTeam} size={22} />
           </Link>
         </div>
       </div>

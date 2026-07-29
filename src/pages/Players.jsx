@@ -9,20 +9,72 @@ import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import { rating, pct, num } from '../lib/format'
 
+// appearance-none replaces the native select chrome entirely -- on some
+// browsers/OSes that chrome ignores border-radius and keeps the value
+// left-aligned regardless of text-center, so it has to go for the rounded
+// box + centered value to actually render. The custom chevron background
+// (muted-color, matches the app's other dropdown arrows) replaces the one
+// appearance-none removes.
+const selectClass = 'appearance-none cursor-pointer bg-surface2 border border-hairline rounded-lg pl-3 pr-7 py-1.5 text-sm text-ink text-center focus:outline-none focus:border-muted bg-no-repeat'
+const selectChevronStyle = {
+  backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%239b9c9e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")",
+  backgroundPosition: 'right 0.55rem center',
+  backgroundSize: '12px',
+}
+// Chromium honors text-align on <option> itself (the popup list isn't
+// otherwise stylable), so the open dropdown's entries stay centered too.
+const optionCenterStyle = { textAlign: 'center' }
 
 
 export default function Players() {
   const { data, loading } = useData('player_buckets')
   const { data: sideData } = useData('player_sides')
+  const { data: agentData } = useData('player_agents')
   const [ratedOnly, setRatedOnly] = useState(false)
   const [search, setSearch] = useState('')
   const [minRounds, setMinRounds] = useState(0)
   const [side, setSide] = useState('both') // 'both' | 't' (attack) | 'ct' (defend)
+  const [agent, setAgent] = useState('')
+  const [country, setCountry] = useState('')
 
   const records = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
+
+  // player_agents.json is the same bucket shape as player_buckets but keyed
+  // by player+agent, so it can't just join the FACETS list (a player's own
+  // bucket has no single "agent" field -- they play several). Instead it's
+  // filtered separately, with the same active selections, down to the set
+  // of players who played the chosen agent at all in scope.
+  const agentRecords = useMemo(() => (agentData ? expandBuckets(agentData, 'p') : []), [agentData])
+  const agentNames = useMemo(
+    () => [...new Set(agentRecords.map((r) => r.ag))].sort(),
+    [agentRecords]
+  )
+  const playersWithAgent = useMemo(() => {
+    if (!agent) return null
+    const set = new Set()
+    for (const r of agentRecords) {
+      if (r.ag !== agent) continue
+      if (!matchesFilters(r, FACETS, selections, dateRange)) continue
+      set.add(r.p)
+    }
+    return set
+  }, [agentRecords, agent, selections, dateRange])
+
+  // Nationality, unlike agent, is static per player -- no separate bucket
+  // dataset or scope-matching needed, just the same meta.countryName every
+  // other column already reads.
+  const countryNames = useMemo(() => {
+    if (!data) return []
+    const names = new Set()
+    for (const player in data.meta) {
+      const cn = data.meta[player]?.countryName
+      if (cn) names.add(cn)
+    }
+    return [...names].sort()
+  }, [data])
 
   // player_sides.json mirrors VLR's own All/Attack/Defend toggle -- a
   // separate, lighter file (just the headline stats) rather than tripling
@@ -51,8 +103,10 @@ export default function Players() {
     const grouped = groupByEntity(filtered)
     const out = []
     for (const [player, buckets] of grouped) {
+      if (playersWithAgent && !playersWithAgent.has(player)) continue
       const meta = data.meta[player]
       if (!meta) continue
+      if (country && meta.countryName !== country) continue
       const s = aggregatePlayerBuckets(buckets, { ratedOnly })
       if (!s || !s.mapsPlayed) continue
       if (s.roundsPlayed < minRounds) continue
@@ -118,7 +172,7 @@ export default function Players() {
       ? out.filter((p) => p.player.toLowerCase().includes(q) || p.team?.toLowerCase().includes(q))
       : out
     return searched.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
-  }, [filtered, data, ratedOnly, search, minRounds, side, sideStatsByPlayer])
+  }, [filtered, data, ratedOnly, search, minRounds, side, sideStatsByPlayer, playersWithAgent, country])
 
   if (loading || !data) return <div className="text-muted text-sm">Loading…</div>
 
@@ -127,7 +181,7 @@ export default function Players() {
       key: 'player', label: 'Player', align: 'left',
       format: (v, row) => (
         <div className="flex items-center gap-2">
-          <Flag countryCode={row.countryCode} countryName={row.countryName} size={20} />
+          <Flag countryCode={row.countryCode} countryName={row.countryName} size={16} />
           <Link
             to={`/players/${encodeURIComponent(v)}`}
             className="font-body font-medium hover:text-accent-bright transition-colors"
@@ -141,7 +195,7 @@ export default function Players() {
       key: 'team', label: 'Team', align: 'left',
       format: (v) => (
         <Link to={`/teams/${encodeURIComponent(v)}`} className="hover:text-accent-bright transition-colors">
-          <TeamLogo team={v} size={18} showName={false} showTag />
+          <TeamLogo team={v} size={22} showName={false} showTag />
         </Link>
       ),
     },
@@ -232,6 +286,30 @@ export default function Players() {
               ))}
             </div>
           </div>
+          <label className="flex items-center gap-2 text-xs text-muted">
+            Agent
+            <select
+              value={agent}
+              onChange={(e) => setAgent(e.target.value)}
+              className={selectClass}
+              style={selectChevronStyle}
+            >
+              <option value="" style={optionCenterStyle}>All agents</option>
+              {agentNames.map((a) => <option key={a} value={a} style={optionCenterStyle}>{a}</option>)}
+            </select>
+          </label>
+          <label className="flex items-center gap-2 text-xs text-muted">
+            Country
+            <select
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className={selectClass}
+              style={selectChevronStyle}
+            >
+              <option value="" style={optionCenterStyle}>All countries</option>
+              {countryNames.map((c) => <option key={c} value={c} style={optionCenterStyle}>{c}</option>)}
+            </select>
+          </label>
         </div>
       </FilterPanel>
 

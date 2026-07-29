@@ -168,12 +168,12 @@ export default function Overview() {
             rows={topPlayers}
             renderRow={(p) => (
               <>
-                <Link to={`/teams/${encodeURIComponent(p.team)}`} className="shrink-0 self-center h-8 flex items-center justify-center">
-                  <TeamLogo team={p.team} size={32} showName={false} />
+                <Link to={`/teams/${encodeURIComponent(p.team)}`} className="shrink-0 self-center h-9 flex items-center justify-center">
+                  <TeamLogo team={p.team} size={36} showName={false} />
                 </Link>
                 <div className="flex-1 min-w-0 self-center">
                   <Link to={`/players/${encodeURIComponent(p.player)}`} className="flex items-center gap-1.5 text-sm text-ink font-medium truncate leading-tight hover:text-accent-bright transition-colors">
-                    <Flag countryCode={p.countryCode} countryName={p.countryName} size={18} />
+                    <Flag countryCode={p.countryCode} countryName={p.countryName} size={14} />
                     <span className="truncate">{p.player}</span>
                   </Link>
                   <Link to={`/teams/${encodeURIComponent(p.team)}`} className="block text-xs text-muted truncate leading-tight hover:text-accent-bright transition-colors">
@@ -189,8 +189,8 @@ export default function Overview() {
             rows={topTeams}
             renderRow={(t) => (
               <>
-                <Link to={`/teams/${encodeURIComponent(t.team)}`} className="shrink-0 self-center h-8 flex items-center justify-center">
-                  <TeamLogo team={t.team} size={32} showName={false} />
+                <Link to={`/teams/${encodeURIComponent(t.team)}`} className="shrink-0 self-center h-9 flex items-center justify-center">
+                  <TeamLogo team={t.team} size={36} showName={false} />
                 </Link>
                 <div className="flex-1 min-w-0 self-center">
                   <Link to={`/teams/${encodeURIComponent(t.team)}`} className="block text-sm text-ink font-medium truncate leading-tight hover:text-accent-bright transition-colors">
@@ -227,14 +227,14 @@ export default function Overview() {
                 })}
                 renderEntity={(r) => (
                   <>
-                    <Flag countryCode={r.countryCode} countryName={r.countryName} size={18} />
+                    <Flag countryCode={r.countryCode} countryName={r.countryName} size={14} />
                     <Link
                       to={`/players/${encodeURIComponent(r.player)}`}
                       className="font-medium text-ink truncate hover:text-accent-bright transition-colors"
                     >
                       {r.player}
                     </Link>
-                    <TeamLogo team={r.team} size={16} />
+                    <TeamLogo team={r.team} size={20} />
                   </>
                 )}
                 meta={c.meta}

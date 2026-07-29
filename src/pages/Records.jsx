@@ -260,9 +260,9 @@ export default function Records() {
                     <div key={m.id} className="flex items-center gap-3 text-sm">
                       <span className="text-muted text-xs w-24 shrink-0">{m.date}</span>
                       <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <TeamLogo team={m.team1} size={18} />
+                        <TeamLogo team={m.team1} size={22} />
                         <span className="font-semibold text-ink shrink-0">{m.s1}–{m.s2}</span>
-                        <TeamLogo team={m.team2} size={18} />
+                        <TeamLogo team={m.team2} size={22} />
                       </div>
                       <span className="text-muted text-xs truncate">{m.event}</span>
                     </div>
@@ -280,9 +280,9 @@ export default function Records() {
             {upsets.map((m) => (
               <div key={m.id} className="flex items-center gap-3 text-sm">
                 <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <TeamLogo team={m.winner} size={18} />
+                  <TeamLogo team={m.winner} size={22} />
                   <span className="text-muted text-xs shrink-0">beat</span>
-                  <TeamLogo team={m.loser} size={18} />
+                  <TeamLogo team={m.loser} size={22} />
                 </div>
                 <span className="text-muted text-xs shrink-0">
                   {m.winnerScore}–{m.loserScore}
@@ -306,9 +306,9 @@ export default function Records() {
             {blowouts.map((b) => (
               <div key={b.id} className="flex items-center gap-3 text-sm">
                 <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <TeamLogo team={b.winner} size={18} />
+                  <TeamLogo team={b.winner} size={22} />
                   <span className="text-muted text-xs shrink-0">beat</span>
-                  <TeamLogo team={b.loser} size={18} />
+                  <TeamLogo team={b.loser} size={22} />
                 </div>
                 <span className="text-muted text-xs shrink-0">{b.map}</span>
                 <span className="font-semibold text-ink shrink-0 w-14 text-right">
@@ -343,9 +343,9 @@ export default function Records() {
               rows={longestSeries}
               renderEntity={(r) => (
                 <>
-                  <TeamLogo team={r.team1} size={18} />
+                  <TeamLogo team={r.team1} size={22} />
                   <span className="text-muted text-xs shrink-0">vs</span>
-                  <TeamLogo team={r.team2} size={18} />
+                  <TeamLogo team={r.team2} size={22} />
                 </>
               )}
               renderMeta={(r) => (durationView === 'series' ? `${r.mapCount} maps` : r.mapName)}
@@ -356,9 +356,9 @@ export default function Records() {
               rows={shortestSeries}
               renderEntity={(r) => (
                 <>
-                  <TeamLogo team={r.team1} size={18} />
+                  <TeamLogo team={r.team1} size={22} />
                   <span className="text-muted text-xs shrink-0">vs</span>
-                  <TeamLogo team={r.team2} size={18} />
+                  <TeamLogo team={r.team2} size={22} />
                 </>
               )}
               renderMeta={(r) => (durationView === 'series' ? `${r.mapCount} maps` : r.mapName)}
@@ -380,13 +380,13 @@ export default function Records() {
             rows={killRecordsBo3}
             renderEntity={(r) => (
               <>
-                <TeamLogo team={r.team} size={16} showName={false} showTag />
+                <TeamLogo team={r.team} size={20} showName={false} showTag />
                 <span className="font-medium text-ink truncate">{r.player}</span>
               </>
             )}
             renderMeta={(r) => (
               <span className="flex items-center gap-1.5">
-                vs <TeamLogo team={r.opponent} size={14} showName={false} showTag /> {r.score}
+                vs <TeamLogo team={r.opponent} size={18} showName={false} showTag /> {r.score}
               </span>
             )}
             renderValue={(r) => `${num(r.kills)} kills`}
@@ -396,13 +396,13 @@ export default function Records() {
             rows={killRecordsBo5}
             renderEntity={(r) => (
               <>
-                <TeamLogo team={r.team} size={16} showName={false} showTag />
+                <TeamLogo team={r.team} size={20} showName={false} showTag />
                 <span className="font-medium text-ink truncate">{r.player}</span>
               </>
             )}
             renderMeta={(r) => (
               <span className="flex items-center gap-1.5">
-                vs <TeamLogo team={r.opponent} size={14} showName={false} showTag /> {r.score}
+                vs <TeamLogo team={r.opponent} size={18} showName={false} showTag /> {r.score}
               </span>
             )}
             renderValue={(r) => `${num(r.kills)} kills`}
@@ -418,14 +418,14 @@ export default function Records() {
             rows={topBy(aceLeaders, 'totalAce', { qualify: (r) => r.totalAce > 0 })}
             renderEntity={(r) => (
               <>
-                <Flag countryCode={r.countryCode} countryName={r.countryName} size={18} />
+                <Flag countryCode={r.countryCode} countryName={r.countryName} size={14} />
                 <Link
                   to={`/players/${encodeURIComponent(r.player)}`}
                   className="font-medium text-ink truncate hover:text-accent-bright transition-colors"
                 >
                   {r.player}
                 </Link>
-                <TeamLogo team={r.team} size={16} />
+                <TeamLogo team={r.team} size={20} />
               </>
             )}
             meta={(r) => `${num(r.mapsPlayed)} maps`}

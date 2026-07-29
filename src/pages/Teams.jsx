@@ -8,7 +8,6 @@ import {
   groupByEntity,
 } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
-import HorizontalBarChart from '../components/HorizontalBarChart'
 import LeaderCard, { topBy, dynamicQualify } from '../components/LeaderCard'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
@@ -129,11 +128,6 @@ export default function Teams() {
     return out.sort((a, b) => (b.mapWinPct ?? 0) - (a.mapWinPct ?? 0))
   }, [filtered, data])
 
-  const topByMapWin = useMemo(
-    () => rows.filter((t) => t.mapsPlayed >= 10).slice(0, 12),
-    [rows]
-  )
-
   if (loading || !data) return <div className="text-muted text-sm">Loading…</div>
 
   const columns = [
@@ -141,7 +135,7 @@ export default function Teams() {
       key: 'team', label: 'Team', align: 'left',
       format: (v) => (
         <Link to={`/teams/${encodeURIComponent(v)}`} className="font-medium hover:text-accent-bright transition-colors">
-          <TeamLogo team={v} size={20} />
+          <TeamLogo team={v} size={24} />
         </Link>
       ),
     },
@@ -181,23 +175,13 @@ export default function Teams() {
         </div>
       ) : (
         <>
-          {topByMapWin.length > 0 && (
-            <div className="bg-surface border border-hairline rounded-2xl p-5">
-              <h3 className="font-display text-sm font-semibold text-ink mb-4">
-                Top teams by map win rate (min. 10 maps in scope)
-              </h3>
-              <HorizontalBarChart
-                data={topByMapWin} labelKey="team" valueKey="mapWinPct" formatValue={pct} max={1}
-                renderLabel={(d) => <TeamLogo team={d.team} size={16} />}
-              />
-            </div>
-          )}
+          <DataTable columns={columns} rows={rows} defaultSortKey="avgRating" />
 
           <div className="flex flex-col gap-3">
             <div className="flex items-baseline justify-between gap-4 flex-wrap">
               <h2 className="font-display text-sm font-semibold text-ink">Round-level leaders</h2>
               <p className="text-muted text-xs">
-                Same filters as the table below. China-region matches carry no economy data,
+                Same filters as the table above. China-region matches carry no economy data,
                 so those teams are absent from the pistol-conversion and anti-eco cards
                 rather than shown as 0%.
               </p>
@@ -214,7 +198,7 @@ export default function Teams() {
                   })}
                   renderEntity={(r) => (
                     <Link to={`/teams/${encodeURIComponent(r.team)}`} className="min-w-0">
-                      <TeamLogo team={r.team} size={18} />
+                      <TeamLogo team={r.team} size={22} />
                     </Link>
                   )}
                   meta={c.meta}
@@ -224,8 +208,6 @@ export default function Teams() {
               ))}
             </div>
           </div>
-
-          <DataTable columns={columns} rows={rows} defaultSortKey="avgRating" />
 
           <p className="text-muted text-xs">
             Pistol Win% assumes 2 pistol rounds per map. China teams show — since VLR doesn't

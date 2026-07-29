@@ -106,7 +106,7 @@ export default function RosterTable({ team, rows, liquipedia }) {
           <div className="bg-surface border border-hairline rounded-2xl divide-y divide-hairline">
             <div className="flex items-center justify-between px-5 py-3">
               <span className="text-sm text-ink font-medium flex items-center gap-2">
-                <Flag countryCode={headCoach.flag} countryName={headCoach.name} size={20} />
+                <Flag countryCode={headCoach.flag} countryName={headCoach.name} size={16} />
                 {headCoach.id}
               </span>
               <div className="flex items-center gap-6 text-xs text-muted">
@@ -152,7 +152,7 @@ export default function RosterTable({ team, rows, liquipedia }) {
                         to={`/players/${encodeURIComponent(p.player)}`}
                         className="flex items-center gap-2.5 min-w-0 group"
                       >
-                        <Flag countryCode={p.countryCode} countryName={p.countryName} size={22} />
+                        <Flag countryCode={p.countryCode} countryName={p.countryName} size={18} />
                         <span className="font-medium text-ink truncate group-hover:text-accent-bright transition-colors">
                           {p.player}
                         </span>

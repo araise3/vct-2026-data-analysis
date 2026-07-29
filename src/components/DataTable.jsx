@@ -2,7 +2,11 @@ import { useMemo, useState } from 'react'
 import { scaleColor } from '../lib/format'
 
 /**
- * columns: [{ key, label, format(v), colorScale?: true, colorInvert?: true, align?: 'left'|'right' }]
+ * columns: [{ key, label, format(v), colorScale?: true, colorInvert?: true, align?: 'left'|'right', noPadding?: true }]
+ *
+ * noPadding drops the cell's default px-5 py-2.5 -- for a column whose
+ * format() wants to size/pad its own content (e.g. an icon meant to fill
+ * the cell) rather than sit inside the standard text padding.
  *
  * colorInvert flips the scale for stats where lower is better (rating
  * consistency, first deaths) so "good" still reads as the high end of the
@@ -83,7 +87,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
               <th
                 key={col.key}
                 onClick={() => toggleSort(col.key)}
-                className={`px-5 py-3 font-medium text-xs uppercase tracking-wide cursor-pointer select-none whitespace-nowrap transition-colors align-middle border-r border-b border-hairline ${
+                className={`${col.noPadding ? 'px-2' : 'px-5'} py-3 font-medium text-xs uppercase tracking-wide cursor-pointer select-none whitespace-nowrap transition-colors align-middle border-r border-b border-hairline ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 } ${sortKey === col.key ? 'text-accent' : 'text-muted hover:text-ink'}`}
               >
@@ -132,7 +136,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                   <td
                     key={col.key}
                     style={bg ? { backgroundColor: bg } : undefined}
-                    className={`px-5 py-2.5 font-body text-[13px] whitespace-nowrap align-middle border-r border-b border-hairline ${
+                    className={`${col.noPadding ? '' : 'px-5 py-2.5'} font-body text-[13px] whitespace-nowrap align-middle border-r border-b border-hairline ${
                       col.align === 'right' ? 'text-right' : 'text-left'
                     } ${col.key === columns[0].key ? 'text-ink' : 'text-ink/90'}`}
                   >

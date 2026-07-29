@@ -28,6 +28,26 @@ export function rating(v) {
   return v.toFixed(2)
 }
 
+/**
+ * Qualitative label for a Rating 2.0 average -- the equivalent of the
+ * word rft.gg prints under its headline rating ("EXCELLENT").
+ *
+ * Cutoffs are absolute, not relative to the current filter scope: 1.00 is
+ * the fixed point Rating 2.0 is defined around (an exactly average
+ * performance), so "Good" should mean the same thing on every profile
+ * rather than shifting with whatever events happen to be selected.
+ * Returns a `tone` matching the site's semantic colours.
+ */
+export function ratingTier(v) {
+  if (v === null || v === undefined || Number.isNaN(v)) return null
+  if (v >= 1.25) return { label: 'Excellent', tone: 'text-good bg-good/10' }
+  if (v >= 1.12) return { label: 'Great', tone: 'text-good bg-good/10' }
+  if (v >= 1.02) return { label: 'Good', tone: 'text-mid bg-mid/10' }
+  if (v >= 0.95) return { label: 'Average', tone: 'text-muted bg-surface2' }
+  if (v >= 0.88) return { label: 'Below average', tone: 'text-bad bg-bad/10' }
+  return { label: 'Poor', tone: 'text-bad bg-bad/10' }
+}
+
 // Event names come out of the scrape title-cased ("Vct 2026 Emea Stage
 // 1"), which reads wrong for the acronyms in them. Lives here rather than
 // in FilterPanel because the match history and Tournaments page label the

@@ -95,7 +95,7 @@ function div(num, den) {
 export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
   if (!buckets.length) return null
   const t = {
-    maps: 0, rnd: 0, ratS: 0, ratR: 0, acsS: 0, acsM: 0,
+    maps: 0, rnd: 0, wn: 0, ratS: 0, ratR: 0, acsS: 0, acsM: 0,
     kastS: 0, kastR: 0, adrS: 0, adrR: 0, hsS: 0, hsR: 0,
     k: 0, d: 0, a: 0, fk: 0, fd: 0, m2: 0, m3: 0, m4: 0, m5: 0, cl: 0,
     pl: 0, df: 0, ecS: 0, utN: 0, rmS: 0, rmSq: 0, rmN: 0,
@@ -104,6 +104,10 @@ export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
     const u = ratedOnly ? b.u : null
     t.maps += b.maps - (u?.maps || 0)
     t.rnd += b.rnd - (u?.rnd || 0)
+    // Maps won. `wn`, not `w` -- `w` is the bucket's week string on this
+    // schema (see export_from_db.py, where using `w` for this would have
+    // silently overwritten every bucket's week).
+    t.wn += (b.wn || 0) - (u?.wn || 0)
     t.ratS += b.ratS
     t.ratR += b.ratR
     t.acsS += b.acsS - (u?.acsS || 0)
@@ -138,6 +142,9 @@ export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
   return {
     mapsPlayed: t.maps,
     roundsPlayed: t.rnd,
+    mapsWon: t.wn,
+    mapsLost: t.maps - t.wn,
+    winPct: div(t.wn, t.maps),
     avgRating: div(t.ratS, t.ratR),
     avgAcs: div(t.acsS, t.acsM),
     totalKills: t.k,
@@ -151,6 +158,24 @@ export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
     totalFirstDeaths: t.fd,
     total2k: t.m2, total3k: t.m3, total4k: t.m4, totalAce: t.m5,
     totalClutches: t.cl,
+    // Per-round / per-map rates. Kept here (rather than derived at each
+    // call site) so the peer-comparison table below can rank every player
+    // on exactly the same definitions the profile page displays.
+    kpr: div(t.k, t.rnd),
+    dpr: div(t.d, t.rnd),
+    apr: div(t.a, t.rnd),
+    fkpr: div(t.fk, t.rnd),
+    fdpr: div(t.fd, t.rnd),
+    // Denominator is utN (maps that actually carry this data), NOT maps.
+    // Multi-kills and clutches are part of the same clean region-wide gap
+    // as econ/plants/defuses -- VLR publishes none of them for China, and
+    // the buckets store 0 rather than null. Dividing by total maps would
+    // therefore report a real 0.00 rate for a China-only scope (which
+    // then ranks as "1st" in a peer table, since everyone ties at zero)
+    // and silently understate a player with a mix of China and
+    // international maps. div() returns null on a 0 denominator, so a
+    // China-only scope correctly reads "no data" instead.
+    multiKillsPerMap: div(t.m2 + t.m3 + t.m4 + t.m5, t.utN),
     // Utility/objective. utilMaps is how many maps actually carry these
     // (null for every China-region map), so the site shows nothing rather
     // than a misleading 0 when it's 0.
@@ -289,6 +314,110 @@ export function aggregateTeamBuckets(buckets) {
 }
 
 /**
+ * Aggregates team_map_buckets.json buckets (same grain as team_buckets --
+ * one row per team per event/week/day -- with map name as an extra
+ * dimension) into one row per map name. Used by the Map Stats table on
+ * team profile pages. atkStart/defStart (which side the team began the
+ * map on, before any halftime swap) come from round 1's winner/side in
+ * the scrape and are 0/0 for the rare map with no round-by-round data at
+ * all, same partial-coverage caveat as atkP/defP elsewhere in this file.
+ */
+export function aggregateTeamMapBuckets(buckets) {
+  const byMap = new Map()
+  for (const b of buckets) {
+    if (!b.m) continue
+    const d = byMap.get(b.m) || {
+      mapP: 0, mapW: 0, rndW: 0, rndL: 0, atkW: 0, atkP: 0, defW: 0, defP: 0,
+      otM: 0, otW: 0, atkStart: 0, defStart: 0,
+    }
+    d.mapP += b.mapP || 0
+    d.mapW += b.mapW || 0
+    d.rndW += b.rndW || 0
+    d.rndL += b.rndL || 0
+    d.atkW += b.atkW || 0
+    d.atkP += b.atkP || 0
+    d.defW += b.defW || 0
+    d.defP += b.defP || 0
+    d.otM += b.otM || 0
+    d.otW += b.otW || 0
+    d.atkStart += b.atkStart || 0
+    d.defStart += b.defStart || 0
+    byMap.set(b.m, d)
+  }
+  return [...byMap.entries()]
+    .map(([map, d]) => ({
+      map,
+      mapsPlayed: d.mapP,
+      wins: d.mapW,
+      losses: d.mapP - d.mapW,
+      winPct: div(d.mapW, d.mapP),
+      atkStart: d.atkStart,
+      defStart: d.defStart,
+      otMaps: d.otM,
+      otWon: d.otW,
+      roundsWon: d.rndW,
+      roundsLost: d.rndL,
+      atkRounds: d.atkP,
+      atkWon: d.atkW,
+      atkWinPct: div(d.atkW, d.atkP),
+      defRounds: d.defP,
+      defWon: d.defW,
+      defWinPct: div(d.defW, d.defP),
+    }))
+    .sort((a, b) => b.mapsPlayed - a.mapsPlayed)
+}
+
+/**
+ * Sums an aggregateTeamMapBuckets() result back down into one overall
+ * "All Maps" row -- the Map Stats table's pinned summary row. Sums the
+ * same per-map rows the table itself renders (rather than re-deriving
+ * from team_buckets.json separately) so the summary is guaranteed
+ * consistent with whatever's actually displayed underneath it, and reuses
+ * each row's raw win counts (atkWon/defWon), not its already-divided
+ * atkWinPct/defWinPct, to avoid compounding rounding error across maps.
+ */
+export function summarizeTeamMapStats(mapRows) {
+  if (!mapRows.length) return null
+  const t = {
+    mapsPlayed: 0, wins: 0, losses: 0, roundsWon: 0, roundsLost: 0,
+    atkRounds: 0, atkWon: 0, defRounds: 0, defWon: 0,
+    atkStart: 0, defStart: 0, otMaps: 0, otWon: 0,
+  }
+  for (const r of mapRows) {
+    t.mapsPlayed += r.mapsPlayed
+    t.wins += r.wins
+    t.losses += r.losses
+    t.roundsWon += r.roundsWon
+    t.roundsLost += r.roundsLost
+    t.atkRounds += r.atkRounds
+    t.atkWon += r.atkWon
+    t.defRounds += r.defRounds
+    t.defWon += r.defWon
+    t.atkStart += r.atkStart
+    t.defStart += r.defStart
+    t.otMaps += r.otMaps
+    t.otWon += r.otWon
+  }
+  return {
+    map: 'Overall',
+    mapsPlayed: t.mapsPlayed,
+    winPct: div(t.wins, t.mapsPlayed),
+    wins: t.wins,
+    losses: t.losses,
+    roundsWon: t.roundsWon,
+    roundsLost: t.roundsLost,
+    atkRounds: t.atkRounds,
+    atkWinPct: div(t.atkWon, t.atkRounds),
+    defRounds: t.defRounds,
+    defWinPct: div(t.defWon, t.defRounds),
+    atkStart: t.atkStart,
+    defStart: t.defStart,
+    otMaps: t.otMaps,
+    otWon: t.otWon,
+  }
+}
+
+/**
  * Aggregates player_sides.json buckets (attack/defense split) -- a much
  * lighter schema than the main player buckets (just the headline stats:
  * Rating/ACS/K/D/A/KAST/ADR/HS%), so this is a separate function rather
@@ -341,11 +470,11 @@ export function aggregateSideBuckets(buckets) {
  */
 export function aggregateAgentBuckets(buckets) {
   if (!buckets.length) return null
-  let maps = 0, rnd = 0, ratS = 0, ratR = 0, acsS = 0, acsM = 0,
+  let maps = 0, rnd = 0, wn = 0, ratS = 0, ratR = 0, acsS = 0, acsM = 0,
       kastS = 0, kastR = 0, adrS = 0, adrR = 0, hsS = 0, hsR = 0,
       k = 0, d = 0, a = 0, fk = 0, fd = 0
   for (const b of buckets) {
-    maps += b.maps || 0; rnd += b.rnd || 0
+    maps += b.maps || 0; rnd += b.rnd || 0; wn += b.wn || 0
     ratS += b.ratS || 0; ratR += b.ratR || 0
     acsS += b.acsS || 0; acsM += b.acsM || 0
     kastS += b.kastS || 0; kastR += b.kastR || 0
@@ -357,6 +486,9 @@ export function aggregateAgentBuckets(buckets) {
   return {
     mapsPlayed: maps,
     roundsPlayed: rnd,
+    mapsWon: wn,
+    mapsLost: maps - wn,
+    winPct: div(wn, maps),
     avgRating: div(ratS, ratR),
     avgAcs: div(acsS, acsM),
     avgKast: div(kastS, kastR),

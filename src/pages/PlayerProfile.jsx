@@ -6,15 +6,18 @@ import {
   expandBuckets, aggregatePlayerBuckets, aggregateAgentBuckets, teamInScope,
   expandMatchRows, groupMatchPlayers,
 } from '../lib/entityBuckets'
+import { buildPeerComparison, rolesInScope, unknownRoleAgents } from '../lib/peerComparison'
 import TrendChart from '../components/TrendChart'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
 import DataTable from '../components/DataTable'
 import MatchHistory from '../components/MatchHistory'
+import ComparisonTable from '../components/ComparisonTable'
+import PerformanceStrip from '../components/PerformanceStrip'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import AgentIcon from '../components/AgentIcon'
-import { rating, pct, num } from '../lib/format'
+import { rating, pct, num, ratingTier } from '../lib/format'
 
 export default function PlayerProfile() {
   const { name } = useParams()
@@ -24,6 +27,10 @@ export default function PlayerProfile() {
   const { data: matchData } = useData('match_results')
   const { data: matchPlayerData } = useData('match_players')
   const [ratedOnly, setRatedOnly] = useState(false)
+  // Which group the comparison table ranks against. 'role' is the default
+  // (the point of the panel is comparing like with like), but it falls
+  // back to 'all' automatically when this player's role can't be inferred.
+  const [peerMode, setPeerMode] = useState('role')
 
   // Scope to this player first, so the facet options only ever show
   // events/weeks this player actually appeared in.
@@ -90,22 +97,97 @@ export default function PlayerProfile() {
     return out.sort((a, b) => b.mapsPlayed - a.mapsPlayed)
   }, [agentRecords, selections, dateRange])
 
+  // --- peer comparison (the "vs. other <role>s" panel) ---
+  // Unlike every other derivation on this page, this one needs EVERY
+  // player's buckets, not just this player's -- a rank and a peer median
+  // are properties of the surrounding field. So it re-filters the full
+  // dataset against the same active selections rather than reusing
+  // `filtered`, which was already narrowed to one player upstream.
+  const peerBuckets = useMemo(() => {
+    if (!data) return []
+    return expandBuckets(data, 'p').filter((r) => matchesFilters(r, FACETS, selections, dateRange))
+  }, [data, selections, dateRange])
+
+  // Same idea for agents: role inference needs the whole field's agent
+  // pools, since the peer group is "players whose in-scope agent pool is
+  // mostly <role>", not just this player's own.
+  const rolesByPlayer = useMemo(() => {
+    if (!agentData) return new Map()
+    const inScope = expandBuckets(agentData, 'p')
+      .filter((r) => matchesFilters(r, FACETS, selections, dateRange))
+    return rolesInScope(inScope)
+  }, [agentData, selections, dateRange])
+
+  const role = rolesByPlayer.get(decodedName) ?? null
+  const effectivePeerMode = role ? peerMode : 'all'
+
+  const comparison = useMemo(
+    () => buildPeerComparison({
+      playerName: decodedName,
+      peerBuckets,
+      ratedOnly,
+      role: effectivePeerMode === 'role' ? role : null,
+      rolesByPlayer,
+    }),
+    [decodedName, peerBuckets, ratedOnly, effectivePeerMode, role, rolesByPlayer]
+  )
+
+  // Agents in this player's pool that carry no role classification, so
+  // the UI can say why a role might be missing or look off rather than
+  // silently mis-grouping them.
+  const unclassifiedAgents = useMemo(
+    () => unknownRoleAgents(agentRows.map((r) => r.agent)),
+    [agentRows]
+  )
+
   // Match history. The scoreboard rows carry no event/week of their own,
   // so the filtering happens on the match records (which expandMatchRows
   // gives the same facet fields as every bucket record) and the scoreboard
   // map is a pure lookup keyed by match id.
   const playersByMatch = useMemo(() => groupMatchPlayers(matchPlayerData), [matchPlayerData])
-  const matchRows = useMemo(() => {
+
+  // Every match this player appeared in, ignoring the filters entirely --
+  // derived from the scoreboard rows rather than from their buckets, so a
+  // match can only appear if there's a box score behind it. The
+  // Performances strip runs off THIS, deliberately unfiltered: it's a
+  // career-shape view, and re-scoping it to the active event (which
+  // defaults to the player's most recent one) collapsed it to a couple of
+  // bars and made it useless. Everything else on the page stays scoped.
+  const allMatchRows = useMemo(() => {
     if (!matchData || !matchPlayerData) return []
-    // Which matches this player actually appeared in -- derived from the
-    // scoreboard rows rather than from their buckets, so a match can only
-    // list here if there's a box score behind it.
     const mine = new Set()
     for (const r of matchPlayerData.rows) if (r.p === decodedName) mine.add(r.m)
-    return expandMatchRows(matchData).filter(
-      (m) => mine.has(m.id) && matchesFilters(m, FACETS, selections, dateRange)
-    )
-  }, [matchData, matchPlayerData, decodedName, selections, dateRange])
+    return expandMatchRows(matchData).filter((m) => mine.has(m.id))
+  }, [matchData, matchPlayerData, decodedName])
+
+  const matchRows = useMemo(
+    () => allMatchRows.filter((m) => matchesFilters(m, FACETS, selections, dateRange)),
+    [allMatchRows, selections, dateRange]
+  )
+
+  // Highest-kill series in scope -- the analogue of rft.gg's "Most Kills
+  // in 1 Game" card. Series totals, not per-map: match_players.json is
+  // one row per player per MATCH, and the per-map breakdown only exists
+  // in the individual matches/{id}.json files, which this page never
+  // fetches (525 of them). Ties keep the earliest match encountered.
+  const bestKillMatch = useMemo(() => {
+    let best = null
+    for (const m of matchRows) {
+      const row = playersByMatch.get(m.id)?.find((r) => r.p === decodedName)
+      if (!row || row.k == null) continue
+      if (!best || row.k > best.kills) {
+        best = {
+          id: m.id,
+          date: m.date,
+          kills: row.k,
+          maps: row.mp,
+          agents: row.ag || [],
+          opponent: m.team1 === row.t ? m.team2 : m.team1,
+        }
+      }
+    }
+    return best
+  }, [matchRows, playersByMatch, decodedName])
 
   // Rating over time: one point per day the player actually played,
   // rounds-weighted within the day so a 3-map day isn't averaged flat
@@ -156,6 +238,10 @@ export default function PlayerProfile() {
       ),
     },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
+    {
+      key: 'winPct', label: 'Win%', align: 'right', colorScale: true,
+      format: (v, r) => (r.mapsPlayed ? pct(v, 0) : '—'),
+    },
     { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
     { key: 'avgRating', label: 'R', align: 'right', colorScale: true, format: (v) => rating(v) },
     { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
@@ -186,8 +272,18 @@ export default function PlayerProfile() {
         <div className="w-16 rounded-xl bg-surface2 border border-hairline flex items-center justify-center shrink-0">
           <Flag countryCode={meta.countryCode} countryName={meta.countryName} size={28} />
         </div>
-        <div className="flex flex-col justify-center">
-          <h1 className="font-display text-2xl font-semibold text-ink">{decodedName}</h1>
+        <div className="flex flex-col justify-center gap-1">
+          <div className="flex items-center gap-2.5">
+            <h1 className="font-display text-2xl font-semibold text-ink">{decodedName}</h1>
+            {role && (
+              <span
+                className="text-[11px] font-medium uppercase tracking-wide px-2 py-0.5 rounded bg-surface2 text-muted"
+                title="Inferred from the agents played in the current scope — Valorant has no position field"
+              >
+                {role}
+              </span>
+            )}
+          </div>
           <Link
             to={`/teams/${encodeURIComponent(displayTeam)}`}
             className="text-muted text-sm hover:text-accent-bright w-fit"
@@ -215,6 +311,160 @@ export default function PlayerProfile() {
           Only maps with a Rating 2.0
         </label>
       </FilterPanel>
+
+      {stats && stats.mapsPlayed > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Headline rating + qualitative tier + map record. */}
+          <div className="bg-surface border border-hairline rounded-2xl px-6 py-5 flex flex-col gap-1">
+            <span className="text-muted text-xs font-medium tracking-wide uppercase">
+              Avg Rating 2.0
+            </span>
+            <div className="flex items-baseline gap-2.5 flex-wrap">
+              <span className="font-display text-3xl font-semibold text-ink">
+                {rating(stats.avgRating)}
+              </span>
+              {ratingTier(stats.avgRating) && (
+                <span
+                  className={`text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded ${ratingTier(stats.avgRating).tone}`}
+                >
+                  {ratingTier(stats.avgRating).label}
+                </span>
+              )}
+            </div>
+            <span className="text-muted text-xs">
+              {stats.mapsWon}W – {stats.mapsLost}L · {pct(stats.winPct, 0)} map win rate
+            </span>
+          </div>
+
+          {/* Most-played agent. */}
+          <div className="bg-surface border border-hairline rounded-2xl px-6 py-5 flex flex-col gap-1">
+            <span className="text-muted text-xs font-medium tracking-wide uppercase">
+              Most Played
+            </span>
+            {agentRows.length > 0 ? (
+              <>
+                <div className="flex items-center gap-2.5">
+                  <AgentIcon agent={agentRows[0].agent} size={30} />
+                  <span className="font-display text-2xl font-semibold text-ink">
+                    {agentRows[0].agent}
+                  </span>
+                </div>
+                <span className="text-muted text-xs">
+                  {num(agentRows[0].mapsPlayed)}{' '}
+                  {agentRows[0].mapsPlayed === 1 ? 'map' : 'maps'} ·{' '}
+                  {pct(agentRows[0].winPct, 0)} win rate · {rating(agentRows[0].avgRating)} rating
+                </span>
+              </>
+            ) : (
+              <span className="font-display text-2xl font-semibold text-muted">—</span>
+            )}
+          </div>
+
+          {/* Best series by kills. */}
+          <div className="bg-surface border border-hairline rounded-2xl px-6 py-5 flex flex-col gap-1">
+            <span className="text-muted text-xs font-medium tracking-wide uppercase">
+              Most Kills in a Match
+            </span>
+            {bestKillMatch ? (
+              <>
+                <Link
+                  to={`/matches/${bestKillMatch.id}`}
+                  className="flex items-baseline gap-2.5 hover:text-accent-bright transition-colors w-fit"
+                >
+                  <span className="font-display text-3xl font-semibold text-ink">
+                    {num(bestKillMatch.kills)}
+                  </span>
+                  <span className="text-muted text-xs">
+                    over {bestKillMatch.maps} {bestKillMatch.maps === 1 ? 'map' : 'maps'}
+                  </span>
+                </Link>
+                <span className="text-muted text-xs flex items-center gap-1.5 flex-wrap">
+                  vs <TeamLogo team={bestKillMatch.opponent} size={16} />
+                  {bestKillMatch.agents.length > 0 && (
+                    <span className="flex items-center gap-1">
+                      {/* Keyed by index, not agent name: `ag` is one entry
+                          per MAP of the series, so a player who ran the
+                          same agent on both maps of a 2-0 legitimately
+                          has it twice. */}
+                      · {bestKillMatch.agents.map((a, i) => (
+                        <AgentIcon key={`${a}-${i}`} agent={a} size={16} />
+                      ))}
+                    </span>
+                  )}
+                </span>
+              </>
+            ) : (
+              <span className="font-display text-3xl font-semibold text-muted">—</span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {allMatchRows.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <h3 className="font-display text-sm font-semibold text-ink">Performances</h3>
+          <p className="text-muted text-xs">
+            One bar per match, oldest to newest — bar height and colour are that series'
+            Rating 2.0. Shows {decodedName}'s full history and is not affected by the filters
+            above.
+          </p>
+          <PerformanceStrip
+            matches={allMatchRows}
+            playersByMatch={playersByMatch}
+            playerName={decodedName}
+          />
+        </div>
+      )}
+
+      {comparison && (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <h3 className="font-display text-sm font-semibold text-ink">
+              How {decodedName} compares
+            </h3>
+            {role && (
+              <div className="flex items-center gap-1 text-xs">
+                {[
+                  { id: 'role', label: `${role}s` },
+                  { id: 'all', label: 'All players' },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setPeerMode(opt.id)}
+                    className={`px-2.5 py-1 rounded transition-colors ${
+                      effectivePeerMode === opt.id
+                        ? 'bg-accent/20 text-accent-bright'
+                        : 'bg-surface2 text-muted hover:text-ink'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <p className="text-muted text-xs">
+            Rank and median across every player in the current scope with at least{' '}
+            {num(comparison.minRounds)} rounds
+            {effectivePeerMode === 'role' && role
+              ? `, whose agent pool is mostly ${role}`
+              : ''}
+            . Green means better than the median — for first deaths per round, lower is better.
+            {!comparison.subjectQualified
+              && ` ${decodedName} is under that bar in this scope (${num(stats?.roundsPlayed)} rounds), so treat these ranks as a small sample.`}
+            {!role && ' Role could not be inferred for this player, so this compares against everyone.'}
+            {unclassifiedAgents.length > 0 && (
+              <> Not role-classified: {unclassifiedAgents.join(', ')}.</>
+            )}
+          </p>
+          <ComparisonTable
+            playerName={decodedName}
+            peerLabel={effectivePeerMode === 'role' && role ? `${role}s` : 'All players'}
+            rows={comparison.rows}
+            peerCount={comparison.peerCount}
+          />
+        </div>
+      )}
 
       {agentRows.length > 0 && (
         <div className="flex flex-col gap-2">

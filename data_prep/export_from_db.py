@@ -456,8 +456,15 @@ def main():
     mps_ctx = all_mps.merge(
         all_matches[['match_id', 'event_id', 'stage', 'match_date']], on='match_id', how='left'
     ).merge(
-        am[['match_id', 'map_index', 'rounds_total']], on=['match_id', 'map_index'], how='left'
+        am[['match_id', 'map_index', 'rounds_total', 'winner']], on=['match_id', 'map_index'], how='left'
     )
+    # Did this player's team win this map? `winner` is already canonical
+    # (built from c1/c2 on `am`), so it's compared against canonical_team,
+    # not the raw scraped `team` -- the same raw-vs-canonical trap that
+    # silently dropped rounds in the map_round_results pipeline below.
+    # A drawn/unfinished map has winner=NaN and correctly counts as a
+    # non-win rather than erroring.
+    mps_ctx['won'] = (mps_ctx['canonical_team'] == mps_ctx['winner']).astype(int)
 
     def day_col(series):
         """match_date timestamps -> 'YYYY-MM-DD' strings (NaT -> None)."""
@@ -499,6 +506,19 @@ def main():
             # rare chance a group's rows disagree.
             "t": g['canonical_team'].iloc[0],
             "maps": int(len(g)), "rnd": int(g['rounds_total'].fillna(0).sum()),
+            # Maps won by this player's team. Enables a per-player W-L
+            # record and win rate (the Players/PlayerProfile pages had no
+            # win data at all before this) without a second join on the
+            # client -- a player is on exactly one team per map, so this
+            # is unambiguous at this grain.
+            #
+            # Keyed "wn", NOT "w": "w" is already this bucket's WEEK
+            # string four lines up. A dict literal silently keeps only the
+            # last duplicate key, so calling this "w" would replace every
+            # bucket's week with a win count and break all week/phase
+            # filtering sitewide -- same collision class as the date-vs-
+            # deaths (`d`) note in entityBuckets.expandBuckets.
+            "wn": int(g['won'].sum()),
             "ratS": round(r_sum, 3), "ratR": r_rnd,
             "acsS": round(float(acs_valid.sum()), 2), "acsM": int(len(acs_valid)),
             "kastS": round(k_sum, 4), "kastR": k_rnd,
@@ -538,6 +558,7 @@ def main():
             u_acs = unrated['acs'].dropna()
             row["u"] = {
                 "maps": int(len(unrated)), "rnd": int(unrated['rounds_total'].fillna(0).sum()),
+                "wn": int(unrated['won'].sum()),
                 "acsS": round(float(u_acs.sum()), 2), "acsM": int(len(u_acs)),
                 "kastS": round(wsum(unrated, 'kast')[0], 4), "kastR": wsum(unrated, 'kast')[1],
                 "adrS": round(wsum(unrated, 'adr')[0], 3), "adrR": wsum(unrated, 'adr')[1],
@@ -664,6 +685,9 @@ def main():
         agent_buckets.append({
             "p": player, "ag": agent, "e": int(event_id), "w": week, "d": day,
             "maps": int(len(g)), "rnd": int(g['rounds_total'].fillna(0).sum()),
+            # Maps won on this agent -- keyed "wn" for the same reason as
+            # in player_buckets above ("w" is the week string here too).
+            "wn": int(g['won'].sum()),
             "ratS": round(r_sum, 3), "ratR": r_rnd,
             "acsS": round(float(acs_valid.sum()), 2), "acsM": int(len(acs_valid)),
             "kastS": round(k_sum, 4), "kastR": k_rnd,
@@ -787,6 +811,14 @@ def main():
     # actually need buy-type info (anti-eco, pistol conversion); those
     # remain absent for China since that join has nothing to match there,
     # same as before.
+    # (match_id, map_index) -> {team: 'atk'|'def'}, the side each team
+    # STARTED the map on (round 1's side, before any halftime swap) --
+    # derived from round 1's winner + winner_side rather than a separate
+    # scraped field (there isn't one): whichever team won round 1 was
+    # playing whatever side winner_side says, and since a map only has two
+    # teams, the loser was necessarily on the other side. Feeds the Map
+    # Stats table's "started ATK"/"started DEF" counts on team profiles.
+    start_side = {}
     if len(all_mrr):
         mrr = all_mrr.merge(
             all_matches[['match_id', 'event_id', 'stage', 'match_date', 'c1', 'c2']],
@@ -829,6 +861,15 @@ def main():
             first = grp.iloc[0]
             base = (int(first['event_id']), first['stage'], first['date'])
             teams = [first['c1'], first['c2']]
+
+            round1 = grp[grp['round_num'] == 1]
+            if len(round1) and round1.iloc[0]['winner'] in teams and round1.iloc[0]['winner_side'] in ('t', 'ct'):
+                r1 = round1.iloc[0]
+                w_side = 'atk' if r1['winner_side'] == 't' else 'def'
+                other = teams[1] if r1['winner'] == teams[0] else teams[0]
+                start_side[(int(mid), int(midx))] = {
+                    r1['winner']: w_side, other: ('def' if w_side == 'atk' else 'atk'),
+                }
             score = {teams[0]: 0, teams[1]: 0}
             max_deficit = {teams[0]: 0, teams[1]: 0}
             pistol_winner = None
@@ -957,6 +998,62 @@ def main():
         json.dump({"events": events_lookup, "meta": team_meta, "buckets": team_buckets},
                   f, separators=(',', ':'))
     print(f"team_buckets.json: {len(team_buckets)} buckets")
+
+    # --- per-map team stats (Map Stats table on team profile pages) ---
+    # Same bucket shape/grain as team_buckets (one row per team per event
+    # per week per calendar day), with map name as an extra dimension --
+    # lets a team profile answer "how does this team specifically perform
+    # on Ascent/Bind/etc" client-side, the same sum-then-divide way every
+    # other bucket file works, rather than fetching every one of a team's
+    # individual match files just to re-derive this in the browser.
+    team_map_rows = []
+    for team_col in ('c1', 'c2'):
+        score_col = 'team1_score' if team_col == 'c1' else 'team2_score'
+        opp_score_col = 'team2_score' if team_col == 'c1' else 'team1_score'
+        sub = map_ctx[['match_id', 'map_index', 'event_id', 'stage', team_col, 'map_name',
+                       'winner', score_col, opp_score_col, 'date', 'is_ot',
+                       f'{team_col}_atkW', f'{team_col}_atkP',
+                       f'{team_col}_defW', f'{team_col}_defP']].copy()
+        sub.columns = ['match_id', 'map_index', 'event_id', 'week', 'team', 'map',
+                       'winner', 'roundsWon', 'roundsLost', 'date', 'is_ot',
+                       'atkW', 'atkP', 'defW', 'defP']
+        team_map_rows.append(sub)
+    team_map_long = pd.concat(team_map_rows, ignore_index=True).dropna(subset=['map'])
+
+    tm_agg = {}
+    for row in team_map_long.itertuples():
+        key = (row.team, int(row.event_id), row.week, row.date, row.map)
+        d = tm_agg.setdefault(key, {"mapP": 0, "mapW": 0, "rndW": 0, "rndL": 0,
+                                     "atkW": 0, "atkP": 0, "defW": 0, "defP": 0,
+                                     "otM": 0, "otW": 0, "atkStart": 0, "defStart": 0})
+        d["mapP"] += 1
+        won = row.winner == row.team
+        if won:
+            d["mapW"] += 1
+        d["rndW"] += int(row.roundsWon) if pd.notna(row.roundsWon) else 0
+        d["rndL"] += int(row.roundsLost) if pd.notna(row.roundsLost) else 0
+        for k in ('atkW', 'atkP', 'defW', 'defP'):
+            v = getattr(row, k)
+            d[k] += int(v) if pd.notna(v) else 0
+        if row.is_ot:
+            d["otM"] += 1
+            if won:
+                d["otW"] += 1
+        side = start_side.get((int(row.match_id), int(row.map_index)), {}).get(row.team)
+        if side == 'atk':
+            d["atkStart"] += 1
+        elif side == 'def':
+            d["defStart"] += 1
+
+    team_map_buckets = []
+    for (team, eid, wk, day, mapname), d in tm_agg.items():
+        if team == 'TBD':
+            continue
+        team_map_buckets.append({"t": team, "e": eid, "w": wk, "d": day, "m": mapname, **d})
+
+    with open(f"{OUT}/team_map_buckets.json", "w") as f:
+        json.dump({"events": events_lookup, "buckets": team_map_buckets}, f, separators=(',', ':'))
+    print(f"team_map_buckets.json: {len(team_map_buckets)} buckets")
 
     # --- match + map results ---
     # One row per completed match, with its maps nested. Powers

@@ -4,6 +4,12 @@ import { scaleColor } from '../lib/format'
 /**
  * columns: [{ key, label, format(v), colorScale?: true, colorInvert?: true, align?: 'left'|'right', noPadding?: true }]
  *
+ * summaryRow: an optional extra row (e.g. "Overall"/"All Maps" totals)
+ * pinned above the sortable body -- rendered from the same columns/format
+ * functions but never included in the sort or in a colorScale column's
+ * min/max, since a totals row isn't a value to rank alongside the ones
+ * it's summarizing.
+ *
  * noPadding drops the cell's default px-5 py-2.5 -- for a column whose
  * format() wants to size/pad its own content (e.g. an icon meant to fill
  * the cell) rather than sit inside the standard text padding.
@@ -40,7 +46,7 @@ import { scaleColor } from '../lib/format'
  * previous cell's right/bottom edge, and the outer wrapper's border
  * covers the table's own left/top edge).
  */
-export default function DataTable({ columns, rows, defaultSortKey, defaultSortDir = 'desc' }) {
+export default function DataTable({ columns, rows, defaultSortKey, defaultSortDir = 'desc', summaryRow }) {
   const [sortKey, setSortKey] = useState(defaultSortKey)
   const [sortDir, setSortDir] = useState(defaultSortDir)
 
@@ -120,6 +126,20 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
           </tr>
         </thead>
         <tbody>
+          {summaryRow && (
+            <tr className="bg-surface2/60 font-semibold">
+              {columns.map((col) => (
+                <td
+                  key={col.key}
+                  className={`${col.noPadding ? '' : 'px-5 py-2.5'} font-body text-[13px] whitespace-nowrap align-middle border-r border-b-2 border-hairline ${
+                    col.align === 'right' ? 'text-right' : 'text-left'
+                  } text-ink`}
+                >
+                  {col.format ? col.format(summaryRow[col.key], summaryRow) : summaryRow[col.key] ?? '—'}
+                </td>
+              ))}
+            </tr>
+          )}
           {sorted.map((row, i) => (
             <tr key={i} className="hover:bg-surface/60 transition-colors">
               {columns.map((col) => {

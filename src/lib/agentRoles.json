@@ -1,0 +1,34 @@
+{
+  "Jett": "Duelist",
+  "Phoenix": "Duelist",
+  "Raze": "Duelist",
+  "Reyna": "Duelist",
+  "Yoru": "Duelist",
+  "Neon": "Duelist",
+  "Iso": "Duelist",
+  "Waylay": "Duelist",
+
+  "Sova": "Initiator",
+  "Breach": "Initiator",
+  "Skye": "Initiator",
+  "Kayo": "Initiator",
+  "Fade": "Initiator",
+  "Gekko": "Initiator",
+  "Tejo": "Initiator",
+
+  "Brimstone": "Controller",
+  "Omen": "Controller",
+  "Viper": "Controller",
+  "Astra": "Controller",
+  "Harbor": "Controller",
+  "Clove": "Controller",
+  "Miks": "Controller",
+
+  "Cypher": "Sentinel",
+  "Killjoy": "Sentinel",
+  "Sage": "Sentinel",
+  "Chamber": "Sentinel",
+  "Deadlock": "Sentinel",
+  "Vyse": "Sentinel",
+  "Veto": "Sentinel"
+}

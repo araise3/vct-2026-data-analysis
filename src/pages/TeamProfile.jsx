@@ -4,7 +4,7 @@ import { useData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandBuckets, aggregateTeamBuckets, aggregatePlayerBuckets, groupByEntity,
-  expandMatchRows, groupMatchPlayers,
+  expandMatchRows, groupMatchPlayers, aggregateTeamMapBuckets, summarizeTeamMapStats,
 } from '../lib/entityBuckets'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
@@ -12,6 +12,7 @@ import MatchHistory from '../components/MatchHistory'
 import TeamLogo from '../components/TeamLogo'
 import RosterTable from '../components/RosterTable'
 import RosterTimeline from '../components/RosterTimeline'
+import DataTable from '../components/DataTable'
 import { rating, pct, num } from '../lib/format'
 import TrendChart from '../components/TrendChart'
 
@@ -28,6 +29,7 @@ export default function TeamProfile() {
   const { data: liquipediaData } = useData('liquipedia_rosters')
   const { data: matchData } = useData('match_results')
   const { data: matchPlayerData } = useData('match_players')
+  const { data: teamMapData } = useData('team_map_buckets')
 
   // Scope to this team first, so facet options only show events this
   // team actually played in.
@@ -41,6 +43,37 @@ export default function TeamProfile() {
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
 
   const stats = useMemo(() => aggregateTeamBuckets(filtered), [filtered])
+
+  // Map Stats table -- team_map_buckets.json is scoped/expanded exactly
+  // like team_buckets.json (same event/week/day grain, plus a map name
+  // dimension), so it goes through matchesFilters directly against this
+  // page's active facet selections rather than the useFacetedFilter hook
+  // itself (same pattern MatchHistory's matchRows below uses for a
+  // second, differently-shaped dataset).
+  const mapStats = useMemo(() => {
+    if (!teamMapData) return []
+    const recs = expandBuckets(teamMapData, 't').filter(
+      (r) => r.id === decodedName && matchesFilters(r, FACETS, selections, dateRange)
+    )
+    return aggregateTeamMapBuckets(recs)
+  }, [teamMapData, decodedName, selections, dateRange])
+
+  const mapStatsOverall = useMemo(() => summarizeTeamMapStats(mapStats), [mapStats])
+
+  const mapStatsColumns = useMemo(() => [
+    { key: 'map', label: 'Map', align: 'left' },
+    { key: 'mapsPlayed', label: 'Played', align: 'right', format: (v) => num(v) },
+    { key: 'winPct', label: 'Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'atkWinPct', label: 'ATK Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'defWinPct', label: 'DEF Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'wins', label: 'W', align: 'right', format: (v) => num(v) },
+    { key: 'losses', label: 'L', align: 'right', format: (v) => num(v) },
+    { key: 'roundsWon', label: 'RW', align: 'right', format: (v) => num(v) },
+    { key: 'roundsLost', label: 'RL', align: 'right', format: (v) => num(v) },
+    { key: 'atkStart', label: 'ATK 1st', align: 'right', format: (v) => num(v) },
+    { key: 'defStart', label: 'DEF 1st', align: 'right', format: (v) => num(v) },
+    { key: 'otMaps', label: 'OT', align: 'right', format: (v, row) => (row.otMaps ? `${row.otWon}/${row.otMaps}` : '—') },
+  ], [])
 
   // Round-number win curve. TrendChart plots against dates, so round
   // numbers are mapped onto arbitrary consecutive days purely as an
@@ -193,18 +226,12 @@ export default function TeamProfile() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <KpiCard
               label="Matches"
               value={`${stats.matchesWon}–${stats.matchesPlayed - stats.matchesWon}`}
               sub={pct(stats.matchWinPct)}
             />
-            <KpiCard
-              label="Maps"
-              value={`${stats.mapsWon}–${stats.mapsPlayed - stats.mapsWon}`}
-              sub={pct(stats.mapWinPct)}
-            />
-            <KpiCard label="Rounds Played" value={num(stats.roundsPlayed)} />
             <KpiCard label="Avg Player Rating" value={rating(stats.avgRating)} />
             <KpiCard
               label="Pistol Win%"
@@ -214,21 +241,6 @@ export default function TeamProfile() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KpiCard
-              label="ATK Win%"
-              value={stats.atkRounds ? pct(stats.atkWinPct) : '—'}
-              sub={stats.atkRounds ? `${stats.atkRounds} rounds` : 'No side data'}
-            />
-            <KpiCard
-              label="DEF Win%"
-              value={stats.defRounds ? pct(stats.defWinPct) : '—'}
-              sub={stats.defRounds ? `${stats.defRounds} rounds` : 'No side data'}
-            />
-            <KpiCard
-              label="Overtime"
-              value={stats.otMaps ? `${stats.otWon}/${stats.otMaps}` : '—'}
-              sub={stats.otMaps ? pct(stats.otWinPct) : 'No OT maps'}
-            />
             <KpiCard
               label="Comebacks"
               value={stats.comebackMaps ? `${stats.comebackWon}/${stats.comebackMaps}` : '—'}
@@ -250,6 +262,21 @@ export default function TeamProfile() {
               sub={stats.antiEcoRounds ? `${stats.antiEcoRounds} rounds` : 'No economy data'}
             />
           </div>
+
+          {mapStats.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <h3 className="font-display text-sm font-semibold text-ink">Map Stats</h3>
+              <p className="text-muted text-xs">
+                {decodedName}'s record on every map played in scope.
+              </p>
+              <DataTable
+                columns={mapStatsColumns}
+                rows={mapStats}
+                summaryRow={mapStatsOverall}
+                defaultSortKey="winPct"
+              />
+            </div>
+          )}
 
           <RosterTable team={decodedName} rows={roster} liquipedia={liquipediaData?.teams?.[decodedName]} />
 

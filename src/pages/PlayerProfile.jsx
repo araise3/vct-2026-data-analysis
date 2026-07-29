@@ -99,7 +99,7 @@ export default function PlayerProfile() {
     if (!matchData || !matchPlayerData) return []
     // Which matches this player actually appeared in -- derived from the
     // scoreboard rows rather than from their buckets, so a match can only
-    // show up here if there's a box score to expand into.
+    // list here if there's a box score behind it.
     const mine = new Set()
     for (const r of matchPlayerData.rows) if (r.p === decodedName) mine.add(r.m)
     return expandMatchRows(matchData).filter(
@@ -290,7 +290,6 @@ export default function PlayerProfile() {
             <MatchHistory
               matches={matchRows}
               playersByMatch={playersByMatch}
-              meta={matchPlayerData?.meta}
               perspective={{ type: 'player', name: decodedName }}
             />
           </div>

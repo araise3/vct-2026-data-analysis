@@ -138,7 +138,7 @@ export default function TeamProfile() {
   // Match history, filtered by the same active facets as everything else
   // on the page. Matched on team1/team2 rather than on the scoreboard rows'
   // own team, so a match still lists even if its box score was never
-  // published (the row just expands to an empty-state instead).
+  // published -- its match page then shows the empty-state.
   const playersByMatch = useMemo(() => groupMatchPlayers(matchPlayerData), [matchPlayerData])
   const matchRows = useMemo(() => {
     if (!matchData) return []
@@ -321,7 +321,6 @@ export default function TeamProfile() {
             <MatchHistory
               matches={matchRows}
               playersByMatch={playersByMatch}
-              meta={matchPlayerData?.meta}
               perspective={{ type: 'team', name: decodedName }}
             />
           </div>

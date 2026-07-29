@@ -170,7 +170,6 @@ export default function Tournaments() {
                         <MatchHistory
                           matches={matches}
                           playersByMatch={playersByMatch}
-                          meta={matchPlayerData?.meta}
                           perspective={null}
                           showEvent={false}
                         />

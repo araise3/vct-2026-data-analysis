@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import TeamLogo from './TeamLogo'
-import MatchScoreboard from './MatchScoreboard'
 import { rating, pct, num, eventLabel, roundLabel } from '../lib/format'
 
 /**
@@ -15,10 +14,11 @@ import { rating, pct, num, eventLabel, roundLabel } from '../lib/format'
  *   - null                     -> a neutral "team1 vs team2" row, which is
  *     what the Tournaments page wants since neither side is the subject
  *
- * Every row expands into the full both-teams MatchScoreboard. Scoreboards
- * mount only once expanded -- a team can have ~100 matches in scope and
- * rendering 100 hidden 10-row tables up front is real work for something
- * almost never looked at.
+ * Rows navigate to /matches/:id rather than expanding in place. The full
+ * detail (per-map scoreboards, round-by-round, economy) lives in its own
+ * per-match JSON file and would be a second fetch per row here -- and the
+ * map selector and side toggle need somewhere to live that isn't inside a
+ * table row.
  */
 
 /** Signed difference, colored like VLR's own +/- columns. */
@@ -28,13 +28,11 @@ function Diff({ value }) {
   return <span className={cls}>{value > 0 ? `+${value}` : value}</span>
 }
 
-function Chevron({ open }) {
+/** Right-pointing chevron marking a row as navigable. */
+function GoChevron() {
   return (
-    <svg
-      viewBox="0 0 16 16" width="13" height="13" fill="none"
-      className={`shrink-0 transition-transform duration-150 ${open ? '' : '-rotate-90'}`}
-    >
-      <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6"
+    <svg viewBox="0 0 16 16" width="13" height="13" fill="none" className="shrink-0 inline-block">
+      <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6"
             strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
@@ -76,18 +74,9 @@ function ResultBadge({ won }) {
 }
 
 export default function MatchHistory({
-  matches, playersByMatch, meta, perspective = null, showEvent = true, emptyLabel,
+  matches, playersByMatch, perspective = null, showEvent = true, emptyLabel,
 }) {
-  const [expanded, setExpanded] = useState(() => new Set())
-
-  const toggle = (id) =>
-    setExpanded((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-
+  const navigate = useNavigate()
   const isPlayer = perspective?.type === 'player'
 
   // Newest first. `date` is YYYY-MM-DD so lexicographic ordering is
@@ -125,7 +114,6 @@ export default function MatchHistory({
         : myScore > oppScore
       return {
         match: m,
-        scoreboard,
         myTeam, opponent, myScore, oppScore, won,
         playerStats: isPlayer ? scoreboard.find((r) => r.p === perspective.name) : null,
       }
@@ -139,8 +127,6 @@ export default function MatchHistory({
   }
 
   const statColumns = isPlayer ? PLAYER_STAT_COLUMNS : []
-  // date + event? + result + score + opponent/teams + stats + chevron
-  const colSpan = 4 + (showEvent ? 1 : 0) + statColumns.length + 1
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-hairline">
@@ -172,17 +158,19 @@ export default function MatchHistory({
                 {c.label}
               </th>
             ))}
+            <th className="px-3 py-3 text-left font-medium text-xs uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
+              Maps
+            </th>
             <th className="px-3 py-3 border-b border-hairline" />
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ match: m, scoreboard, myTeam, opponent, myScore, oppScore, won, playerStats }) => {
-            const open = expanded.has(m.id)
-            return [
+          {rows.map(({ match: m, opponent, myScore, oppScore, won, playerStats }) => {
+            return (
               <tr
                 key={m.id}
-                onClick={() => toggle(m.id)}
-                className={`cursor-pointer transition-colors ${open ? 'bg-surface2/50' : 'hover:bg-surface2/30'}`}
+                onClick={() => navigate(`/matches/${m.id}`)}
+                className="cursor-pointer transition-colors hover:bg-surface2/30"
               >
                 <td className="px-4 py-2.5 border-b border-hairline text-muted whitespace-nowrap">
                   {m.date || '—'}
@@ -261,42 +249,27 @@ export default function MatchHistory({
                     {playerStats ? c.render(playerStats) : <span className="text-muted">—</span>}
                   </td>
                 ))}
-                <td className="px-3 py-2.5 border-b border-hairline text-muted text-right">
-                  <Chevron open={open} />
+                {/* Map scores inline -- the row is now a link rather than
+                    an expander, so this is the only place the series shape
+                    (2-0 vs 2-1, which maps) shows without navigating. */}
+                <td className="px-3 py-2.5 border-b border-hairline whitespace-nowrap">
+                  <span className="flex items-center gap-1.5">
+                    {m.maps?.map((mp, i) => (
+                      <span
+                        key={`${mp.map}-${i}`}
+                        className="text-[11px] text-muted/70"
+                        title={`${mp.map} ${mp.s1}–${mp.s2}${mp.ot ? ' (OT)' : ''}`}
+                      >
+                        {mp.s1}<span className="text-muted/40">–</span>{mp.s2}
+                      </span>
+                    ))}
+                  </span>
                 </td>
-              </tr>,
-              open && (
-                <tr key={`${m.id}-detail`}>
-                  <td colSpan={colSpan} className="border-b border-hairline bg-base/40 px-4 py-4">
-                    {/* Map scores for the series, above the box score --
-                        the scoreboard itself is series-aggregate, so
-                        without this there's nothing showing how the maps
-                        actually went. */}
-                    {m.maps?.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {m.maps.map((mp, i) => (
-                          <span
-                            key={`${mp.map}-${i}`}
-                            className="text-xs bg-surface2 border border-hairline rounded-lg px-2.5 py-1 text-muted"
-                          >
-                            <span className="text-ink/90">{mp.map}</span>{' '}
-                            {mp.s1}<span className="text-muted/50">–</span>{mp.s2}
-                            {mp.ot ? <span className="text-accent-bright ml-1">OT</span> : null}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    <MatchScoreboard
-                      rows={scoreboard}
-                      team1={m.team1}
-                      team2={m.team2}
-                      meta={meta}
-                      highlightPlayer={isPlayer ? perspective.name : null}
-                    />
-                  </td>
-                </tr>
-              ),
-            ]
+                <td className="px-3 py-2.5 border-b border-hairline text-muted text-right">
+                  <GoChevron />
+                </td>
+              </tr>
+            )
           })}
         </tbody>
       </table>

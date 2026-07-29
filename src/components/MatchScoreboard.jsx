@@ -34,18 +34,9 @@ export function statsFor(row, side) {
 const BASE_COLUMNS = [
   { key: 'r', label: 'R', render: (s) => rating(s.r) },
   { key: 'acs', label: 'ACS', render: (s) => num(s.acs, 0) },
-  {
-    key: 'kda', label: 'K / D / A',
-    render: (s) => (
-      <span className="whitespace-nowrap">
-        <span className="text-ink">{num(s.k)}</span>
-        <span className="text-muted/50"> / </span>
-        <span className="text-muted">{num(s.d)}</span>
-        <span className="text-muted/50"> / </span>
-        <span className="text-ink/80">{num(s.a)}</span>
-      </span>
-    ),
-  },
+  { key: 'k', label: 'K', render: (s) => num(s.k) },
+  { key: 'd', label: 'D', render: (s) => num(s.d) },
+  { key: 'a', label: 'A', render: (s) => num(s.a) },
   { key: 'kdDiff', label: '+/−', render: (s) => <Diff value={s.k - s.d} /> },
   { key: 'kast', label: 'KAST', render: (s) => pct(s.kast, 0) },
   { key: 'adr', label: 'ADR', render: (s) => num(s.adr, 0) },

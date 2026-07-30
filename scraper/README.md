@@ -133,11 +133,21 @@ them.
 ### Closed-event skip and the late-rating grace period (`--resume` only)
 
 A routine `--resume` run doesn't re-fetch every event every time. An event
-with no upcoming/live matches left, whose last completed match is more than
-`RECHECK_GRACE_DAYS` (7) old, is treated as closed and skipped outright — no
-event-stats, agents, or match-list requests spent on it at all. Cuts a
-routine run from ~45 requests (all 15 events, unconditionally) down to
+with no upcoming/live/**partial** matches left, whose last completed match is
+more than `RECHECK_GRACE_DAYS` (7) old, is treated as closed and skipped
+outright — no event-stats, agents, or match-list requests spent on it at all.
+Cuts a routine run from ~45 requests (all 15 events, unconditionally) down to
 roughly however many events are actually still active — typically 3-5.
+
+Any match sitting at `'partial'` keeps its event open regardless of how old
+the match itself is — found live in production: VLR briefly pulled the
+published box score for a months-old EWC China Qualifier match back to
+"Logs (Soon)", the scraper correctly stored it as `'partial'` (see above),
+but the event-closing check originally only looked at match-status
+`upcoming`/`live` and date recency, not `'partial'` — so on the very next run
+the event would have closed (nothing upcoming, last match ~70 days old) and
+that known-incomplete match would never have been retried. Fixed by adding
+`'partial'` as its own condition, independent of date.
 
 The grace period exists because VLR can take a while to publish Rating 2.0
 (and sometimes ACS) for a match, China region especially — closing an event

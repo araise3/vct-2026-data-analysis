@@ -40,10 +40,14 @@ NOTES
 
 RECHECK / CLOSED-EVENT BEHAVIOR (--resume only)
 ------------------------------------------------
-An event with no live/upcoming matches left and whose last completed match is
-more than RECHECK_GRACE_DAYS (7) old is treated as closed and skipped
-entirely -- no event-stats/agents/match-list requests spent on it. While an
-event is still active (by that same rule), EVERY match under it -- including
+An event with no live/upcoming/partial matches left and whose last completed
+match is more than RECHECK_GRACE_DAYS (7) old is treated as closed and
+skipped entirely -- no event-stats/agents/match-list requests spent on it.
+ANY match sitting at 'partial' keeps the event open regardless of its date --
+found live in production (VLR briefly pulled a months-old EWC China Qualifier
+match's box score back to "Logs (Soon)"; without this, the event would have
+closed on the next run and that known-incomplete match would never have been
+retried). While an event is still active (by either rule), EVERY match under it -- including
 ones from early in a long-running event -- stays eligible for a throttled
 box-score re-check (at most once per RECHECK_THROTTLE_HOURS = 24), because
 VLR can take much longer than a few days to fill in Rating 2.0/ACS for some
@@ -211,19 +215,33 @@ def _parse_dt(s):
 def event_needs_scrape(conn, event_id: int) -> bool:
     """Whether this event is still worth spending requests on at all.
 
-    True if it has never been scraped, has a match still upcoming/live, or
-    its last completed match was within RECHECK_GRACE_DAYS -- VLR can still
-    be filling in data for it (Rating 2.0 has shown up to a few days late,
-    China region especially). Past that with nothing live left, the event's
-    aggregate pages and match list cannot change again, so skipping them
-    entirely loses nothing.
+    True if it has never been scraped, has a match still upcoming/live, has
+    any match sitting at 'partial' (see below), or its last completed match
+    was within RECHECK_GRACE_DAYS -- VLR can still be filling in data for it
+    (Rating 2.0 has shown up to a few days late, China region especially).
+    Past that with nothing live or partial left, the event's aggregate pages
+    and match list cannot change again, so skipping them entirely loses
+    nothing.
+
+    The 'partial' check is its own condition, deliberately not folded into
+    the date check below: a partial match's match_date is fixed at whenever
+    it was actually played, which can be long past RECHECK_GRACE_DAYS (found
+    live -- an EWC China Qualifier match from months back briefly lost its
+    published box score again, VLR-side, and came back with 0 player rows on
+    a rescrape). Date-gating the partial check would let an old event with a
+    known-incomplete match close anyway, permanently stranding it: 'partial'
+    exists specifically to keep something retryable, and status is a
+    stronger signal than age for that one match. This isn't the unbounded
+    "recheck everything forever" that was explicitly ruled out elsewhere --
+    it only keeps polling for matches already flagged as needing another
+    look, not every closed event "just in case".
     """
     cur = conn.cursor()
     cur.execute("SELECT status, match_date FROM matches WHERE event_id = ?", (event_id,))
     rows = cur.fetchall()
     if not rows:
         return True
-    if any(status in ("upcoming", "live") for status, _ in rows):
+    if any(status in ("upcoming", "live", "partial") for status, _ in rows):
         return True
     now = datetime.utcnow()
     for _, match_date in rows:

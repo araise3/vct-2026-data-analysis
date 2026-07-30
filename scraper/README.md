@@ -542,6 +542,44 @@ score parsing pass that already runs for every match (no extra page
 visits). Verified against a real dumped match page: all 5 players on one
 roster correctly came back as Thailand, all 5 on the other as South Korea.
 
+## Historical seasons: `vlr_vct_2025_scraper.py` / `vlr_ewc_2025_scraper.py`
+
+Same code, same schema, same politeness/failure/recheck logic as the current-season
+scrapers above — these are full copies with only the season-specific constants
+changed (event list, default DB filename, env var name, User-Agent string).
+Diffed line-by-line against the current-season files before being committed to
+confirm nothing else drifted.
+
+```bash
+python vlr_vct_2025_scraper.py --resume
+python vlr_ewc_2025_scraper.py --resume
+```
+
+Every event id/slug in `VCT_2025_EVENTS` was confirmed directly against live
+vlr.gg pages, not guessed from the current season's naming pattern — that
+pattern isn't reliable across seasons (2025's China Kickoff uses a
+`champions-tour-` prefix no other 2025 China event does).
+
+**EWC 2025 has a different event structure than the current EWC season, and
+this is a real difference in the source data, not a bug**: 2026 gives each
+qualifier (Americas/EMEA/Pacific/China) its own event id, but 2025 has no
+separate id per qualifier at all. Everything — EMEA Qualifier, Americas
+Qualifier, Pacific x ACL Qualifier, Group Stage, Playoffs — lives under one
+event id (`2449`) as named stages, and the existing match-list fetch
+(`?series_id=all`) already returns all of them in a single page (confirmed
+live: 77 matches spanning all 5 stages, in one request). So
+`EWC_2025_EVENTS` has one entry instead of five. No standalone China
+Qualifier stage was found either — China's berth that year came through a
+path not represented as its own vlr.gg bracket.
+
+These are meant for a one-time historical backfill, not a recurring job: once
+the initial `--resume` run completes, every event will have all-completed
+matches with no upcoming/live ones and a last-match date far outside
+`RECHECK_GRACE_DAYS`, so `event_needs_scrape()` marks everything closed and
+every run after the first costs 0 requests. Not wired into the GitHub Actions
+workflow — that automation exists for keeping a live, in-progress season
+current, which doesn't apply to a season that ended in 2025.
+
 ## Known fragility
 
 VLR.gg's HTML isn't a stable public API — if they redesign the site, the CSS

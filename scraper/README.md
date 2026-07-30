@@ -139,15 +139,21 @@ outright — no event-stats, agents, or match-list requests spent on it at all.
 Cuts a routine run from ~45 requests (all 15 events, unconditionally) down to
 roughly however many events are actually still active — typically 3-5.
 
-Any match sitting at `'partial'` keeps its event open regardless of how old
-the match itself is — found live in production: VLR briefly pulled the
-published box score for a months-old EWC China Qualifier match back to
-"Logs (Soon)", the scraper correctly stored it as `'partial'` (see above),
-but the event-closing check originally only looked at match-status
-`upcoming`/`live` and date recency, not `'partial'` — so on the very next run
-the event would have closed (nothing upcoming, last match ~70 days old) and
-that known-incomplete match would never have been retried. Fixed by adding
-`'partial'` as its own condition, independent of date.
+A match sitting at `'partial'` keeps its event open for `RECHECK_GRACE_DAYS`
+from whenever it *first* went partial (a separate `first_partial_at` column,
+not `match_date`) — found live in production: VLR was showing "Logs (Soon)"
+(0 player rows) for 13 matches in a months-old EWC China Qualifier that the
+scraper correctly stored as `'partial'`. Checking an older local snapshot of
+the same DB showed those 13 matches never had real stats even in the
+earliest available scrape — a probably-permanent VLR-side gap, not a
+transient one. That mattered because the event has zero upcoming/live
+matches, so an earlier version of this check (any `'partial'` keeps the
+event open, no time limit) would have polled it forever chasing data that
+may never arrive. Bounding by `first_partial_at` instead of `match_date`
+keeps the original fix intact (a partial match's real play-date can be
+arbitrarily old and shouldn't matter) while still giving up automatically
+once the chase window is exhausted — the match stays `'partial'` in the DB
+as an honest record, it just stops generating further requests.
 
 The grace period exists because VLR can take a while to publish Rating 2.0
 (and sometimes ACS) for a match, China region especially — closing an event

@@ -216,35 +216,48 @@ def event_needs_scrape(conn, event_id: int) -> bool:
     """Whether this event is still worth spending requests on at all.
 
     True if it has never been scraped, has a match still upcoming/live, has
-    any match sitting at 'partial' (see below), or its last completed match
-    was within RECHECK_GRACE_DAYS -- VLR can still be filling in data for it
-    (Rating 2.0 has shown up to a few days late, China region especially).
-    Past that with nothing live or partial left, the event's aggregate pages
+    a 'partial' match still within its own chase window (see below), or its
+    last completed match was within RECHECK_GRACE_DAYS -- VLR can still be
+    filling in data for it (Rating 2.0 has shown up to a few days late,
+    China region especially). Past all of that, the event's aggregate pages
     and match list cannot change again, so skipping them entirely loses
     nothing.
 
-    The 'partial' check is its own condition, deliberately not folded into
-    the date check below: a partial match's match_date is fixed at whenever
-    it was actually played, which can be long past RECHECK_GRACE_DAYS (found
-    live -- an EWC China Qualifier match from months back briefly lost its
-    published box score again, VLR-side, and came back with 0 player rows on
-    a rescrape). Date-gating the partial check would let an old event with a
-    known-incomplete match close anyway, permanently stranding it: 'partial'
-    exists specifically to keep something retryable, and status is a
-    stronger signal than age for that one match. This isn't the unbounded
-    "recheck everything forever" that was explicitly ruled out elsewhere --
-    it only keeps polling for matches already flagged as needing another
-    look, not every closed event "just in case".
+    A 'partial' match is checked against first_partial_at (when it FIRST went
+    partial), not match_date (when it was played) -- an earlier version of
+    this function had no bound on 'partial' at all, on the assumption that
+    'partial' always means "transient, will resolve given time." Real data
+    proved that assumption wrong: 13 EWC 2026 China Qualifier matches have
+    every stat NULL (rating, acs, kills, everything) in the OLDEST available
+    snapshot too, not just the latest one -- meaning VLR most likely never
+    published a real box score for them, not that it regressed from good to
+    bad. That event has zero upcoming/live matches, so with no bound at all
+    it would have polled forever for data that will never arrive -- exactly
+    the unbounded cost this mechanism exists to prevent. Bounding by
+    first_partial_at (not match_date) still fixes the original problem this
+    condition was added for (a match whose event has long since aged out by
+    date can still be chased for RECHECK_GRACE_DAYS from when the problem was
+    actually noticed), while giving up automatically once that's exhausted --
+    the match stays 'partial' in the DB as an honest record, it just stops
+    generating further requests.
     """
     cur = conn.cursor()
-    cur.execute("SELECT status, match_date FROM matches WHERE event_id = ?", (event_id,))
+    cur.execute("SELECT status, match_date, first_partial_at FROM matches WHERE event_id = ?", (event_id,))
     rows = cur.fetchall()
     if not rows:
         return True
-    if any(status in ("upcoming", "live", "partial") for status, _ in rows):
+    if any(status in ("upcoming", "live") for status, _, _ in rows):
         return True
     now = datetime.utcnow()
-    for _, match_date in rows:
+    for status, match_date, first_partial_at in rows:
+        if status == "partial":
+            fp = _parse_dt(first_partial_at)
+            # No first_partial_at on record (e.g. a DB from before this
+            # column existed) -- treat conservatively as freshly partial
+            # rather than silently never re-checking it.
+            if fp is None or (now - fp) <= timedelta(days=RECHECK_GRACE_DAYS):
+                return True
+            continue
         dt = _parse_dt(match_date)
         if dt and (now - dt) <= timedelta(days=RECHECK_GRACE_DAYS):
             return True
@@ -286,6 +299,10 @@ def init_db(path: str = DB_PATH) -> sqlite3.Connection:
     cur = conn.cursor()
     try:
         cur.execute("ALTER TABLE matches ADD COLUMN last_checked_at TEXT")
+    except sqlite3.OperationalError:
+        pass  # column already exists -- DB was created after this migration
+    try:
+        cur.execute("ALTER TABLE matches ADD COLUMN first_partial_at TEXT")
     except sqlite3.OperationalError:
         pass  # column already exists -- DB was created after this migration
 
@@ -1358,12 +1375,29 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
     if not scrape_ok:
         print(f"  [partial] match {match_id}: stored as 'partial' — will be retried on the next run")
 
+    # first_partial_at marks WHEN this match first went partial, separate from
+    # match_date (when it was played) and last_checked_at (last recheck
+    # attempt) -- it's what bounds how long event_needs_scrape() keeps chasing
+    # it. Preserve the original value across repeat 'partial' results (so the
+    # chase window doesn't quietly reset every recheck); clear it once
+    # resolved, since a 'completed' match has nothing left to bound.
+    cur.execute("SELECT status, first_partial_at FROM matches WHERE match_id = ?", (match_id,))
+    existing = cur.fetchone()
+    if status == "partial":
+        if existing and existing[0] == "partial" and existing[1]:
+            first_partial_at = existing[1]
+        else:
+            first_partial_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        first_partial_at = None
+
     cur.execute(
         """INSERT OR REPLACE INTO matches
-        (match_id, event_id, team1, team2, score1, score2, stage, match_date, match_url, status, last_checked_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
         (match_id, event_id, team1, team2, score1, score2, stage, match_date, match_url, status,
-         datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
+         last_checked_at, first_partial_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (match_id, event_id, team1, team2, score1, score2, stage, match_date, match_url, status,
+         datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), first_partial_at),
     )
     conn.commit()
 

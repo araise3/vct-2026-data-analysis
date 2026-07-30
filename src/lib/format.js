@@ -160,16 +160,15 @@ export function scaleColor(value, min, max) {
 // point regardless of scope, so the domain here is absolute rather than
 // relative to the displayed rows. Real ATK/DEF win rates in this dataset
 // only deviate ~0-9 points from 50 (a near-even coin flip almost always),
-// so a spread anywhere near scaleColor's whole-range assumption left
-// every cell nearly grey -- 8 points is calibrated to that actual spread
-// so a real outlier (a lopsided map) hits full color rather than needing
-// an implausible 50%+65% win rate to do so. Saturation also runs well
-// past scaleColor's own peak (55% vs. 20%) -- this table has only two
-// rows, so leaning on stronger color to carry the signal (rather than
-// position in a big table) reads better here than matching that scale
-// exactly would.
+// so a spread anywhere near scaleColor's whole-range assumption left every
+// cell nearly grey -- 8 points is calibrated to that actual spread so a
+// real outlier (a lopsided map) hits full color rather than needing an
+// implausible 50%+65% win rate to do so. Saturation still runs past
+// scaleColor's own peak (35% vs. 20%) since this table only has two rows
+// to carry the signal, but 55% (tried first) rendered outliers neon-bright
+// rather than just clearly colored -- 35% is the toned-down middle ground.
 const DIVERGE_SPREAD = 0.08
-const DIVERGE_MAX_SAT = 55
+const DIVERGE_MAX_SAT = 35
 export function scaleDivergingColor(value, mid = 0.5) {
   if (value === null || value === undefined || Number.isNaN(value)) return 'transparent'
   const t = Math.max(-1, Math.min(1, (value - mid) / DIVERGE_SPREAD))

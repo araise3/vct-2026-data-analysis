@@ -11,7 +11,7 @@ import DataTable from '../components/DataTable'
 import LeaderCard, { topBy, dynamicQualify } from '../components/LeaderCard'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
-import { pct, num, rating, duration } from '../lib/format'
+import { pct, num, rating, duration, regionAbbr } from '../lib/format'
 
 
 
@@ -139,10 +139,14 @@ export default function Teams() {
         </Link>
       ),
     },
-    { key: 'region', label: 'Region', align: 'left' },
+    // Abbreviated (AMER/CN/APAC, EMEA is already this short) so the column
+    // no longer needs to be sized for "Americas" -- the width it gives up
+    // goes to Rounds below.
+    { key: 'region', label: 'Region', align: 'left', width: 56, format: (v) => regionAbbr(v) },
     { key: 'matchesPlayed', label: 'Matches', align: 'right', format: (v) => num(v) },
-    { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
-    { key: 'roundsPlayed', label: 'RND', align: 'right', format: (v) => num(v) },
+    // Evenly split -- Maps and Rounds share the width Region gave up above.
+    { key: 'mapsPlayed', label: 'Maps', align: 'right', width: 69, format: (v) => num(v) },
+    { key: 'roundsPlayed', label: 'RND', align: 'right', width: 69, format: (v) => num(v) },
     { key: 'matchWinPct', label: 'Match Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'avgRating', label: 'Avg Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
     { key: 'pistolWinPct', label: 'Pistol Win%', align: 'right', colorScale: true, format: (v) => pct(v) },

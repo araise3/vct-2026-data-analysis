@@ -66,6 +66,7 @@ export default function TeamProfile() {
     { key: 'winPct', label: 'Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'atkWinPct', label: 'ATK Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'defWinPct', label: 'DEF Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
+    { key: 'pistolWinPct', label: 'Pistol Win%', align: 'right', colorScale: true, format: (v, row) => (row.pistolRounds ? pct(v) : '—') },
     { key: 'wins', label: 'W', align: 'right', format: (v) => num(v) },
     { key: 'losses', label: 'L', align: 'right', format: (v) => num(v) },
     { key: 'roundsWon', label: 'RW', align: 'right', format: (v) => num(v) },

@@ -63,6 +63,15 @@ export function eventLabel(name) {
     .replace(/\bEmea\b/g, 'EMEA')
 }
 
+// Short codes for the Teams table's Region column -- freeing up column
+// width to give to Rounds. EMEA is already this short, so it passes through
+// unchanged; anything not in the map (shouldn't happen with this dataset's
+// four regions) does too, rather than showing blank.
+const REGION_ABBR = { Americas: 'AMER', China: 'CN', Pacific: 'APAC' }
+export function regionAbbr(region) {
+  return REGION_ABBR[region] ?? region
+}
+
 // A match's `w` is "Phase: Round" ("Playoffs: Grand Final") -- the phase is
 // usually already shown as its own grouping, so this pulls out just the
 // round half. Values with no colon (a bare "Week 2") pass through whole.
@@ -143,4 +152,21 @@ export function scaleColor(value, min, max) {
   }
   const t = Math.max(0, Math.min(1, (value - min) / (max - min)))
   return `hsl(${t * 270}, ${SAT}%, ${LIGHT}%)`
+}
+
+// Green/red diverging scale for a win rate around a fixed 50% midpoint --
+// unlike scaleColor above (which stretches across whatever min/max the
+// current view happens to contain), a win rate has a real, fixed neutral
+// point regardless of scope, so the domain here is absolute (±15 points
+// from 50% reaches full color) rather than relative to the displayed rows.
+// Used for the Agents page's ATK/DEF win-rate table, where "which shade"
+// should mean the same thing (favored vs. unfavored) on every view rather
+// than shifting with whatever maps are in scope.
+const DIVERGE_SPREAD = 0.15
+const DIVERGE_MAX_SAT = 18
+export function scaleDivergingColor(value, mid = 0.5) {
+  if (value === null || value === undefined || Number.isNaN(value)) return 'transparent'
+  const t = Math.max(-1, Math.min(1, (value - mid) / DIVERGE_SPREAD))
+  const hue = t >= 0 ? 120 : 0
+  return `hsl(${hue}, ${Math.abs(t) * DIVERGE_MAX_SAT}%, ${LIGHT}%)`
 }

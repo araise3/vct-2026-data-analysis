@@ -819,6 +819,18 @@ def main():
     # teams, the loser was necessarily on the other side. Feeds the Map
     # Stats table's "started ATK"/"started DEF" counts on team profiles.
     start_side = {}
+    # (team, event_id, week, date, map) -> {pisP, pisW}, the same key shape
+    # tm_agg below uses -- lets the per-map pistol tally merge straight into
+    # team_map_buckets after tm_agg is built, no separate join needed. map
+    # name isn't on `mrr` itself (it's a map_ctx/maps-table column, and mrr
+    # is match_round_results merged with match-level fields only), so it's
+    # looked up per (match_id, map_index) from map_ctx rather than re-merged
+    # onto every round row.
+    map_pistol = {}
+    map_name_lookup = {
+        (int(r.match_id), int(r.map_index)): r.map_name
+        for r in map_ctx[['match_id', 'map_index', 'map_name']].itertuples()
+    }
     if len(all_mrr):
         mrr = all_mrr.merge(
             all_matches[['match_id', 'event_id', 'stage', 'match_date', 'c1', 'c2']],
@@ -861,6 +873,7 @@ def main():
             first = grp.iloc[0]
             base = (int(first['event_id']), first['stage'], first['date'])
             teams = [first['c1'], first['c2']]
+            map_name = map_name_lookup.get((int(mid), int(midx)))
 
             round1 = grp[grp['round_num'] == 1]
             if len(round1) and round1.iloc[0]['winner'] in teams and round1.iloc[0]['winner_side'] in ('t', 'ct'):
@@ -963,6 +976,17 @@ def main():
                         max_deficit[team] = deficit
                 if rn in (1, 13):
                     pistol_winner = winner
+                    # Per-map pistol win% (Map Stats table): both teams
+                    # play every pistol round, so pisP bumps for both,
+                    # pisW only for whichever team won it.
+                    if map_name is not None:
+                        for team in teams:
+                            mp = map_pistol.setdefault(
+                                (team, *base, map_name), {"pisP": 0, "pisW": 0}
+                            )
+                            mp["pisP"] += 1
+                            if team == winner:
+                                mp["pisW"] += 1
                 if rn in (2, 14):
                     bonus_winner = winner if winner == pistol_winner else None
 
@@ -1044,6 +1068,16 @@ def main():
             d["atkStart"] += 1
         elif side == 'def':
             d["defStart"] += 1
+
+    # Merge in the per-map pistol tally computed alongside start_side above
+    # -- same (team, event_id, week, date, map) key tm_agg itself uses, so
+    # this is a plain dict merge rather than a separate join.
+    for key, mp in map_pistol.items():
+        d = tm_agg.setdefault(key, {"mapP": 0, "mapW": 0, "rndW": 0, "rndL": 0,
+                                     "atkW": 0, "atkP": 0, "defW": 0, "defP": 0,
+                                     "otM": 0, "otW": 0, "atkStart": 0, "defStart": 0})
+        d["pisP"] = d.get("pisP", 0) + mp["pisP"]
+        d["pisW"] = d.get("pisW", 0) + mp["pisW"]
 
     team_map_buckets = []
     for (team, eid, wk, day, mapname), d in tm_agg.items():

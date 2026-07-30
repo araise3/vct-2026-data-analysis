@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { scaleColor } from '../lib/format'
+import { scaleColor, scaleDivergingColor } from '../lib/format'
 
 // Browsers treat "/" as a soft line-break opportunity even with no
 // surrounding whitespace (it's in Unicode's "break after" class per
@@ -59,6 +59,11 @@ function noBreakSlash(label) {
  * were being measured against the same fixed scale. Each view's own
  * min/max is what's actually being used.
  *
+ * diverging (paired with colorScale: true) switches a column to
+ * scaleDivergingColor instead -- a fixed green-above/red-below-50% scale
+ * for stats with a real, absolute neutral point (a win rate), rather than
+ * scaleColor's view-relative min/max. No domain is computed for it here.
+ *
  * Deliberately no per-column width/table-layout:fixed: that mode forces
  * every column to split whatever space is left after the sized ones,
  * which kept shrinking (and truncating headers) every time a new column
@@ -98,7 +103,10 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
   const colorRanges = useMemo(() => {
     const ranges = {}
     columns.forEach((col) => {
-      if (col.colorScale) {
+      // diverging columns are colored against a fixed 50% midpoint (see
+      // scaleDivergingColor), not the current view's own min/max, so they
+      // don't need a domain computed here at all.
+      if (col.colorScale && !col.diverging) {
         const values = rows.map((r) => r[col.key]).filter((v) => v !== null && v !== undefined && !Number.isNaN(v))
         ranges[col.key] = values.length ? [Math.min(...values), Math.max(...values)] : [0, 1]
       }
@@ -210,13 +218,15 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
               {columns.map((col) => {
                 const value = row[col.key]
                 const range = col.colorScale && colorRanges[col.key]
-                const bg = range
-                  ? scaleColor(
-                      value,
-                      col.colorInvert ? range[1] : range[0],
-                      col.colorInvert ? range[0] : range[1]
-                    )
-                  : undefined
+                const bg = col.diverging
+                  ? scaleDivergingColor(value)
+                  : range
+                    ? scaleColor(
+                        value,
+                        col.colorInvert ? range[1] : range[0],
+                        col.colorInvert ? range[0] : range[1]
+                      )
+                    : undefined
                 const style = {}
                 if (bg) style.backgroundColor = bg
                 if (col.width) { style.width = col.width; style.minWidth = col.width }

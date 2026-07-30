@@ -328,7 +328,7 @@ export function aggregateTeamMapBuckets(buckets) {
     if (!b.m) continue
     const d = byMap.get(b.m) || {
       mapP: 0, mapW: 0, rndW: 0, rndL: 0, atkW: 0, atkP: 0, defW: 0, defP: 0,
-      otM: 0, otW: 0, atkStart: 0, defStart: 0,
+      otM: 0, otW: 0, atkStart: 0, defStart: 0, pisP: 0, pisW: 0,
     }
     d.mapP += b.mapP || 0
     d.mapW += b.mapW || 0
@@ -342,6 +342,8 @@ export function aggregateTeamMapBuckets(buckets) {
     d.otW += b.otW || 0
     d.atkStart += b.atkStart || 0
     d.defStart += b.defStart || 0
+    d.pisP += b.pisP || 0
+    d.pisW += b.pisW || 0
     byMap.set(b.m, d)
   }
   return [...byMap.entries()]
@@ -363,6 +365,9 @@ export function aggregateTeamMapBuckets(buckets) {
       defRounds: d.defP,
       defWon: d.defW,
       defWinPct: div(d.defW, d.defP),
+      pistolRounds: d.pisP,
+      pistolWon: d.pisW,
+      pistolWinPct: div(d.pisW, d.pisP),
     }))
     .sort((a, b) => b.mapsPlayed - a.mapsPlayed)
 }
@@ -382,6 +387,7 @@ export function summarizeTeamMapStats(mapRows) {
     mapsPlayed: 0, wins: 0, losses: 0, roundsWon: 0, roundsLost: 0,
     atkRounds: 0, atkWon: 0, defRounds: 0, defWon: 0,
     atkStart: 0, defStart: 0, otMaps: 0, otWon: 0,
+    pistolRounds: 0, pistolWon: 0,
   }
   for (const r of mapRows) {
     t.mapsPlayed += r.mapsPlayed
@@ -397,6 +403,8 @@ export function summarizeTeamMapStats(mapRows) {
     t.defStart += r.defStart
     t.otMaps += r.otMaps
     t.otWon += r.otWon
+    t.pistolRounds += r.pistolRounds
+    t.pistolWon += r.pistolWon
   }
   return {
     map: 'Overall',
@@ -410,6 +418,8 @@ export function summarizeTeamMapStats(mapRows) {
     atkWinPct: div(t.atkWon, t.atkRounds),
     defRounds: t.defRounds,
     defWinPct: div(t.defWon, t.defRounds),
+    pistolRounds: t.pistolRounds,
+    pistolWinPct: div(t.pistolWon, t.pistolRounds),
     atkStart: t.atkStart,
     defStart: t.defStart,
     otMaps: t.otMaps,

@@ -74,13 +74,13 @@ export default function Agents() {
           dateRange, setDateRange, dateBounds } =
     useFacetedFilter(buckets, FACETS, { competition: ['VCT'] })
 
-  // Map columns are shared verbatim between the two matrix tables below
-  // (same `matrixColumns` array passed to both), so reordering them applies
-  // to both at once. Triggered by clicking the ATK WIN / DEF WIN row label
-  // itself rather than a separate control -- sorting the two win-rate ROWS
-  // the normal DataTable way is barely useful with only two rows, but
-  // sorting the map COLUMNS by one of those rows' values (best attack map
-  // first, etc.) is the thing that's actually useful for either table.
+  // Reorders only the win-rate table's own map columns (see winRateColumns
+  // below) -- the pick-rate table keeps its own fixed column order
+  // (pickRateColumns) regardless. Triggered by clicking the ATK WIN / DEF
+  // WIN row label itself rather than a separate control -- sorting the two
+  // win-rate ROWS the normal DataTable way is barely useful with only two
+  // rows, but sorting the map COLUMNS by one of those rows' values (best
+  // attack map first, etc.) is the thing that's actually useful here.
   const [mapSort, setMapSort] = useState({ key: null, dir: 'desc' })
 
   function toggleMapSort(key) {
@@ -132,44 +132,68 @@ export default function Agents() {
     })
   }, [scoped, data])
 
-  const mapColumnWidth = 120
+  // Narrow enough that all 12 maps plus the label/Overall columns fit
+  // inside the site's 1160px content column without a horizontal
+  // scrollbar -- there's plenty of room at this width for a percentage
+  // ("100.0%") at the table's own (vlr.gg-matched) 12px font.
+  const mapColumnWidth = 78
 
   if (loading || !data) {
     return <div className="text-muted text-sm">Loading…</div>
   }
 
-  const matrixColumns = [
-    {
-      key: 'label', label: '', align: 'left', noPadding: true,
-      format: (v, row) => {
-        if (row.rowType === 'agent') {
-          return (
-            <span className="flex items-center justify-center">
-              <AgentIcon agent={v} size={26} />
-            </span>
-          )
-        }
-        // ATK WIN / DEF WIN rows: the label itself is the sort trigger for
-        // the map COLUMNS (see mapSort above), so it gets the same arrow
-        // treatment DataTable gives a sortable column header.
-        const active = mapSort.key === row.rowType
+  const labelColumn = {
+    key: 'label', label: '', align: 'left', noPadding: true,
+    format: (v, row) => {
+      if (row.rowType === 'agent') {
         return (
-          <button
-            onClick={() => toggleMapSort(row.rowType)}
-            className={`w-full flex items-center gap-1.5 px-4 py-1.5 text-left text-[11px] font-semibold tracking-wide cursor-pointer select-none transition-colors ${
-              active ? 'text-accent' : 'text-ink hover:text-accent-bright'
-            }`}
-          >
-            {v}
-            <span className={`inline-block w-2.5 text-[10px] leading-none text-accent ${active ? '' : 'invisible'}`}>
-              {mapSort.dir === 'asc' ? '▲' : '▼'}
-            </span>
-          </button>
+          <span className="flex items-center justify-center">
+            <AgentIcon agent={v} size={26} />
+          </span>
         )
-      },
+      }
+      // ATK WIN / DEF WIN rows: the label itself is the sort trigger for
+      // the win-rate table's own map COLUMNS (see mapSort above) -- it does
+      // NOT affect the pick-rate table below, which always keeps maps in
+      // their default order (see pickRateColumns).
+      const active = mapSort.key === row.rowType
+      return (
+        <button
+          onClick={() => toggleMapSort(row.rowType)}
+          className={`w-full flex items-center gap-1 px-3 py-1.5 text-left text-[10px] font-semibold cursor-pointer select-none transition-colors ${
+            active ? 'text-accent' : 'text-ink hover:text-accent-bright'
+          }`}
+        >
+          {v}
+          <span className={`inline-block w-2.5 text-[10px] leading-none text-accent ${active ? '' : 'invisible'}`}>
+            {mapSort.dir === 'asc' ? '▲' : '▼'}
+          </span>
+        </button>
+      )
     },
-    { key: 'overall', label: 'Overall', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : pct(v, 1)) },
+  }
+
+  // Win rates get the green/red diverging scale (a real, fixed 50% neutral
+  // point -- "favored" vs. "unfavored" should mean the same shade on every
+  // view), not the pick-rate table's violet-red heatmap below (pick rate
+  // has no such neutral point to diverge around).
+  const winRateColumns = [
+    labelColumn,
+    { key: 'overall', label: 'Overall', align: 'right', colorScale: true, diverging: true, format: (v) => (v == null ? '—' : pct(v, 1)) },
     ...orderedMapNames.map((m) => ({
+      key: m, label: m, align: 'right', colorScale: true, diverging: true, width: mapColumnWidth,
+      format: (v) => (v === null || v === undefined ? '—' : pct(v, 1)),
+    })),
+  ]
+
+  // Always in data.mapNames' own order -- NOT orderedMapNames, which only
+  // the win-rate table's ATK WIN/DEF WIN buttons above control. The two
+  // tables used to share one column order (clicking a button up there
+  // silently reordered this table too); this is what decouples them.
+  const pickRateColumns = [
+    labelColumn,
+    { key: 'overall', label: 'Overall', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : pct(v, 1)) },
+    ...data.mapNames.map((m) => ({
       key: m, label: m, align: 'right', colorScale: true, width: mapColumnWidth,
       format: (v) => (v === null || v === undefined ? '—' : pct(v, 1)),
     })),
@@ -208,10 +232,9 @@ export default function Agents() {
             <h3 className="font-display text-sm font-semibold text-ink">Map win rates (attack vs. defense)</h3>
             <p className="text-muted text-xs">
               Round-weighted, not a naive average across buckets. Reflects the filters above. Click
-              ATK WIN or DEF WIN to sort maps by that rate — the order also applies to the pick
-              rate table below.
+              ATK WIN or DEF WIN to sort maps by that rate.
             </p>
-            <DataTable columns={matrixColumns} rows={winRateRows} />
+            <DataTable columns={winRateColumns} rows={winRateRows} />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -219,7 +242,7 @@ export default function Agents() {
             <p className="text-muted text-xs">
               Reflects the filters above — sorted by overall pick rate in scope.
             </p>
-            <DataTable columns={matrixColumns} rows={matrixRows} defaultSortKey="overall" />
+            <DataTable columns={pickRateColumns} rows={matrixRows} defaultSortKey="overall" />
           </div>
         </>
       )}

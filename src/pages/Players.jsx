@@ -206,7 +206,10 @@ export default function Players() {
     },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
     { key: 'roundsPlayed', label: 'RND', align: 'right', format: (v) => num(v) },
-    { key: 'avgRating', label: 'R', align: 'right', colorScale: true, format: (v) => rating(v) },
+    // Widened by exactly what Econ below gives up, rather than each sizing
+    // independently -- Rating is the headline stat here and Econ's own
+    // label/data need far less room.
+    { key: 'avgRating', label: 'R', align: 'right', colorScale: true, width: 73, format: (v) => rating(v) },
     { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
     { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },
     { key: 'avgKast', label: 'KAST', align: 'right', colorScale: true, format: (v) => pct(v) },
@@ -222,7 +225,7 @@ export default function Players() {
     { key: 'avgHsPct', label: 'HS%', align: 'right', colorScale: true, format: (v) => pct(v) },
     // Econ isn't a VLR column -- it's ours, placed right after the VLR
     // block rather than mixed into it.
-    { key: 'avgEcon', label: 'Econ', align: 'right', colorScale: true, format: (v, r) => (r.utilMaps ? Math.round(v) : '—') },
+    { key: 'avgEcon', label: 'Econ', align: 'right', colorScale: true, width: 55, format: (v, r) => (r.utilMaps ? Math.round(v) : '—') },
   ]
 
   return (

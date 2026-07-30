@@ -264,7 +264,7 @@ export default function MatchHistory({
                     {m.maps?.map((mp, i) => (
                       <span
                         key={`${mp.map}-${i}`}
-                        className="text-[11px] text-muted/70"
+                        className="text-[11px] text-muted/80 bg-surface2 rounded-full px-1.5 py-0.5 leading-none whitespace-nowrap"
                         title={`${mp.map} ${mp.s1}–${mp.s2}${mp.ot ? ' (OT)' : ''}`}
                       >
                         {mp.s1}<span className="text-muted/40">–</span>{mp.s2}

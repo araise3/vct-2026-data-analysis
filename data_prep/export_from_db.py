@@ -739,7 +739,24 @@ def main():
     print(f"player_agents.json: {len(agent_buckets)} buckets")
 
     # --- teams ---
-    completed_all = all_matches[all_matches['status'] == 'completed']
+    # A 'partial' match has a real final score (matches.score1/score2) even
+    # though its per-player box score never got captured -- that score is
+    # trustworthy (captured independently of the box score, before it's even
+    # attempted), so match win/loss and match history should count it. Round-
+    # level stats derived elsewhere (rnd/atk/def/pistol/etc.) are deliberately
+    # NOT widened the same way -- see map_long_completed / team_map_long_completed
+    # / the mrr filter below -- since there's no reviewed round-by-round data
+    # backing those for a match whose box score was never reviewed.
+    # score1/score2 non-null is checked explicitly, not just status: 'partial'
+    # matches, unlike 'completed' ones, aren't guaranteed to have a score (the
+    # rare case where even the match header failed to parse) -- and an
+    # unguarded score1 > score2 comparison elsewhere (line ~778, ~1141) would
+    # silently score a NaN-vs-NaN comparison as a loss for both teams rather
+    # than skipping the row, which this null check prevents at the source.
+    scored_matches = all_matches[
+        all_matches['status'].isin(['completed', 'partial'])
+        & all_matches['score1'].notna() & all_matches['score2'].notna()
+    ]
     team_buckets = []
     map_ctx = am.dropna(subset=['winner']).merge(
         all_matches[['match_id', 'match_date']], on='match_id', how='left'
@@ -773,7 +790,7 @@ def main():
 
     team_rows = []
     for team_col, opp_col in (('c1', 'c2'), ('c2', 'c1')):
-        sub = completed_all[['event_id', 'stage', team_col, 'score1', 'score2', 'match_date']].copy()
+        sub = scored_matches[['event_id', 'stage', team_col, 'score1', 'score2', 'match_date']].copy()
         sub.columns = ['event_id', 'week', 'team', 's1', 's2', 'match_date']
         sub['won'] = (sub['s1'] > sub['s2']) if team_col == 'c1' else (sub['s2'] > sub['s1'])
         team_rows.append(sub[['event_id', 'week', 'team', 'won', 'match_date']])
@@ -783,11 +800,11 @@ def main():
     map_rows = []
     for team_col in ('c1', 'c2'):
         sub = map_ctx[['event_id', 'stage', team_col, 'winner', 'rounds_total',
-                       'duration_seconds', 'date', 'is_ot',
+                       'duration_seconds', 'date', 'is_ot', 'status',
                        f'{team_col}_atkW', f'{team_col}_atkP',
                        f'{team_col}_defW', f'{team_col}_defP']].copy()
         sub.columns = ['event_id', 'week', 'team', 'winner', 'rounds_total',
-                       'duration_seconds', 'date', 'is_ot',
+                       'duration_seconds', 'date', 'is_ot', 'status',
                        'atkW', 'atkP', 'defW', 'defP']
         map_rows.append(sub)
     map_long = pd.concat(map_rows, ignore_index=True)
@@ -802,6 +819,14 @@ def main():
         d = agg.setdefault((team, int(eid), wk, day), {})
         d["mapP"] = int(len(g))
         d["mapW"] = int((g['winner'] == team).sum())
+    # Round/duration/side/OT counts are restricted to 'completed' maps only --
+    # a 'partial' match's map score is trustworthy (used for mapP/mapW above),
+    # but there's no reviewed round-by-round data backing these more granular
+    # stats, so they're deliberately not widened the same way scored_matches
+    # was above.
+    map_long_completed = map_long[map_long['status'] == 'completed']
+    for (team, eid, wk, day), g in map_long_completed.groupby(['team', 'event_id', 'week', 'date'], dropna=True):
+        d = agg.setdefault((team, int(eid), wk, day), {})
         d["rnd"] = int(g['rounds_total'].fillna(0).sum())
         # durM is how many of this bucket's maps actually have a known
         # duration (partial coverage -- only re-scraped matches carry it),
@@ -869,11 +894,18 @@ def main():
     }
     if len(all_mrr):
         mrr = all_mrr.merge(
-            all_matches[['match_id', 'event_id', 'stage', 'match_date', 'c1', 'c2']],
+            all_matches[['match_id', 'event_id', 'stage', 'match_date', 'c1', 'c2', 'status']],
             on='match_id', how='left'
         )
         mrr['date'] = day_col(mrr['match_date'])
         mrr = mrr.dropna(subset=['c1', 'c2', 'event_id'])
+        # Round-level detail (win-condition breakdown, anti-eco/bonus/comeback
+        # counts, per-round win curve, pistol tally, starting side) is
+        # restricted to 'completed' matches only -- same reasoning as
+        # map_long_completed/team_map_long_completed above. This one filter
+        # cascades to round_agg, map_pistol, and start_side all at once, since
+        # all three are built by iterating grouped mrr rows below.
+        mrr = mrr[mrr['status'] == 'completed']
         mrr = mrr.sort_values(['match_id', 'map_index', 'round_num'])
         # `winner` is the RAW scraped team name (never canonicalized at
         # scrape time), but `teams` below is built from c1/c2 (canonical).
@@ -1066,16 +1098,20 @@ def main():
     # on Ascent/Bind/etc" client-side, the same sum-then-divide way every
     # other bucket file works, rather than fetching every one of a team's
     # individual match files just to re-derive this in the browser.
+    DEFAULT_TM = {"mapP": 0, "mapW": 0, "rndW": 0, "rndL": 0,
+                  "atkW": 0, "atkP": 0, "defW": 0, "defP": 0,
+                  "otM": 0, "otW": 0, "atkStart": 0, "defStart": 0}
+
     team_map_rows = []
     for team_col in ('c1', 'c2'):
         score_col = 'team1_score' if team_col == 'c1' else 'team2_score'
         opp_score_col = 'team2_score' if team_col == 'c1' else 'team1_score'
         sub = map_ctx[['match_id', 'map_index', 'event_id', 'stage', team_col, 'map_name',
-                       'winner', score_col, opp_score_col, 'date', 'is_ot',
+                       'winner', score_col, opp_score_col, 'date', 'is_ot', 'status',
                        f'{team_col}_atkW', f'{team_col}_atkP',
                        f'{team_col}_defW', f'{team_col}_defP']].copy()
         sub.columns = ['match_id', 'map_index', 'event_id', 'week', 'team', 'map',
-                       'winner', 'roundsWon', 'roundsLost', 'date', 'is_ot',
+                       'winner', 'roundsWon', 'roundsLost', 'date', 'is_ot', 'status',
                        'atkW', 'atkP', 'defW', 'defP']
         team_map_rows.append(sub)
     team_map_long = pd.concat(team_map_rows, ignore_index=True).dropna(subset=['map'])
@@ -1083,13 +1119,21 @@ def main():
     tm_agg = {}
     for row in team_map_long.itertuples():
         key = (row.team, int(row.event_id), row.week, row.date, row.map)
-        d = tm_agg.setdefault(key, {"mapP": 0, "mapW": 0, "rndW": 0, "rndL": 0,
-                                     "atkW": 0, "atkP": 0, "defW": 0, "defP": 0,
-                                     "otM": 0, "otW": 0, "atkStart": 0, "defStart": 0})
+        d = tm_agg.setdefault(key, dict(DEFAULT_TM))
         d["mapP"] += 1
-        won = row.winner == row.team
-        if won:
+        if row.winner == row.team:
             d["mapW"] += 1
+
+    # Round W/L, ATK/DEF split, OT, and starting side are restricted to
+    # 'completed' maps only -- same reasoning as map_long_completed above:
+    # mapP/mapW just needs a trustworthy map score (already true for
+    # 'partial'), but these more granular stats need reviewed round-by-round
+    # data that a 'partial' match's box score never produced.
+    team_map_long_completed = team_map_long[team_map_long['status'] == 'completed']
+    for row in team_map_long_completed.itertuples():
+        key = (row.team, int(row.event_id), row.week, row.date, row.map)
+        d = tm_agg.setdefault(key, dict(DEFAULT_TM))
+        won = row.winner == row.team
         d["rndW"] += int(row.roundsWon) if pd.notna(row.roundsWon) else 0
         d["rndL"] += int(row.roundsLost) if pd.notna(row.roundsLost) else 0
         for k in ('atkW', 'atkP', 'defW', 'defP'):
@@ -1107,11 +1151,11 @@ def main():
 
     # Merge in the per-map pistol tally computed alongside start_side above
     # -- same (team, event_id, week, date, map) key tm_agg itself uses, so
-    # this is a plain dict merge rather than a separate join.
+    # this is a plain dict merge rather than a separate join. (map_pistol
+    # itself is already restricted to 'completed' matches -- see the mrr
+    # filter above where it's built.)
     for key, mp in map_pistol.items():
-        d = tm_agg.setdefault(key, {"mapP": 0, "mapW": 0, "rndW": 0, "rndL": 0,
-                                     "atkW": 0, "atkP": 0, "defW": 0, "defP": 0,
-                                     "otM": 0, "otW": 0, "atkStart": 0, "defStart": 0})
+        d = tm_agg.setdefault(key, dict(DEFAULT_TM))
         d["pisP"] = d.get("pisP", 0) + mp["pisP"]
         d["pisW"] = d.get("pisW", 0) + mp["pisW"]
 
@@ -1137,7 +1181,7 @@ def main():
     # worse season record beat one with a better record. Documented on the
     # page itself so it isn't mistaken for a real ranking upset.
     team_record = {}
-    for row in completed_all.itertuples():
+    for row in scored_matches.itertuples():
         for t, won in ((row.c1, row.score1 > row.score2), (row.c2, row.score2 > row.score1)):
             rec = team_record.setdefault(t, [0, 0])
             rec[0] += 1
@@ -1175,7 +1219,7 @@ def main():
             top_scorer_by_match[int(r.match_id)] = (r.player, r.canonical_team, int(r.kills))
 
     match_rows = []
-    for row in completed_all.itertuples():
+    for row in scored_matches.itertuples():
         if row.c1 == 'TBD' or row.c2 == 'TBD':
             continue
         s1 = int(row.score1) if pd.notna(row.score1) else None
@@ -1417,7 +1461,7 @@ def main():
         matches_tagged[['match_id', 'event_stage', 'event_name', 'event_region', 'phase', 'stage']], on='match_id', how='left'
     )
     maps_named = maps_df.merge(
-        matches_tagged[['match_id', 'event_stage', 'event_name', 'event_region', 'phase', 'stage']], on='match_id', how='left'
+        matches_tagged[['match_id', 'event_stage', 'event_name', 'event_region', 'phase', 'stage', 'status']], on='match_id', how='left'
     )
     players_long = players_long.merge(
         maps_named[['match_id', 'map_index', 'map_name']], on=['match_id', 'map_index'], how='left'
@@ -1430,6 +1474,12 @@ def main():
     maps_long = maps_named.dropna(subset=['winner']).copy()
     maps_long['atk_win_rounds'] = maps_long['team1_atk_score'].fillna(0) + maps_long['team2_atk_score'].fillna(0)
     maps_long['def_win_rounds'] = maps_long['team1_def_score'].fillna(0) + maps_long['team2_def_score'].fillna(0)
+    # Round counts (rounds/atkWinRounds/defWinRounds) are restricted to
+    # 'completed' matches only -- same reasoning as team_buckets'
+    # map_long_completed above. maps_long itself stays unfiltered so a map
+    # doesn't disappear from mapNames (the dropdown/matrix list) just because
+    # its only coverage in some scope happens to be partial-only.
+    maps_long_completed = maps_long[maps_long['status'] == 'completed']
 
     # Raw, granular buckets -- one per (region, event, stage, phase, week)
     # combination -- carrying counts, not pre-computed percentages. The
@@ -1442,10 +1492,10 @@ def main():
     group_cols = ['competition', 'event_region', 'event_name', 'event_stage', 'phase', 'stage']
     for (competition, region, event_name, event_stage, phase, week), g in players_long.groupby(group_cols, dropna=True):
         agent_counts = g['agent'].value_counts().to_dict()
-        map_g = maps_long[
-            (maps_long.event_region == region) & (maps_long.event_name == event_name) &
-            (maps_long.event_stage == event_stage) &
-            (maps_long.phase == phase) & (maps_long.stage == week)
+        map_g = maps_long_completed[
+            (maps_long_completed.event_region == region) & (maps_long_completed.event_name == event_name) &
+            (maps_long_completed.event_stage == event_stage) &
+            (maps_long_completed.phase == phase) & (maps_long_completed.stage == week)
         ]
         map_stats = {}
         for map_name, mg in map_g.groupby('map_name'):

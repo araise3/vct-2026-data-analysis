@@ -157,13 +157,19 @@ export function scaleColor(value, min, max) {
 // Green/red diverging scale for a win rate around a fixed 50% midpoint --
 // unlike scaleColor above (which stretches across whatever min/max the
 // current view happens to contain), a win rate has a real, fixed neutral
-// point regardless of scope, so the domain here is absolute (±15 points
-// from 50% reaches full color) rather than relative to the displayed rows.
-// Used for the Agents page's ATK/DEF win-rate table, where "which shade"
-// should mean the same thing (favored vs. unfavored) on every view rather
-// than shifting with whatever maps are in scope.
-const DIVERGE_SPREAD = 0.15
-const DIVERGE_MAX_SAT = 18
+// point regardless of scope, so the domain here is absolute rather than
+// relative to the displayed rows. Real ATK/DEF win rates in this dataset
+// only deviate ~0-9 points from 50 (a near-even coin flip almost always),
+// so a spread anywhere near scaleColor's whole-range assumption left
+// every cell nearly grey -- 8 points is calibrated to that actual spread
+// so a real outlier (a lopsided map) hits full color rather than needing
+// an implausible 50%+65% win rate to do so. Saturation also runs well
+// past scaleColor's own peak (55% vs. 20%) -- this table has only two
+// rows, so leaning on stronger color to carry the signal (rather than
+// position in a big table) reads better here than matching that scale
+// exactly would.
+const DIVERGE_SPREAD = 0.08
+const DIVERGE_MAX_SAT = 55
 export function scaleDivergingColor(value, mid = 0.5) {
   if (value === null || value === undefined || Number.isNaN(value)) return 'transparent'
   const t = Math.max(-1, Math.min(1, (value - mid) / DIVERGE_SPREAD))

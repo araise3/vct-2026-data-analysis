@@ -258,13 +258,17 @@ export default function MatchHistory({
                 ))}
                 {/* Map scores inline -- the row leaves the site entirely
                     now, so this is the only place the series shape (2-0 vs
-                    2-1, which maps) shows without a round trip to VLR. */}
+                    2-1, which maps) shows without a round trip to VLR.
+                    Each pill is a fixed width (rather than sized to its own
+                    "7–13" vs "13–5" text), so the 2nd/3rd map's pill lines
+                    up at the same x position row to row instead of drifting
+                    with whatever digit count that particular score has. */}
                 <td className="px-3 py-1.5 border-b border-hairline whitespace-nowrap">
                   <span className="flex items-center gap-1.5">
                     {m.maps?.map((mp, i) => (
                       <span
                         key={`${mp.map}-${i}`}
-                        className="text-[11px] text-muted/80 bg-surface2 rounded-full px-1.5 py-0.5 leading-none whitespace-nowrap"
+                        className="text-[11px] text-muted/80 bg-surface2 rounded-full px-1.5 py-0.5 leading-none whitespace-nowrap w-11 text-center"
                         title={`${mp.map} ${mp.s1}–${mp.s2}${mp.ot ? ' (OT)' : ''}`}
                       >
                         {mp.s1}<span className="text-muted/40">–</span>{mp.s2}

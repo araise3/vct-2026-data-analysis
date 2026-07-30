@@ -1,6 +1,18 @@
 import { useMemo, useState } from 'react'
 import { scaleColor } from '../lib/format'
 
+// Browsers treat "/" as a soft line-break opportunity even with no
+// surrounding whitespace (it's in Unicode's "break after" class per
+// UAX#14), so a short label like "K/D" can wrap into "K/" + "D" once
+// wrapping headers made column widths hug their data rather than their
+// header text. Word-joiners (U+2060) on both sides of the slash forbid a
+// break there specifically, while leaving genuine word-break opportunities
+// (spaces, e.g. "Match Win%") untouched.
+const WORD_JOINER = '⁠'
+function noBreakSlash(label) {
+  return typeof label === 'string' ? label.replace(/\//g, `${WORD_JOINER}/${WORD_JOINER}`) : label
+}
+
 /**
  * columns: [{ key, label, format(v), colorScale?: true, colorInvert?: true, align?: 'left'|'right', noPadding?: true }]
  *
@@ -43,6 +55,19 @@ import { scaleColor } from '../lib/format'
  * itself to its own content and can never truncate; the wrapping
  * overflow-auto div handles horizontal scroll if the whole table is
  * wider than the viewport, which is normal for a many-column stats table.
+ *
+ * Header cells wrap (`whitespace-normal`, not `-nowrap`) while data cells
+ * stay `whitespace-nowrap` -- a header label like "MATCH WIN%" or "PISTOL
+ * WIN%" is routinely wider than the data underneath it ("75.0%"), and
+ * under table-layout:auto an unbreakable header was what forced the whole
+ * column that wide, not the data. Letting the header wrap onto two lines
+ * means the column settles to whatever the (non-wrapping) data actually
+ * needs, which is what makes a table like Teams or Players fit inside
+ * rft.gg's 1152px content column instead of needing its own horizontal
+ * scrollbar. The label span itself needs `min-w-0` -- flex items default
+ * to `min-width: auto`, which refuses to shrink below the text's own
+ * unwrapped width and would silently cancel the wrap (see App.jsx's
+ * comment on the same flex/min-width gotcha).
  *
  * border-separate (not border-collapse) on the table: border-collapse
  * doesn't reliably merge borders across a position:sticky boundary in
@@ -102,7 +127,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                 key={col.key}
                 onClick={() => toggleSort(col.key)}
                 style={col.width ? { width: col.width, minWidth: col.width } : undefined}
-                className={`${col.noPadding ? 'px-1.5' : 'px-4'} py-2 font-medium text-[11px] uppercase tracking-wide cursor-pointer select-none whitespace-nowrap transition-colors align-middle border-r border-b border-hairline ${
+                className={`${col.noPadding ? 'px-1.5' : 'px-4'} py-2 font-medium text-[11px] uppercase tracking-wide cursor-pointer select-none whitespace-normal transition-colors align-middle border-r border-b border-hairline ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 } ${sortKey === col.key ? 'text-accent' : 'text-muted hover:text-ink'}`}
               >
@@ -119,16 +144,30 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                   only on the active column, which grew that column on
                   click; reserving it on every column from the start,
                   uniformly, is what avoids that.)
+
+                  justify-end, combined with flex-row-reverse: this span is
+                  `w-full` (needed so the label has a bounded width to wrap
+                  against, see the wrapping note above), so its own
+                  positioning within that full-width box no longer follows
+                  the th's text-align the way a shrink-wrapped inline-flex
+                  used to -- it has to be placed explicitly. flex-end packs
+                  the label+arrow group at the main-end, and flex-row-reverse
+                  itself flips which physical edge "main-end" is: for a
+                  normal row that's the right edge (correct for a
+                  right-aligned numeric column), and for row-reverse it's
+                  the left edge (correct for a left-aligned column like
+                  Player/Team) -- so the same justify-end works for both
+                  branches below.
                 */}
-                <span className={`inline-flex items-center gap-1 align-middle ${col.align === 'right' ? '' : 'flex-row-reverse'}`}>
+                <span className={`flex w-full items-center justify-end gap-1 align-middle ${col.align === 'right' ? '' : 'flex-row-reverse'}`}>
                   <span
-                    className={`inline-block w-2.5 text-[10px] leading-none text-accent ${
+                    className={`inline-block w-2.5 shrink-0 text-[10px] leading-none text-accent ${
                       sortKey === col.key ? '' : 'invisible'
                     }`}
                   >
                     {sortDir === 'asc' ? '▲' : '▼'}
                   </span>
-                  {col.label}
+                  <span className="min-w-0 leading-tight">{noBreakSlash(col.label)}</span>
                 </span>
               </th>
             ))}

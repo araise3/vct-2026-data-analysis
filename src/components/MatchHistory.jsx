@@ -129,38 +129,46 @@ export default function MatchHistory({
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-hairline">
-      <table className="w-full border-separate border-spacing-0 text-[13px]">
+      <table className="w-full border-separate border-spacing-0 text-[12px]">
         <thead>
           <tr className="bg-surface2">
-            <th className="px-4 py-3 text-left font-medium text-xs uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
+            <th className="px-4 py-2 text-left font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
               Date
             </th>
             {showEvent && (
-              <th className="px-4 py-3 text-left font-medium text-xs uppercase tracking-wide text-muted border-b border-hairline">
+              <th className="px-4 py-2 text-left font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline">
                 Event
               </th>
             )}
-            <th className="px-4 py-3 text-left font-medium text-xs uppercase tracking-wide text-muted border-b border-hairline">
+            {/* whitespace-nowrap here (and on the matching data cell below)
+                is load-bearing, not decorative -- without it, round labels
+                longer than one short word ("Grand Final", "Upper
+                Semifinals") wrap onto 2 lines while every other column
+                in the row stays single-line, which grew that one row to
+                60px against the table's normal 41px and made the whole
+                table read as misaligned row-to-row rather than just one
+                wide column. */}
+            <th className="px-4 py-2 text-left font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
               {perspective ? 'Round' : 'Match'}
             </th>
-            <th className="px-2 py-3 text-center font-medium text-xs uppercase tracking-wide text-muted border-b border-hairline">
+            <th className="px-2 py-2 text-center font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline">
               {perspective ? '' : 'Round'}
             </th>
-            <th className="px-4 py-3 text-center font-medium text-xs uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
+            <th className="px-4 py-2 text-center font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
               Score
             </th>
             {statColumns.map((c) => (
               <th
                 key={c.key}
-                className="px-3 py-3 text-right font-medium text-xs uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap"
+                className="px-3 py-2 text-right font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap"
               >
                 {c.label}
               </th>
             ))}
-            <th className="px-3 py-3 text-left font-medium text-xs uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
+            <th className="px-3 py-2 text-left font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
               Maps
             </th>
-            <th className="px-3 py-3 border-b border-hairline" />
+            <th className="px-3 py-2 border-b border-hairline" />
           </tr>
         </thead>
         <tbody>
@@ -171,15 +179,15 @@ export default function MatchHistory({
                 onClick={() => window.open(vlrMatchUrl(m.id), '_blank', 'noopener,noreferrer')}
                 className="cursor-pointer transition-colors hover:bg-surface2/30"
               >
-                <td className="px-4 py-2.5 border-b border-hairline text-muted whitespace-nowrap">
+                <td className="px-4 py-1.5 border-b border-hairline text-muted whitespace-nowrap">
                   {m.date || '—'}
                 </td>
                 {showEvent && (
-                  <td className="px-4 py-2.5 border-b border-hairline text-ink/80">
+                  <td className="px-4 py-1.5 border-b border-hairline text-ink/80">
                     <span className="truncate block max-w-[220px]">{eventLabel(m.event)}</span>
                   </td>
                 )}
-                <td className="px-4 py-2.5 border-b border-hairline">
+                <td className="px-4 py-1.5 border-b border-hairline whitespace-nowrap">
                   {perspective ? (
                     <span className="text-muted text-xs">{roundLabel(m.w)}</span>
                   ) : (
@@ -209,12 +217,12 @@ export default function MatchHistory({
                     </div>
                   )}
                 </td>
-                <td className="px-2 py-2.5 border-b border-hairline text-center">
+                <td className="px-2 py-1.5 border-b border-hairline text-center">
                   {perspective ? <ResultBadge won={won} /> : (
                     <span className="text-muted text-xs whitespace-nowrap">{roundLabel(m.w)}</span>
                   )}
                 </td>
-                <td className="px-4 py-2.5 border-b border-hairline text-center whitespace-nowrap">
+                <td className="px-4 py-1.5 border-b border-hairline text-center whitespace-nowrap">
                   {perspective ? (
                     <span className="flex items-center justify-center gap-2">
                       <span className={won ? 'text-ink font-medium' : 'text-muted'}>
@@ -243,7 +251,7 @@ export default function MatchHistory({
                 {statColumns.map((c) => (
                   <td
                     key={c.key}
-                    className="px-3 py-2.5 text-right border-b border-hairline whitespace-nowrap text-ink/90"
+                    className="px-3 py-1.5 text-right border-b border-hairline whitespace-nowrap text-ink/90"
                   >
                     {playerStats ? c.render(playerStats) : <span className="text-muted">—</span>}
                   </td>
@@ -251,7 +259,7 @@ export default function MatchHistory({
                 {/* Map scores inline -- the row leaves the site entirely
                     now, so this is the only place the series shape (2-0 vs
                     2-1, which maps) shows without a round trip to VLR. */}
-                <td className="px-3 py-2.5 border-b border-hairline whitespace-nowrap">
+                <td className="px-3 py-1.5 border-b border-hairline whitespace-nowrap">
                   <span className="flex items-center gap-1.5">
                     {m.maps?.map((mp, i) => (
                       <span
@@ -264,7 +272,7 @@ export default function MatchHistory({
                     ))}
                   </span>
                 </td>
-                <td className="px-3 py-2.5 border-b border-hairline text-right">
+                <td className="px-3 py-1.5 border-b border-hairline text-right">
                   <a
                     href={vlrMatchUrl(m.id)}
                     target="_blank"

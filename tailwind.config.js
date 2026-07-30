@@ -38,27 +38,31 @@ export default {
         '2xl': '0.875rem',
       },
       maxWidth: {
-        // rft.gg's own `max-w-content` token was 1152px (72rem), paired
-        // everywhere with `mx-auto px-4 md:px-6` -- their navbar's inner row
-        // and their main content wrapper both used that same trio, which is
-        // what made the nav links sit flush with the content beneath them.
-        // That's still true here; only the number changed.
+        // Was rft.gg's own `max-w-content` token (1152px / 72rem). Now set
+        // to vlr.gg's own `#wrapper` max-width instead (1160px, read off
+        // their live stylesheet at /stats) -- barely different in absolute
+        // terms, but this is the actual site the tables' own density
+        // (column widths, abbreviations) is modeled on, so its width is the
+        // more consistent reference now that content is the thing driving
+        // the number rather than rft.gg's chrome. Paired everywhere with
+        // `mx-auto px-4 md:px-6`, matching both sites' navbar-inner-row +
+        // content-wrapper pattern.
         //
         // Single source of truth for the site width: <main>, the footer, and
         // TopNav's inner row all reference it, so this one value widens or
         // narrows the whole site.
         //
-        // Widened from 1152px to 1800px: at 1152 the widest tables (the
-        // Agents matrix runs ~1650-1700px with every map column; Players and
-        // Teams aren't far behind) scrolled inside DataTable's own
-        // overflow-auto wrapper even on a typical wide desktop monitor,
-        // where hundreds of pixels sat unused on either side of a 1152px
-        // column. 1800 was sized against the Agents matrix specifically
-        // (the widest table on the site) so it renders with no horizontal
-        // scrollbar at a 1920px viewport; DataTable's own comment on why it
-        // has no fixed column widths / uses overflow-auto still holds for
-        // narrower viewports, where scrolling remains unavoidable.
-        content: '1800px',
+        // This was bumped to 1800px for a while to stop the widest tables
+        // (the Agents matrix) needing a horizontal scrollbar, but that grew
+        // the whole page past rft.gg's own width just to serve one table.
+        // Reverted since -- DataTable's headers wrap instead of forcing
+        // `whitespace-nowrap`, which is what was actually blowing columns
+        // out past their data's own width (see DataTable's comment), so
+        // tables fit this box on their own merits. Whatever still doesn't
+        // fit falls back to DataTable's own overflow-auto horizontal
+        // scrollbar, same as it always has for a many-column table on a
+        // narrow viewport.
+        content: '1160px',
       },
     },
   },

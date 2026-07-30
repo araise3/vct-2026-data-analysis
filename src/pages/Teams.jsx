@@ -142,7 +142,7 @@ export default function Teams() {
     { key: 'region', label: 'Region', align: 'left' },
     { key: 'matchesPlayed', label: 'Matches', align: 'right', format: (v) => num(v) },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
-    { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
+    { key: 'roundsPlayed', label: 'RND', align: 'right', format: (v) => num(v) },
     { key: 'matchWinPct', label: 'Match Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'avgRating', label: 'Avg Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
     { key: 'pistolWinPct', label: 'Pistol Win%', align: 'right', colorScale: true, format: (v) => pct(v) },

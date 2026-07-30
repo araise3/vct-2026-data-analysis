@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
@@ -37,29 +37,6 @@ export default function PlayerProfile() {
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'] })
-
-  // Default the standard scope to the player's most recent event rather
-  // than every event they've ever played -- applied once, after this
-  // player's own records are actually available (they're empty on the
-  // very first render, before player_buckets.json resolves), so it can't
-  // fight a user who's already changed the Event filter. Derived from
-  // `filtered`, not the raw per-player `records`, so "most recent" respects
-  // the page's other active defaults (Competition: VCT) instead of picking
-  // e.g. an EWC event that the VCT filter would then immediately conflict
-  // with and zero out. `e` (event id) increases roughly chronologically,
-  // same assumption teamInScope already relies on for "which team is
-  // newest".
-  const appliedDefaultEvent = useRef(false)
-  useEffect(() => {
-    if (appliedDefaultEvent.current || filtered.length === 0) return
-    appliedDefaultEvent.current = true
-    let maxE = -Infinity
-    let latestEvent = null
-    for (const r of filtered) {
-      if (r.e > maxE) { maxE = r.e; latestEvent = r.event }
-    }
-    if (latestEvent) setFacet('event', [latestEvent])
-  }, [filtered, setFacet])
 
   const stats = useMemo(
     () => aggregatePlayerBuckets(filtered, { ratedOnly }),
@@ -132,9 +109,9 @@ export default function PlayerProfile() {
   // derived from the scoreboard rows rather than from their buckets, so a
   // match can only appear if there's a box score behind it. The
   // Performances strip runs off THIS, deliberately unfiltered: it's a
-  // career-shape view, and re-scoping it to the active event (which
-  // defaults to the player's most recent one) collapsed it to a couple of
-  // bars and made it useless. Everything else on the page stays scoped.
+  // career-shape view, and re-scoping it to whatever Event filter is
+  // active (narrowing to a single event collapses it to a couple of bars)
+  // would make it useless. Everything else on the page stays scoped.
   const allMatchRows = useMemo(() => {
     if (!matchData || !matchPlayerData) return []
     const mine = new Set()
@@ -220,11 +197,11 @@ export default function PlayerProfile() {
       ),
     },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
+    { key: 'roundsPlayed', label: 'RND', align: 'right', format: (v) => num(v) },
     {
       key: 'winPct', label: 'Win%', align: 'right', colorScale: true,
       format: (v, r) => (r.mapsPlayed ? pct(v, 0) : '—'),
     },
-    { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
     { key: 'avgRating', label: 'R', align: 'right', colorScale: true, format: (v) => rating(v) },
     { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
     { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },

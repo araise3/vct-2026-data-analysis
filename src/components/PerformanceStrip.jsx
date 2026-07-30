@@ -95,7 +95,7 @@ export default function PerformanceStrip({ matches, playersByMatch, playerName }
               target="_blank"
               rel="noopener noreferrer"
               title={`${b.date} — vs ${b.opponent} ${b.score} — Rating ${fmtRating(b.r)} (${b.k}/${b.d}/${b.a}) — open on vlr.gg`}
-              className="group relative flex-1 min-w-[10px] max-w-[26px] h-full flex items-end"
+              className="group relative flex-1 min-w-[10px] h-full flex items-end"
             >
               <span
                 className={`w-full rounded-sm transition-opacity group-hover:opacity-80 ${toneFor(b.r)}`}
@@ -111,10 +111,10 @@ export default function PerformanceStrip({ matches, playersByMatch, playerName }
           {bars.map((b) => (
             <span
               key={b.id}
-              className="flex-1 min-w-[10px] max-w-[26px] flex justify-center"
+              className="flex-1 min-w-[10px] flex justify-center"
               title={`vs ${b.opponent}`}
             >
-              <TeamLogo team={b.opponent} size={16} showName={false} />
+              <TeamLogo team={b.opponent} size={20} showName={false} />
             </span>
           ))}
         </div>

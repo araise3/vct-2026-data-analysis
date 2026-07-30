@@ -213,8 +213,8 @@ export default function PlayerProfile() {
     {
       key: 'agent', label: 'Agent', align: 'left', noPadding: true,
       format: (v) => (
-        <span className="flex items-center gap-2 px-5 py-2.5">
-          <AgentIcon agent={v} size={24} />
+        <span className="flex items-center gap-2 px-4 py-1.5">
+          <AgentIcon agent={v} size={20} />
           <span className="font-body font-medium">{v}</span>
         </span>
       ),

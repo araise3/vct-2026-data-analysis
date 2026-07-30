@@ -145,7 +145,7 @@ export default function Agents() {
         if (row.rowType === 'agent') {
           return (
             <span className="flex items-center justify-center">
-              <AgentIcon agent={v} size={36} />
+              <AgentIcon agent={v} size={26} />
             </span>
           )
         }
@@ -156,7 +156,7 @@ export default function Agents() {
         return (
           <button
             onClick={() => toggleMapSort(row.rowType)}
-            className={`w-full flex items-center gap-1.5 px-5 py-2.5 text-left text-xs font-semibold tracking-wide cursor-pointer select-none transition-colors ${
+            className={`w-full flex items-center gap-1.5 px-4 py-1.5 text-left text-[11px] font-semibold tracking-wide cursor-pointer select-none transition-colors ${
               active ? 'text-accent' : 'text-ink hover:text-accent-bright'
             }`}
           >

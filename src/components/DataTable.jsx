@@ -10,7 +10,7 @@ import { scaleColor } from '../lib/format'
  * min/max, since a totals row isn't a value to rank alongside the ones
  * it's summarizing.
  *
- * noPadding drops the cell's default px-5 py-2.5 -- for a column whose
+ * noPadding drops the cell's default px-4 py-1.5 -- for a column whose
  * format() wants to size/pad its own content (e.g. an icon meant to fill
  * the cell) rather than sit inside the standard text padding.
  *
@@ -102,7 +102,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                 key={col.key}
                 onClick={() => toggleSort(col.key)}
                 style={col.width ? { width: col.width, minWidth: col.width } : undefined}
-                className={`${col.noPadding ? 'px-2' : 'px-5'} py-3 font-medium text-xs uppercase tracking-wide cursor-pointer select-none whitespace-nowrap transition-colors align-middle border-r border-b border-hairline ${
+                className={`${col.noPadding ? 'px-1.5' : 'px-4'} py-2 font-medium text-[11px] uppercase tracking-wide cursor-pointer select-none whitespace-nowrap transition-colors align-middle border-r border-b border-hairline ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 } ${sortKey === col.key ? 'text-accent' : 'text-muted hover:text-ink'}`}
               >
@@ -141,7 +141,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                 <td
                   key={col.key}
                   style={col.width ? { width: col.width, minWidth: col.width } : undefined}
-                  className={`${col.noPadding ? '' : 'px-5 py-2.5'} font-body text-[13px] whitespace-nowrap align-middle border-r border-b-2 border-hairline ${
+                  className={`${col.noPadding ? '' : 'px-4 py-1.5'} font-body text-[12px] whitespace-nowrap align-middle border-r border-b-2 border-hairline ${
                     col.align === 'right' ? 'text-right' : 'text-left'
                   } text-ink`}
                 >
@@ -169,7 +169,7 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                   <td
                     key={col.key}
                     style={Object.keys(style).length ? style : undefined}
-                    className={`${col.noPadding ? '' : 'px-5 py-2.5'} font-body text-[13px] whitespace-nowrap align-middle border-r border-b border-hairline ${
+                    className={`${col.noPadding ? '' : 'px-4 py-1.5'} font-body text-[12px] whitespace-nowrap align-middle border-r border-b border-hairline ${
                       col.align === 'right' ? 'text-right' : 'text-left'
                     } ${col.key === columns[0].key ? 'text-ink' : 'text-ink/90'}`}
                   >

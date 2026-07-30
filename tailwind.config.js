@@ -38,24 +38,27 @@ export default {
         '2xl': '0.875rem',
       },
       maxWidth: {
-        // rft.gg's own `max-w-content` token, read off their live stylesheet:
-        // 1152px (72rem). Paired everywhere with `mx-auto px-4 md:px-6`,
-        // exactly as they do it -- their navbar's inner row and their main
-        // content wrapper both use that same trio, which is what makes the
-        // nav links sit flush with the content beneath them.
+        // rft.gg's own `max-w-content` token was 1152px (72rem), paired
+        // everywhere with `mx-auto px-4 md:px-6` -- their navbar's inner row
+        // and their main content wrapper both used that same trio, which is
+        // what made the nav links sit flush with the content beneath them.
+        // That's still true here; only the number changed.
         //
         // Single source of truth for the site width: <main>, the footer, and
         // TopNav's inner row all reference it, so this one value widens or
         // narrows the whole site.
         //
-        // The site used to be full-bleed (max-w-[2400px], effectively the
-        // viewport), which is why it read as sprawling next to rft.gg.
-        // Constraining it means the widest tables (the Agents matrix runs
-        // ~1700px with every map column) now scroll inside their own
-        // DataTable overflow-auto wrapper rather than stretching the page --
-        // the intended behaviour, see DataTable's comment on why it has no
-        // fixed column widths.
-        content: '1152px',
+        // Widened from 1152px to 1800px: at 1152 the widest tables (the
+        // Agents matrix runs ~1650-1700px with every map column; Players and
+        // Teams aren't far behind) scrolled inside DataTable's own
+        // overflow-auto wrapper even on a typical wide desktop monitor,
+        // where hundreds of pixels sat unused on either side of a 1152px
+        // column. 1800 was sized against the Agents matrix specifically
+        // (the widest table on the site) so it renders with no horizontal
+        // scrollbar at a 1920px viewport; DataTable's own comment on why it
+        // has no fixed column widths / uses overflow-auto still holds for
+        // narrower viewports, where scrolling remains unavoidable.
+        content: '1800px',
       },
     },
   },

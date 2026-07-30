@@ -223,9 +223,6 @@ export default function Players() {
     // Econ isn't a VLR column -- it's ours, placed right after the VLR
     // block rather than mixed into it.
     { key: 'avgEcon', label: 'Econ', align: 'right', colorScale: true, format: (v, r) => (r.utilMaps ? Math.round(v) : '—') },
-    { key: 'totalKills', label: 'K', align: 'right', format: (v) => num(v) },
-    { key: 'totalDeaths', label: 'D', align: 'right', format: (v) => num(v) },
-    { key: 'totalAce', label: 'Ace', align: 'right', format: (v) => num(v) },
   ]
 
   return (

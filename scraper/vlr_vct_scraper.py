@@ -20,6 +20,10 @@ USAGE
     python3 vlr_vct_scraper.py --events 2683     # scrape just one event id
     python3 vlr_vct_scraper.py --skip-matches    # stats/agents only (fast)
     python3 vlr_vct_scraper.py --resume          # skip matches already in DB
+    python3 vlr_vct_scraper.py --resume --require-existing-db
+                                                 # as above, but abort instead of
+                                                 # creating a DB if none exists
+                                                 # (for unattended/automated runs)
     python3 vlr_vct_scraper.py --economy-only    # re-fetch ONLY the economy tab
                                                    # for matches already in the DB
                                                    # (2 fetches/match instead of a
@@ -33,14 +37,39 @@ NOTES
 - Run this on YOUR machine / environment with normal internet access —
   it will NOT run inside this sandboxed chat, which can't reach vlr.gg.
 - Check vlr.gg's robots.txt / terms before doing heavy or commercial scraping.
+
+RECHECK / CLOSED-EVENT BEHAVIOR (--resume only)
+------------------------------------------------
+An event with no live/upcoming matches left and whose last completed match is
+more than RECHECK_GRACE_DAYS (7) old is treated as closed and skipped
+entirely -- no event-stats/agents/match-list requests spent on it. While an
+event is still active (by that same rule), EVERY match under it -- including
+ones from early in a long-running event -- stays eligible for a throttled
+box-score re-check (at most once per RECHECK_THROTTLE_HOURS = 24), because
+VLR can take much longer than a few days to fill in Rating 2.0/ACS for some
+matches (confirmed live: an entire in-progress China Stage 2 has run 2+ weeks
+with Rating 2.0 still missing for every match so far). There is deliberately
+NO separate cutoff based on a match's own age -- only the event closing ends
+the rechecking, since a fixed per-match window would let early matches in a
+still-running event silently stop being checked while the event kept getting
+scraped anyway. Pass --events to force-scrape a specific event regardless of
+its closed status.
+
+EXIT CODES
+----------
+    0  clean run
+    1  something failed but what landed is valid (publish, but don't call it a success)
+    2  aborted -- vlr.gg refused us (403/429), or --require-existing-db found no DB
 """
 
 import argparse
+import os
 import random
 import re
 import sqlite3
 import sys
 import time
+from datetime import datetime, timedelta
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -48,7 +77,9 @@ import requests
 from bs4 import BeautifulSoup
 
 BASE = "https://www.vlr.gg"
-DB_PATH = "vlr_vct_2026.db"
+# Environment-overridable so an automated run can point at a restored database
+# elsewhere in the workspace without editing this file or passing --db.
+DB_PATH = os.environ.get("VLR_DB_PATH", "vlr_vct_2026.db")
 
 HEADERS = {
     "User-Agent": (
@@ -60,6 +91,45 @@ HEADERS = {
 
 REQUEST_DELAY = (1.2, 2.2)  # random delay range (seconds) between requests
 MAX_RETRIES = 4
+
+# Status codes that mean "vlr.gg is refusing this client", as opposed to a
+# transient server hiccup. Retrying these is pointless (the next request gets
+# the same answer) and counterproductive (it looks like hammering).
+BLOCK_STATUSES = (401, 403, 429)
+
+
+class ScrapeFailure(Exception):
+    """Raised when the run should abort outright instead of limping on.
+
+    Distinct from the per-request/per-event failures below, which are counted
+    and tolerated: this one means every remaining request would fail the same
+    way, so continuing just burns requests and produces a half-empty DB.
+    """
+
+
+# Run-level failure tallies. Each individual failure path here is already
+# recoverable by design -- a failed fetch returns None, a failed event is
+# caught and skipped -- which is the right behaviour for an interactive run
+# where a human reads the warnings. What was missing is anything that *adds
+# them up*, so a run where every single request failed still exited 0.
+FAILURES = {"fetch": 0, "event": 0, "match": 0}
+
+
+def failure_exit_code() -> int:
+    """0 only if the run was genuinely clean; 1 if anything failed.
+
+    Exit 1 means "the data that did land is valid, but this run is incomplete"
+    -- a caller can still publish what was scraped, but must not report the run
+    as a success. A hard abort uses exit 2 instead; see ScrapeFailure.
+    """
+    total = FAILURES["fetch"] + FAILURES["event"] + FAILURES["match"]
+    if not total:
+        return 0
+    print(f"\n[FAILED] {FAILURES['event']} event(s), {FAILURES['match']} match(es) and "
+          f"{FAILURES['fetch']} request(s) failed this run.")
+    print("Exiting non-zero so an automated run does not report this as a success.")
+    return 1
+
 
 # ---------------------------------------------------------------------------
 # Tier-1 VCT 2026 international events (id, slug, region, stage).
@@ -99,21 +169,108 @@ def fetch(url: str, session: requests.Session) -> Optional[BeautifulSoup]:
             elif resp.status_code == 404:
                 print(f"  [404] {url}")
                 return None
+            elif resp.status_code in BLOCK_STATUSES:
+                # Being refused at the edge is not something backoff fixes.
+                # This is the expected failure mode when running from a
+                # datacenter IP (a CI runner) against a Cloudflare-fronted
+                # site, and the one that most needs to be loud: the old code
+                # quietly returned None for every page, so the run still
+                # finished "successfully" having scraped nothing at all.
+                raise ScrapeFailure(
+                    f"HTTP {resp.status_code} from {url} -- vlr.gg is refusing this client. "
+                    f"A datacenter/CI IP being blocked is the usual cause. Aborting the run "
+                    f"rather than continuing with incomplete data."
+                )
             else:
                 print(f"  [{resp.status_code}] {url} (attempt {attempt})")
         except requests.RequestException as e:
             print(f"  [error] {url}: {e} (attempt {attempt})")
         time.sleep(2 ** attempt)  # exponential backoff
     print(f"  [FAILED after {MAX_RETRIES} attempts] {url}")
+    FAILURES["fetch"] += 1
     return None
 
 
 # ---------------------------------------------------------------------------
+# Grace-period / recheck helpers (see the fix-#5 comment at the top of the
+# diff that introduced these for the full rationale).
+# ---------------------------------------------------------------------------
+RECHECK_GRACE_DAYS = 7
+RECHECK_THROTTLE_HOURS = 24
+
+
+def _parse_dt(s):
+    if not s:
+        return None
+    try:
+        return datetime.strptime(s, "%Y-%m-%d %H:%M:%S")
+    except (ValueError, TypeError):
+        return None
+
+
+def event_needs_scrape(conn, event_id: int) -> bool:
+    """Whether this event is still worth spending requests on at all.
+
+    True if it has never been scraped, has a match still upcoming/live, or
+    its last completed match was within RECHECK_GRACE_DAYS -- VLR can still
+    be filling in data for it (Rating 2.0 has shown up to a few days late,
+    China region especially). Past that with nothing live left, the event's
+    aggregate pages and match list cannot change again, so skipping them
+    entirely loses nothing.
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT status, match_date FROM matches WHERE event_id = ?", (event_id,))
+    rows = cur.fetchall()
+    if not rows:
+        return True
+    if any(status in ("upcoming", "live") for status, _ in rows):
+        return True
+    now = datetime.utcnow()
+    for _, match_date in rows:
+        dt = _parse_dt(match_date)
+        if dt and (now - dt) <= timedelta(days=RECHECK_GRACE_DAYS):
+            return True
+    return False
+
+
+def match_due_for_recheck(last_checked_at) -> bool:
+    """Whether an already-'completed' match should be re-scraped anyway.
+
+    Deliberately has NO cutoff based on the match's own date. An earlier
+    version bounded this to RECHECK_GRACE_DAYS after the match itself, which
+    looked reasonable but broke on real data: a still-running event (e.g.
+    China Stage 2, which stays open for weeks) has early matches that age
+    past a fixed per-match window long before the event around them closes,
+    so those matches would silently stop being re-checked while the event
+    kept getting scraped every run -- exactly the gap this whole mechanism
+    exists to close (VLR filling in Rating 2.0 / ACS late is not guaranteed
+    to happen within a fixed number of days of the match, only within the
+    event's own active lifetime).
+
+    The termination condition lives at the EVENT level instead: this function
+    is only ever reached for matches whose event passed event_needs_scrape()
+    this run, so once an event closes for good, its matches simply stop being
+    visited at all -- no separate expiry needed here. All this function does
+    is throttle: not checked again within RECHECK_THROTTLE_HOURS, so a
+    3-hourly cron doesn't re-fetch the same box score up to 8 times a day
+    chasing a correction that lands once.
+    """
+    last = _parse_dt(last_checked_at)
+    if last and (datetime.utcnow() - last) < timedelta(hours=RECHECK_THROTTLE_HOURS):
+        return False
+    return True
+
+
 # Database setup
 # ---------------------------------------------------------------------------
 def init_db(path: str = DB_PATH) -> sqlite3.Connection:
     conn = sqlite3.connect(path)
     cur = conn.cursor()
+    try:
+        cur.execute("ALTER TABLE matches ADD COLUMN last_checked_at TEXT")
+    except sqlite3.OperationalError:
+        pass  # column already exists -- DB was created after this migration
+
     cur.executescript(
         """
         CREATE TABLE IF NOT EXISTS events (
@@ -190,7 +347,8 @@ def init_db(path: str = DB_PATH) -> sqlite3.Connection:
             stage TEXT,
             match_date TEXT,
             match_url TEXT,
-            status TEXT DEFAULT 'unknown'
+            status TEXT DEFAULT 'unknown',
+            last_checked_at TEXT
         );
 
         CREATE TABLE IF NOT EXISTS maps (
@@ -799,15 +957,15 @@ def rescrape_all_economy(session, conn, event_ids=None):
         placeholders = ",".join("?" * len(event_ids))
         cur.execute(
             f"SELECT match_id, match_url FROM matches "
-            f"WHERE status='completed' AND event_id IN ({placeholders}) ORDER BY match_id",
+            f"WHERE status IN ('completed','partial') AND event_id IN ({placeholders}) ORDER BY match_id",
             event_ids,
         )
     else:
         cur.execute(
-            "SELECT match_id, match_url FROM matches WHERE status='completed' ORDER BY match_id"
+            "SELECT match_id, match_url FROM matches WHERE status IN ('completed','partial') ORDER BY match_id"
         )
     rows = cur.fetchall()
-    print(f"Re-scraping economy data for {len(rows)} completed matches...")
+    print(f"Re-scraping economy data for {len(rows)} completed/partial matches...")
     for i, (match_id, match_url) in enumerate(rows, 1):
         try:
             n = rescrape_match_economy_only(session, conn, match_id, match_url)
@@ -815,7 +973,10 @@ def rescrape_all_economy(session, conn, event_ids=None):
         except KeyboardInterrupt:
             print("\nInterrupted — progress saved to DB.")
             raise
+        except ScrapeFailure:
+            raise  # fatal and run-wide -- must not be swallowed as a per-match error
         except Exception as e:
+            FAILURES["match"] += 1
             print(f"  !! failed on match {match_id}: {e}")
             continue
 
@@ -841,23 +1002,29 @@ def rescrape_all_match_details(session, conn, event_ids=None):
         placeholders = ",".join("?" * len(event_ids))
         cur.execute(
             f"SELECT match_id, event_id, match_url FROM matches "
-            f"WHERE status='completed' AND event_id IN ({placeholders}) ORDER BY match_id",
+            f"WHERE status IN ('completed','partial') AND event_id IN ({placeholders}) ORDER BY match_id",
             event_ids,
         )
     else:
         cur.execute(
-            "SELECT match_id, event_id, match_url FROM matches WHERE status='completed' ORDER BY match_id"
+            "SELECT match_id, event_id, match_url FROM matches WHERE status IN ('completed','partial') ORDER BY match_id"
         )
     rows = cur.fetchall()
-    print(f"Re-scraping full match detail for {len(rows)} completed matches...")
+    print(f"Re-scraping full match detail for {len(rows)} completed/partial matches...")
     for i, (match_id, event_id, match_url) in enumerate(rows, 1):
         try:
-            scrape_match_detail(session, conn, event_id, match_id, match_url)
-            print(f"  [{i}/{len(rows)}] match {match_id} done")
+            if scrape_match_detail(session, conn, event_id, match_id, match_url):
+                print(f"  [{i}/{len(rows)}] match {match_id} done")
+            else:
+                FAILURES["match"] += 1
+                print(f"  [{i}/{len(rows)}] match {match_id} incomplete -- left as 'partial'")
         except KeyboardInterrupt:
             print("\nInterrupted — progress saved to DB.")
             raise
+        except ScrapeFailure:
+            raise  # fatal and run-wide -- must not be swallowed as a per-match error
         except Exception as e:
+            FAILURES["match"] += 1
             print(f"  !! failed on match {match_id}: {e}")
             continue
 
@@ -879,7 +1046,10 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
     """
     soup = fetch(match_url, session)
     if soup is None:
-        return
+        # Nothing written — the match keeps whatever status it already had, so
+        # a fetch failure here leaves it eligible for retry rather than
+        # recording an empty 'completed' row.
+        return False
 
     if dump_html:
         dump_path = f"debug_match_{match_id}.html"
@@ -1156,17 +1326,32 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
         print(f"  [warn] match {match_id}: {map_index} map(s) parsed but 0 player rows — "
               f"table selectors likely need updating. Re-run with --dump-html {match_id} to inspect.")
 
+    # Only claim 'completed' when the page actually yielded usable data.
+    # Writing 'completed' unconditionally is what turned a *transient* failure
+    # into a permanent one: --resume skips any match already marked
+    # 'completed', so an empty/garbage row would never be retried and the gap
+    # would silently persist forever. 'partial' still records the row (the
+    # match stays tracked, with whatever score could be derived) but leaves it
+    # eligible for re-scrape next run. Under human supervision the [warn]
+    # lines above were enough to catch this; an unattended cron has nobody
+    # reading them.
+    scrape_ok = map_index > 0 and total_player_rows > 0
+    status = "completed" if scrape_ok else "partial"
+    if not scrape_ok:
+        print(f"  [partial] match {match_id}: stored as 'partial' — will be retried on the next run")
+
     cur.execute(
         """INSERT OR REPLACE INTO matches
-        (match_id, event_id, team1, team2, score1, score2, stage, match_date, match_url, status)
-        VALUES (?,?,?,?,?,?,?,?,?,'completed')""",
-        (match_id, event_id, team1, team2, score1, score2, stage, match_date, match_url),
+        (match_id, event_id, team1, team2, score1, score2, stage, match_date, match_url, status, last_checked_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+        (match_id, event_id, team1, team2, score1, score2, stage, match_date, match_url, status,
+         datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
     )
     conn.commit()
 
     # Second fetch: multi-kill (2K-5K) and clutch (1v1-1v5) counts, plus
     # ECON/plants/defuses, from the separate "?tab=performance" view.
-    if map_index > 0 and total_player_rows > 0:
+    if scrape_ok:
         perf_rows = scrape_match_performance(session, conn, match_id, match_url, game_id_to_map_index)
         if perf_rows == 0:
             print(f"  [warn] match {match_id}: performance-tab data (multi-kills/clutches) "
@@ -1178,6 +1363,8 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
         if econ_rows == 0:
             print(f"  [warn] match {match_id}: economy-tab data came back empty — "
                   f"VLR markup for that tab may need re-checking.")
+
+    return scrape_ok
 
 
 # ---------------------------------------------------------------------------
@@ -1219,15 +1406,19 @@ def scrape_event(session, conn, event_id, slug, region, stage, skip_matches=Fals
             continue
 
         if resume:
-            cur.execute("SELECT status FROM matches WHERE match_id = ?", (match_id,))
+            cur.execute("SELECT status, last_checked_at FROM matches WHERE match_id = ?", (match_id,))
             row = cur.fetchone()
             if row and row[0] == "completed":
-                print(f"  [{i}/{len(matches)}] skip (already scraped) match {match_id}")
-                continue
+                if not match_due_for_recheck(row[1]):
+                    print(f"  [{i}/{len(matches)}] skip (already scraped) match {match_id}")
+                    continue
+                print(f"  [{i}/{len(matches)}] match {match_id} — re-checking (event still "
+                      f"active; possible late data, e.g. rating/ACS)")
 
         print(f"  [{i}/{len(matches)}] match {match_id} — completed, scraping box score")
-        scrape_match_detail(session, conn, event_id, match_id, match_url,
-                             dump_html=(match_id in dump_html_ids))
+        if not scrape_match_detail(session, conn, event_id, match_id, match_url,
+                                    dump_html=(match_id in dump_html_ids)):
+            FAILURES["match"] += 1
 
 
 def main():
@@ -1247,32 +1438,66 @@ def main():
                               "the attack/defense side-split, and the per-round winner/side/"
                               "win-condition table, all at once. Combine with --events to scope it.")
     parser.add_argument("--db", default=DB_PATH, help="SQLite DB path")
+    parser.add_argument("--require-existing-db", action="store_true",
+                         help="Abort if the database does not already exist instead of "
+                              "creating an empty one. For automated runs: init_db() will "
+                              "happily create a fresh database, which turns a restore "
+                              "failure into a silent full re-scrape of every match.")
     parser.add_argument("--dump-html", type=int, nargs="*", default=[],
                          help="Match ID(s) to save raw HTML for, e.g. --dump-html 594740 594741 "
                               "(useful for debugging if player stats keep coming back empty)")
     args = parser.parse_args()
     dump_html_ids = set(args.dump_html)
 
+    if args.require_existing_db and not os.path.exists(args.db):
+        # init_db() creates the database if it is absent, which is correct for a
+        # first run and disastrous for an automated one: a cache/restore miss
+        # would silently kick off a full re-scrape of every match in the season
+        # (hours of requests) instead of the handful of new ones expected.
+        print(f"[FATAL] --require-existing-db was given but {args.db} does not exist.")
+        print("        Refusing to create one from scratch. Restore the database first.")
+        sys.exit(2)
+
     conn = init_db(args.db)
     session = requests.Session()
 
     if args.economy_only:
-        rescrape_all_economy(session, conn, event_ids=args.events)
+        try:
+            rescrape_all_economy(session, conn, event_ids=args.events)
+        except ScrapeFailure as e:
+            print(f"\n[FATAL] {e}")
+            conn.close()
+            sys.exit(2)
         conn.close()
         print(f"\nDone. Data saved to {args.db}")
-        return
+        sys.exit(failure_exit_code())
 
     if args.redo_match_details:
-        rescrape_all_match_details(session, conn, event_ids=args.events)
+        try:
+            rescrape_all_match_details(session, conn, event_ids=args.events)
+        except ScrapeFailure as e:
+            print(f"\n[FATAL] {e}")
+            conn.close()
+            sys.exit(2)
         conn.close()
         print(f"\nDone. Data saved to {args.db}")
-        return
+        sys.exit(failure_exit_code())
 
     events = VCT_2026_EVENTS
     if args.events:
         events = [e for e in events if e[0] in args.events]
 
     for event_id, slug, region, stage in events:
+        # Closed events (nothing live, last match older than RECHECK_GRACE_DAYS)
+        # are skipped outright -- 0 requests instead of the stats+agents+
+        # match-list fetch every event used to get every run. --events on the
+        # command line is an explicit ask and bypasses this; a run without
+        # --resume is a deliberate full pass and also bypasses it, matching
+        # how the match-level skip below is already gated on --resume.
+        if args.resume and not args.events and not event_needs_scrape(conn, event_id):
+            print(f"\n=== Event {event_id} — {slug} ({region} {stage}): no activity within "
+                  f"the last {RECHECK_GRACE_DAYS} days, skipping ===")
+            continue
         try:
             scrape_event(session, conn, event_id, slug, region, stage,
                          skip_matches=args.skip_matches, resume=args.resume,
@@ -1280,12 +1505,20 @@ def main():
         except KeyboardInterrupt:
             print("\nInterrupted — progress saved to DB.")
             sys.exit(1)
+        except ScrapeFailure as e:
+            # Run-wide and fatal: stop now rather than working through every
+            # remaining event just to fail each one the same way.
+            print(f"\n[FATAL] {e}")
+            conn.close()
+            sys.exit(2)
         except Exception as e:
+            FAILURES["event"] += 1
             print(f"  !! failed on event {event_id}: {e}")
             continue
 
     conn.close()
     print(f"\nDone. Data saved to {args.db}")
+    sys.exit(failure_exit_code())
 
 
 if __name__ == "__main__":

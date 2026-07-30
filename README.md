@@ -74,9 +74,12 @@ vct-site/
 python3 data_prep/export_from_db.py
 ```
 
-It expects `vlr_vct_2026.db` and `vlr_ewc_2026.db` (paths are constants near
-the top of the script — update them to point at your fresh scrape). It
-handles:
+It expects `vlr_vct_2026.db` and `vlr_ewc_2026.db`. Paths default to the
+constants near the top of the script but can be overridden with the
+`VLR_DB_PATH`, `VLR_EWC_DB_PATH` and `VLR_OUT` environment variables (which is
+how the automated workflow below points it at a restored database). It
+refuses to run against a missing or empty VCT database rather than writing a
+full set of empty JSON files over the real data. It handles:
 
 - **Team-name canonicalization** — tags (e.g. "PRX") → full names, China's
   sponsor-prefixed long names → their short form, EWC's sub-branded rosters
@@ -89,6 +92,46 @@ handles:
   `statsWithEwc` field added per team/player for the toggle
 
 After running it, `npm run build` picks up the fresh JSON automatically.
+
+## Automated updates
+
+`.github/workflows/update-data.yml` runs the whole loop above on a schedule
+(every 3 hours) so new results appear without anyone running the scraper by
+hand: scrape only what's new → regenerate `public/data/` → commit → push.
+Pushing to `main` is what triggers the Cloudflare Pages rebuild, so there's no
+separate deploy step.
+
+### How the database persists
+
+The scraper databases are **not** in this repo — ~8MB of binary that deltas
+badly would balloon history at that commit frequency. Each run restores them
+from the GitHub Actions cache, scrapes what's new, and saves them back. The
+cache alone is fast but not durable (entries are evicted after 7 days unused),
+so a `db-snapshot` release is kept as a durable fallback, refreshed
+automatically once a day and used whenever the cache comes up empty.
+
+Nothing needs seeding by hand: if **neither** the cache nor the snapshot has a
+copy — the very first run ever, or both lost at once — the workflow just
+scrapes everything from scratch itself instead of failing. That run is slow
+(~1300 requests, roughly an hour, vs. a handful normally), but it's the only
+one — the very next run finds what it just saved and goes back to incremental.
+If you'd rather skip that one slow run, upload your existing databases as the
+seed before the first scheduled run fires:
+
+```bash
+gh release create db-snapshot "vlr_vct_2026.db" "vlr_ewc_2026.db" --title "Scraper DB snapshot" --notes "Seed/recovery copy for CI."
+```
+
+To force a full rewipe-and-rebuild on purpose (e.g. recovering from suspected
+data corruption, not just ordinary cache loss), run the workflow via
+*Actions → Update VLR data → Run workflow* with **force_full_rebuild** checked
+— it discards whatever was restored and starts clean.
+
+Exit codes carry meaning end to end: a clean run publishes and goes green; an
+incomplete run still publishes the valid data it collected but the job is
+marked failed so it's visible; and a run that vlr.gg refuses outright (403/429,
+the expected result if the runner's datacenter IP gets blocked) aborts without
+publishing anything.
 
 ## Local development
 

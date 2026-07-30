@@ -12,9 +12,17 @@ import sqlite3
 import numpy as np
 import pandas as pd
 
-DB_PATH = "C:/Users/leona/Desktop/scrape vlr/vlr_vct_2026.db"
-EWC_DB_PATH = "C:/Users/leona/Desktop/scrape vlr/vlr_ewc_2026.db"
-OUT = "C:/Users/leona/Desktop/vct-2026-data-analysis/public/data"
+# Paths are environment-overridable so this runs unattended in CI -- where the
+# DBs are restored into the workspace rather than sitting on this machine's
+# Desktop -- without editing constants. The defaults are the previous hardcoded
+# values, so a local run is unchanged. OUT is now derived from this file's own
+# location (which resolves to the same directory the absolute path named) so it
+# follows the repo if it ever moves.
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+DB_PATH = os.environ.get("VLR_DB_PATH", "C:/Users/leona/Desktop/scrape vlr/vlr_vct_2026.db")
+EWC_DB_PATH = os.environ.get("VLR_EWC_DB_PATH", "C:/Users/leona/Desktop/scrape vlr/vlr_ewc_2026.db")
+OUT = os.environ.get("VLR_OUT", os.path.join(_REPO_ROOT, "public", "data"))
 
 CHINA_TEAMS = ['All Gamers', 'Bilibili Gaming', 'Dragon Ranger Gaming', 'EDward Gaming',
                'FunPlus Phoenix', 'JDG Esports', 'Nova Esports', 'TYLOO',
@@ -96,8 +104,36 @@ def load_db(path, competition):
 
 
 def main():
+    # The VCT database is the primary dataset -- an export without it is never
+    # something anyone wants. load_db() below deliberately tolerates a missing
+    # file (the EWC database legitimately may not exist), but applying that
+    # same tolerance to the VCT one is actively dangerous unattended: a DB that
+    # failed to restore would export a full set of *empty* JSON files, and an
+    # automated job would happily commit them over the real site data. Fail
+    # loudly here instead.
+    if not os.path.exists(DB_PATH):
+        raise SystemExit(
+            f"[FATAL] VCT database not found: {DB_PATH}\n"
+            f"        Set VLR_DB_PATH, or run the scraper first. Refusing to export "
+            f"an empty dataset over existing data."
+        )
+
     vct = load_db(DB_PATH, "VCT")
     ewc = load_db(EWC_DB_PATH, "EWC")
+
+    # Second guard on the same hazard: the file can exist and still be useless
+    # (a zero-byte placeholder, a fresh DB the scraper only just created, a
+    # restore that produced a valid but empty SQLite file). Nothing downstream
+    # distinguishes "no completed matches" from "no data", so check it here
+    # where the intent is unambiguous.
+    _completed = vct["matches"]
+    _completed = _completed[_completed["status"] == "completed"] if len(_completed) else _completed
+    if len(_completed) == 0:
+        raise SystemExit(
+            f"[FATAL] {DB_PATH} contains no completed matches -- it is empty or was "
+            f"only just created.\n        Refusing to export an empty dataset over "
+            f"existing data."
+        )
 
     # Combined universe: every downstream computation runs on this, then
     # gets filtered back down to competition=='VCT' for the default

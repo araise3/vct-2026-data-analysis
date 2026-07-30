@@ -6,6 +6,15 @@ dist
 # Liquipedia API response cache (ToU asks callers to cache; not source)
 scraper/.liquipedia_cache/
 
+# Scraper SQLite databases. Kept out of git deliberately: ~8MB of binary that
+# deltas badly, committed on every automated run, would balloon history. CI
+# restores them from the Actions cache instead (.github/workflows/update-data.yml).
+data_cache/
+*.db
+
+__pycache__/
+*.pyc
+
 # Session context for Claude Code -- kept locally updated, never committed/pushed
 CLAUDE.md
 

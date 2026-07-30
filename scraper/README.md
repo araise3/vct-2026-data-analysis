@@ -99,7 +99,64 @@ python vlr_vct_scraper.py --events 2683 2775
 
 # Resume a full run after it was interrupted (skips matches already saved)
 python vlr_vct_scraper.py --resume
+
+# Abort rather than create a database if none exists (for automated runs)
+python vlr_vct_scraper.py --resume --require-existing-db
 ```
+
+The DB path can also be set with the `VLR_DB_PATH` environment variable
+(`VLR_EWC_DB_PATH` for the EWC scraper) instead of `--db`.
+
+### Exit codes
+
+These matter when the scraper runs unattended — every failure path here is
+individually recoverable, which historically meant a run where *every* request
+failed still exited 0.
+
+| Code | Meaning |
+|------|---------|
+| `0`  | Clean run. |
+| `1`  | Something failed (a request, an event, or a match) but what landed is valid. Safe to publish; don't report as success. |
+| `2`  | Aborted. Either vlr.gg refused the client (403/429 — see `ScrapeFailure`) or `--require-existing-db` found no database. Nothing should be published. |
+
+### Match status values
+
+`matches.status` is `completed` only when a match page actually yielded map and
+player rows. If the page fetched but parsed to nothing usable, the row is stored
+as **`partial`** instead, which keeps it eligible for a retry on the next
+`--resume` run — writing `completed` unconditionally used to make a one-off
+transient failure permanent, since `--resume` skips anything already marked
+completed. `partial` rows are excluded from the site export, and
+`--economy-only` / `--redo-match-details` include them so a backfill can repair
+them.
+
+### Closed-event skip and the late-rating grace period (`--resume` only)
+
+A routine `--resume` run doesn't re-fetch every event every time. An event
+with no upcoming/live matches left, whose last completed match is more than
+`RECHECK_GRACE_DAYS` (7) old, is treated as closed and skipped outright — no
+event-stats, agents, or match-list requests spent on it at all. Cuts a
+routine run from ~45 requests (all 15 events, unconditionally) down to
+roughly however many events are actually still active — typically 3-5.
+
+The grace period exists because VLR can take a while to publish Rating 2.0
+(and sometimes ACS) for a match, China region especially — closing an event
+the instant its last match scores would freeze that gap forever. **While an
+event is still active by the rule above, every match under it stays eligible
+for a re-check**, not just recently-played ones: a fixed per-match cutoff was
+tried first and rejected once real data showed why it doesn't work — an
+entire China Stage 2 event ran 2+ weeks with Rating 2.0 missing for every
+match played so far, and a per-match window would have let the earliest of
+those matches quietly stop being re-checked while the event around them was
+still being scraped every run. So the only thing bounding a re-check is the
+`RECHECK_THROTTLE_HOURS` (24) cooldown — at most once a day per match, so a
+3-hourly cron doesn't hammer the same box score 8 times chasing one
+correction — and the event closing, which is a hard stop: once that happens,
+none of its matches are ever visited again, no periodic "just in case" check.
+
+`--events <id>` bypasses the closed-event skip for a deliberate backfill/
+correction on a specific event, and a run without `--resume` always does
+everything (matching how `--resume` already gates the match-level skip).
 
 Data lands in `vlr_vct_2026.db` (SQLite). Export everything to CSV with:
 
@@ -239,17 +296,30 @@ score, and either send it back for a selector fix or adjust the `ovw_tables =`
 and `cell_val()` lookups in `scrape_match_detail()` yourself — that function
 is the one place all the per-map/per-player parsing happens.
 
-## A note on missing `rating` values for some VCT China matches
+## A note on missing `rating` (and occasionally `acs`) values for some VCT China matches
 
-If you see a small number of `map_player_stats` rows with `rating = NULL`
-but every other stat (ACS, kills, deaths, KAST, etc.) populated normally —
-this isn't a scraper bug. It's isolated to a handful of **VCT China**
-matches specifically (confirmed: 9 matches across China Kickoff/Stage 1/
-Stage 2, 0 matches in any other region), which points to VLR's China
-coverage simply not having Rating 2.0 computed/published for those games on
-their end (China runs through a separate broadcast/stats pipeline than the
-other regions). There's nothing to extract if VLR itself doesn't have the
-number. No fix needed — `NULL` here is the honest, correct value.
+If you see `map_player_stats` rows with `rating = NULL` (and rarely `acs`
+NULL too) — this isn't a scraper bug, and isolated to **VCT China**
+specifically (0 matches in any other region). But treat "how many" and "is it
+permanent" as a moving target, not a fixed fact — re-measured while
+investigating the recheck logic above and found meaningfully worse than
+originally documented:
+
+- **6 matches** from China Kickoff/Stage 1 (played January-May) still have
+  `rating = NULL` with every other stat populated, months later. These are
+  genuinely stuck — VLR simply never computed Rating 2.0 for them — and
+  there's nothing to extract if VLR itself doesn't have the number.
+- **25 matches from China Stage 2** (an event still in progress as of this
+  writing) have `rating = NULL` — every completed match in that event so far,
+  not a handful. **3 of the most recent also have `acs = NULL`**, i.e. the gap
+  isn't strictly "rating only" the way it first looked with a smaller sample.
+  Unlike the first group, it's too early to call these permanent — the event
+  hasn't closed yet, and the recheck mechanism above exists specifically to
+  keep watching matches like these for as long as their event stays open,
+  rather than assuming "VLR will never publish it" prematurely. Once China
+  Stage 2 closes (7 days after its last match with nothing live left) and
+  these are still NULL, that's the point where "permanent, no fix possible"
+  actually becomes a safe conclusion — not before.
 
 ## The same China gap shows up in map duration too
 

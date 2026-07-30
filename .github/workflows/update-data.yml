@@ -1,0 +1,221 @@
+name: Update VLR data
+
+# Replaces the manual "run the scraper, then upload the DB" loop: scrapes only
+# what is new, regenerates public/data/*.json, and commits the result. Pushing
+# to main is what triggers the Cloudflare Pages rebuild -- there is no separate
+# deploy step here, and no deploy hook to configure.
+#
+# The scraper database is NOT in this repo (it is ~8MB of binary that would
+# bloat history fast at this commit frequency). It lives in the Actions cache,
+# restored at the start of each run and saved again at the end, with a
+# db-snapshot release as a durable fallback (see "Restore scraper database"
+# steps below). If neither has a copy -- the very first run, or both layers
+# lost at once -- the workflow builds the database from scratch itself rather
+# than failing: slower for that one run (up to ~1300 requests, roughly an
+# hour), but fully unattended. Every run after that restores normally.
+
+on:
+  schedule:
+    # Every 3 hours. Closed events (nothing live, last match >7 days old) are
+    # skipped entirely, so a routine run only costs ~3 requests per event
+    # that's actually still active (typically 3-5 of the 15), not all 15.
+    # Note: GitHub delays scheduled runs under load, and disables schedules
+    # entirely after 60 days of repository inactivity.
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+    inputs:
+      force_full_rebuild:
+        description: 'Discard any restored database and scrape everything from scratch, even if the cache/snapshot had a copy. SLOW (roughly an hour of requests to vlr.gg). For recovering from suspected data corruption -- NOT needed just to seed the first run or recover from ordinary cache loss, both of which already happen automatically.'
+        type: boolean
+        default: false
+
+# One run at a time. Two concurrent runs would race on both the database cache
+# and the push, and queuing is always preferable to either losing a scrape or
+# resolving a conflict after the fact.
+concurrency:
+  group: update-vlr-data
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    # A routine run finishes in a couple of minutes. A from-scratch rebuild
+    # (first run, cache+snapshot both lost, or force_full_rebuild) is the
+    # ~1300-request/~1hr case CLAUDE.md describes -- 180 gives that real room
+    # without letting a genuinely stuck run occupy the single concurrency slot
+    # indefinitely (see `concurrency` below).
+    timeout-minutes: 180
+
+    env:
+      VLR_DB_PATH: data_cache/vlr_vct_2026.db
+      VLR_EWC_DB_PATH: data_cache/vlr_ewc_2026.db
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scraper/requirements.txt -r data_prep/requirements.txt
+
+      # A cache key is immutable once written, so a fixed key would restore the
+      # first run's database forever. Keying on run_id and restoring by prefix
+      # gives the intended "load newest, save updated" behaviour.
+      - name: Restore scraper database (cache)
+        if: inputs.force_full_rebuild != true
+        uses: actions/cache/restore@v4
+        with:
+          path: data_cache
+          key: vlr-db-${{ github.run_id }}
+          restore-keys: vlr-db-
+
+      # The Actions cache is fast but not durable: entries are evicted after 7
+      # days unused, and there is no way to seed one from outside a workflow.
+      # A release asset covers both gaps -- it is how the first run gets an
+      # existing database at all, and how any later cache loss is recovered
+      # without re-scraping the whole season.
+      - name: Restore scraper database (release snapshot fallback)
+        if: inputs.force_full_rebuild != true && hashFiles('data_cache/vlr_vct_2026.db') == ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Cache miss. Trying the db-snapshot release."
+          mkdir -p data_cache
+          if gh release download db-snapshot --pattern '*.db' --dir data_cache --clobber; then
+            echo "Restored from release snapshot."
+          else
+            echo "No usable db-snapshot release found."
+          fi
+
+      # Neither layer above is guaranteed to have anything -- the very first
+      # run ever, or both lost at once. Rather than fail and wait for a human,
+      # let the scrapers' own init_db() create a fresh database and scrape
+      # everything: slower this one time, but this repo's whole point here is
+      # not needing anyone to babysit it. force_full_rebuild wipes on purpose
+      # (e.g. suspected corruption); this step just reports what's about to
+      # happen so it's visible in the log either way.
+      - name: Report database status
+        run: |
+          mkdir -p data_cache
+          if [ "${{ inputs.force_full_rebuild }}" = "true" ]; then
+            rm -f data_cache/*.db
+            echo "::warning::force_full_rebuild requested -- discarding any restored database."
+          fi
+          if [ -f "$VLR_DB_PATH" ]; then
+            echo "Database ready: $(du -h "$VLR_DB_PATH" | cut -f1)"
+          else
+            echo "::warning::No existing database (cache miss, no snapshot, or a forced rebuild)."
+            echo "This run will scrape everything from scratch (~1300 requests, ~1hr)."
+            echo "Every run after this one restores normally and only fetches what's new."
+          fi
+
+      # Exit codes are meaningful (see failure_exit_code() / ScrapeFailure in the
+      # scrapers): 0 clean, 1 incomplete but what landed is valid, 2+ aborted.
+      # Only 0 and 1 should reach the export step -- a 2 means vlr.gg refused us
+      # and the database is missing whatever this run should have added.
+      - name: Scrape VCT
+        id: scrape_vct
+        run: |
+          set +e
+          python scraper/vlr_vct_scraper.py --resume
+          code=$?
+          set -e
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" -ge 2 ]; then
+            echo "::error::VCT scraper aborted (exit $code). Not publishing this run."
+            exit "$code"
+          fi
+          if [ "$code" -eq 1 ]; then
+            echo "::warning::VCT scrape incomplete (exit 1). Publishing what landed; job will be marked failed."
+          fi
+
+      - name: Scrape EWC
+        id: scrape_ewc
+        run: |
+          set +e
+          python scraper/vlr_ewc_scraper.py --resume
+          code=$?
+          set -e
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" -ge 2 ]; then
+            echo "::error::EWC scraper aborted (exit $code). Not publishing this run."
+            exit "$code"
+          fi
+          if [ "$code" -eq 1 ]; then
+            echo "::warning::EWC scrape incomplete (exit 1). Publishing what landed; job will be marked failed."
+          fi
+
+      # Saved before the export/commit steps so a failure further down still
+      # preserves the scraping work this run paid for.
+      - name: Save scraper database
+        if: always() && steps.scrape_vct.outcome != 'skipped'
+        uses: actions/cache/save@v4
+        with:
+          path: data_cache
+          key: vlr-db-${{ github.run_id }}
+
+      # Keep the durable recovery copy roughly current. Refreshed once a day
+      # (the 03:00 UTC run) rather than every run: it is an 8MB upload, and a
+      # snapshot up to 24h stale still saves the entire season's re-scrape.
+      # Without this the release would stay frozen at whenever it was seeded,
+      # so a cache loss months later would silently cost every scrape since.
+      - name: Refresh release snapshot
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ] && [ "$(date -u +%H)" != "03" ]; then
+            echo "Not the daily slot -- skipping snapshot refresh."
+            exit 0
+          fi
+          gh release view db-snapshot >/dev/null 2>&1 || \
+            gh release create db-snapshot --title 'Scraper DB snapshot' \
+              --notes 'Seed/recovery copy of the scraper SQLite databases for CI. Replaced automatically; not a source of truth.'
+          gh release upload db-snapshot data_cache/*.db --clobber
+          echo "Snapshot refreshed."
+
+      # Writes only the files it generates; liquipedia_rosters.json is produced
+      # by a separate script and must survive untouched. Never clear this
+      # directory wholesale. The script itself refuses to run against a missing
+      # or empty database rather than emitting empty JSON over real data.
+      - name: Regenerate public/data
+        run: python data_prep/export_from_db.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data
+          if git diff --staged --quiet; then
+            echo "No data changes -- nothing to publish."
+            exit 0
+          fi
+          git commit -m "Update VLR data $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # Rebase before pushing: a run can overlap with a manual commit to
+          # main, and losing this run's data to a rejected push would mean the
+          # scraping was wasted.
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Pushed."
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt); rebasing onto latest main."
+            git pull --rebase --autostash origin main
+          done
+          echo "::error::Could not push after 3 attempts."
+          exit 1
+
+      # Runs after publishing, so valid data still reaches the site while the
+      # run itself is still reported as failed. Without this an incomplete
+      # scrape would show up as a green check.
+      - name: Mark run failed if scrape was incomplete
+        if: steps.scrape_vct.outputs.code != '0' || steps.scrape_ewc.outputs.code != '0'
+        run: |
+          echo "::error::Scrape was incomplete (VCT exit ${{ steps.scrape_vct.outputs.code }}, EWC exit ${{ steps.scrape_ewc.outputs.code }}). Check the logs above for which events or matches failed."
+          exit 1

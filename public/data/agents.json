@@ -3,11 +3,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Americas Qualifier",
-      "week": "Americas Qualifier: Decider",
+      "region": "Americas",
+      "event": "Esports World Cup 2025 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Decider",
+      "week": "Decider",
       "playerRows": 50,
       "agentCounts": {
         "Jett": 7,
@@ -106,11 +106,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Americas Qualifier",
-      "week": "Americas Qualifier: Elimination",
+      "region": "Americas",
+      "event": "Esports World Cup 2025 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Elimination",
+      "week": "Elimination",
       "playerRows": 30,
       "agentCounts": {
         "Viper": 6,
@@ -177,11 +177,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Americas Qualifier",
-      "week": "Americas Qualifier: Lower Final",
+      "region": "Americas",
+      "event": "Esports World Cup 2025 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Lower Final",
+      "week": "Lower Final",
       "playerRows": 20,
       "agentCounts": {
         "Viper": 4,
@@ -237,11 +237,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Americas Qualifier",
-      "week": "Americas Qualifier: Lower Round 1",
+      "region": "Americas",
+      "event": "Esports World Cup 2025 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Lower Round 1",
+      "week": "Lower Round 1",
       "playerRows": 20,
       "agentCounts": {
         "Viper": 4,
@@ -288,11 +288,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Americas Qualifier",
-      "week": "Americas Qualifier: Lower Round 2",
+      "region": "Americas",
+      "event": "Esports World Cup 2025 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Lower Round 2",
+      "week": "Lower Round 2",
       "playerRows": 40,
       "agentCounts": {
         "Omen": 4,
@@ -346,11 +346,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Americas Qualifier",
-      "week": "Americas Qualifier: Lower Round 3",
+      "region": "Americas",
+      "event": "Esports World Cup 2025 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Lower Round 3",
+      "week": "Lower Round 3",
       "playerRows": 20,
       "agentCounts": {
         "Viper": 3,
@@ -397,11 +397,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Americas Qualifier",
-      "week": "Americas Qualifier: Opening",
+      "region": "Americas",
+      "event": "Esports World Cup 2025 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Opening",
+      "week": "Opening",
       "playerRows": 40,
       "agentCounts": {
         "Jett": 6,
@@ -472,11 +472,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Americas Qualifier",
-      "week": "Americas Qualifier: Upper Final",
+      "region": "Americas",
+      "event": "Esports World Cup 2025 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Upper Final",
+      "week": "Upper Final",
       "playerRows": 20,
       "agentCounts": {
         "Omen": 3,
@@ -530,11 +530,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Americas Qualifier",
-      "week": "Americas Qualifier: Upper Quarterfinals",
+      "region": "Americas",
+      "event": "Esports World Cup 2025 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Upper Quarterfinals",
+      "week": "Upper Quarterfinals",
       "playerRows": 60,
       "agentCounts": {
         "Sova": 7,
@@ -623,11 +623,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Americas Qualifier",
-      "week": "Americas Qualifier: Upper Semifinals",
+      "region": "Americas",
+      "event": "Esports World Cup 2025 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Upper Semifinals",
+      "week": "Upper Semifinals",
       "playerRows": 60,
       "agentCounts": {
         "Omen": 8,
@@ -742,11 +742,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Americas Qualifier",
-      "week": "Americas Qualifier: Winner's",
+      "region": "Americas",
+      "event": "Esports World Cup 2025 Americas Qualifier",
+      "stage": "Qualifier",
+      "phase": "Winner's",
+      "week": "Winner's",
       "playerRows": 40,
       "agentCounts": {
         "Sova": 4,
@@ -835,11 +835,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "EMEA Qualifier",
-      "week": "EMEA Qualifier: Decider (Phase 2)",
+      "region": "EMEA",
+      "event": "Esports World Cup 2025 EMEA Qualifier",
+      "stage": "Qualifier",
+      "phase": "Decider (Phase 2)",
+      "week": "Decider (Phase 2)",
       "playerRows": 40,
       "agentCounts": {
         "Omen": 6,
@@ -926,11 +926,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "EMEA Qualifier",
-      "week": "EMEA Qualifier: Elimination (Phase 2)",
+      "region": "EMEA",
+      "event": "Esports World Cup 2025 EMEA Qualifier",
+      "stage": "Qualifier",
+      "phase": "Elimination (Phase 2)",
+      "week": "Elimination (Phase 2)",
       "playerRows": 20,
       "agentCounts": {
         "Sova": 4,
@@ -976,11 +976,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "EMEA Qualifier",
-      "week": "EMEA Qualifier: Lower Final",
+      "region": "EMEA",
+      "event": "Esports World Cup 2025 EMEA Qualifier",
+      "stage": "Qualifier",
+      "phase": "Lower Final",
+      "week": "Lower Final",
       "playerRows": 20,
       "agentCounts": {
         "Cypher": 4,
@@ -1027,11 +1027,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "EMEA Qualifier",
-      "week": "EMEA Qualifier: Lower Round 1",
+      "region": "EMEA",
+      "event": "Esports World Cup 2025 EMEA Qualifier",
+      "stage": "Qualifier",
+      "phase": "Lower Round 1",
+      "week": "Lower Round 1",
       "playerRows": 40,
       "agentCounts": {
         "Omen": 8,
@@ -1091,11 +1091,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "EMEA Qualifier",
-      "week": "EMEA Qualifier: Lower Round 2",
+      "region": "EMEA",
+      "event": "Esports World Cup 2025 EMEA Qualifier",
+      "stage": "Qualifier",
+      "phase": "Lower Round 2",
+      "week": "Lower Round 2",
       "playerRows": 50,
       "agentCounts": {
         "Tejo": 6,
@@ -1192,11 +1192,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "EMEA Qualifier",
-      "week": "EMEA Qualifier: Lower Round 3",
+      "region": "EMEA",
+      "event": "Esports World Cup 2025 EMEA Qualifier",
+      "stage": "Qualifier",
+      "phase": "Lower Round 3",
+      "week": "Lower Round 3",
       "playerRows": 30,
       "agentCounts": {
         "Cypher": 4,
@@ -1265,11 +1265,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "EMEA Qualifier",
-      "week": "EMEA Qualifier: Opening (Phase 2)",
+      "region": "EMEA",
+      "event": "Esports World Cup 2025 EMEA Qualifier",
+      "stage": "Qualifier",
+      "phase": "Opening (Phase 2)",
+      "week": "Opening (Phase 2)",
       "playerRows": 40,
       "agentCounts": {
         "Omen": 7,
@@ -1340,11 +1340,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "EMEA Qualifier",
-      "week": "EMEA Qualifier: Upper Final",
+      "region": "EMEA",
+      "event": "Esports World Cup 2025 EMEA Qualifier",
+      "stage": "Qualifier",
+      "phase": "Upper Final",
+      "week": "Upper Final",
       "playerRows": 30,
       "agentCounts": {
         "Cypher": 6,
@@ -1408,11 +1408,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "EMEA Qualifier",
-      "week": "EMEA Qualifier: Upper Quarterfinals",
+      "region": "EMEA",
+      "event": "Esports World Cup 2025 EMEA Qualifier",
+      "stage": "Qualifier",
+      "phase": "Upper Quarterfinals",
+      "week": "Upper Quarterfinals",
       "playerRows": 90,
       "agentCounts": {
         "Omen": 14,
@@ -1530,11 +1530,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "EMEA Qualifier",
-      "week": "EMEA Qualifier: Upper Semifinals",
+      "region": "EMEA",
+      "event": "Esports World Cup 2025 EMEA Qualifier",
+      "stage": "Qualifier",
+      "phase": "Upper Semifinals",
+      "week": "Upper Semifinals",
       "playerRows": 40,
       "agentCounts": {
         "Cypher": 6,
@@ -1603,11 +1603,11 @@
     {
       "competition": "EWC",
       "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "EMEA Qualifier",
-      "week": "EMEA Qualifier: Winner's (Phase 2)",
+      "region": "EMEA",
+      "event": "Esports World Cup 2025 EMEA Qualifier",
+      "stage": "Qualifier",
+      "phase": "Winner's (Phase 2)",
+      "week": "Winner's (Phase 2)",
       "playerRows": 40,
       "agentCounts": {
         "Omen": 6,
@@ -2634,394 +2634,6 @@
       "region": "International",
       "event": "Esports World Cup 2025",
       "stage": "Main Event",
-      "phase": "Pacific X Asian Champions League Qualifier",
-      "week": "Pacific X Asian Champions League Qualifier: Day 1",
-      "playerRows": 60,
-      "agentCounts": {
-        "Sova": 11,
-        "Omen": 11,
-        "Jett": 6,
-        "Cypher": 5,
-        "Viper": 4,
-        "Killjoy": 4,
-        "Raze": 3,
-        "Neon": 3,
-        "Yoru": 3,
-        "Kayo": 3,
-        "Breach": 2,
-        "Sage": 1,
-        "Fade": 1,
-        "Vyse": 1,
-        "Iso": 1,
-        "Deadlock": 1
-      },
-      "mapStats": {
-        "Ascent": {
-          "rounds": 43,
-          "atkWinRounds": 21,
-          "defWinRounds": 22
-        },
-        "Icebox": {
-          "rounds": 21,
-          "atkWinRounds": 9,
-          "defWinRounds": 12
-        },
-        "Lotus": {
-          "rounds": 21,
-          "atkWinRounds": 13,
-          "defWinRounds": 8
-        },
-        "Sunset": {
-          "rounds": 42,
-          "atkWinRounds": 26,
-          "defWinRounds": 16
-        }
-      },
-      "mapAgentCounts": {
-        "Ascent": {
-          "Sova": 4,
-          "Jett": 4,
-          "Omen": 4,
-          "Cypher": 2,
-          "Kayo": 2,
-          "Killjoy": 2,
-          "Yoru": 1,
-          "Deadlock": 1
-        },
-        "Icebox": {
-          "Sova": 2,
-          "Viper": 2,
-          "Jett": 2,
-          "Killjoy": 2,
-          "Omen": 1,
-          "Kayo": 1
-        },
-        "Lotus": {
-          "Raze": 2,
-          "Omen": 2,
-          "Yoru": 1,
-          "Fade": 1,
-          "Vyse": 1,
-          "Sova": 1,
-          "Viper": 1,
-          "Iso": 1
-        },
-        "Sunset": {
-          "Sova": 4,
-          "Omen": 4,
-          "Cypher": 3,
-          "Neon": 3,
-          "Breach": 2,
-          "Sage": 1,
-          "Raze": 1,
-          "Viper": 1,
-          "Yoru": 1
-        }
-      }
-    },
-    {
-      "competition": "EWC",
-      "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Pacific X Asian Champions League Qualifier",
-      "week": "Pacific X Asian Champions League Qualifier: Day 2",
-      "playerRows": 60,
-      "agentCounts": {
-        "Omen": 9,
-        "Neon": 6,
-        "Viper": 5,
-        "Sova": 5,
-        "Cypher": 5,
-        "Killjoy": 4,
-        "Breach": 4,
-        "Tejo": 3,
-        "Deadlock": 3,
-        "Fade": 3,
-        "Yoru": 3,
-        "Vyse": 2,
-        "Astra": 2,
-        "Raze": 2,
-        "Jett": 1,
-        "Kayo": 1,
-        "Gekko": 1,
-        "Clove": 1
-      },
-      "mapStats": {
-        "Haven": {
-          "rounds": 24,
-          "atkWinRounds": 13,
-          "defWinRounds": 11
-        },
-        "Icebox": {
-          "rounds": 26,
-          "atkWinRounds": 16,
-          "defWinRounds": 8
-        },
-        "Lotus": {
-          "rounds": 24,
-          "atkWinRounds": 5,
-          "defWinRounds": 19
-        },
-        "Pearl": {
-          "rounds": 22,
-          "atkWinRounds": 5,
-          "defWinRounds": 17
-        },
-        "Split": {
-          "rounds": 17,
-          "atkWinRounds": 8,
-          "defWinRounds": 9
-        },
-        "Sunset": {
-          "rounds": 19,
-          "atkWinRounds": 7,
-          "defWinRounds": 12
-        }
-      },
-      "mapAgentCounts": {
-        "Haven": {
-          "Cypher": 2,
-          "Omen": 2,
-          "Sova": 2,
-          "Breach": 2,
-          "Neon": 2
-        },
-        "Icebox": {
-          "Viper": 2,
-          "Omen": 2,
-          "Killjoy": 2,
-          "Jett": 1,
-          "Tejo": 1,
-          "Kayo": 1,
-          "Gekko": 1
-        },
-        "Lotus": {
-          "Omen": 2,
-          "Cypher": 1,
-          "Deadlock": 1,
-          "Fade": 1,
-          "Raze": 1,
-          "Tejo": 1,
-          "Viper": 1,
-          "Breach": 1,
-          "Yoru": 1
-        },
-        "Pearl": {
-          "Neon": 2,
-          "Vyse": 2,
-          "Astra": 2,
-          "Sova": 2,
-          "Killjoy": 2
-        },
-        "Split": {
-          "Viper": 2,
-          "Omen": 2,
-          "Deadlock": 1,
-          "Tejo": 1,
-          "Neon": 1,
-          "Fade": 1,
-          "Yoru": 1,
-          "Raze": 1
-        },
-        "Sunset": {
-          "Cypher": 2,
-          "Omen": 1,
-          "Sova": 1,
-          "Yoru": 1,
-          "Deadlock": 1,
-          "Breach": 1,
-          "Neon": 1,
-          "Fade": 1,
-          "Clove": 1
-        }
-      }
-    },
-    {
-      "competition": "EWC",
-      "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Pacific X Asian Champions League Qualifier",
-      "week": "Pacific X Asian Champions League Qualifier: Grand Final",
-      "playerRows": 40,
-      "agentCounts": {
-        "Omen": 8,
-        "Sova": 4,
-        "Deadlock": 4,
-        "Yoru": 3,
-        "Vyse": 3,
-        "Jett": 3,
-        "Tejo": 3,
-        "Viper": 3,
-        "Raze": 2,
-        "Killjoy": 2,
-        "Chamber": 1,
-        "Sage": 1,
-        "Neon": 1,
-        "Cypher": 1,
-        "Fade": 1
-      },
-      "mapStats": {
-        "Ascent": {
-          "rounds": 21,
-          "atkWinRounds": 8,
-          "defWinRounds": 13
-        },
-        "Icebox": {
-          "rounds": 19,
-          "atkWinRounds": 11,
-          "defWinRounds": 8
-        },
-        "Lotus": {
-          "rounds": 24,
-          "atkWinRounds": 13,
-          "defWinRounds": 11
-        },
-        "Sunset": {
-          "rounds": 20,
-          "atkWinRounds": 13,
-          "defWinRounds": 7
-        }
-      },
-      "mapAgentCounts": {
-        "Ascent": {
-          "Deadlock": 2,
-          "Omen": 2,
-          "Sova": 1,
-          "Yoru": 1,
-          "Chamber": 1,
-          "Vyse": 1,
-          "Jett": 1,
-          "Tejo": 1
-        },
-        "Icebox": {
-          "Jett": 2,
-          "Killjoy": 2,
-          "Viper": 2,
-          "Omen": 2,
-          "Sova": 1,
-          "Tejo": 1
-        },
-        "Lotus": {
-          "Yoru": 2,
-          "Vyse": 2,
-          "Omen": 2,
-          "Raze": 1,
-          "Fade": 1,
-          "Deadlock": 1,
-          "Tejo": 1
-        },
-        "Sunset": {
-          "Omen": 2,
-          "Sova": 2,
-          "Sage": 1,
-          "Raze": 1,
-          "Viper": 1,
-          "Neon": 1,
-          "Deadlock": 1,
-          "Cypher": 1
-        }
-      }
-    },
-    {
-      "competition": "EWC",
-      "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
-      "phase": "Pacific X Asian Champions League Qualifier",
-      "week": "Pacific X Asian Champions League Qualifier: Semifinals",
-      "playerRows": 40,
-      "agentCounts": {
-        "Omen": 6,
-        "Sova": 5,
-        "Neon": 5,
-        "Vyse": 3,
-        "Viper": 3,
-        "Deadlock": 3,
-        "Astra": 2,
-        "Raze": 2,
-        "Yoru": 2,
-        "Fade": 2,
-        "Killjoy": 2,
-        "Cypher": 2,
-        "Tejo": 1,
-        "Breach": 1,
-        "Jett": 1
-      },
-      "mapStats": {
-        "Haven": {
-          "rounds": 23,
-          "atkWinRounds": 10,
-          "defWinRounds": 13
-        },
-        "Pearl": {
-          "rounds": 18,
-          "atkWinRounds": 9,
-          "defWinRounds": 9
-        },
-        "Split": {
-          "rounds": 24,
-          "atkWinRounds": 9,
-          "defWinRounds": 15
-        },
-        "Sunset": {
-          "rounds": 21,
-          "atkWinRounds": 14,
-          "defWinRounds": 7
-        }
-      },
-      "mapAgentCounts": {
-        "Haven": {
-          "Omen": 2,
-          "Sova": 2,
-          "Neon": 1,
-          "Deadlock": 1,
-          "Cypher": 1,
-          "Killjoy": 1,
-          "Breach": 1,
-          "Jett": 1
-        },
-        "Pearl": {
-          "Astra": 2,
-          "Vyse": 2,
-          "Raze": 1,
-          "Yoru": 1,
-          "Fade": 1,
-          "Sova": 1,
-          "Neon": 1,
-          "Killjoy": 1
-        },
-        "Split": {
-          "Omen": 2,
-          "Viper": 2,
-          "Fade": 1,
-          "Raze": 1,
-          "Yoru": 1,
-          "Tejo": 1,
-          "Neon": 1,
-          "Deadlock": 1
-        },
-        "Sunset": {
-          "Sova": 2,
-          "Omen": 2,
-          "Neon": 2,
-          "Deadlock": 1,
-          "Cypher": 1,
-          "Viper": 1,
-          "Vyse": 1
-        }
-      }
-    },
-    {
-      "competition": "EWC",
-      "year": 2025,
-      "region": "International",
-      "event": "Esports World Cup 2025",
-      "stage": "Main Event",
       "phase": "Playoffs",
       "week": "Playoffs: Consolation Final",
       "playerRows": 20,
@@ -3376,6 +2988,394 @@
           "Raze": 1,
           "Sage": 1,
           "Viper": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "year": 2025,
+      "region": "Pacific",
+      "event": "Esports World Cup 2025 Pacific X Asian Champions League Qualifier",
+      "stage": "Qualifier",
+      "phase": "Day 1",
+      "week": "Day 1",
+      "playerRows": 60,
+      "agentCounts": {
+        "Sova": 11,
+        "Omen": 11,
+        "Jett": 6,
+        "Cypher": 5,
+        "Viper": 4,
+        "Killjoy": 4,
+        "Raze": 3,
+        "Neon": 3,
+        "Yoru": 3,
+        "Kayo": 3,
+        "Breach": 2,
+        "Sage": 1,
+        "Fade": 1,
+        "Vyse": 1,
+        "Iso": 1,
+        "Deadlock": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 43,
+          "atkWinRounds": 21,
+          "defWinRounds": 22
+        },
+        "Icebox": {
+          "rounds": 21,
+          "atkWinRounds": 9,
+          "defWinRounds": 12
+        },
+        "Lotus": {
+          "rounds": 21,
+          "atkWinRounds": 13,
+          "defWinRounds": 8
+        },
+        "Sunset": {
+          "rounds": 42,
+          "atkWinRounds": 26,
+          "defWinRounds": 16
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Sova": 4,
+          "Jett": 4,
+          "Omen": 4,
+          "Cypher": 2,
+          "Kayo": 2,
+          "Killjoy": 2,
+          "Yoru": 1,
+          "Deadlock": 1
+        },
+        "Icebox": {
+          "Sova": 2,
+          "Viper": 2,
+          "Jett": 2,
+          "Killjoy": 2,
+          "Omen": 1,
+          "Kayo": 1
+        },
+        "Lotus": {
+          "Raze": 2,
+          "Omen": 2,
+          "Yoru": 1,
+          "Fade": 1,
+          "Vyse": 1,
+          "Sova": 1,
+          "Viper": 1,
+          "Iso": 1
+        },
+        "Sunset": {
+          "Sova": 4,
+          "Omen": 4,
+          "Cypher": 3,
+          "Neon": 3,
+          "Breach": 2,
+          "Sage": 1,
+          "Raze": 1,
+          "Viper": 1,
+          "Yoru": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "year": 2025,
+      "region": "Pacific",
+      "event": "Esports World Cup 2025 Pacific X Asian Champions League Qualifier",
+      "stage": "Qualifier",
+      "phase": "Day 2",
+      "week": "Day 2",
+      "playerRows": 60,
+      "agentCounts": {
+        "Omen": 9,
+        "Neon": 6,
+        "Viper": 5,
+        "Sova": 5,
+        "Cypher": 5,
+        "Killjoy": 4,
+        "Breach": 4,
+        "Tejo": 3,
+        "Deadlock": 3,
+        "Fade": 3,
+        "Yoru": 3,
+        "Vyse": 2,
+        "Astra": 2,
+        "Raze": 2,
+        "Jett": 1,
+        "Kayo": 1,
+        "Gekko": 1,
+        "Clove": 1
+      },
+      "mapStats": {
+        "Haven": {
+          "rounds": 24,
+          "atkWinRounds": 13,
+          "defWinRounds": 11
+        },
+        "Icebox": {
+          "rounds": 26,
+          "atkWinRounds": 16,
+          "defWinRounds": 8
+        },
+        "Lotus": {
+          "rounds": 24,
+          "atkWinRounds": 5,
+          "defWinRounds": 19
+        },
+        "Pearl": {
+          "rounds": 22,
+          "atkWinRounds": 5,
+          "defWinRounds": 17
+        },
+        "Split": {
+          "rounds": 17,
+          "atkWinRounds": 8,
+          "defWinRounds": 9
+        },
+        "Sunset": {
+          "rounds": 19,
+          "atkWinRounds": 7,
+          "defWinRounds": 12
+        }
+      },
+      "mapAgentCounts": {
+        "Haven": {
+          "Cypher": 2,
+          "Omen": 2,
+          "Sova": 2,
+          "Breach": 2,
+          "Neon": 2
+        },
+        "Icebox": {
+          "Viper": 2,
+          "Omen": 2,
+          "Killjoy": 2,
+          "Jett": 1,
+          "Tejo": 1,
+          "Kayo": 1,
+          "Gekko": 1
+        },
+        "Lotus": {
+          "Omen": 2,
+          "Cypher": 1,
+          "Deadlock": 1,
+          "Fade": 1,
+          "Raze": 1,
+          "Tejo": 1,
+          "Viper": 1,
+          "Breach": 1,
+          "Yoru": 1
+        },
+        "Pearl": {
+          "Neon": 2,
+          "Vyse": 2,
+          "Astra": 2,
+          "Sova": 2,
+          "Killjoy": 2
+        },
+        "Split": {
+          "Viper": 2,
+          "Omen": 2,
+          "Deadlock": 1,
+          "Tejo": 1,
+          "Neon": 1,
+          "Fade": 1,
+          "Yoru": 1,
+          "Raze": 1
+        },
+        "Sunset": {
+          "Cypher": 2,
+          "Omen": 1,
+          "Sova": 1,
+          "Yoru": 1,
+          "Deadlock": 1,
+          "Breach": 1,
+          "Neon": 1,
+          "Fade": 1,
+          "Clove": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "year": 2025,
+      "region": "Pacific",
+      "event": "Esports World Cup 2025 Pacific X Asian Champions League Qualifier",
+      "stage": "Qualifier",
+      "phase": "Grand Final",
+      "week": "Grand Final",
+      "playerRows": 40,
+      "agentCounts": {
+        "Omen": 8,
+        "Sova": 4,
+        "Deadlock": 4,
+        "Yoru": 3,
+        "Vyse": 3,
+        "Jett": 3,
+        "Tejo": 3,
+        "Viper": 3,
+        "Raze": 2,
+        "Killjoy": 2,
+        "Chamber": 1,
+        "Sage": 1,
+        "Neon": 1,
+        "Cypher": 1,
+        "Fade": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 21,
+          "atkWinRounds": 8,
+          "defWinRounds": 13
+        },
+        "Icebox": {
+          "rounds": 19,
+          "atkWinRounds": 11,
+          "defWinRounds": 8
+        },
+        "Lotus": {
+          "rounds": 24,
+          "atkWinRounds": 13,
+          "defWinRounds": 11
+        },
+        "Sunset": {
+          "rounds": 20,
+          "atkWinRounds": 13,
+          "defWinRounds": 7
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Deadlock": 2,
+          "Omen": 2,
+          "Sova": 1,
+          "Yoru": 1,
+          "Chamber": 1,
+          "Vyse": 1,
+          "Jett": 1,
+          "Tejo": 1
+        },
+        "Icebox": {
+          "Jett": 2,
+          "Killjoy": 2,
+          "Viper": 2,
+          "Omen": 2,
+          "Sova": 1,
+          "Tejo": 1
+        },
+        "Lotus": {
+          "Yoru": 2,
+          "Vyse": 2,
+          "Omen": 2,
+          "Raze": 1,
+          "Fade": 1,
+          "Deadlock": 1,
+          "Tejo": 1
+        },
+        "Sunset": {
+          "Omen": 2,
+          "Sova": 2,
+          "Sage": 1,
+          "Raze": 1,
+          "Viper": 1,
+          "Neon": 1,
+          "Deadlock": 1,
+          "Cypher": 1
+        }
+      }
+    },
+    {
+      "competition": "EWC",
+      "year": 2025,
+      "region": "Pacific",
+      "event": "Esports World Cup 2025 Pacific X Asian Champions League Qualifier",
+      "stage": "Qualifier",
+      "phase": "Semifinals",
+      "week": "Semifinals",
+      "playerRows": 40,
+      "agentCounts": {
+        "Omen": 6,
+        "Sova": 5,
+        "Neon": 5,
+        "Vyse": 3,
+        "Viper": 3,
+        "Deadlock": 3,
+        "Astra": 2,
+        "Raze": 2,
+        "Yoru": 2,
+        "Fade": 2,
+        "Killjoy": 2,
+        "Cypher": 2,
+        "Tejo": 1,
+        "Breach": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Haven": {
+          "rounds": 23,
+          "atkWinRounds": 10,
+          "defWinRounds": 13
+        },
+        "Pearl": {
+          "rounds": 18,
+          "atkWinRounds": 9,
+          "defWinRounds": 9
+        },
+        "Split": {
+          "rounds": 24,
+          "atkWinRounds": 9,
+          "defWinRounds": 15
+        },
+        "Sunset": {
+          "rounds": 21,
+          "atkWinRounds": 14,
+          "defWinRounds": 7
+        }
+      },
+      "mapAgentCounts": {
+        "Haven": {
+          "Omen": 2,
+          "Sova": 2,
+          "Neon": 1,
+          "Deadlock": 1,
+          "Cypher": 1,
+          "Killjoy": 1,
+          "Breach": 1,
+          "Jett": 1
+        },
+        "Pearl": {
+          "Astra": 2,
+          "Vyse": 2,
+          "Raze": 1,
+          "Yoru": 1,
+          "Fade": 1,
+          "Sova": 1,
+          "Neon": 1,
+          "Killjoy": 1
+        },
+        "Split": {
+          "Omen": 2,
+          "Viper": 2,
+          "Fade": 1,
+          "Raze": 1,
+          "Yoru": 1,
+          "Tejo": 1,
+          "Neon": 1,
+          "Deadlock": 1
+        },
+        "Sunset": {
+          "Sova": 2,
+          "Omen": 2,
+          "Neon": 2,
+          "Deadlock": 1,
+          "Cypher": 1,
+          "Viper": 1,
+          "Vyse": 1
         }
       }
     },
@@ -18629,843 +18629,6 @@
       "competition": "VCT",
       "year": 2025,
       "region": "International",
-      "event": "Champions Tour 2025 Masters Bangkok",
-      "stage": "Masters",
-      "phase": "Playoffs",
-      "week": "Playoffs: Grand Final",
-      "playerRows": 50,
-      "agentCounts": {
-        "Yoru": 8,
-        "Omen": 6,
-        "Sova": 5,
-        "Tejo": 4,
-        "Breach": 4,
-        "Astra": 4,
-        "Viper": 3,
-        "Cypher": 2,
-        "Raze": 2,
-        "Iso": 2,
-        "Vyse": 2,
-        "Chamber": 2,
-        "Fade": 2,
-        "Jett": 1,
-        "Reyna": 1,
-        "Neon": 1,
-        "Killjoy": 1
-      },
-      "mapStats": {
-        "Abyss": {
-          "rounds": 24,
-          "atkWinRounds": 17,
-          "defWinRounds": 7
-        },
-        "Haven": {
-          "rounds": 22,
-          "atkWinRounds": 13,
-          "defWinRounds": 9
-        },
-        "Lotus": {
-          "rounds": 18,
-          "atkWinRounds": 9,
-          "defWinRounds": 9
-        },
-        "Pearl": {
-          "rounds": 30,
-          "atkWinRounds": 8,
-          "defWinRounds": 16
-        },
-        "Split": {
-          "rounds": 28,
-          "atkWinRounds": 8,
-          "defWinRounds": 16
-        }
-      },
-      "mapAgentCounts": {
-        "Abyss": {
-          "Sova": 1,
-          "Yoru": 1,
-          "Astra": 1,
-          "Chamber": 1,
-          "Breach": 1,
-          "Tejo": 1,
-          "Fade": 1,
-          "Omen": 1,
-          "Jett": 1,
-          "Reyna": 1
-        },
-        "Haven": {
-          "Yoru": 2,
-          "Tejo": 1,
-          "Astra": 1,
-          "Breach": 1,
-          "Vyse": 1,
-          "Omen": 1,
-          "Iso": 1,
-          "Cypher": 1,
-          "Sova": 1
-        },
-        "Lotus": {
-          "Omen": 2,
-          "Tejo": 1,
-          "Viper": 1,
-          "Yoru": 1,
-          "Breach": 1,
-          "Cypher": 1,
-          "Raze": 1,
-          "Iso": 1,
-          "Sova": 1
-        },
-        "Pearl": {
-          "Yoru": 2,
-          "Astra": 2,
-          "Sova": 2,
-          "Vyse": 1,
-          "Chamber": 1,
-          "Neon": 1,
-          "Killjoy": 1
-        },
-        "Split": {
-          "Omen": 2,
-          "Yoru": 2,
-          "Viper": 2,
-          "Tejo": 1,
-          "Breach": 1,
-          "Fade": 1,
-          "Raze": 1
-        }
-      }
-    },
-    {
-      "competition": "VCT",
-      "year": 2025,
-      "region": "International",
-      "event": "Champions Tour 2025 Masters Bangkok",
-      "stage": "Masters",
-      "phase": "Playoffs",
-      "week": "Playoffs: Lower Final",
-      "playerRows": 40,
-      "agentCounts": {
-        "Tejo": 5,
-        "Raze": 4,
-        "Brimstone": 4,
-        "Omen": 4,
-        "Breach": 4,
-        "Vyse": 3,
-        "Cypher": 3,
-        "Kayo": 2,
-        "Fade": 2,
-        "Jett": 2,
-        "Yoru": 2,
-        "Viper": 2,
-        "Iso": 1,
-        "Sova": 1,
-        "Neon": 1
-      },
-      "mapStats": {
-        "Bind": {
-          "rounds": 17,
-          "atkWinRounds": 7,
-          "defWinRounds": 10
-        },
-        "Fracture": {
-          "rounds": 26,
-          "atkWinRounds": 14,
-          "defWinRounds": 10
-        },
-        "Haven": {
-          "rounds": 23,
-          "atkWinRounds": 17,
-          "defWinRounds": 6
-        },
-        "Split": {
-          "rounds": 18,
-          "atkWinRounds": 11,
-          "defWinRounds": 7
-        }
-      },
-      "mapAgentCounts": {
-        "Bind": {
-          "Kayo": 2,
-          "Raze": 2,
-          "Vyse": 2,
-          "Brimstone": 2,
-          "Tejo": 1,
-          "Fade": 1
-        },
-        "Fracture": {
-          "Tejo": 2,
-          "Brimstone": 2,
-          "Breach": 2,
-          "Neon": 1,
-          "Cypher": 1,
-          "Vyse": 1,
-          "Raze": 1
-        },
-        "Haven": {
-          "Cypher": 2,
-          "Omen": 2,
-          "Jett": 1,
-          "Breach": 1,
-          "Tejo": 1,
-          "Yoru": 1,
-          "Iso": 1,
-          "Sova": 1
-        },
-        "Split": {
-          "Omen": 2,
-          "Viper": 2,
-          "Tejo": 1,
-          "Jett": 1,
-          "Breach": 1,
-          "Yoru": 1,
-          "Fade": 1,
-          "Raze": 1
-        }
-      }
-    },
-    {
-      "competition": "VCT",
-      "year": 2025,
-      "region": "International",
-      "event": "Champions Tour 2025 Masters Bangkok",
-      "stage": "Masters",
-      "phase": "Playoffs",
-      "week": "Playoffs: Lower Round 1",
-      "playerRows": 30,
-      "agentCounts": {
-        "Omen": 6,
-        "Raze": 4,
-        "Sova": 3,
-        "Cypher": 3,
-        "Viper": 3,
-        "Fade": 3,
-        "Yoru": 3,
-        "Iso": 2,
-        "Vyse": 1,
-        "Jett": 1,
-        "Breach": 1
-      },
-      "mapStats": {
-        "Haven": {
-          "rounds": 17,
-          "atkWinRounds": 9,
-          "defWinRounds": 8
-        },
-        "Lotus": {
-          "rounds": 26,
-          "atkWinRounds": 16,
-          "defWinRounds": 8
-        },
-        "Split": {
-          "rounds": 18,
-          "atkWinRounds": 7,
-          "defWinRounds": 11
-        }
-      },
-      "mapAgentCounts": {
-        "Haven": {
-          "Cypher": 2,
-          "Yoru": 2,
-          "Sova": 2,
-          "Omen": 2,
-          "Iso": 1,
-          "Jett": 1
-        },
-        "Lotus": {
-          "Raze": 2,
-          "Omen": 2,
-          "Iso": 1,
-          "Sova": 1,
-          "Cypher": 1,
-          "Viper": 1,
-          "Fade": 1,
-          "Vyse": 1
-        },
-        "Split": {
-          "Omen": 2,
-          "Raze": 2,
-          "Viper": 2,
-          "Fade": 2,
-          "Yoru": 1,
-          "Breach": 1
-        }
-      }
-    },
-    {
-      "competition": "VCT",
-      "year": 2025,
-      "region": "International",
-      "event": "Champions Tour 2025 Masters Bangkok",
-      "stage": "Masters",
-      "phase": "Playoffs",
-      "week": "Playoffs: Upper Final",
-      "playerRows": 20,
-      "agentCounts": {
-        "Omen": 4,
-        "Breach": 4,
-        "Tejo": 3,
-        "Viper": 3,
-        "Yoru": 2,
-        "Clove": 1,
-        "Fade": 1,
-        "Neon": 1,
-        "Jett": 1
-      },
-      "mapStats": {
-        "Lotus": {
-          "rounds": 21,
-          "atkWinRounds": 11,
-          "defWinRounds": 10
-        },
-        "Split": {
-          "rounds": 20,
-          "atkWinRounds": 9,
-          "defWinRounds": 11
-        }
-      },
-      "mapAgentCounts": {
-        "Lotus": {
-          "Omen": 2,
-          "Breach": 2,
-          "Clove": 1,
-          "Fade": 1,
-          "Neon": 1,
-          "Tejo": 1,
-          "Viper": 1,
-          "Yoru": 1
-        },
-        "Split": {
-          "Viper": 2,
-          "Breach": 2,
-          "Omen": 2,
-          "Tejo": 2,
-          "Jett": 1,
-          "Yoru": 1
-        }
-      }
-    },
-    {
-      "competition": "VCT",
-      "year": 2025,
-      "region": "International",
-      "event": "Champions Tour 2025 Masters Bangkok",
-      "stage": "Masters",
-      "phase": "Playoffs",
-      "week": "Playoffs: Upper Semifinals",
-      "playerRows": 50,
-      "agentCounts": {
-        "Tejo": 6,
-        "Viper": 5,
-        "Raze": 5,
-        "Yoru": 5,
-        "Vyse": 5,
-        "Omen": 4,
-        "Fade": 4,
-        "Brimstone": 4,
-        "Breach": 3,
-        "Kayo": 2,
-        "Astra": 2,
-        "Jett": 1,
-        "Neon": 1,
-        "Killjoy": 1,
-        "Sova": 1,
-        "Skye": 1
-      },
-      "mapStats": {
-        "Bind": {
-          "rounds": 47,
-          "atkWinRounds": 25,
-          "defWinRounds": 18
-        },
-        "Lotus": {
-          "rounds": 22,
-          "atkWinRounds": 9,
-          "defWinRounds": 13
-        },
-        "Pearl": {
-          "rounds": 24,
-          "atkWinRounds": 11,
-          "defWinRounds": 13
-        },
-        "Split": {
-          "rounds": 20,
-          "atkWinRounds": 15,
-          "defWinRounds": 5
-        }
-      },
-      "mapAgentCounts": {
-        "Bind": {
-          "Brimstone": 4,
-          "Vyse": 3,
-          "Raze": 3,
-          "Tejo": 3,
-          "Kayo": 2,
-          "Fade": 1,
-          "Skye": 1,
-          "Viper": 1,
-          "Breach": 1,
-          "Yoru": 1
-        },
-        "Lotus": {
-          "Omen": 2,
-          "Viper": 2,
-          "Vyse": 1,
-          "Fade": 1,
-          "Raze": 1,
-          "Tejo": 1,
-          "Breach": 1,
-          "Yoru": 1
-        },
-        "Pearl": {
-          "Astra": 2,
-          "Yoru": 2,
-          "Vyse": 1,
-          "Tejo": 1,
-          "Fade": 1,
-          "Neon": 1,
-          "Killjoy": 1,
-          "Sova": 1
-        },
-        "Split": {
-          "Viper": 2,
-          "Omen": 2,
-          "Jett": 1,
-          "Tejo": 1,
-          "Breach": 1,
-          "Fade": 1,
-          "Raze": 1,
-          "Yoru": 1
-        }
-      }
-    },
-    {
-      "competition": "VCT",
-      "year": 2025,
-      "region": "International",
-      "event": "Champions Tour 2025 Masters Bangkok",
-      "stage": "Masters",
-      "phase": "Swiss Stage",
-      "week": "Swiss Stage: Round 1",
-      "playerRows": 80,
-      "agentCounts": {
-        "Tejo": 9,
-        "Breach": 8,
-        "Vyse": 8,
-        "Omen": 7,
-        "Yoru": 7,
-        "Raze": 7,
-        "Viper": 6,
-        "Astra": 6,
-        "Fade": 5,
-        "Brimstone": 4,
-        "Jett": 3,
-        "Sova": 3,
-        "Chamber": 2,
-        "Cypher": 2,
-        "Kayo": 2,
-        "Skye": 1
-      },
-      "mapStats": {
-        "Abyss": {
-          "rounds": 16,
-          "atkWinRounds": 7,
-          "defWinRounds": 9
-        },
-        "Bind": {
-          "rounds": 22,
-          "atkWinRounds": 11,
-          "defWinRounds": 11
-        },
-        "Fracture": {
-          "rounds": 23,
-          "atkWinRounds": 8,
-          "defWinRounds": 15
-        },
-        "Haven": {
-          "rounds": 23,
-          "atkWinRounds": 13,
-          "defWinRounds": 10
-        },
-        "Lotus": {
-          "rounds": 37,
-          "atkWinRounds": 19,
-          "defWinRounds": 18
-        },
-        "Pearl": {
-          "rounds": 19,
-          "atkWinRounds": 8,
-          "defWinRounds": 11
-        },
-        "Split": {
-          "rounds": 34,
-          "atkWinRounds": 12,
-          "defWinRounds": 12
-        }
-      },
-      "mapAgentCounts": {
-        "Abyss": {
-          "Sova": 2,
-          "Astra": 2,
-          "Chamber": 1,
-          "Breach": 1,
-          "Yoru": 1,
-          "Jett": 1,
-          "Kayo": 1,
-          "Omen": 1
-        },
-        "Bind": {
-          "Brimstone": 2,
-          "Raze": 2,
-          "Skye": 1,
-          "Viper": 1,
-          "Tejo": 1,
-          "Kayo": 1,
-          "Vyse": 1,
-          "Fade": 1
-        },
-        "Fracture": {
-          "Brimstone": 2,
-          "Raze": 2,
-          "Tejo": 2,
-          "Vyse": 2,
-          "Breach": 2
-        },
-        "Haven": {
-          "Breach": 2,
-          "Tejo": 2,
-          "Cypher": 1,
-          "Yoru": 1,
-          "Omen": 1,
-          "Astra": 1,
-          "Jett": 1,
-          "Vyse": 1
-        },
-        "Lotus": {
-          "Omen": 4,
-          "Viper": 3,
-          "Tejo": 2,
-          "Breach": 2,
-          "Yoru": 2,
-          "Raze": 2,
-          "Vyse": 2,
-          "Fade": 2,
-          "Cypher": 1
-        },
-        "Pearl": {
-          "Vyse": 2,
-          "Astra": 2,
-          "Yoru": 2,
-          "Fade": 1,
-          "Tejo": 1,
-          "Chamber": 1,
-          "Sova": 1
-        },
-        "Split": {
-          "Viper": 2,
-          "Jett": 1,
-          "Tejo": 1,
-          "Breach": 1,
-          "Omen": 1,
-          "Yoru": 1,
-          "Raze": 1,
-          "Astra": 1,
-          "Fade": 1
-        }
-      }
-    },
-    {
-      "competition": "VCT",
-      "year": 2025,
-      "region": "International",
-      "event": "Champions Tour 2025 Masters Bangkok",
-      "stage": "Masters",
-      "phase": "Swiss Stage",
-      "week": "Swiss Stage: Round 2 (0-1)",
-      "playerRows": 50,
-      "agentCounts": {
-        "Omen": 8,
-        "Cypher": 5,
-        "Raze": 5,
-        "Sova": 4,
-        "Viper": 4,
-        "Jett": 3,
-        "Tejo": 3,
-        "Iso": 2,
-        "Vyse": 2,
-        "Fade": 2,
-        "Yoru": 2,
-        "Breach": 2,
-        "Kayo": 2,
-        "Brimstone": 2,
-        "Skye": 2,
-        "Astra": 1,
-        "Gekko": 1
-      },
-      "mapStats": {
-        "Abyss": {
-          "rounds": 30,
-          "atkWinRounds": 10,
-          "defWinRounds": 14
-        },
-        "Bind": {
-          "rounds": 14,
-          "atkWinRounds": 3,
-          "defWinRounds": 11
-        },
-        "Haven": {
-          "rounds": 21,
-          "atkWinRounds": 13,
-          "defWinRounds": 8
-        },
-        "Lotus": {
-          "rounds": 36,
-          "atkWinRounds": 18,
-          "defWinRounds": 18
-        }
-      },
-      "mapAgentCounts": {
-        "Abyss": {
-          "Omen": 2,
-          "Kayo": 2,
-          "Jett": 2,
-          "Cypher": 1,
-          "Sova": 1,
-          "Tejo": 1,
-          "Astra": 1
-        },
-        "Bind": {
-          "Viper": 2,
-          "Raze": 2,
-          "Brimstone": 2,
-          "Skye": 2,
-          "Gekko": 1,
-          "Tejo": 1
-        },
-        "Haven": {
-          "Cypher": 2,
-          "Sova": 2,
-          "Omen": 2,
-          "Iso": 1,
-          "Yoru": 1,
-          "Jett": 1,
-          "Breach": 1
-        },
-        "Lotus": {
-          "Omen": 4,
-          "Raze": 3,
-          "Cypher": 2,
-          "Vyse": 2,
-          "Fade": 2,
-          "Viper": 2,
-          "Sova": 1,
-          "Iso": 1,
-          "Breach": 1,
-          "Tejo": 1,
-          "Yoru": 1
-        }
-      }
-    },
-    {
-      "competition": "VCT",
-      "year": 2025,
-      "region": "International",
-      "event": "Champions Tour 2025 Masters Bangkok",
-      "stage": "Masters",
-      "phase": "Swiss Stage",
-      "week": "Swiss Stage: Round 2 (1-0)",
-      "playerRows": 60,
-      "agentCounts": {
-        "Tejo": 10,
-        "Breach": 6,
-        "Brimstone": 6,
-        "Yoru": 5,
-        "Raze": 5,
-        "Cypher": 4,
-        "Vyse": 4,
-        "Viper": 3,
-        "Omen": 3,
-        "Sova": 3,
-        "Astra": 3,
-        "Skye": 2,
-        "Fade": 2,
-        "Jett": 1,
-        "Chamber": 1,
-        "Kayo": 1,
-        "Neon": 1
-      },
-      "mapStats": {
-        "Abyss": {
-          "rounds": 24,
-          "atkWinRounds": 13,
-          "defWinRounds": 11
-        },
-        "Bind": {
-          "rounds": 42,
-          "atkWinRounds": 18,
-          "defWinRounds": 24
-        },
-        "Fracture": {
-          "rounds": 17,
-          "atkWinRounds": 3,
-          "defWinRounds": 14
-        },
-        "Pearl": {
-          "rounds": 34,
-          "atkWinRounds": 12,
-          "defWinRounds": 12
-        },
-        "Split": {
-          "rounds": 24,
-          "atkWinRounds": 13,
-          "defWinRounds": 11
-        }
-      },
-      "mapAgentCounts": {
-        "Abyss": {
-          "Sova": 2,
-          "Tejo": 2,
-          "Omen": 1,
-          "Cypher": 1,
-          "Yoru": 1,
-          "Jett": 1,
-          "Astra": 1,
-          "Breach": 1
-        },
-        "Bind": {
-          "Tejo": 4,
-          "Brimstone": 4,
-          "Raze": 3,
-          "Skye": 2,
-          "Viper": 2,
-          "Yoru": 1,
-          "Breach": 1,
-          "Cypher": 1,
-          "Kayo": 1,
-          "Vyse": 1
-        },
-        "Fracture": {
-          "Tejo": 2,
-          "Breach": 2,
-          "Brimstone": 2,
-          "Cypher": 1,
-          "Neon": 1,
-          "Vyse": 1,
-          "Raze": 1
-        },
-        "Pearl": {
-          "Vyse": 2,
-          "Astra": 2,
-          "Yoru": 2,
-          "Tejo": 1,
-          "Fade": 1,
-          "Sova": 1,
-          "Chamber": 1
-        },
-        "Split": {
-          "Omen": 2,
-          "Breach": 2,
-          "Tejo": 1,
-          "Yoru": 1,
-          "Cypher": 1,
-          "Raze": 1,
-          "Viper": 1,
-          "Fade": 1
-        }
-      }
-    },
-    {
-      "competition": "VCT",
-      "year": 2025,
-      "region": "International",
-      "event": "Champions Tour 2025 Masters Bangkok",
-      "stage": "Masters",
-      "phase": "Swiss Stage",
-      "week": "Swiss Stage: Round 3",
-      "playerRows": 40,
-      "agentCounts": {
-        "Tejo": 7,
-        "Breach": 6,
-        "Yoru": 5,
-        "Vyse": 3,
-        "Cypher": 3,
-        "Astra": 3,
-        "Omen": 3,
-        "Brimstone": 2,
-        "Neon": 2,
-        "Raze": 1,
-        "Sova": 1,
-        "Killjoy": 1,
-        "Fade": 1,
-        "Jett": 1,
-        "Viper": 1
-      },
-      "mapStats": {
-        "Fracture": {
-          "rounds": 24,
-          "atkWinRounds": 15,
-          "defWinRounds": 9
-        },
-        "Haven": {
-          "rounds": 18,
-          "atkWinRounds": 9,
-          "defWinRounds": 9
-        },
-        "Lotus": {
-          "rounds": 20,
-          "atkWinRounds": 7,
-          "defWinRounds": 13
-        },
-        "Pearl": {
-          "rounds": 17,
-          "atkWinRounds": 9,
-          "defWinRounds": 8
-        }
-      },
-      "mapAgentCounts": {
-        "Fracture": {
-          "Tejo": 2,
-          "Brimstone": 2,
-          "Breach": 2,
-          "Vyse": 1,
-          "Raze": 1,
-          "Cypher": 1,
-          "Yoru": 1
-        },
-        "Haven": {
-          "Breach": 2,
-          "Tejo": 2,
-          "Astra": 1,
-          "Yoru": 1,
-          "Vyse": 1,
-          "Cypher": 1,
-          "Omen": 1,
-          "Jett": 1
-        },
-        "Lotus": {
-          "Omen": 2,
-          "Tejo": 2,
-          "Breach": 2,
-          "Viper": 1,
-          "Yoru": 1,
-          "Cypher": 1,
-          "Neon": 1
-        },
-        "Pearl": {
-          "Yoru": 2,
-          "Astra": 2,
-          "Sova": 1,
-          "Neon": 1,
-          "Killjoy": 1,
-          "Vyse": 1,
-          "Tejo": 1,
-          "Fade": 1
-        }
-      }
-    },
-    {
-      "competition": "VCT",
-      "year": 2025,
-      "region": "International",
       "event": "Valorant Champions 2025",
       "stage": "Champions",
       "phase": "Group Stage",
@@ -21260,6 +20423,843 @@
           "Killjoy": 1,
           "Vyse": 1,
           "Yoru": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2025,
+      "region": "International",
+      "event": "Valorant Masters Bangkok 2025",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Grand Final",
+      "playerRows": 50,
+      "agentCounts": {
+        "Yoru": 8,
+        "Omen": 6,
+        "Sova": 5,
+        "Tejo": 4,
+        "Breach": 4,
+        "Astra": 4,
+        "Viper": 3,
+        "Cypher": 2,
+        "Raze": 2,
+        "Iso": 2,
+        "Vyse": 2,
+        "Chamber": 2,
+        "Fade": 2,
+        "Jett": 1,
+        "Reyna": 1,
+        "Neon": 1,
+        "Killjoy": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 24,
+          "atkWinRounds": 17,
+          "defWinRounds": 7
+        },
+        "Haven": {
+          "rounds": 22,
+          "atkWinRounds": 13,
+          "defWinRounds": 9
+        },
+        "Lotus": {
+          "rounds": 18,
+          "atkWinRounds": 9,
+          "defWinRounds": 9
+        },
+        "Pearl": {
+          "rounds": 30,
+          "atkWinRounds": 8,
+          "defWinRounds": 16
+        },
+        "Split": {
+          "rounds": 28,
+          "atkWinRounds": 8,
+          "defWinRounds": 16
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Sova": 1,
+          "Yoru": 1,
+          "Astra": 1,
+          "Chamber": 1,
+          "Breach": 1,
+          "Tejo": 1,
+          "Fade": 1,
+          "Omen": 1,
+          "Jett": 1,
+          "Reyna": 1
+        },
+        "Haven": {
+          "Yoru": 2,
+          "Tejo": 1,
+          "Astra": 1,
+          "Breach": 1,
+          "Vyse": 1,
+          "Omen": 1,
+          "Iso": 1,
+          "Cypher": 1,
+          "Sova": 1
+        },
+        "Lotus": {
+          "Omen": 2,
+          "Tejo": 1,
+          "Viper": 1,
+          "Yoru": 1,
+          "Breach": 1,
+          "Cypher": 1,
+          "Raze": 1,
+          "Iso": 1,
+          "Sova": 1
+        },
+        "Pearl": {
+          "Yoru": 2,
+          "Astra": 2,
+          "Sova": 2,
+          "Vyse": 1,
+          "Chamber": 1,
+          "Neon": 1,
+          "Killjoy": 1
+        },
+        "Split": {
+          "Omen": 2,
+          "Yoru": 2,
+          "Viper": 2,
+          "Tejo": 1,
+          "Breach": 1,
+          "Fade": 1,
+          "Raze": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2025,
+      "region": "International",
+      "event": "Valorant Masters Bangkok 2025",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Lower Final",
+      "playerRows": 40,
+      "agentCounts": {
+        "Tejo": 5,
+        "Raze": 4,
+        "Brimstone": 4,
+        "Omen": 4,
+        "Breach": 4,
+        "Vyse": 3,
+        "Cypher": 3,
+        "Kayo": 2,
+        "Fade": 2,
+        "Jett": 2,
+        "Yoru": 2,
+        "Viper": 2,
+        "Iso": 1,
+        "Sova": 1,
+        "Neon": 1
+      },
+      "mapStats": {
+        "Bind": {
+          "rounds": 17,
+          "atkWinRounds": 7,
+          "defWinRounds": 10
+        },
+        "Fracture": {
+          "rounds": 26,
+          "atkWinRounds": 14,
+          "defWinRounds": 10
+        },
+        "Haven": {
+          "rounds": 23,
+          "atkWinRounds": 17,
+          "defWinRounds": 6
+        },
+        "Split": {
+          "rounds": 18,
+          "atkWinRounds": 11,
+          "defWinRounds": 7
+        }
+      },
+      "mapAgentCounts": {
+        "Bind": {
+          "Kayo": 2,
+          "Raze": 2,
+          "Vyse": 2,
+          "Brimstone": 2,
+          "Tejo": 1,
+          "Fade": 1
+        },
+        "Fracture": {
+          "Tejo": 2,
+          "Brimstone": 2,
+          "Breach": 2,
+          "Neon": 1,
+          "Cypher": 1,
+          "Vyse": 1,
+          "Raze": 1
+        },
+        "Haven": {
+          "Cypher": 2,
+          "Omen": 2,
+          "Jett": 1,
+          "Breach": 1,
+          "Tejo": 1,
+          "Yoru": 1,
+          "Iso": 1,
+          "Sova": 1
+        },
+        "Split": {
+          "Omen": 2,
+          "Viper": 2,
+          "Tejo": 1,
+          "Jett": 1,
+          "Breach": 1,
+          "Yoru": 1,
+          "Fade": 1,
+          "Raze": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2025,
+      "region": "International",
+      "event": "Valorant Masters Bangkok 2025",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Lower Round 1",
+      "playerRows": 30,
+      "agentCounts": {
+        "Omen": 6,
+        "Raze": 4,
+        "Sova": 3,
+        "Cypher": 3,
+        "Viper": 3,
+        "Fade": 3,
+        "Yoru": 3,
+        "Iso": 2,
+        "Vyse": 1,
+        "Jett": 1,
+        "Breach": 1
+      },
+      "mapStats": {
+        "Haven": {
+          "rounds": 17,
+          "atkWinRounds": 9,
+          "defWinRounds": 8
+        },
+        "Lotus": {
+          "rounds": 26,
+          "atkWinRounds": 16,
+          "defWinRounds": 8
+        },
+        "Split": {
+          "rounds": 18,
+          "atkWinRounds": 7,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Haven": {
+          "Cypher": 2,
+          "Yoru": 2,
+          "Sova": 2,
+          "Omen": 2,
+          "Iso": 1,
+          "Jett": 1
+        },
+        "Lotus": {
+          "Raze": 2,
+          "Omen": 2,
+          "Iso": 1,
+          "Sova": 1,
+          "Cypher": 1,
+          "Viper": 1,
+          "Fade": 1,
+          "Vyse": 1
+        },
+        "Split": {
+          "Omen": 2,
+          "Raze": 2,
+          "Viper": 2,
+          "Fade": 2,
+          "Yoru": 1,
+          "Breach": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2025,
+      "region": "International",
+      "event": "Valorant Masters Bangkok 2025",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Upper Final",
+      "playerRows": 20,
+      "agentCounts": {
+        "Omen": 4,
+        "Breach": 4,
+        "Tejo": 3,
+        "Viper": 3,
+        "Yoru": 2,
+        "Clove": 1,
+        "Fade": 1,
+        "Neon": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Lotus": {
+          "rounds": 21,
+          "atkWinRounds": 11,
+          "defWinRounds": 10
+        },
+        "Split": {
+          "rounds": 20,
+          "atkWinRounds": 9,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Lotus": {
+          "Omen": 2,
+          "Breach": 2,
+          "Clove": 1,
+          "Fade": 1,
+          "Neon": 1,
+          "Tejo": 1,
+          "Viper": 1,
+          "Yoru": 1
+        },
+        "Split": {
+          "Viper": 2,
+          "Breach": 2,
+          "Omen": 2,
+          "Tejo": 2,
+          "Jett": 1,
+          "Yoru": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2025,
+      "region": "International",
+      "event": "Valorant Masters Bangkok 2025",
+      "stage": "Masters",
+      "phase": "Playoffs",
+      "week": "Playoffs: Upper Semifinals",
+      "playerRows": 50,
+      "agentCounts": {
+        "Tejo": 6,
+        "Viper": 5,
+        "Raze": 5,
+        "Yoru": 5,
+        "Vyse": 5,
+        "Omen": 4,
+        "Fade": 4,
+        "Brimstone": 4,
+        "Breach": 3,
+        "Kayo": 2,
+        "Astra": 2,
+        "Jett": 1,
+        "Neon": 1,
+        "Killjoy": 1,
+        "Sova": 1,
+        "Skye": 1
+      },
+      "mapStats": {
+        "Bind": {
+          "rounds": 47,
+          "atkWinRounds": 25,
+          "defWinRounds": 18
+        },
+        "Lotus": {
+          "rounds": 22,
+          "atkWinRounds": 9,
+          "defWinRounds": 13
+        },
+        "Pearl": {
+          "rounds": 24,
+          "atkWinRounds": 11,
+          "defWinRounds": 13
+        },
+        "Split": {
+          "rounds": 20,
+          "atkWinRounds": 15,
+          "defWinRounds": 5
+        }
+      },
+      "mapAgentCounts": {
+        "Bind": {
+          "Brimstone": 4,
+          "Vyse": 3,
+          "Raze": 3,
+          "Tejo": 3,
+          "Kayo": 2,
+          "Fade": 1,
+          "Skye": 1,
+          "Viper": 1,
+          "Breach": 1,
+          "Yoru": 1
+        },
+        "Lotus": {
+          "Omen": 2,
+          "Viper": 2,
+          "Vyse": 1,
+          "Fade": 1,
+          "Raze": 1,
+          "Tejo": 1,
+          "Breach": 1,
+          "Yoru": 1
+        },
+        "Pearl": {
+          "Astra": 2,
+          "Yoru": 2,
+          "Vyse": 1,
+          "Tejo": 1,
+          "Fade": 1,
+          "Neon": 1,
+          "Killjoy": 1,
+          "Sova": 1
+        },
+        "Split": {
+          "Viper": 2,
+          "Omen": 2,
+          "Jett": 1,
+          "Tejo": 1,
+          "Breach": 1,
+          "Fade": 1,
+          "Raze": 1,
+          "Yoru": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2025,
+      "region": "International",
+      "event": "Valorant Masters Bangkok 2025",
+      "stage": "Masters",
+      "phase": "Swiss Stage",
+      "week": "Swiss Stage: Round 1",
+      "playerRows": 80,
+      "agentCounts": {
+        "Tejo": 9,
+        "Breach": 8,
+        "Vyse": 8,
+        "Omen": 7,
+        "Yoru": 7,
+        "Raze": 7,
+        "Viper": 6,
+        "Astra": 6,
+        "Fade": 5,
+        "Brimstone": 4,
+        "Jett": 3,
+        "Sova": 3,
+        "Chamber": 2,
+        "Cypher": 2,
+        "Kayo": 2,
+        "Skye": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 16,
+          "atkWinRounds": 7,
+          "defWinRounds": 9
+        },
+        "Bind": {
+          "rounds": 22,
+          "atkWinRounds": 11,
+          "defWinRounds": 11
+        },
+        "Fracture": {
+          "rounds": 23,
+          "atkWinRounds": 8,
+          "defWinRounds": 15
+        },
+        "Haven": {
+          "rounds": 23,
+          "atkWinRounds": 13,
+          "defWinRounds": 10
+        },
+        "Lotus": {
+          "rounds": 37,
+          "atkWinRounds": 19,
+          "defWinRounds": 18
+        },
+        "Pearl": {
+          "rounds": 19,
+          "atkWinRounds": 8,
+          "defWinRounds": 11
+        },
+        "Split": {
+          "rounds": 34,
+          "atkWinRounds": 12,
+          "defWinRounds": 12
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Sova": 2,
+          "Astra": 2,
+          "Chamber": 1,
+          "Breach": 1,
+          "Yoru": 1,
+          "Jett": 1,
+          "Kayo": 1,
+          "Omen": 1
+        },
+        "Bind": {
+          "Brimstone": 2,
+          "Raze": 2,
+          "Skye": 1,
+          "Viper": 1,
+          "Tejo": 1,
+          "Kayo": 1,
+          "Vyse": 1,
+          "Fade": 1
+        },
+        "Fracture": {
+          "Brimstone": 2,
+          "Raze": 2,
+          "Tejo": 2,
+          "Vyse": 2,
+          "Breach": 2
+        },
+        "Haven": {
+          "Breach": 2,
+          "Tejo": 2,
+          "Cypher": 1,
+          "Yoru": 1,
+          "Omen": 1,
+          "Astra": 1,
+          "Jett": 1,
+          "Vyse": 1
+        },
+        "Lotus": {
+          "Omen": 4,
+          "Viper": 3,
+          "Tejo": 2,
+          "Breach": 2,
+          "Yoru": 2,
+          "Raze": 2,
+          "Vyse": 2,
+          "Fade": 2,
+          "Cypher": 1
+        },
+        "Pearl": {
+          "Vyse": 2,
+          "Astra": 2,
+          "Yoru": 2,
+          "Fade": 1,
+          "Tejo": 1,
+          "Chamber": 1,
+          "Sova": 1
+        },
+        "Split": {
+          "Viper": 2,
+          "Jett": 1,
+          "Tejo": 1,
+          "Breach": 1,
+          "Omen": 1,
+          "Yoru": 1,
+          "Raze": 1,
+          "Astra": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2025,
+      "region": "International",
+      "event": "Valorant Masters Bangkok 2025",
+      "stage": "Masters",
+      "phase": "Swiss Stage",
+      "week": "Swiss Stage: Round 2 (0-1)",
+      "playerRows": 50,
+      "agentCounts": {
+        "Omen": 8,
+        "Cypher": 5,
+        "Raze": 5,
+        "Sova": 4,
+        "Viper": 4,
+        "Jett": 3,
+        "Tejo": 3,
+        "Iso": 2,
+        "Vyse": 2,
+        "Fade": 2,
+        "Yoru": 2,
+        "Breach": 2,
+        "Kayo": 2,
+        "Brimstone": 2,
+        "Skye": 2,
+        "Astra": 1,
+        "Gekko": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 30,
+          "atkWinRounds": 10,
+          "defWinRounds": 14
+        },
+        "Bind": {
+          "rounds": 14,
+          "atkWinRounds": 3,
+          "defWinRounds": 11
+        },
+        "Haven": {
+          "rounds": 21,
+          "atkWinRounds": 13,
+          "defWinRounds": 8
+        },
+        "Lotus": {
+          "rounds": 36,
+          "atkWinRounds": 18,
+          "defWinRounds": 18
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Omen": 2,
+          "Kayo": 2,
+          "Jett": 2,
+          "Cypher": 1,
+          "Sova": 1,
+          "Tejo": 1,
+          "Astra": 1
+        },
+        "Bind": {
+          "Viper": 2,
+          "Raze": 2,
+          "Brimstone": 2,
+          "Skye": 2,
+          "Gekko": 1,
+          "Tejo": 1
+        },
+        "Haven": {
+          "Cypher": 2,
+          "Sova": 2,
+          "Omen": 2,
+          "Iso": 1,
+          "Yoru": 1,
+          "Jett": 1,
+          "Breach": 1
+        },
+        "Lotus": {
+          "Omen": 4,
+          "Raze": 3,
+          "Cypher": 2,
+          "Vyse": 2,
+          "Fade": 2,
+          "Viper": 2,
+          "Sova": 1,
+          "Iso": 1,
+          "Breach": 1,
+          "Tejo": 1,
+          "Yoru": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2025,
+      "region": "International",
+      "event": "Valorant Masters Bangkok 2025",
+      "stage": "Masters",
+      "phase": "Swiss Stage",
+      "week": "Swiss Stage: Round 2 (1-0)",
+      "playerRows": 60,
+      "agentCounts": {
+        "Tejo": 10,
+        "Breach": 6,
+        "Brimstone": 6,
+        "Yoru": 5,
+        "Raze": 5,
+        "Cypher": 4,
+        "Vyse": 4,
+        "Viper": 3,
+        "Omen": 3,
+        "Sova": 3,
+        "Astra": 3,
+        "Skye": 2,
+        "Fade": 2,
+        "Jett": 1,
+        "Chamber": 1,
+        "Kayo": 1,
+        "Neon": 1
+      },
+      "mapStats": {
+        "Abyss": {
+          "rounds": 24,
+          "atkWinRounds": 13,
+          "defWinRounds": 11
+        },
+        "Bind": {
+          "rounds": 42,
+          "atkWinRounds": 18,
+          "defWinRounds": 24
+        },
+        "Fracture": {
+          "rounds": 17,
+          "atkWinRounds": 3,
+          "defWinRounds": 14
+        },
+        "Pearl": {
+          "rounds": 34,
+          "atkWinRounds": 12,
+          "defWinRounds": 12
+        },
+        "Split": {
+          "rounds": 24,
+          "atkWinRounds": 13,
+          "defWinRounds": 11
+        }
+      },
+      "mapAgentCounts": {
+        "Abyss": {
+          "Sova": 2,
+          "Tejo": 2,
+          "Omen": 1,
+          "Cypher": 1,
+          "Yoru": 1,
+          "Jett": 1,
+          "Astra": 1,
+          "Breach": 1
+        },
+        "Bind": {
+          "Tejo": 4,
+          "Brimstone": 4,
+          "Raze": 3,
+          "Skye": 2,
+          "Viper": 2,
+          "Yoru": 1,
+          "Breach": 1,
+          "Cypher": 1,
+          "Kayo": 1,
+          "Vyse": 1
+        },
+        "Fracture": {
+          "Tejo": 2,
+          "Breach": 2,
+          "Brimstone": 2,
+          "Cypher": 1,
+          "Neon": 1,
+          "Vyse": 1,
+          "Raze": 1
+        },
+        "Pearl": {
+          "Vyse": 2,
+          "Astra": 2,
+          "Yoru": 2,
+          "Tejo": 1,
+          "Fade": 1,
+          "Sova": 1,
+          "Chamber": 1
+        },
+        "Split": {
+          "Omen": 2,
+          "Breach": 2,
+          "Tejo": 1,
+          "Yoru": 1,
+          "Cypher": 1,
+          "Raze": 1,
+          "Viper": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2025,
+      "region": "International",
+      "event": "Valorant Masters Bangkok 2025",
+      "stage": "Masters",
+      "phase": "Swiss Stage",
+      "week": "Swiss Stage: Round 3",
+      "playerRows": 40,
+      "agentCounts": {
+        "Tejo": 7,
+        "Breach": 6,
+        "Yoru": 5,
+        "Vyse": 3,
+        "Cypher": 3,
+        "Astra": 3,
+        "Omen": 3,
+        "Brimstone": 2,
+        "Neon": 2,
+        "Raze": 1,
+        "Sova": 1,
+        "Killjoy": 1,
+        "Fade": 1,
+        "Jett": 1,
+        "Viper": 1
+      },
+      "mapStats": {
+        "Fracture": {
+          "rounds": 24,
+          "atkWinRounds": 15,
+          "defWinRounds": 9
+        },
+        "Haven": {
+          "rounds": 18,
+          "atkWinRounds": 9,
+          "defWinRounds": 9
+        },
+        "Lotus": {
+          "rounds": 20,
+          "atkWinRounds": 7,
+          "defWinRounds": 13
+        },
+        "Pearl": {
+          "rounds": 17,
+          "atkWinRounds": 9,
+          "defWinRounds": 8
+        }
+      },
+      "mapAgentCounts": {
+        "Fracture": {
+          "Tejo": 2,
+          "Brimstone": 2,
+          "Breach": 2,
+          "Vyse": 1,
+          "Raze": 1,
+          "Cypher": 1,
+          "Yoru": 1
+        },
+        "Haven": {
+          "Breach": 2,
+          "Tejo": 2,
+          "Astra": 1,
+          "Yoru": 1,
+          "Vyse": 1,
+          "Cypher": 1,
+          "Omen": 1,
+          "Jett": 1
+        },
+        "Lotus": {
+          "Omen": 2,
+          "Tejo": 2,
+          "Breach": 2,
+          "Viper": 1,
+          "Yoru": 1,
+          "Cypher": 1,
+          "Neon": 1
+        },
+        "Pearl": {
+          "Yoru": 2,
+          "Astra": 2,
+          "Sova": 1,
+          "Neon": 1,
+          "Killjoy": 1,
+          "Vyse": 1,
+          "Tejo": 1,
+          "Fade": 1
         }
       }
     },
@@ -40949,31 +40949,37 @@
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 3",
-      "playerRows": 60,
+      "playerRows": 80,
       "agentCounts": {
-        "Omen": 11,
-        "Cypher": 8,
+        "Omen": 13,
+        "Cypher": 10,
+        "Sova": 8,
+        "Neon": 8,
         "Skye": 6,
-        "Neon": 6,
-        "Sova": 5,
         "Raze": 4,
         "Jett": 4,
+        "Viper": 3,
         "Deadlock": 3,
         "Sage": 3,
         "Vyse": 2,
-        "Viper": 2,
+        "Waylay": 2,
+        "Yoru": 2,
+        "Kayo": 2,
+        "Harbor": 2,
         "Fade": 1,
         "Phoenix": 1,
         "Astra": 1,
         "Veto": 1,
-        "Waylay": 1,
-        "Yoru": 1
+        "Brimstone": 1,
+        "Tejo": 1,
+        "Gekko": 1,
+        "Chamber": 1
       },
       "mapStats": {
         "Ascent": {
-          "rounds": 16,
-          "atkWinRounds": 5,
-          "defWinRounds": 11
+          "rounds": 37,
+          "atkWinRounds": 20,
+          "defWinRounds": 17
         },
         "Haven": {
           "rounds": 52,
@@ -40990,6 +40996,11 @@
           "atkWinRounds": 10,
           "defWinRounds": 14
         },
+        "Summit": {
+          "rounds": 23,
+          "atkWinRounds": 16,
+          "defWinRounds": 7
+        },
         "Sunset": {
           "rounds": 23,
           "atkWinRounds": 14,
@@ -40998,12 +41009,16 @@
       },
       "mapAgentCounts": {
         "Ascent": {
-          "Cypher": 2,
-          "Sova": 2,
+          "Sova": 4,
+          "Omen": 4,
+          "Cypher": 3,
           "Jett": 2,
-          "Omen": 2,
+          "Neon": 2,
           "Deadlock": 1,
-          "Neon": 1
+          "Kayo": 1,
+          "Yoru": 1,
+          "Harbor": 1,
+          "Chamber": 1
         },
         "Haven": {
           "Cypher": 4,
@@ -41036,6 +41051,18 @@
           "Viper": 1,
           "Omen": 1,
           "Neon": 1
+        },
+        "Summit": {
+          "Cypher": 1,
+          "Kayo": 1,
+          "Sova": 1,
+          "Brimstone": 1,
+          "Neon": 1,
+          "Viper": 1,
+          "Harbor": 1,
+          "Tejo": 1,
+          "Gekko": 1,
+          "Waylay": 1
         },
         "Sunset": {
           "Sage": 2,

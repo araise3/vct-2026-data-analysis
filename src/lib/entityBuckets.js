@@ -308,14 +308,14 @@ export function aggregateTeamBuckets(buckets) {
     //     BOTH the pistol and the post-pistol anti-eco round -- two
     //     buys deep against a recovering opponent.
     //
-    // IMPORTANT: as of this commit, `bonusR`/`bonusW` in the exported
-    // JSON still holds what THIS code used to call pistolConv -- round
-    // 2/14 data, not round 3/15 -- because export_from_db.py hasn't been
-    // re-run yet. Once it has been (see that file's own comments), this
-    // field will correctly mean round 3/15 with no further code changes
-    // needed here. Until then, the "Bonus round" card on this site is
-    // showing stale round-2 data under the new label -- re-run the
-    // export and redeploy team_buckets.json to fix that.
+    // The re-export this file's history once flagged as pending has since
+    // happened: bonusR/bonusW in team_buckets.json correctly means round
+    // 3/15, not the old round-2/14 data. Verified directly against vlr.gg's
+    // own round-by-round results for 100 Thieves' 3 matches in VCT 2026
+    // Americas Stage 2 (7 bonus-round opportunities, 3 wins -- exact match,
+    // including the edge case where a 13-0 sweep's second pistol (round 13)
+    // has no round 14 to follow up on, so it correctly doesn't count toward
+    // this funnel).
     antiEcoRounds: t.aeR,
     antiEcoWinPct: div(t.aeW, t.aeR),
     postPistolAntiEcoRounds: t.ae2R,

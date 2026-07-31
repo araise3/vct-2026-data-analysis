@@ -1,5 +1,6 @@
 /**
- * Peer-relative radar profile for a single player.
+ * Peer-relative radar profile for a single player, with an optional
+ * second player layered over the same axes for direct comparison.
  *
  * Modelled on the peer-comparison panel documented in CLAUDE.md (removed
  * since, but the qualification-bar reasoning still applies here): a fixed
@@ -19,6 +20,17 @@
  * (nothing to plot a vertex at) is dropped entirely, the same rule that
  * already keeps a China-only scope from rendering a fake "1st place" 0.00
  * on multi-kills (see multiKillsPerMap's own note in entityBuckets.js).
+ *
+ * When `compareName` is given, the SAME per-axis domain is reused for both
+ * players (widened to cover whichever of the two is more extreme) rather
+ * than computing two independent charts -- two radars with different
+ * scales per spoke would silently misrepresent which player is actually
+ * ahead. Both named players are excluded from the peer pool used to build
+ * that domain (comparing a player against a peer field that secretly
+ * includes them, or the person they're being compared to, would be
+ * circular). If either player has no value for a given axis, the axis is
+ * dropped entirely rather than drawing a vertex at a fabricated value --
+ * same "drop, don't fake" rule as the single-player case.
  */
 import { groupByEntity, aggregatePlayerBuckets } from './entityBuckets'
 
@@ -43,6 +55,10 @@ const AXES = [
   },
 ]
 
+function isNum(v) {
+  return v !== null && v !== undefined && !Number.isNaN(v)
+}
+
 function percentile(sorted, p) {
   if (!sorted.length) return null
   const idx = (sorted.length - 1) * p
@@ -60,7 +76,7 @@ function percentile(sorted, p) {
  * player-scoped `filtered`, since this needs the whole field to rank
  * against.
  */
-export function buildRadarProfile(records, subjectName, { ratedOnly = false } = {}) {
+export function buildRadarProfile(records, subjectName, { ratedOnly = false, compareName = null } = {}) {
   const grouped = groupByEntity(records)
   const allPlayers = []
   for (const [id, buckets] of grouped) {
@@ -71,6 +87,17 @@ export function buildRadarProfile(records, subjectName, { ratedOnly = false } = 
   const subject = allPlayers.find((p) => p.id === subjectName)
   if (!subject) return null
 
+  // Comparing a player against themself would just draw two identical
+  // polygons -- treat it the same as no comparison requested.
+  const effectiveCompareName = compareName && compareName !== subjectName ? compareName : null
+  const compareSubject = effectiveCompareName
+    ? allPlayers.find((p) => p.id === effectiveCompareName) ?? null
+    : null
+  // A name was typed but has no data in the current scope -- surfaced so
+  // the UI can say so instead of silently drawing a single-player chart
+  // with no explanation.
+  const compareMissing = !!effectiveCompareName && !compareSubject
+
   const roundsSorted = allPlayers
     .map((p) => p.stats.roundsPlayed)
     .filter((r) => r > 0)
@@ -78,19 +105,24 @@ export function buildRadarProfile(records, subjectName, { ratedOnly = false } = 
   const medianRounds = percentile(roundsSorted, 0.5) || 0
   const bar = Math.max(20, 0.5 * medianRounds)
 
-  const qualifiedPeers = allPlayers.filter((p) => p.id !== subjectName && p.stats.roundsPlayed >= bar)
+  const excluded = new Set([subjectName, compareSubject?.id].filter(Boolean))
+  const qualifiedPeers = allPlayers.filter((p) => !excluded.has(p.id) && p.stats.roundsPlayed >= bar)
   const subjectQualified = subject.stats.roundsPlayed >= bar
+  const compareQualified = compareSubject ? compareSubject.stats.roundsPlayed >= bar : null
 
   const axes = AXES.map((axis) => {
     const subjectValue = axis.compute(subject.stats)
+    const compareValue = compareSubject ? axis.compute(compareSubject.stats) : null
+    const hasSubject = isNum(subjectValue)
+    const hasCompare = compareSubject ? isNum(compareValue) : false
+
+    if (!hasSubject) return null // nothing to plot the subject's own vertex at
+    if (compareSubject && !hasCompare) return null // comparison active but this axis can't be fairly shown for both
+
     const peerValues = qualifiedPeers
       .map((p) => axis.compute(p.stats))
-      .filter((v) => v !== null && v !== undefined && !Number.isNaN(v))
+      .filter(isNum)
       .sort((a, b) => a - b)
-
-    if (subjectValue === null || subjectValue === undefined || Number.isNaN(subjectValue)) {
-      if (!peerValues.length) return null
-    }
 
     let lo, hi
     if (peerValues.length >= 2) {
@@ -105,23 +137,26 @@ export function buildRadarProfile(records, subjectName, { ratedOnly = false } = 
       const pad = Math.abs(v) * 0.15 || 1
       lo = v - pad; hi = v + pad
     }
-    // Widen to always cover the subject -- otherwise a subject who sits
-    // outside the peer field's own p5-p95 band (a real outlier, or the
-    // only unqualified data point when peerValues is thin) would clamp to
-    // the rim/center and look like an ordinary top/bottom score rather
-    // than the actual extreme it is.
-    if (subjectValue !== null && subjectValue !== undefined && !Number.isNaN(subjectValue)) {
-      lo = Math.min(lo, subjectValue)
-      hi = Math.max(hi, subjectValue)
+    // Widen to always cover the subject (and the compared player, if any)
+    // -- otherwise a player who sits outside the peer field's own p5-p95
+    // band (a real outlier, or the only unqualified data point when
+    // peerValues is thin) would clamp to the rim/center and look like an
+    // ordinary top/bottom score rather than the actual extreme it is.
+    lo = Math.min(lo, subjectValue)
+    hi = Math.max(hi, subjectValue)
+    if (hasCompare) {
+      lo = Math.min(lo, compareValue)
+      hi = Math.max(hi, compareValue)
     }
     if (lo === hi) hi = lo + (Math.abs(lo) * 0.1 || 1)
 
-    const hasSubject = subjectValue !== null && subjectValue !== undefined && !Number.isNaN(subjectValue)
-    const norm = hasSubject ? Math.max(0, Math.min(1, (subjectValue - lo) / (hi - lo))) : null
-    const rank = hasSubject ? 1 + peerValues.filter((v) => v > subjectValue).length : null
-    const n = peerValues.length + (hasSubject ? 1 : 0)
+    const norm = Math.max(0, Math.min(1, (subjectValue - lo) / (hi - lo)))
+    const rank = 1 + peerValues.filter((v) => v > subjectValue).length
+    const n = peerValues.length + 1
 
-    if (!hasSubject) return null // nothing to plot a vertex at
+    const compareNorm = hasCompare ? Math.max(0, Math.min(1, (compareValue - lo) / (hi - lo))) : null
+    const compareRank = hasCompare ? 1 + peerValues.filter((v) => v > compareValue).length : null
+    const compareFormatted = hasCompare ? axis.format(compareValue) : null
 
     const ticks = Array.from({ length: 9 }, (_, i) => lo + ((hi - lo) * i) / 8)
 
@@ -132,11 +167,19 @@ export function buildRadarProfile(records, subjectName, { ratedOnly = false } = 
       formatted: axis.format(subjectValue),
       lo, hi, ticks,
       norm, rank, n,
+      compareValue, compareFormatted, compareNorm, compareRank,
       format: axis.format,
     }
   }).filter(Boolean)
 
   if (!axes.length) return null
 
-  return { axes, subjectQualified, peerCount: qualifiedPeers.length }
+  return {
+    axes,
+    subjectQualified,
+    peerCount: qualifiedPeers.length,
+    compareName: compareSubject?.id ?? null,
+    compareQualified,
+    compareMissing,
+  }
 }

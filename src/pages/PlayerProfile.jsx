@@ -28,6 +28,13 @@ export default function PlayerProfile() {
   const { data: matchData } = useData('match_results')
   const { data: matchPlayerData } = useData('match_players')
   const [ratedOnly, setRatedOnly] = useState(false)
+  // Radar comparison target. Kept as two pieces of state -- `compareInput`
+  // is the live text of the field, `compareName` is what actually gets
+  // passed to buildRadarProfile() -- so a mid-typing "no data for 'as'"
+  // caveat doesn't flash on every keystroke; the name only "commits" on
+  // blur/Enter, same as picking a suggestion from the datalist.
+  const [compareInput, setCompareInput] = useState('')
+  const [compareName, setCompareName] = useState('')
 
   // Scope to this player first, so the facet options only ever show
   // events/weeks this player actually appeared in.
@@ -73,9 +80,30 @@ export default function PlayerProfile() {
     [allPlayerRecords, selections, dateRange]
   )
   const radar = useMemo(
-    () => buildRadarProfile(radarScope, decodedName, { ratedOnly }),
-    [radarScope, decodedName, ratedOnly]
+    () => buildRadarProfile(radarScope, decodedName, { ratedOnly, compareName: compareName || null }),
+    [radarScope, decodedName, ratedOnly, compareName]
   )
+
+  // Names available to compare against -- every player who has at least
+  // one bucket in the current filter scope, so the suggestion list always
+  // matches who could actually plot a second polygon. Not restricted to
+  // qualified peers (see buildRadarProfile's bar) -- a thin comparison is
+  // still meaningful, same as the subject themself being shown unqualified.
+  const compareOptions = useMemo(() => {
+    const ids = new Set()
+    for (const r of radarScope) {
+      if (r.id !== decodedName) ids.add(r.id)
+    }
+    return [...ids].sort((a, b) => a.localeCompare(b))
+  }, [radarScope, decodedName])
+
+  function commitCompare() {
+    setCompareName(compareInput.trim())
+  }
+  function clearCompare() {
+    setCompareInput('')
+    setCompareName('')
+  }
 
   // Per-agent breakdown, filtered by the same active facet selections as
   // the rest of the page. player_agents.json is a deliberately lean
@@ -445,13 +473,53 @@ export default function PlayerProfile() {
 
       {radar && (
         <div className="bg-surface border border-hairline rounded-2xl p-5">
-          <h3 className="font-display text-sm font-semibold text-ink mb-1">Performance profile</h3>
+          <div className="flex items-start justify-between gap-4 flex-wrap mb-1">
+            <h3 className="font-display text-sm font-semibold text-ink">Performance profile</h3>
+
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: '#FF4655' }} />
+              <span className="text-xs text-ink font-medium">{decodedName}</span>
+              <span className="text-muted text-xs">vs</span>
+              <input
+                list="radar-compare-options"
+                value={compareInput}
+                onChange={(e) => setCompareInput(e.target.value)}
+                onBlur={commitCompare}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') { e.preventDefault(); commitCompare(); e.currentTarget.blur() }
+                }}
+                placeholder="Compare a player…"
+                className="w-40 bg-surface2 border border-hairline rounded-md px-2.5 py-1 text-xs text-ink placeholder:text-muted focus:outline-none focus:border-muted"
+              />
+              <datalist id="radar-compare-options">
+                {compareOptions.map((n) => <option key={n} value={n} />)}
+              </datalist>
+              {radar.compareName && (
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: '#FFD47D' }} />
+                  <button
+                    type="button"
+                    onClick={clearCompare}
+                    className="text-muted hover:text-ink text-xs leading-none"
+                    title="Clear comparison"
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
+            </div>
+          </div>
+
           <p className="text-muted text-xs mb-4">
-            Each spoke is its own scale — position is {decodedName}'s percentile within qualified
-            players (rounds played ≥ half the scope's median, min 20) in the current filter scope,
-            not an absolute value. Hover a point for rank.
-            {!radar.subjectQualified && ' Small sample — this player is below the qualification bar in this scope.'}
+            Each spoke is its own scale — position is percentile within qualified players (rounds
+            played ≥ half the scope's median, min 20) in the current filter scope, not an absolute
+            value. Hover a point for rank.
+            {!radar.subjectQualified && ` Small sample for ${decodedName} — below the qualification bar in this scope.`}
+            {radar.compareName && radar.compareQualified === false && ` Small sample for ${radar.compareName} — below the qualification bar in this scope.`}
+            {compareName && compareName === decodedName && ' Pick a different player to compare against.'}
+            {radar.compareMissing && ` No data for "${compareName}" in this scope.`}
           </p>
+
           <div className="max-w-xl mx-auto">
             <RadarChart axes={radar.axes} />
           </div>

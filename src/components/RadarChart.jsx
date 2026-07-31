@@ -1,5 +1,8 @@
 import { useMemo } from 'react'
 
+const SUBJECT_COLOR = '#FF4655'
+const COMPARE_COLOR = '#FFD47D' // matches the `mid` design token -- distinct from the brand red
+
 /**
  * Peer-relative radar chart -- one spoke per stat, each on its own scale
  * (that axis's qualified-peer domain, see radarProfile.js), radius is the
@@ -10,6 +13,12 @@ import { useMemo } from 'react'
  * `axes`: the `axes` array from buildRadarProfile() -- each entry carries
  * `norm` (0-1 position to plot), `ticks` (9 real-value gridline labels,
  * outer-to-inner), and `formatted`/`rank`/`n` for the label + tooltip.
+ *
+ * When every axis also carries a `compareNorm` (buildRadarProfile()'s
+ * invariant when a comparison is active -- an axis without one for either
+ * player is dropped entirely, never left half-filled), a second polygon is
+ * layered on top in `COMPARE_COLOR`, dashed so it stays visually distinct
+ * even where the two shapes overlap heavily.
  *
  * Rendered as inline SVG with a viewBox and no fixed size, matching
  * TrendChart's convention (scales to whatever container it's dropped
@@ -22,6 +31,7 @@ export default function RadarChart({ axes }) {
   const cy = H / 2
   const R = 150
   const RINGS = [0.25, 0.5, 0.75, 1]
+  const hasCompare = axes.length > 0 && axes.every((a) => a.compareNorm !== null && a.compareNorm !== undefined)
 
   const geom = useMemo(() => {
     const n = axes.length
@@ -36,6 +46,11 @@ export default function RadarChart({ axes }) {
 
     const dataPolygon = polygon(axes.map((a) => a.norm * R))
     const dataVertices = axes.map((a, i) => ({ ...pointAt(i, a.norm * R), axis: a }))
+
+    const comparePolygon = hasCompare ? polygon(axes.map((a) => a.compareNorm * R)) : null
+    const compareVertices = hasCompare
+      ? axes.map((a, i) => ({ ...pointAt(i, a.compareNorm * R), axis: a }))
+      : []
 
     const gridRings = RINGS.map((f) => polygon(axes.map(() => R * f)))
     const spokes = axes.map((_, i) => pointAt(i, R))
@@ -58,7 +73,7 @@ export default function RadarChart({ axes }) {
       })
     )
 
-    // Axis name + bold value, placed just past the outer ring. Anchor
+    // Axis name + bold value(s), placed just past the outer ring. Anchor
     // side follows which half of the circle the spoke points into so
     // labels read outward rather than overlapping the plot.
     const labels = axes.map((a, i) => {
@@ -69,8 +84,8 @@ export default function RadarChart({ axes }) {
       return { ...a, x: p.x, y: p.y, anchor }
     })
 
-    return { dataPolygon, dataVertices, gridRings, spokes, ticks, labels }
-  }, [axes, cx, cy, R])
+    return { dataPolygon, dataVertices, comparePolygon, compareVertices, gridRings, spokes, ticks, labels }
+  }, [axes, cx, cy, R, hasCompare])
 
   if (!geom) {
     return <p className="text-muted text-xs">Not enough peer data in this scope to plot a profile.</p>
@@ -99,14 +114,30 @@ export default function RadarChart({ axes }) {
         </text>
       ))}
 
+      {geom.comparePolygon && (
+        <polygon
+          points={geom.comparePolygon}
+          fill={COMPARE_COLOR} fillOpacity="0.14"
+          stroke={COMPARE_COLOR} strokeWidth="2" strokeDasharray="6 4" strokeLinejoin="round"
+        />
+      )}
+
       <polygon
         points={geom.dataPolygon}
-        fill="#FF4655" fillOpacity="0.28"
-        stroke="#FF4655" strokeWidth="2" strokeLinejoin="round"
+        fill={SUBJECT_COLOR} fillOpacity="0.28"
+        stroke={SUBJECT_COLOR} strokeWidth="2" strokeLinejoin="round"
       />
 
+      {geom.compareVertices.map((v) => (
+        <circle key={`cmp-${v.axis.key}`} cx={v.x} cy={v.y} r="3" fill={COMPARE_COLOR} stroke="#131619" strokeWidth="1.2">
+          <title>
+            {`${v.axis.label}: ${v.axis.compareFormatted}${v.axis.compareRank ? ` (#${v.axis.compareRank} of ${v.axis.n})` : ''}`}
+          </title>
+        </circle>
+      ))}
+
       {geom.dataVertices.map((v) => (
-        <circle key={v.axis.key} cx={v.x} cy={v.y} r="3" fill="#FF4655" stroke="#131619" strokeWidth="1.2">
+        <circle key={v.axis.key} cx={v.x} cy={v.y} r="3" fill={SUBJECT_COLOR} stroke="#131619" strokeWidth="1.2">
           <title>
             {`${v.axis.label}: ${v.axis.formatted}${v.axis.rank ? ` (#${v.axis.rank} of ${v.axis.n})` : ''}`}
           </title>
@@ -126,11 +157,19 @@ export default function RadarChart({ axes }) {
           <text
             x={l.x} y={l.y + 9}
             textAnchor={l.anchor}
-            className="fill-current text-ink"
-            style={{ fontSize: 14, fontWeight: 700 }}
+            style={{ fontSize: 14, fontWeight: 700, fill: SUBJECT_COLOR }}
           >
             {l.formatted}
           </text>
+          {hasCompare && (
+            <text
+              x={l.x} y={l.y + 23}
+              textAnchor={l.anchor}
+              style={{ fontSize: 12, fontWeight: 700, fill: COMPARE_COLOR }}
+            >
+              {l.compareFormatted}
+            </text>
+          )}
         </g>
       ))}
     </svg>

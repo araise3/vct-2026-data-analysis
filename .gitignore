@@ -2,9 +2,11 @@ node_modules
 dist
 .DS_Store
 *.local
+scraper/venv/
 
 # Liquipedia API response cache (ToU asks callers to cache; not source)
 scraper/.liquipedia_cache/
+scraper/.liquipedia_logo_cache/
 
 # Scraper SQLite databases. Kept out of git deliberately: ~8MB of binary that
 # deltas badly, committed on every automated run, would balloon history. CI

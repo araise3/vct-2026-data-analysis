@@ -44,6 +44,8 @@ CANONICAL_OVERRIDES = {
     "Wuxi Titan Esports Club (Titan Esports Club)": "Titan Esports Club",
     "AG.AL (All Gamers)": "All Gamers",
     "MIBR.LOS (MIBR)": "MIBR",
+    "Movistar KOI (KOI)": "KOI",
+    "VISA KRÜ (KRÜ Esports)": "KRÜ Esports",
 }
 
 

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
@@ -41,6 +41,20 @@ export default function TeamProfile() {
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
+
+  // Fall back to 2025 when this team has no 2026 data at all -- same
+  // reasoning/mechanism as PlayerProfile.jsx: a team that isn't part of the
+  // 2026 franchising lineup (folded, didn't make the cut) would otherwise
+  // land on a page that opens completely empty under the site-wide 2026
+  // default. Derived from `records` (this team's own buckets across every
+  // year) once `teamData` has loaded, not passed as the hook's `initial`
+  // selection, since `records` doesn't exist yet on the first render.
+  const yearFallbackApplied = useRef(false)
+  useEffect(() => {
+    if (yearFallbackApplied.current || !teamData) return
+    yearFallbackApplied.current = true
+    if (!records.some((r) => r.year === 2026)) setFacet('year', [2025])
+  }, [teamData, records, setFacet])
 
   const stats = useMemo(() => aggregateTeamBuckets(filtered), [filtered])
 
@@ -208,7 +222,7 @@ export default function TeamProfile() {
 
       <div className="flex items-stretch gap-4">
         <div className="w-16 rounded-xl bg-surface2 border border-hairline flex items-center justify-center shrink-0">
-          <TeamLogo team={decodedName} size={44} showName={false} showBg={false} />
+          <TeamLogo team={decodedName} size={44} showName={false} />
         </div>
         <div className="flex flex-col justify-center">
           <h1 className="font-display text-2xl font-semibold text-ink">{decodedName}</h1>

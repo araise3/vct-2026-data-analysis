@@ -151,7 +151,7 @@ export default function SearchBar() {
                 {r.type === 'player' ? (
                   <Flag countryCode={r.countryCode} countryName={r.countryName} size={16} />
                 ) : (
-                  <TeamLogo team={r.name} size={18} showName={false} showBg={false} />
+                  <TeamLogo team={r.name} size={18} showName={false} />
                 )}
                 <span className="flex flex-col min-w-0 leading-tight">
                   <span className="text-xs font-medium text-ink truncate">{r.name}</span>

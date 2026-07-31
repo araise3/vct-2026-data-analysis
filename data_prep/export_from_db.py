@@ -195,6 +195,20 @@ def main():
     vct = drop_showmatches(merge_dbs(vct_2026, vct_2025))
     ewc = drop_showmatches(merge_dbs(ewc_2026, ewc_2025))
 
+    # VLR's own event name for 2025 China Kickoff is "Champions Tour 2025
+    # China Kickoff" -- a stray one-off that breaks the "Vct 2025 <Region>
+    # <Stage>" pattern every other 2025 VCT event follows (confirmed this is
+    # genuinely what VLR's page is titled, not a scraper bug -- see the 2025
+    # historical-scraper note in CLAUDE.md). Canonicalized here the same way
+    # team names are (CANONICAL_OVERRIDES above), purely for display
+    # consistency: eventLabel() on the frontend uppercases a leading "Vct" to
+    # "VCT", so renaming to match the sibling pattern here is what makes it
+    # render as "VCT 2025 China Kickoff" like every other 2025 VCT event.
+    EVENT_NAME_OVERRIDES = {
+        "Champions Tour 2025 China Kickoff": "Vct 2025 China Kickoff",
+    }
+    vct["events"]["name"] = vct["events"]["name"].replace(EVENT_NAME_OVERRIDES)
+
     # Combined universe: every downstream computation runs on this, then
     # gets filtered back down to competition=='VCT' for the default
     # (today's) output, or left unfiltered for the "+EWC" variant. This

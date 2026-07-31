@@ -35537,32 +35537,32 @@
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 3",
-      "playerRows": 120,
+      "playerRows": 140,
       "agentCounts": {
-        "Omen": 20,
-        "Phoenix": 14,
-        "Sova": 13,
-        "Neon": 12,
+        "Omen": 24,
+        "Phoenix": 17,
+        "Sova": 16,
+        "Neon": 14,
+        "Cypher": 13,
+        "Fade": 12,
         "Viper": 11,
-        "Fade": 11,
-        "Cypher": 10,
         "Yoru": 7,
-        "Jett": 4,
-        "Chamber": 4,
-        "Harbor": 3,
+        "Jett": 6,
+        "Chamber": 5,
         "Raze": 3,
-        "Vyse": 2,
+        "Harbor": 3,
+        "Vyse": 3,
         "Waylay": 2,
+        "Deadlock": 1,
         "Astra": 1,
         "Kayo": 1,
-        "Sage": 1,
-        "Deadlock": 1
+        "Sage": 1
       },
       "mapStats": {
         "Ascent": {
-          "rounds": 64,
-          "atkWinRounds": 25,
-          "defWinRounds": 39
+          "rounds": 87,
+          "atkWinRounds": 32,
+          "defWinRounds": 55
         },
         "Breeze": {
           "rounds": 19,
@@ -35570,9 +35570,9 @@
           "defWinRounds": 10
         },
         "Haven": {
-          "rounds": 30,
-          "atkWinRounds": 18,
-          "defWinRounds": 6
+          "rounds": 49,
+          "atkWinRounds": 27,
+          "defWinRounds": 16
         },
         "Lotus": {
           "rounds": 23,
@@ -35597,17 +35597,17 @@
       },
       "mapAgentCounts": {
         "Ascent": {
-          "Omen": 6,
-          "Sova": 6,
-          "Phoenix": 4,
-          "Cypher": 4,
+          "Sova": 8,
+          "Omen": 8,
+          "Cypher": 6,
+          "Phoenix": 6,
+          "Jett": 4,
           "Yoru": 3,
-          "Jett": 2,
+          "Deadlock": 1,
           "Vyse": 1,
           "Neon": 1,
           "Chamber": 1,
-          "Viper": 1,
-          "Deadlock": 1
+          "Viper": 1
         },
         "Breeze": {
           "Phoenix": 2,
@@ -35618,14 +35618,16 @@
           "Cypher": 1
         },
         "Haven": {
-          "Phoenix": 2,
-          "Sova": 2,
-          "Omen": 1,
-          "Cypher": 1,
-          "Neon": 1,
+          "Phoenix": 3,
+          "Omen": 3,
+          "Sova": 3,
+          "Neon": 3,
+          "Cypher": 2,
+          "Chamber": 2,
           "Jett": 1,
           "Astra": 1,
-          "Chamber": 1
+          "Vyse": 1,
+          "Fade": 1
         },
         "Lotus": {
           "Raze": 2,
@@ -40987,20 +40989,20 @@
         "Skye": 7,
         "Raze": 6,
         "Sage": 5,
-        "Fade": 4,
         "Viper": 4,
+        "Fade": 4,
         "Jett": 4,
-        "Deadlock": 3,
-        "Astra": 3,
-        "Veto": 3,
-        "Yoru": 3,
         "Harbor": 3,
+        "Yoru": 3,
         "Chamber": 3,
-        "Vyse": 2,
-        "Phoenix": 2,
-        "Waylay": 2,
+        "Veto": 3,
+        "Astra": 3,
+        "Deadlock": 3,
         "Kayo": 2,
         "Tejo": 2,
+        "Waylay": 2,
+        "Phoenix": 2,
+        "Vyse": 2,
         "Brimstone": 1,
         "Gekko": 1
       },
@@ -41046,13 +41048,13 @@
           "Sova": 4,
           "Omen": 4,
           "Cypher": 3,
-          "Jett": 2,
           "Neon": 2,
-          "Deadlock": 1,
+          "Jett": 2,
           "Kayo": 1,
           "Yoru": 1,
           "Harbor": 1,
-          "Chamber": 1
+          "Chamber": 1,
+          "Deadlock": 1
         },
         "Breeze": {
           "Sova": 2,
@@ -41120,14 +41122,14 @@
           "Sage": 3,
           "Omen": 3,
           "Raze": 2,
-          "Sova": 2,
+          "Fade": 2,
           "Cypher": 2,
           "Neon": 2,
-          "Fade": 2,
-          "Veto": 1,
+          "Sova": 2,
           "Astra": 1,
           "Yoru": 1,
-          "Chamber": 1
+          "Chamber": 1,
+          "Veto": 1
         }
       }
     }

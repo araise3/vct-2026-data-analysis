@@ -206,9 +206,15 @@ export default function PlayerProfile() {
 
   const agentColumns = [
     {
-      key: 'agent', label: 'Agent', align: 'left', noPadding: true,
+      // DataTable applies its own py-1.5 to every cell regardless of
+      // noPadding (that flag only drops horizontal padding) -- the inner
+      // span's own py-2 was stacking on top of that, doubling up to ~14px
+      // of top/bottom padding on this row alone. Dropped to py-1 so the
+      // bigger icon/text still gets a little of its own room without
+      // compounding with the table's row padding.
+      key: 'agent', label: 'Agent', align: 'left', noPadding: true, width: 130,
       format: (v) => (
-        <span className="flex items-center gap-2.5 px-4 py-2">
+        <span className="flex items-center gap-2.5 px-4 py-1">
           <AgentIcon agent={v} size={30} />
           <span className="font-body font-medium text-[14px]">{v}</span>
         </span>
@@ -220,7 +226,7 @@ export default function PlayerProfile() {
       key: 'winPct', label: 'Win%', align: 'right', colorScale: true,
       format: (v, r) => (r.mapsPlayed ? pct(v, 0) : '—'),
     },
-    { key: 'avgRating', label: 'R', align: 'right', colorScale: true, format: (v) => rating(v) },
+    { key: 'avgRating', label: 'R', align: 'right', colorScale: true, width: 70, format: (v) => rating(v) },
     { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
     { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },
     { key: 'avgKast', label: 'KAST', align: 'right', colorScale: true, format: (v) => pct(v) },

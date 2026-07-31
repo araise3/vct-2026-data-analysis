@@ -4575,273 +4575,6 @@
     {
       "competition": "EWC",
       "year": 2026,
-      "region": "China",
-      "event": "Esports World Cup 2026 China Qualifier",
-      "stage": "Qualifier",
-      "phase": "Stage 2",
-      "week": "Stage 2: Lower Final",
-      "playerRows": 30,
-      "agentCounts": {},
-      "mapStats": {
-        "Fracture": {
-          "rounds": 22,
-          "atkWinRounds": 11,
-          "defWinRounds": 11
-        },
-        "Pearl": {
-          "rounds": 14,
-          "atkWinRounds": 3,
-          "defWinRounds": 11
-        },
-        "Split": {
-          "rounds": 14,
-          "atkWinRounds": 3,
-          "defWinRounds": 11
-        }
-      },
-      "mapAgentCounts": {
-        "Fracture": {},
-        "Pearl": {},
-        "Split": {}
-      }
-    },
-    {
-      "competition": "EWC",
-      "year": 2026,
-      "region": "China",
-      "event": "Esports World Cup 2026 China Qualifier",
-      "stage": "Qualifier",
-      "phase": "Stage 2",
-      "week": "Stage 2: Lower Round 1",
-      "playerRows": 50,
-      "agentCounts": {},
-      "mapStats": {
-        "Ascent": {
-          "rounds": 19,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Haven": {
-          "rounds": 43,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Split": {
-          "rounds": 55,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        }
-      },
-      "mapAgentCounts": {
-        "Ascent": {},
-        "Haven": {},
-        "Split": {}
-      }
-    },
-    {
-      "competition": "EWC",
-      "year": 2026,
-      "region": "China",
-      "event": "Esports World Cup 2026 China Qualifier",
-      "stage": "Qualifier",
-      "phase": "Stage 2",
-      "week": "Stage 2: Lower Round 2",
-      "playerRows": 50,
-      "agentCounts": {},
-      "mapStats": {
-        "Ascent": {
-          "rounds": 24,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Breeze": {
-          "rounds": 15,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Haven": {
-          "rounds": 19,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Lotus": {
-          "rounds": 23,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Split": {
-          "rounds": 21,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        }
-      },
-      "mapAgentCounts": {
-        "Ascent": {},
-        "Breeze": {},
-        "Haven": {},
-        "Lotus": {},
-        "Split": {}
-      }
-    },
-    {
-      "competition": "EWC",
-      "year": 2026,
-      "region": "China",
-      "event": "Esports World Cup 2026 China Qualifier",
-      "stage": "Qualifier",
-      "phase": "Stage 2",
-      "week": "Stage 2: Lower Round 3",
-      "playerRows": 20,
-      "agentCounts": {},
-      "mapStats": {
-        "Haven": {
-          "rounds": 22,
-          "atkWinRounds": 11,
-          "defWinRounds": 11
-        },
-        "Split": {
-          "rounds": 20,
-          "atkWinRounds": 13,
-          "defWinRounds": 7
-        }
-      },
-      "mapAgentCounts": {
-        "Haven": {},
-        "Split": {}
-      }
-    },
-    {
-      "competition": "EWC",
-      "year": 2026,
-      "region": "China",
-      "event": "Esports World Cup 2026 China Qualifier",
-      "stage": "Qualifier",
-      "phase": "Stage 2",
-      "week": "Stage 2: Upper Final",
-      "playerRows": 30,
-      "agentCounts": {},
-      "mapStats": {
-        "Breeze": {
-          "rounds": 20,
-          "atkWinRounds": 7,
-          "defWinRounds": 13
-        },
-        "Lotus": {
-          "rounds": 20,
-          "atkWinRounds": 11,
-          "defWinRounds": 9
-        },
-        "Split": {
-          "rounds": 21,
-          "atkWinRounds": 7,
-          "defWinRounds": 14
-        }
-      },
-      "mapAgentCounts": {
-        "Breeze": {},
-        "Lotus": {},
-        "Split": {}
-      }
-    },
-    {
-      "competition": "EWC",
-      "year": 2026,
-      "region": "China",
-      "event": "Esports World Cup 2026 China Qualifier",
-      "stage": "Qualifier",
-      "phase": "Stage 2",
-      "week": "Stage 2: Upper Quarterfinals",
-      "playerRows": 110,
-      "agentCounts": {},
-      "mapStats": {
-        "Ascent": {
-          "rounds": 41,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Breeze": {
-          "rounds": 44,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Haven": {
-          "rounds": 46,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Lotus": {
-          "rounds": 22,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Pearl": {
-          "rounds": 30,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Split": {
-          "rounds": 50,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        }
-      },
-      "mapAgentCounts": {
-        "Ascent": {},
-        "Breeze": {},
-        "Haven": {},
-        "Lotus": {},
-        "Pearl": {},
-        "Split": {}
-      }
-    },
-    {
-      "competition": "EWC",
-      "year": 2026,
-      "region": "China",
-      "event": "Esports World Cup 2026 China Qualifier",
-      "stage": "Qualifier",
-      "phase": "Stage 2",
-      "week": "Stage 2: Upper Semifinals",
-      "playerRows": 50,
-      "agentCounts": {},
-      "mapStats": {
-        "Breeze": {
-          "rounds": 21,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Haven": {
-          "rounds": 19,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Lotus": {
-          "rounds": 26,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Pearl": {
-          "rounds": 16,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        },
-        "Split": {
-          "rounds": 30,
-          "atkWinRounds": 0,
-          "defWinRounds": 0
-        }
-      },
-      "mapAgentCounts": {
-        "Breeze": {},
-        "Haven": {},
-        "Lotus": {},
-        "Pearl": {},
-        "Split": {}
-      }
-    },
-    {
-      "competition": "EWC",
-      "year": 2026,
       "region": "EMEA",
       "event": "Esports World Cup 2026 Emea Qualifier",
       "stage": "Qualifier",
@@ -6865,17 +6598,17 @@
         "Cypher": 13,
         "Phoenix": 13,
         "Viper": 8,
-        "Fade": 6,
         "Jett": 6,
         "Raze": 6,
+        "Fade": 6,
         "Harbor": 5,
         "Vyse": 3,
-        "Skye": 2,
         "Kayo": 2,
         "Chamber": 2,
+        "Skye": 2,
+        "Deadlock": 1,
         "Brimstone": 1,
-        "Waylay": 1,
-        "Deadlock": 1
+        "Waylay": 1
       },
       "mapStats": {
         "Ascent": {
@@ -6916,25 +6649,25 @@
       },
       "mapAgentCounts": {
         "Ascent": {
+          "Phoenix": 4,
           "Omen": 4,
           "Sova": 4,
-          "Phoenix": 4,
+          "Cypher": 2,
           "Jett": 2,
           "Neon": 2,
-          "Cypher": 2,
-          "Vyse": 1,
-          "Chamber": 1
+          "Chamber": 1,
+          "Vyse": 1
         },
         "Breeze": {
           "Sova": 6,
           "Neon": 5,
+          "Viper": 4,
           "Phoenix": 4,
           "Harbor": 4,
-          "Viper": 4,
           "Cypher": 3,
           "Jett": 2,
-          "Kayo": 1,
-          "Omen": 1
+          "Omen": 1,
+          "Kayo": 1
         },
         "Fracture": {
           "Cypher": 2,
@@ -6948,13 +6681,13 @@
           "Raze": 1
         },
         "Haven": {
-          "Neon": 4,
           "Omen": 4,
+          "Neon": 4,
           "Sova": 4,
           "Phoenix": 3,
           "Cypher": 3,
-          "Waylay": 1,
-          "Chamber": 1
+          "Chamber": 1,
+          "Waylay": 1
         },
         "Lotus": {
           "Raze": 4,
@@ -27305,19 +27038,19 @@
         "Sova": 11,
         "Omen": 9,
         "Astra": 9,
-        "Chamber": 7,
         "Fade": 7,
+        "Chamber": 7,
         "Kayo": 5,
         "Brimstone": 4,
+        "Skye": 3,
         "Killjoy": 3,
         "Neon": 3,
-        "Skye": 3,
         "Veto": 2,
         "Breach": 2,
         "Jett": 2,
         "Tejo": 2,
-        "Harbor": 1,
         "Iso": 1,
+        "Harbor": 1,
         "Sage": 1
       },
       "mapStats": {
@@ -27360,16 +27093,16 @@
       "mapAgentCounts": {
         "Abyss": {
           "Sova": 6,
-          "Astra": 4,
           "Yoru": 4,
+          "Astra": 4,
           "Omen": 3,
-          "Chamber": 2,
           "Veto": 2,
           "Breach": 2,
+          "Chamber": 2,
           "Waylay": 2,
-          "Harbor": 1,
           "Viper": 1,
           "Iso": 1,
+          "Harbor": 1,
           "Kayo": 1,
           "Tejo": 1
         },
@@ -29346,6 +29079,94 @@
     {
       "competition": "VCT",
       "year": 2026,
+      "region": "Americas",
+      "event": "Vct 2026 Americas Stage 2",
+      "stage": "Stage 2",
+      "phase": "Group Stage",
+      "week": "Group Stage: Week 3",
+      "playerRows": 50,
+      "agentCounts": {
+        "Phoenix": 7,
+        "Sova": 7,
+        "Cypher": 6,
+        "Neon": 6,
+        "Omen": 6,
+        "Viper": 4,
+        "Harbor": 3,
+        "Fade": 2,
+        "Raze": 2,
+        "Waylay": 2,
+        "Astra": 1,
+        "Chamber": 1,
+        "Vyse": 1,
+        "Skye": 1,
+        "Jett": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 21,
+          "atkWinRounds": 9,
+          "defWinRounds": 12
+        },
+        "Breeze": {
+          "rounds": 39,
+          "atkWinRounds": 24,
+          "defWinRounds": 15
+        },
+        "Lotus": {
+          "rounds": 23,
+          "atkWinRounds": 11,
+          "defWinRounds": 12
+        },
+        "Sunset": {
+          "rounds": 28,
+          "atkWinRounds": 8,
+          "defWinRounds": 16
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Phoenix": 2,
+          "Cypher": 2,
+          "Omen": 2,
+          "Sova": 2,
+          "Jett": 1,
+          "Neon": 1
+        },
+        "Breeze": {
+          "Sova": 4,
+          "Phoenix": 3,
+          "Neon": 3,
+          "Harbor": 3,
+          "Cypher": 2,
+          "Viper": 2,
+          "Astra": 1,
+          "Chamber": 1,
+          "Waylay": 1
+        },
+        "Lotus": {
+          "Viper": 2,
+          "Raze": 2,
+          "Omen": 2,
+          "Fade": 1,
+          "Neon": 1,
+          "Vyse": 1,
+          "Skye": 1
+        },
+        "Sunset": {
+          "Phoenix": 2,
+          "Cypher": 2,
+          "Omen": 2,
+          "Sova": 1,
+          "Neon": 1,
+          "Waylay": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2026,
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -30427,8 +30248,8 @@
       "playerRows": 100,
       "agentCounts": {
         "Sova": 13,
-        "Viper": 11,
         "Omen": 11,
+        "Viper": 11,
         "Waylay": 10,
         "Neon": 10,
         "Killjoy": 9,
@@ -30437,10 +30258,10 @@
         "Fade": 4,
         "Raze": 3,
         "Skye": 3,
-        "Tejo": 2,
         "Kayo": 2,
-        "Cypher": 2,
         "Brimstone": 2,
+        "Tejo": 2,
+        "Cypher": 2,
         "Breach": 1,
         "Chamber": 1
       },
@@ -30482,12 +30303,12 @@
           "Astra": 4,
           "Sova": 4,
           "Yoru": 2,
-          "Cypher": 1,
-          "Tejo": 1,
-          "Neon": 1,
           "Breach": 1,
           "Kayo": 1,
-          "Omen": 1
+          "Omen": 1,
+          "Cypher": 1,
+          "Tejo": 1,
+          "Neon": 1
         },
         "Bind": {
           "Brimstone": 2,
@@ -30509,9 +30330,9 @@
           "Kayo": 1
         },
         "Haven": {
-          "Omen": 6,
-          "Sova": 6,
           "Neon": 6,
+          "Sova": 6,
+          "Omen": 6,
           "Killjoy": 5,
           "Viper": 5,
           "Cypher": 1,
@@ -30522,8 +30343,8 @@
           "Astra": 4,
           "Yoru": 3,
           "Neon": 3,
-          "Fade": 2,
           "Sova": 2,
+          "Fade": 2,
           "Waylay": 1,
           "Tejo": 1
         },
@@ -30555,17 +30376,17 @@
         "Jett": 5,
         "Veto": 4,
         "Cypher": 4,
-        "Fade": 3,
         "Raze": 3,
+        "Fade": 3,
         "Tejo": 3,
-        "Breach": 2,
         "Skye": 2,
-        "Reyna": 1,
-        "Neon": 1,
-        "Gekko": 1,
+        "Breach": 2,
         "Phoenix": 1,
         "Harbor": 1,
-        "Brimstone": 1
+        "Brimstone": 1,
+        "Reyna": 1,
+        "Neon": 1,
+        "Gekko": 1
       },
       "mapStats": {
         "Abyss": {
@@ -30597,14 +30418,14 @@
       "mapAgentCounts": {
         "Abyss": {
           "Astra": 8,
-          "Sova": 6,
           "Yoru": 6,
+          "Sova": 6,
           "Waylay": 5,
           "Omen": 4,
           "Veto": 3,
+          "Jett": 2,
           "Tejo": 2,
           "Cypher": 2,
-          "Jett": 2,
           "Breach": 1,
           "Reyna": 1
         },
@@ -30621,12 +30442,12 @@
         "Breeze": {
           "Yoru": 4,
           "Sova": 4,
+          "Viper": 3,
           "Jett": 3,
           "Astra": 3,
-          "Viper": 3,
-          "Cypher": 1,
           "Omen": 1,
-          "Veto": 1
+          "Veto": 1,
+          "Cypher": 1
         },
         "Corrode": {
           "Omen": 2,
@@ -30773,11 +30594,11 @@
         "Cypher": 8,
         "Brimstone": 8,
         "Sova": 5,
-        "Fade": 2,
-        "Phoenix": 2,
         "Kayo": 2,
         "Astra": 2,
         "Jett": 2,
+        "Phoenix": 2,
+        "Fade": 2,
         "Chamber": 1,
         "Gekko": 1,
         "Breach": 1,
@@ -30818,11 +30639,11 @@
       },
       "mapAgentCounts": {
         "Bind": {
-          "Waylay": 4,
           "Brimstone": 4,
+          "Waylay": 4,
+          "Neon": 3,
           "Skye": 3,
           "Viper": 3,
-          "Neon": 3,
           "Omen": 1,
           "Kayo": 1,
           "Gekko": 1
@@ -30850,15 +30671,15 @@
           "Tejo": 1
         },
         "Haven": {
-          "Neon": 4,
           "Omen": 4,
+          "Neon": 4,
           "Waylay": 3,
           "Cypher": 3,
           "Sova": 2,
+          "Skye": 1,
           "Phoenix": 1,
           "Fade": 1,
-          "Chamber": 1,
-          "Skye": 1
+          "Chamber": 1
         },
         "Lotus": {
           "Omen": 2,
@@ -30870,11 +30691,11 @@
           "Skye": 1
         },
         "Split": {
+          "Waylay": 4,
+          "Omen": 4,
           "Viper": 4,
           "Neon": 4,
-          "Skye": 4,
-          "Omen": 4,
-          "Waylay": 4
+          "Skye": 4
         }
       }
     },
@@ -31645,14 +31466,14 @@
         "Cypher": 6,
         "Waylay": 5,
         "Raze": 3,
+        "Sova": 2,
         "Chamber": 2,
         "Brimstone": 2,
-        "Sova": 2,
         "Viper": 2,
-        "Tejo": 1,
-        "Jett": 1,
         "Fade": 1,
-        "Vyse": 1
+        "Vyse": 1,
+        "Tejo": 1,
+        "Jett": 1
       },
       "mapStats": {
         "Fracture": {
@@ -31687,12 +31508,12 @@
           "Tejo": 1
         },
         "Haven": {
-          "Omen": 4,
           "Neon": 4,
+          "Omen": 4,
           "Cypher": 4,
           "Waylay": 3,
-          "Skye": 2,
           "Sova": 2,
+          "Skye": 2,
           "Chamber": 1
         },
         "Lotus": {
@@ -35711,6 +35532,119 @@
     {
       "competition": "VCT",
       "year": 2026,
+      "region": "EMEA",
+      "event": "Vct 2026 Emea Stage 2",
+      "stage": "Stage 2",
+      "phase": "Group Stage",
+      "week": "Group Stage: Week 3",
+      "playerRows": 90,
+      "agentCounts": {
+        "Omen": 14,
+        "Phoenix": 12,
+        "Viper": 11,
+        "Neon": 10,
+        "Sova": 9,
+        "Fade": 9,
+        "Cypher": 4,
+        "Jett": 4,
+        "Chamber": 4,
+        "Harbor": 3,
+        "Yoru": 3,
+        "Vyse": 2,
+        "Raze": 1,
+        "Astra": 1,
+        "Kayo": 1,
+        "Waylay": 1,
+        "Sage": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 46,
+          "atkWinRounds": 20,
+          "defWinRounds": 26
+        },
+        "Breeze": {
+          "rounds": 19,
+          "atkWinRounds": 9,
+          "defWinRounds": 10
+        },
+        "Haven": {
+          "rounds": 30,
+          "atkWinRounds": 18,
+          "defWinRounds": 6
+        },
+        "Split": {
+          "rounds": 57,
+          "atkWinRounds": 44,
+          "defWinRounds": 13
+        },
+        "Summit": {
+          "rounds": 56,
+          "atkWinRounds": 24,
+          "defWinRounds": 24
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Omen": 4,
+          "Sova": 4,
+          "Phoenix": 3,
+          "Jett": 2,
+          "Cypher": 2,
+          "Vyse": 1,
+          "Yoru": 1,
+          "Neon": 1,
+          "Chamber": 1,
+          "Viper": 1
+        },
+        "Breeze": {
+          "Phoenix": 2,
+          "Sova": 2,
+          "Neon": 2,
+          "Harbor": 2,
+          "Viper": 1,
+          "Cypher": 1
+        },
+        "Haven": {
+          "Phoenix": 2,
+          "Sova": 2,
+          "Omen": 1,
+          "Cypher": 1,
+          "Neon": 1,
+          "Jett": 1,
+          "Astra": 1,
+          "Chamber": 1
+        },
+        "Split": {
+          "Fade": 6,
+          "Viper": 6,
+          "Omen": 6,
+          "Neon": 5,
+          "Phoenix": 4,
+          "Raze": 1,
+          "Jett": 1,
+          "Yoru": 1
+        },
+        "Summit": {
+          "Omen": 3,
+          "Viper": 3,
+          "Fade": 3,
+          "Chamber": 2,
+          "Sova": 1,
+          "Neon": 1,
+          "Kayo": 1,
+          "Phoenix": 1,
+          "Harbor": 1,
+          "Waylay": 1,
+          "Sage": 1,
+          "Vyse": 1,
+          "Yoru": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2026,
       "region": "International",
       "event": "Valorant Masters London 2026",
       "stage": "Masters",
@@ -35899,20 +35833,20 @@
       "playerRows": 50,
       "agentCounts": {
         "Omen": 9,
-        "Vyse": 6,
         "Neon": 6,
-        "Raze": 5,
+        "Vyse": 6,
         "Fade": 5,
+        "Raze": 5,
         "Sova": 4,
         "Phoenix": 3,
         "Jett": 3,
-        "Cypher": 2,
         "Viper": 2,
-        "Waylay": 1,
-        "Sage": 1,
+        "Cypher": 2,
         "Astra": 1,
         "Skye": 1,
-        "Chamber": 1
+        "Chamber": 1,
+        "Waylay": 1,
+        "Sage": 1
       },
       "mapStats": {
         "Ascent": {
@@ -35936,13 +35870,13 @@
           "Sova": 4,
           "Omen": 4,
           "Phoenix": 2,
+          "Neon": 2,
           "Cypher": 2,
           "Jett": 2,
-          "Neon": 2,
+          "Chamber": 1,
           "Vyse": 1,
           "Waylay": 1,
-          "Sage": 1,
-          "Chamber": 1
+          "Sage": 1
         },
         "Lotus": {
           "Raze": 4,
@@ -35950,9 +35884,9 @@
           "Vyse": 4,
           "Fade": 3,
           "Neon": 2,
-          "Viper": 1,
           "Jett": 1,
-          "Skye": 1
+          "Skye": 1,
+          "Viper": 1
         },
         "Split": {
           "Neon": 2,
@@ -35977,20 +35911,20 @@
       "playerRows": 40,
       "agentCounts": {
         "Omen": 7,
-        "Vyse": 4,
         "Jett": 4,
         "Sova": 4,
-        "Raze": 3,
-        "Fade": 3,
+        "Vyse": 4,
         "Phoenix": 3,
         "Cypher": 3,
+        "Fade": 3,
+        "Raze": 3,
         "Neon": 2,
         "Sage": 2,
-        "Viper": 1,
         "Astra": 1,
         "Chamber": 1,
         "Deadlock": 1,
-        "Skye": 1
+        "Skye": 1,
+        "Viper": 1
       },
       "mapStats": {
         "Ascent": {
@@ -36031,16 +35965,16 @@
         },
         "Lotus": {
           "Omen": 4,
-          "Raze": 3,
           "Fade": 3,
+          "Raze": 3,
           "Vyse": 3,
-          "Viper": 1,
-          "Neon": 1,
           "Sage": 1,
           "Cypher": 1,
           "Deadlock": 1,
           "Jett": 1,
-          "Skye": 1
+          "Skye": 1,
+          "Viper": 1,
+          "Neon": 1
         }
       }
     },
@@ -36193,14 +36127,14 @@
         "Neon": 5,
         "Skye": 4,
         "Sage": 3,
-        "Astra": 3,
-        "Waylay": 3,
         "Chamber": 3,
+        "Waylay": 3,
+        "Astra": 3,
         "Kayo": 2,
         "Brimstone": 2,
-        "Deadlock": 1,
         "Yoru": 1,
-        "Harbor": 1
+        "Harbor": 1,
+        "Deadlock": 1
       },
       "mapStats": {
         "Ascent": {
@@ -36244,13 +36178,13 @@
           "Sova": 4,
           "Omen": 4,
           "Phoenix": 3,
-          "Neon": 2,
           "Vyse": 2,
-          "Cypher": 1,
-          "Jett": 1,
+          "Neon": 2,
           "Yoru": 1,
           "Sage": 1,
-          "Chamber": 1
+          "Chamber": 1,
+          "Cypher": 1,
+          "Jett": 1
         },
         "Breeze": {
           "Sova": 2,
@@ -36285,13 +36219,13 @@
           "Vyse": 5,
           "Raze": 5,
           "Fade": 4,
-          "Viper": 2,
           "Skye": 2,
           "Jett": 2,
+          "Viper": 2,
+          "Neon": 1,
           "Cypher": 1,
           "Sage": 1,
-          "Deadlock": 1,
-          "Neon": 1
+          "Deadlock": 1
         },
         "Pearl": {
           "Astra": 2,
@@ -36421,25 +36355,25 @@
         "Fade": 11,
         "Omen": 8,
         "Phoenix": 7,
-        "Viper": 6,
         "Astra": 6,
+        "Viper": 6,
         "Neon": 6,
-        "Cypher": 5,
-        "Chamber": 5,
-        "Waylay": 5,
         "Jett": 5,
         "Sova": 5,
-        "Raze": 4,
+        "Waylay": 5,
+        "Cypher": 5,
+        "Chamber": 5,
         "Vyse": 4,
+        "Raze": 4,
         "Brimstone": 3,
         "Tejo": 2,
         "Sage": 2,
+        "Deadlock": 1,
         "Skye": 1,
         "Harbor": 1,
         "Kayo": 1,
         "Killjoy": 1,
-        "Breach": 1,
-        "Deadlock": 1
+        "Breach": 1
       },
       "mapStats": {
         "Breeze": {
@@ -36511,28 +36445,28 @@
         "Lotus": {
           "Omen": 4,
           "Fade": 3,
-          "Raze": 2,
-          "Viper": 2,
-          "Vyse": 2,
           "Cypher": 2,
+          "Viper": 2,
+          "Raze": 2,
+          "Vyse": 2,
+          "Sage": 1,
+          "Deadlock": 1,
           "Chamber": 1,
           "Skye": 1,
-          "Waylay": 1,
-          "Sage": 1,
-          "Deadlock": 1
+          "Waylay": 1
         },
         "Pearl": {
           "Astra": 4,
           "Phoenix": 3,
+          "Vyse": 2,
+          "Fade": 2,
           "Sova": 2,
           "Neon": 2,
-          "Fade": 2,
-          "Vyse": 2,
-          "Chamber": 1,
-          "Killjoy": 1,
           "Jett": 1,
           "Waylay": 1,
-          "Tejo": 1
+          "Tejo": 1,
+          "Chamber": 1,
+          "Killjoy": 1
         },
         "Split": {
           "Viper": 2,
@@ -36775,15 +36709,15 @@
         "Sova": 6,
         "Jett": 6,
         "Fade": 5,
-        "Phoenix": 4,
         "Raze": 4,
+        "Phoenix": 4,
         "Neon": 3,
         "Vyse": 3,
         "Viper": 3,
-        "Deadlock": 2,
-        "Sage": 2,
         "Waylay": 2,
         "Brimstone": 2,
+        "Deadlock": 2,
+        "Sage": 2,
         "Skye": 1,
         "Chamber": 1
       },
@@ -36830,27 +36764,27 @@
           "Waylay": 1
         },
         "Haven": {
-          "Omen": 4,
           "Sova": 4,
           "Cypher": 4,
+          "Omen": 4,
           "Jett": 3,
           "Phoenix": 2,
+          "Waylay": 1,
           "Deadlock": 1,
-          "Neon": 1,
-          "Waylay": 1
+          "Neon": 1
         },
         "Lotus": {
           "Omen": 4,
+          "Fade": 3,
           "Raze": 3,
           "Vyse": 3,
-          "Fade": 3,
+          "Neon": 1,
+          "Viper": 1,
           "Jett": 1,
           "Skye": 1,
           "Sage": 1,
           "Deadlock": 1,
-          "Cypher": 1,
-          "Neon": 1,
-          "Viper": 1
+          "Cypher": 1
         }
       }
     },
@@ -37018,19 +36952,19 @@
       "agentCounts": {
         "Yoru": 9,
         "Viper": 7,
-        "Omen": 6,
         "Sova": 6,
-        "Fade": 5,
+        "Omen": 6,
         "Astra": 5,
         "Waylay": 5,
+        "Fade": 5,
         "Neon": 4,
         "Cypher": 4,
         "Raze": 3,
         "Killjoy": 2,
-        "Skye": 1,
-        "Brimstone": 1,
         "Jett": 1,
-        "Tejo": 1
+        "Tejo": 1,
+        "Skye": 1,
+        "Brimstone": 1
       },
       "mapStats": {
         "Abyss": {
@@ -37137,17 +37071,17 @@
         "Fade": 5,
         "Omen": 5,
         "Neon": 5,
-        "Sova": 4,
         "Astra": 4,
+        "Sova": 4,
+        "Chamber": 2,
+        "Cypher": 2,
         "Waylay": 2,
         "Vyse": 2,
-        "Chamber": 2,
         "Raze": 2,
-        "Cypher": 2,
-        "Killjoy": 1,
-        "Skye": 1,
         "Phoenix": 1,
-        "Jett": 1
+        "Jett": 1,
+        "Killjoy": 1,
+        "Skye": 1
       },
       "mapStats": {
         "Breeze": {
@@ -37363,21 +37297,21 @@
         "Omen": 13,
         "Sova": 12,
         "Yoru": 12,
-        "Neon": 11,
         "Viper": 11,
+        "Neon": 11,
         "Waylay": 8,
         "Astra": 7,
         "Fade": 6,
         "Killjoy": 3,
         "Cypher": 3,
         "Phoenix": 2,
-        "Skye": 2,
         "Raze": 2,
-        "Harbor": 2,
         "Tejo": 2,
-        "Kayo": 1,
+        "Skye": 2,
+        "Harbor": 2,
         "Chamber": 1,
         "Jett": 1,
+        "Kayo": 1,
         "Vyse": 1
       },
       "mapStats": {
@@ -37416,14 +37350,14 @@
         "Abyss": {
           "Waylay": 4,
           "Sova": 4,
+          "Omen": 2,
+          "Yoru": 2,
           "Astra": 2,
           "Harbor": 2,
-          "Yoru": 2,
-          "Omen": 2,
-          "Neon": 1,
           "Cypher": 1,
           "Tejo": 1,
-          "Viper": 1
+          "Viper": 1,
+          "Neon": 1
         },
         "Breeze": {
           "Yoru": 2,
@@ -37445,17 +37379,17 @@
           "Kayo": 1
         },
         "Haven": {
-          "Omen": 3,
           "Sova": 3,
+          "Omen": 3,
           "Neon": 3,
           "Yoru": 3,
           "Killjoy": 2,
-          "Astra": 1,
-          "Cypher": 1,
           "Viper": 1,
           "Chamber": 1,
           "Phoenix": 1,
-          "Fade": 1
+          "Fade": 1,
+          "Astra": 1,
+          "Cypher": 1
         },
         "Pearl": {
           "Astra": 2,
@@ -37471,13 +37405,13 @@
           "Viper": 6,
           "Omen": 5,
           "Fade": 4,
+          "Yoru": 3,
           "Waylay": 3,
           "Neon": 3,
-          "Yoru": 3,
-          "Skye": 2,
           "Raze": 2,
-          "Astra": 1,
-          "Vyse": 1
+          "Skye": 2,
+          "Vyse": 1,
+          "Astra": 1
         }
       }
     },
@@ -37612,10 +37546,10 @@
         "Raze": 2,
         "Skye": 2,
         "Chamber": 1,
-        "Jett": 1,
+        "Tejo": 1,
         "Iso": 1,
         "Vyse": 1,
-        "Tejo": 1
+        "Jett": 1
       },
       "mapStats": {
         "Abyss": {
@@ -37702,12 +37636,12 @@
           "Viper": 4,
           "Fade": 3,
           "Omen": 3,
-          "Yoru": 2,
-          "Raze": 2,
           "Neon": 2,
           "Waylay": 2,
-          "Skye": 1,
-          "Astra": 1
+          "Yoru": 2,
+          "Raze": 2,
+          "Astra": 1,
+          "Skye": 1
         }
       }
     },
@@ -37902,19 +37836,19 @@
         "Yoru": 7,
         "Sova": 6,
         "Viper": 5,
-        "Astra": 4,
         "Omen": 4,
+        "Astra": 4,
         "Neon": 3,
         "Jett": 2,
+        "Tejo": 1,
+        "Waylay": 1,
+        "Harbor": 1,
+        "Skye": 1,
         "Fade": 1,
         "Phoenix": 1,
         "Chamber": 1,
         "Cypher": 1,
-        "Iso": 1,
-        "Tejo": 1,
-        "Waylay": 1,
-        "Harbor": 1,
-        "Skye": 1
+        "Iso": 1
       },
       "mapStats": {
         "Abyss": {
@@ -37947,13 +37881,13 @@
           "Skye": 1
         },
         "Breeze": {
-          "Viper": 4,
-          "Sova": 4,
           "Yoru": 4,
-          "Neon": 2,
-          "Astra": 2,
+          "Sova": 4,
+          "Viper": 4,
           "Jett": 2,
-          "Omen": 2
+          "Omen": 2,
+          "Neon": 2,
+          "Astra": 2
         },
         "Haven": {
           "Yoru": 2,
@@ -41004,6 +40938,113 @@
           "Yoru": 1,
           "Phoenix": 1,
           "Sova": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2026,
+      "region": "Pacific",
+      "event": "Vct 2026 Pacific Stage 2",
+      "stage": "Stage 2",
+      "phase": "Group Stage",
+      "week": "Group Stage: Week 3",
+      "playerRows": 60,
+      "agentCounts": {
+        "Omen": 11,
+        "Cypher": 8,
+        "Skye": 6,
+        "Neon": 6,
+        "Sova": 5,
+        "Raze": 4,
+        "Jett": 4,
+        "Deadlock": 3,
+        "Sage": 3,
+        "Vyse": 2,
+        "Viper": 2,
+        "Fade": 1,
+        "Phoenix": 1,
+        "Astra": 1,
+        "Veto": 1,
+        "Waylay": 1,
+        "Yoru": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 16,
+          "atkWinRounds": 5,
+          "defWinRounds": 11
+        },
+        "Haven": {
+          "rounds": 52,
+          "atkWinRounds": 33,
+          "defWinRounds": 15
+        },
+        "Lotus": {
+          "rounds": 24,
+          "atkWinRounds": 11,
+          "defWinRounds": 13
+        },
+        "Split": {
+          "rounds": 26,
+          "atkWinRounds": 10,
+          "defWinRounds": 14
+        },
+        "Sunset": {
+          "rounds": 23,
+          "atkWinRounds": 14,
+          "defWinRounds": 9
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Cypher": 2,
+          "Sova": 2,
+          "Jett": 2,
+          "Omen": 2,
+          "Deadlock": 1,
+          "Neon": 1
+        },
+        "Haven": {
+          "Cypher": 4,
+          "Omen": 4,
+          "Neon": 3,
+          "Skye": 3,
+          "Phoenix": 1,
+          "Sova": 1,
+          "Jett": 1,
+          "Waylay": 1,
+          "Deadlock": 1,
+          "Yoru": 1
+        },
+        "Lotus": {
+          "Vyse": 2,
+          "Omen": 2,
+          "Raze": 2,
+          "Fade": 1,
+          "Viper": 1,
+          "Skye": 1,
+          "Jett": 1
+        },
+        "Split": {
+          "Skye": 2,
+          "Raze": 1,
+          "Deadlock": 1,
+          "Astra": 1,
+          "Cypher": 1,
+          "Sage": 1,
+          "Viper": 1,
+          "Omen": 1,
+          "Neon": 1
+        },
+        "Sunset": {
+          "Sage": 2,
+          "Omen": 2,
+          "Sova": 2,
+          "Veto": 1,
+          "Raze": 1,
+          "Cypher": 1,
+          "Neon": 1
         }
       }
     }

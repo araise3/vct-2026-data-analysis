@@ -163,14 +163,19 @@ export default function PlayerProfile() {
     [allMatchRows, selections, dateRange]
   )
 
-  // Highest-kill series in scope -- the analogue of rft.gg's "Most Kills
-  // in 1 Game" card. Series totals, not per-map, and necessarily so:
-  // match_players.json is one row per player per MATCH, and the site no
-  // longer ships a per-map breakdown at all (those files were dropped when
-  // match pages became vlr.gg links). Ties keep the earliest match.
+  // Highest-kill series across this player's ENTIRE match history -- the
+  // analogue of rft.gg's "Most Kills in 1 Game" card. Deliberately built
+  // from `allMatchRows`, not the filtered `matchRows`: unlike every other
+  // stat on this page, a career-best record shouldn't disappear or shrink
+  // just because the user narrowed the scope to one event -- it's a fixed
+  // fact about the player, not a scoped aggregate. Series totals, not
+  // per-map, and necessarily so: match_players.json is one row per player
+  // per MATCH, and the site no longer ships a per-map breakdown at all
+  // (those files were dropped when match pages became vlr.gg links). Ties
+  // keep the earliest match.
   const bestKillMatch = useMemo(() => {
     let best = null
-    for (const m of matchRows) {
+    for (const m of allMatchRows) {
       const row = playersByMatch.get(m.id)?.find((r) => r.p === decodedName)
       if (!row || row.k == null) continue
       if (!best || row.k > best.kills) {
@@ -185,7 +190,7 @@ export default function PlayerProfile() {
       }
     }
     return best
-  }, [matchRows, playersByMatch, decodedName])
+  }, [allMatchRows, playersByMatch, decodedName])
 
   // Rating over time: one point per day the player actually played,
   // rounds-weighted within the day so a 3-map day isn't averaged flat
@@ -407,21 +412,6 @@ export default function PlayerProfile() {
         </div>
       )}
 
-      {radar && (
-        <div className="bg-surface border border-hairline rounded-2xl p-5">
-          <h3 className="font-display text-sm font-semibold text-ink mb-1">Performance profile</h3>
-          <p className="text-muted text-xs mb-4">
-            Each spoke is its own scale — position is {decodedName}'s percentile within qualified
-            players (rounds played ≥ half the scope's median, min 20) in the current filter scope,
-            not an absolute value. Hover a point for rank.
-            {!radar.subjectQualified && ' Small sample — this player is below the qualification bar in this scope.'}
-          </p>
-          <div className="max-w-xl mx-auto">
-            <RadarChart axes={radar.axes} />
-          </div>
-        </div>
-      )}
-
       {matchRows.length > 0 && (
         <div className="flex flex-col gap-2">
           <h3 className="font-display text-sm font-semibold text-ink">Performances</h3>
@@ -453,6 +443,21 @@ export default function PlayerProfile() {
         </div>
       )}
 
+      {radar && (
+        <div className="bg-surface border border-hairline rounded-2xl p-5">
+          <h3 className="font-display text-sm font-semibold text-ink mb-1">Performance profile</h3>
+          <p className="text-muted text-xs mb-4">
+            Each spoke is its own scale — position is {decodedName}'s percentile within qualified
+            players (rounds played ≥ half the scope's median, min 20) in the current filter scope,
+            not an absolute value. Hover a point for rank.
+            {!radar.subjectQualified && ' Small sample — this player is below the qualification bar in this scope.'}
+          </p>
+          <div className="max-w-xl mx-auto">
+            <RadarChart axes={radar.axes} />
+          </div>
+        </div>
+      )}
+
       {!stats ? (
         <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
           <p className="text-muted text-sm">No maps in this scope.</p>
@@ -465,16 +470,12 @@ export default function PlayerProfile() {
           {/* Maps/Rounds/Rating/ACS/K-D/KAST/ADR/HS% used to duplicate a
               KPI-card grid here -- they're now the Agents table's Overall
               row above, so only the stats that table CAN'T show (no
-              multi-kill/econ/objective data in player_agents.json) live
-              in cards. */}
+              econ/objective data in player_agents.json) live in cards.
+              Plants/Defuses moved into the Totals grid below (counting
+              stats belong together); Consistency (rating SD) was removed
+              per direct feedback. */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KpiCard
-              label="Consistency (rating SD)"
-              value={stats.ratingSd == null ? '—' : stats.ratingSd.toFixed(3)}
-            />
             <KpiCard label="Avg Econ" value={stats.utilMaps ? num(stats.avgEcon, 0) : '—'} />
-            <KpiCard label="Plants" value={stats.utilMaps ? num(stats.totalPlants) : '—'} />
-            <KpiCard label="Defuses" value={stats.utilMaps ? num(stats.totalDefuses) : '—'} />
           </div>
 
           <div className="bg-surface border border-hairline rounded-2xl p-5">
@@ -499,6 +500,8 @@ export default function PlayerProfile() {
               <Stat label="4K" value={num(stats.total4k)} />
               <Stat label="Ace" value={num(stats.totalAce)} />
               <Stat label="Clutches Won" value={num(stats.totalClutches)} />
+              <Stat label="Plants" value={stats.utilMaps ? num(stats.totalPlants) : '—'} />
+              <Stat label="Defuses" value={stats.utilMaps ? num(stats.totalDefuses) : '—'} />
             </div>
           </div>
 

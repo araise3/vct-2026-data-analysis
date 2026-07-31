@@ -129,11 +129,11 @@ export default function MatchHistory({
             <th className="px-4 py-2 text-left font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
               {perspective ? 'Round' : 'Match'}
             </th>
-            <th className="px-2 py-2 text-center font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline">
-              {perspective ? '' : 'Round'}
+            <th className="px-4 py-2 text-left font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
+              {perspective ? 'Opponent' : 'Round'}
             </th>
-            <th className="px-4 py-2 text-center font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
-              Score
+            <th className="px-4 py-2 text-left font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
+              {perspective ? 'Result' : 'Score'}
             </th>
             <th className="px-3 py-2 text-left font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
               Maps
@@ -187,41 +187,47 @@ export default function MatchHistory({
                     </div>
                   )}
                 </td>
-                <td className="px-2 py-1.5 border-b border-hairline text-center">
-                  {perspective ? <ResultBadge won={won} /> : (
+                {/* Opponent gets its own column now -- it used to be crammed
+                    into the same cell as the score itself (logo/name right
+                    next to the digits), which read as one cluttered,
+                    ambiguous "Score" column doing two unrelated jobs at
+                    once (who we played AND what happened). Splitting them
+                    also reads in the natural order: who, then what happened. */}
+                <td className="px-4 py-1.5 border-b border-hairline whitespace-nowrap">
+                  {perspective ? (
+                    opponent && (
+                      <Link
+                        to={`/teams/${encodeURIComponent(opponent)}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex items-center hover:text-accent-bright transition-colors"
+                      >
+                        <TeamLogo team={opponent} size={18} />
+                      </Link>
+                    )
+                  ) : (
                     <span className="text-muted text-xs whitespace-nowrap">{roundLabel(m.w)}</span>
                   )}
                 </td>
                 <td className="px-4 py-1.5 border-b border-hairline whitespace-nowrap">
                   {perspective ? (
-                    // The score itself sits in a fixed-width, right-aligned
-                    // box so it lands at the same x position every row --
-                    // without it, this whole group (score + opponent) was
-                    // centered as one flex unit, so a long opponent name
-                    // (e.g. "DetonatioN FocusMe") pushed the score visibly
-                    // off from a short one ("T1") since centering a wider
-                    // group shifts its start further left. Only the
-                    // opponent logo/name trails afterward now, so its width
-                    // never moves the score.
-                    <span className="flex items-center gap-2">
-                      <span className="flex items-center justify-end gap-1.5 w-9 shrink-0">
-                        <span className={won ? 'text-ink font-medium' : 'text-muted'}>
+                    // The W/L badge and the score are one "Result" now,
+                    // instead of the badge living all the way back in the
+                    // Round column, disconnected from the number it
+                    // actually describes. myScore/oppScore each keep their
+                    // own fixed-width slot (not the cluster as a whole) so
+                    // "1" -- narrower than "0"/"2" in this font -- can't
+                    // shift the dash's position row to row.
+                    <span className="flex items-center gap-1.5">
+                      <ResultBadge won={won} />
+                      <span className="flex items-center gap-1">
+                        <span className={`w-4 text-right ${won ? 'text-ink font-medium' : 'text-muted'}`}>
                           {myScore ?? '—'}
                         </span>
                         <span className="text-muted/50">–</span>
-                        <span className={won === false ? 'text-ink font-medium' : 'text-muted'}>
+                        <span className={`w-4 text-left ${won === false ? 'text-ink font-medium' : 'text-muted'}`}>
                           {oppScore ?? '—'}
                         </span>
                       </span>
-                      {opponent && (
-                        <Link
-                          to={`/teams/${encodeURIComponent(opponent)}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="hover:text-accent-bright transition-colors"
-                        >
-                          <TeamLogo team={opponent} size={18} />
-                        </Link>
-                      )}
                     </span>
                   ) : (
                     <span className="text-ink">

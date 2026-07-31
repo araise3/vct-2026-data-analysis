@@ -87,6 +87,9 @@ export default function TeamProfile() {
     { key: 'roundsLost', label: 'RL', align: 'right', format: (v) => num(v) },
     { key: 'atkStart', label: 'ATK 1st', align: 'right', format: (v) => num(v) },
     { key: 'defStart', label: 'DEF 1st', align: 'right', format: (v) => num(v) },
+    // How often this map goes to OT at all -- distinct from the "OT" column
+    // right after it, which is the team's win record *once* it gets there.
+    { key: 'otPct', label: 'OT%', align: 'right', format: (v, row) => (row.mapsPlayed ? pct(v) : '—') },
     { key: 'otMaps', label: 'OT', align: 'right', format: (v, row) => (row.otMaps ? `${row.otWon}/${row.otMaps}` : '—') },
   ], [])
 

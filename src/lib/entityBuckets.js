@@ -362,6 +362,11 @@ export function aggregateTeamMapBuckets(buckets) {
       defStart: d.defStart,
       otMaps: d.otM,
       otWon: d.otW,
+      // How often THIS map reaches OT at all, not how the team does once it
+      // gets there (that's otWon/otMaps, the existing "OT" column) -- a
+      // separate, purely descriptive rate, so no colorScale on it in the
+      // table (there's no "good"/"bad" direction to a map just running long).
+      otPct: div(d.otM, d.mapP),
       roundsWon: d.rndW,
       roundsLost: d.rndL,
       atkRounds: d.atkP,
@@ -429,6 +434,7 @@ export function summarizeTeamMapStats(mapRows) {
     defStart: t.defStart,
     otMaps: t.otMaps,
     otWon: t.otWon,
+    otPct: div(t.otMaps, t.mapsPlayed),
   }
 }
 

@@ -146,6 +146,13 @@ export default function TeamProfile() {
       const s = aggregatePlayerBuckets(buckets)
       if (!s || !s.mapsPlayed) continue
       const m = playerData.meta[player]
+      // meta is deliberately VCT-only at the export layer (see
+      // export_from_db.py's players.json section) -- a player who only
+      // ever played EWC has real bucket data here but no meta entry, so
+      // this has to be skipped rather than assumed present, matching the
+      // same guard every other page reading player meta already has
+      // (Overview/Players/Records.jsx).
+      if (!m) continue
       let firstDate = null, lastDate = null
       for (const b of buckets) {
         const win = weekDates.get(`${b.e}|${b.w}`)

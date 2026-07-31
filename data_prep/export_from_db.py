@@ -195,19 +195,76 @@ def main():
     vct = drop_showmatches(merge_dbs(vct_2026, vct_2025))
     ewc = drop_showmatches(merge_dbs(ewc_2026, ewc_2025))
 
-    # VLR's own event name for 2025 China Kickoff is "Champions Tour 2025
-    # China Kickoff" -- a stray one-off that breaks the "Vct 2025 <Region>
-    # <Stage>" pattern every other 2025 VCT event follows (confirmed this is
-    # genuinely what VLR's page is titled, not a scraper bug -- see the 2025
-    # historical-scraper note in CLAUDE.md). Canonicalized here the same way
-    # team names are (CANONICAL_OVERRIDES above), purely for display
+    # VLR's own event names for two 2025 events are stray one-offs that break
+    # the pattern every sibling event of the same kind follows (confirmed
+    # genuinely what VLR's own pages are titled, not scraper bugs -- see the
+    # 2025 historical-scraper note in CLAUDE.md). Canonicalized here the same
+    # way team names are (CANONICAL_OVERRIDES above), purely for display
     # consistency: eventLabel() on the frontend uppercases a leading "Vct" to
-    # "VCT", so renaming to match the sibling pattern here is what makes it
-    # render as "VCT 2025 China Kickoff" like every other 2025 VCT event.
+    # "VCT", so the China Kickoff rename is what makes it render as
+    # "VCT 2025 China Kickoff" like every other 2025 VCT event; the Masters
+    # Bangkok rename needs no frontend transform since it already matches its
+    # siblings' raw casing ("Valorant Masters Toronto 2025", "...Santiago
+    # 2026", "...London 2026") exactly as stored.
     EVENT_NAME_OVERRIDES = {
         "Champions Tour 2025 China Kickoff": "Vct 2025 China Kickoff",
+        "Champions Tour 2025 Masters Bangkok": "Valorant Masters Bangkok 2025",
     }
     vct["events"]["name"] = vct["events"]["name"].replace(EVENT_NAME_OVERRIDES)
+
+    # EWC 2025's event structure is genuinely different from EWC 2026's,
+    # confirmed by fetching the actual pages rather than assumed from the
+    # 2026 pattern (see the EWC 2025 event-structure note in CLAUDE.md): 2026
+    # gives each regional qualifier its own real vlr.gg event id (2953-2956),
+    # but 2025 has no separate id per qualifier at all -- EMEA Qualifier,
+    # Americas Qualifier, Pacific x Asian Champions League Qualifier, Group
+    # Stage, and Playoffs all live under one event id (2449), distinguished
+    # only by a "<Qualifier name>: <round>" prefix on matches.stage. That
+    # lumped every 2025 qualifier match into one 77-match "Esports World Cup
+    # 2025" tournament entry, unfilterable by region the way every 2026 EWC
+    # qualifier is. Split out here into synthetic per-qualifier events for
+    # site display/filtering parity with 2026 -- there's no real vlr.gg event
+    # page behind these synthetic ids, so they're picked from a block (9xxxx)
+    # nowhere near any real event id (2025 season: 2274-2501, 2026 season:
+    # 2682-2978, both checked directly against the real DBs) to guarantee no
+    # collision, ever. Group Stage and Playoffs matches are left under the
+    # original 2449 id -- they ARE the Main Event bracket, same concept as
+    # 2026's own un-split main event (2952).
+    EWC_2025_QUALIFIER_SPLITS = [
+        # (stage prefix on the raw scraped match, synthetic event_id, event name, region)
+        ("Americas Qualifier", 90001, "Esports World Cup 2025 Americas Qualifier", "Americas"),
+        ("EMEA Qualifier", 90002, "Esports World Cup 2025 EMEA Qualifier", "EMEA"),
+        ("Pacific X Asian Champions League Qualifier", 90003,
+         "Esports World Cup 2025 Pacific X Asian Champions League Qualifier", "Pacific"),
+    ]
+
+    def split_ewc_2025_qualifiers(tables):
+        matches_df = tables["matches"]
+        events_df = tables["events"]
+        template = events_df.loc[events_df["event_id"] == 2449]
+        if template.empty:
+            return tables  # EWC 2025 DB not loaded this run
+        template = template.iloc[0].to_dict()
+        new_event_rows = []
+        for prefix, new_id, name, region in EWC_2025_QUALIFIER_SPLITS:
+            mask = (matches_df["event_id"] == 2449) & matches_df["stage"].str.startswith(f"{prefix}:")
+            n = int(mask.sum())
+            if not n:
+                continue
+            matches_df.loc[mask, "event_id"] = new_id
+            # Strip the now-redundant "<Qualifier name>: " prefix -- the
+            # qualifier name is the EVENT now, not a phase within a bigger
+            # one, exactly mirroring how 2026's own separate qualifier events
+            # carry a bare "Stage 1: <round>" with no regional prefix.
+            matches_df.loc[mask, "stage"] = matches_df.loc[mask, "stage"].str.slice(len(prefix) + 2)
+            new_event_rows.append({**template, "event_id": new_id, "name": name,
+                                    "region": region, "stage": "Qualifier"})
+            print(f"  split {n} match(es) into synthetic event {new_id} ({name})")
+        if new_event_rows:
+            tables["events"] = pd.concat([events_df, pd.DataFrame(new_event_rows)], ignore_index=True)
+        return tables
+
+    ewc = split_ewc_2025_qualifiers(ewc)
 
     # Combined universe: every downstream computation runs on this, then
     # gets filtered back down to competition=='VCT' for the default

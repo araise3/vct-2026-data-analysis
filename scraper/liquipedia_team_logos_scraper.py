@@ -274,8 +274,22 @@ def fetch_team_icons(s, titles):
     return icons
 
 
+# Every real usage of TeamLogo across the site tops out at size=44
+# (TeamProfile's header). Requesting a 160px-wide thumbnail instead of the
+# original covers that up to ~3.6x device pixel ratio with headroom to
+# spare, at a fraction of the size -- the originals turned out to be huge
+# (some team logos are scanned/exported at 3000px on the long edge, one as
+# large as 5.4MB for a single file) despite never being displayed above
+# 44px anywhere, which was the actual performance problem: ~25MB of image
+# weight for icons rendered at 18-44px.
+THUMB_WIDTH = 160
+
+
 def resolve_file_urls(s, filenames):
-    """Batched imageinfo lookup, chunked to <=50 titles per request."""
+    """Batched imageinfo lookup, chunked to <=50 titles per request.
+    Requests a pre-sized thumbnail (iiurlwidth) rather than the original
+    full-resolution file -- Liquipedia's thumbnailing service generates
+    this server-side, so no local image processing is needed."""
     urls = {}
     files = sorted(set(filenames))
     for i in range(0, len(files), 50):
@@ -287,10 +301,10 @@ def resolve_file_urls(s, filenames):
         # chunk of titles, so a re-run actually hits the cache instead of
         # silently re-requesting (and burning another round of rate-limited
         # calls) every single time.
-        digest = hashlib.md5(titles.encode("utf-8")).hexdigest()
+        digest = hashlib.md5((titles + f"|w{THUMB_WIDTH}").encode("utf-8")).hexdigest()
         data = cached_get(s, "imageinfo", "chunk_" + digest, {
             "action": "query", "prop": "imageinfo", "iiprop": "url",
-            "format": "json", "titles": titles,
+            "iiurlwidth": str(THUMB_WIDTH), "format": "json", "titles": titles,
         })
         pages = data.get("query", {}).get("pages", {})
         for pid, p in pages.items():
@@ -305,7 +319,14 @@ def resolve_file_urls(s, filenames):
             # real signal, not the "missing" key.
             if not p.get("imageinfo"):
                 continue
-            urls[fn] = p["imageinfo"][0]["url"]
+            info = p["imageinfo"][0]
+            # thumburl is only present when the source is actually wider
+            # than THUMB_WIDTH and thumbnailing applies; a handful of team
+            # icons are already narrower than 160px (e.g. KOI's is 649px --
+            # not tiny, but some could legitimately be under the threshold),
+            # in which case there's no separate thumbnail and the original
+            # *is* the appropriately-sized file already.
+            urls[fn] = info.get("thumburl") or info["url"]
     return urls
 
 

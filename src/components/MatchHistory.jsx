@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import TeamLogo from './TeamLogo'
-import { rating, pct, num, eventLabel, roundLabel, vlrMatchUrl } from '../lib/format'
+import { eventLabel, roundLabel, vlrMatchUrl } from '../lib/format'
 
 /**
  * Chronological match log, shared by the player profile, the team profile
@@ -28,13 +28,6 @@ import { rating, pct, num, eventLabel, roundLabel, vlrMatchUrl } from '../lib/fo
  * open two tabs.
  */
 
-/** Signed difference, colored like VLR's own +/- columns. */
-function Diff({ value }) {
-  if (value === null || value === undefined || Number.isNaN(value)) return <span className="text-muted">—</span>
-  const cls = value > 0 ? 'text-emerald-400' : value < 0 ? 'text-accent-bright' : 'text-muted'
-  return <span className={cls}>{value > 0 ? `+${value}` : value}</span>
-}
-
 /** Box-with-arrow glyph, marking a row as leaving the site for vlr.gg. */
 function ExternalIcon() {
   return (
@@ -46,18 +39,6 @@ function ExternalIcon() {
     </svg>
   )
 }
-
-const PLAYER_STAT_COLUMNS = [
-  { key: 'r', label: 'R', render: (s) => rating(s.r) },
-  { key: 'acs', label: 'ACS', render: (s) => num(s.acs, 0) },
-  { key: 'k', label: 'K', render: (s) => num(s.k) },
-  { key: 'd', label: 'D', render: (s) => num(s.d) },
-  { key: 'a', label: 'A', render: (s) => num(s.a) },
-  { key: 'kdDiff', label: '+/−', render: (s) => <Diff value={s.k - s.d} /> },
-  { key: 'kast', label: 'KAST', render: (s) => pct(s.kast, 0) },
-  { key: 'adr', label: 'ADR', render: (s) => num(s.adr, 0) },
-  { key: 'hs', label: 'HS%', render: (s) => pct(s.hs, 0) },
-]
 
 /** W/L pill. `won` may be null for a match with no decided winner. */
 function ResultBadge({ won }) {
@@ -114,7 +95,6 @@ export default function MatchHistory({
       return {
         match: m,
         myTeam, opponent, myScore, oppScore, won,
-        playerStats: isPlayer ? scoreboard.find((r) => r.p === perspective.name) : null,
       }
     })
   }, [ordered, playersByMatch, perspective, isPlayer])
@@ -124,8 +104,6 @@ export default function MatchHistory({
       <p className="text-muted text-sm px-1">{emptyLabel || 'No matches in this scope.'}</p>
     )
   }
-
-  const statColumns = isPlayer ? PLAYER_STAT_COLUMNS : []
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-hairline">
@@ -157,14 +135,6 @@ export default function MatchHistory({
             <th className="px-4 py-2 text-center font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
               Score
             </th>
-            {statColumns.map((c) => (
-              <th
-                key={c.key}
-                className="px-3 py-2 text-right font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap"
-              >
-                {c.label}
-              </th>
-            ))}
             <th className="px-3 py-2 text-left font-medium text-[11px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap">
               Maps
             </th>
@@ -172,7 +142,7 @@ export default function MatchHistory({
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ match: m, opponent, myScore, oppScore, won, playerStats }) => {
+          {rows.map(({ match: m, opponent, myScore, oppScore, won }) => {
             return (
               <tr
                 key={m.id}
@@ -222,21 +192,32 @@ export default function MatchHistory({
                     <span className="text-muted text-xs whitespace-nowrap">{roundLabel(m.w)}</span>
                   )}
                 </td>
-                <td className="px-4 py-1.5 border-b border-hairline text-center whitespace-nowrap">
+                <td className="px-4 py-1.5 border-b border-hairline whitespace-nowrap">
                   {perspective ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <span className={won ? 'text-ink font-medium' : 'text-muted'}>
-                        {myScore ?? '—'}
-                      </span>
-                      <span className="text-muted/50">–</span>
-                      <span className={won === false ? 'text-ink font-medium' : 'text-muted'}>
-                        {oppScore ?? '—'}
+                    // The score itself sits in a fixed-width, right-aligned
+                    // box so it lands at the same x position every row --
+                    // without it, this whole group (score + opponent) was
+                    // centered as one flex unit, so a long opponent name
+                    // (e.g. "DetonatioN FocusMe") pushed the score visibly
+                    // off from a short one ("T1") since centering a wider
+                    // group shifts its start further left. Only the
+                    // opponent logo/name trails afterward now, so its width
+                    // never moves the score.
+                    <span className="flex items-center gap-2">
+                      <span className="flex items-center justify-end gap-1.5 w-9 shrink-0">
+                        <span className={won ? 'text-ink font-medium' : 'text-muted'}>
+                          {myScore ?? '—'}
+                        </span>
+                        <span className="text-muted/50">–</span>
+                        <span className={won === false ? 'text-ink font-medium' : 'text-muted'}>
+                          {oppScore ?? '—'}
+                        </span>
                       </span>
                       {opponent && (
                         <Link
                           to={`/teams/${encodeURIComponent(opponent)}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="ml-1 hover:text-accent-bright transition-colors"
+                          className="hover:text-accent-bright transition-colors"
                         >
                           <TeamLogo team={opponent} size={18} />
                         </Link>
@@ -248,14 +229,6 @@ export default function MatchHistory({
                     </span>
                   )}
                 </td>
-                {statColumns.map((c) => (
-                  <td
-                    key={c.key}
-                    className="px-3 py-1.5 text-right border-b border-hairline whitespace-nowrap text-ink/90"
-                  >
-                    {playerStats ? c.render(playerStats) : <span className="text-muted">—</span>}
-                  </td>
-                ))}
                 {/* Map scores inline -- the row leaves the site entirely
                     now, so this is the only place the series shape (2-0 vs
                     2-1, which maps) shows without a round trip to VLR.

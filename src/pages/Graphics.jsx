@@ -67,7 +67,7 @@ export default function Graphics() {
   )
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
-    useFacetedFilter(records, FACETS, { competition: ['VCT'] })
+    useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   const rows = useMemo(() => {
     if (!data) return []

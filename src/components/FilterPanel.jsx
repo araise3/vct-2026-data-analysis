@@ -10,15 +10,16 @@ import { eventLabel } from '../lib/format'
  * that week across all of them at once. They're rendered as a sub-group per
  * selected event instead of one flat chip list.
  */
-export const FACETS = ['competition', 'region', 'split', 'event', 'eventPhase', 'eventWeek']
+export const FACETS = ['year', 'competition', 'region', 'split', 'event', 'eventPhase', 'eventWeek']
 
 /** Facets shown as flat chip groups, in order, above the per-event section. */
-const TOP_FACETS = ['competition', 'region', 'split', 'event']
+const TOP_FACETS = ['year', 'competition', 'region', 'split', 'event']
 
 /** Facets scoped to a specific event, shown only once events are selected. */
 const SCOPED_FACETS = ['eventPhase', 'eventWeek']
 
 export const FACET_LABELS = {
+  year: 'Year',
   competition: 'Competition',
   region: 'Region',
   split: 'Split',
@@ -31,10 +32,13 @@ export const FACET_LABELS = {
 // reads wrong -- Split's season progression, not alphabetized, with
 // Qualifier (an EWC-only concept, orthogonal to the VCT Kickoff/Stage 1/
 // Stage 2 progression) pushed to the end rather than sorting ahead of
-// "Stage" alphabetically. Values not listed here keep their place at the
-// end, in whatever order the hook already sorted them.
+// "Stage" alphabetically. Year is newest-first (current season is what most
+// visits care about), the opposite of the hook's default ascending sort.
+// Values not listed here keep their place at the end, in whatever order the
+// hook already sorted them.
 const FACET_ORDER = {
   split: ['Kickoff', 'Stage 1', 'Stage 2', 'Qualifier'],
+  year: [2026, 2025],
 }
 
 function orderOptions(facet, opts) {

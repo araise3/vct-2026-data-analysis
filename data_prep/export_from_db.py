@@ -22,6 +22,13 @@ _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DB_PATH = os.environ.get("VLR_DB_PATH", "C:/Users/leona/Desktop/scrape vlr/vlr_vct_2026.db")
 EWC_DB_PATH = os.environ.get("VLR_EWC_DB_PATH", "C:/Users/leona/Desktop/scrape vlr/vlr_ewc_2026.db")
+# 2025 historical DBs -- built by scraper/vlr_vct_2025_scraper.py and
+# scraper/vlr_ewc_2025_scraper.py, one-time backfills that live inside this
+# repo's own scraper/ directory (unlike the 2026 DBs above, which sit
+# outside the repo by convention). Both are optional the same way EWC_DB_PATH
+# is: load_db() tolerates either being absent.
+VCT_2025_DB_PATH = os.environ.get("VLR_VCT_2025_DB_PATH", os.path.join(_REPO_ROOT, "scraper", "vlr_vct_2025.db"))
+EWC_2025_DB_PATH = os.environ.get("VLR_EWC_2025_DB_PATH", os.path.join(_REPO_ROOT, "scraper", "vlr_ewc_2025.db"))
 OUT = os.environ.get("VLR_OUT", os.path.join(_REPO_ROOT, "public", "data"))
 
 CHINA_TEAMS = ['All Gamers', 'Bilibili Gaming', 'Dragon Ranger Gaming', 'EDward Gaming',
@@ -83,14 +90,14 @@ TABLE_COLUMNS = {
 }
 
 
-def load_db(path, competition):
-    # The EWC db is a separate optional file -- if it isn't present
-    # alongside the VCT one, run on VCT alone rather than erroring, using
-    # empty (but correctly-shaped) frames so every downstream pd.concat/
-    # merge still works unchanged.
+def load_db(path, competition, year):
+    # The EWC db (and both 2025 DBs) are separate optional files -- if one
+    # isn't present, run without it rather than erroring, using empty (but
+    # correctly-shaped) frames so every downstream pd.concat/merge still
+    # works unchanged.
     if not os.path.exists(path):
-        print(f"[info] {path} not found -- skipping ({competition} data will be empty)")
-        return {name: pd.DataFrame(columns=cols + ["competition"])
+        print(f"[info] {path} not found -- skipping ({competition} {year} data will be empty)")
+        return {name: pd.DataFrame(columns=cols + ["competition", "year"])
                 for name, cols in TABLE_COLUMNS.items()}
     conn = sqlite3.connect(path)
     tables = {}
@@ -98,6 +105,13 @@ def load_db(path, competition):
                  "map_round_economy", "map_round_results"]:
         df = pd.read_sql_query(f"SELECT * FROM {name}", conn)
         df["competition"] = competition
+        # Which season this row belongs to -- tagged at load time from which
+        # DB it came from (VLR's own event names already carry the year too,
+        # e.g. "Vct 2025 Americas Kickoff" vs "Vct 2026 Americas Kickoff", so
+        # there's no name-collision risk between years; this tag is what lets
+        # the site offer a dedicated Year filter rather than making users
+        # parse it back out of the event name).
+        df["year"] = year
         tables[name] = df
     conn.close()
     return tables
@@ -118,15 +132,19 @@ def main():
             f"an empty dataset over existing data."
         )
 
-    vct = load_db(DB_PATH, "VCT")
-    ewc = load_db(EWC_DB_PATH, "EWC")
+    vct_2026 = load_db(DB_PATH, "VCT", 2026)
+    ewc_2026 = load_db(EWC_DB_PATH, "EWC", 2026)
 
     # Second guard on the same hazard: the file can exist and still be useless
     # (a zero-byte placeholder, a fresh DB the scraper only just created, a
     # restore that produced a valid but empty SQLite file). Nothing downstream
     # distinguishes "no completed matches" from "no data", so check it here
-    # where the intent is unambiguous.
-    _completed = vct["matches"]
+    # where the intent is unambiguous. Deliberately checked against
+    # vct_2026 alone (not the year-merged `vct` built below) -- this guard
+    # exists specifically to catch a broken *current-season* DB, and a
+    # healthy 2025 backfill sitting alongside a corrupt 2026 DB must not
+    # mask that.
+    _completed = vct_2026["matches"]
     _completed = _completed[_completed["status"] == "completed"] if len(_completed) else _completed
     if len(_completed) == 0:
         raise SystemExit(
@@ -134,6 +152,48 @@ def main():
             f"only just created.\n        Refusing to export an empty dataset over "
             f"existing data."
         )
+
+    # 2025 historical backfill -- both optional (load_db tolerates either
+    # being absent), same as EWC_DB_PATH above.
+    vct_2025 = load_db(VCT_2025_DB_PATH, "VCT", 2025)
+    ewc_2025 = load_db(EWC_2025_DB_PATH, "EWC", 2025)
+
+    # From here on, `vct` and `ewc` are each a union across every season for
+    # that competition -- every line below this point that reads vct[...]/
+    # ewc[...] was written before 2025 data existed and needs no changes at
+    # all, since it was already only ever assuming "VCT data" / "EWC data"
+    # with no season baked into that assumption.
+    def merge_dbs(*dbs):
+        return {name: pd.concat([d[name] for d in dbs], ignore_index=True) for name in TABLE_COLUMNS}
+
+    # Showmatches -- exhibition games VLR bundles into a real event's match
+    # list (all-star matches, "Team Tarik vs Team Toast" fan events, etc.)
+    # even though they're not part of the competitive bracket and their
+    # rosters don't reflect any real team. VLR's own match page marks each
+    # one with a "Showmatch" tag, and the scraper already captures that as a
+    # literal "Showmatch: <name>" prefix on matches.stage -- a real signal
+    # already present in the data, not id-guessing, so this generalizes to
+    # any future showmatch (any season) with no code change. Found 6 in the
+    # 2025 VCT backfill this way (450589, 507067, 530514, 536176, 536985,
+    # 538583) -- 3 more than the 3 a user happened to spot by hand, which is
+    # exactly why this filters on the underlying signal instead of hardcoding
+    # those 3 ids. Applied to every match-id-keyed table, not just matches
+    # itself, so a showmatch can't leak into player/team stats, buckets,
+    # agents.json, or match_results/match_players via a table that still
+    # carries its rows after `matches` alone gets filtered.
+    def drop_showmatches(tables):
+        m = tables["matches"]
+        show_ids = set(m.loc[m["stage"].fillna("").str.startswith("Showmatch"), "match_id"])
+        if not show_ids:
+            return tables
+        print(f"  dropping {len(show_ids)} showmatch(es): {sorted(show_ids)}")
+        return {
+            name: (df[~df["match_id"].isin(show_ids)].copy() if "match_id" in df.columns else df)
+            for name, df in tables.items()
+        }
+
+    vct = drop_showmatches(merge_dbs(vct_2026, vct_2025))
+    ewc = drop_showmatches(merge_dbs(ewc_2026, ewc_2025))
 
     # Combined universe: every downstream computation runs on this, then
     # gets filtered back down to competition=='VCT' for the default
@@ -171,7 +231,9 @@ def main():
         return df
 
     nationality = pd.concat(
-        [load_nationality(DB_PATH), load_nationality(EWC_DB_PATH)], ignore_index=True
+        [load_nationality(DB_PATH), load_nationality(EWC_DB_PATH),
+         load_nationality(VCT_2025_DB_PATH), load_nationality(EWC_2025_DB_PATH)],
+        ignore_index=True
     ).drop_duplicates(subset='player', keep='first')
     nationality_map = nationality.set_index('player')[['country_code', 'country_name']].to_dict('index')
 
@@ -448,7 +510,7 @@ def main():
     for r in all_events.to_dict(orient='records'):
         events_lookup[int(r['event_id'])] = {
             "name": r['name'], "region": r['region'], "stage": r['stage'],
-            "competition": r['competition'],
+            "competition": r['competition'], "year": int(r['year']),
         }
 
     am = all_maps.merge(
@@ -1489,8 +1551,16 @@ def main():
     # would blow up combinatorially, but summing raw counts on demand
     # handles any combination for free.
     buckets = []
-    group_cols = ['competition', 'event_region', 'event_name', 'event_stage', 'phase', 'stage']
-    for (competition, region, event_name, event_stage, phase, week), g in players_long.groupby(group_cols, dropna=True):
+    # 'year' is redundant with event_name for grouping purposes (VLR's own
+    # event names already carry the season, e.g. "Vct 2025 Americas Kickoff"
+    # vs "Vct 2026 Americas Kickoff" -- see load_db()), but it's included
+    # explicitly anyway so the exported bucket carries a `year` field the
+    # Agents page can filter on directly, the same way it already filters
+    # directly on `region`/`competition`/`event` (this page uses the raw
+    # bucket fields, not the events-lookup-derived eventFields() every other
+    # bucket file goes through).
+    group_cols = ['competition', 'year', 'event_region', 'event_name', 'event_stage', 'phase', 'stage']
+    for (competition, year, region, event_name, event_stage, phase, week), g in players_long.groupby(group_cols, dropna=True):
         agent_counts = g['agent'].value_counts().to_dict()
         map_g = maps_long_completed[
             (maps_long_completed.event_region == region) & (maps_long_completed.event_name == event_name) &
@@ -1514,7 +1584,7 @@ def main():
             map_agent_counts[map_name] = {k: int(v) for k, v in mg['agent'].value_counts().items()}
 
         buckets.append({
-            "competition": competition,
+            "competition": competition, "year": int(year),
             "region": region, "event": event_name, "stage": event_stage,
             "phase": phase, "week": week,
             "playerRows": int(len(g)),
@@ -1533,7 +1603,7 @@ def main():
     agents_out = {
         "buckets": buckets,
         "mapNames": sorted(maps_long['map_name'].dropna().unique().tolist()),
-        "facets": ["competition", "region", "event", "stage", "phase", "week"],
+        "facets": ["competition", "year", "region", "event", "stage", "phase", "week"],
     }
 
     with open(f"{OUT}/agents.json", "w") as f:

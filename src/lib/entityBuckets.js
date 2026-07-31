@@ -57,6 +57,11 @@ function eventFields(ev, week) {
     // region's event of the same split at once, e.g. selecting "Stage 1"
     // matches Americas/EMEA/China/Pacific Stage 1 all together.
     split: HIDDEN_SPLITS.has(ev.stage) ? undefined : ev.stage,
+    // Season year (2025/2026) -- tagged per event at export time from which
+    // scrape DB it came from. Distinct from `split`/`event`: this is a
+    // coarse switch between whole seasons, e.g. selecting "2025" pulls in
+    // every 2025 region/split at once regardless of which one.
+    year: ev.year,
   }
 }
 

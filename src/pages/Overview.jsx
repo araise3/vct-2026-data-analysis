@@ -74,7 +74,7 @@ export default function Overview() {
   // halves of the page always describe the same scope.
   const { selections, setFacet, clearAll, filtered: filteredTeams, options, activeCount,
           dateRange, setDateRange, dateBounds } =
-    useFacetedFilter(teamRecords, FACETS, { competition: ['VCT'] })
+    useFacetedFilter(teamRecords, FACETS, { competition: ['VCT'], year: [2026] })
 
   const filteredPlayers = useMemo(
     () =>

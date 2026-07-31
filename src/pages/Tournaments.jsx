@@ -40,7 +40,7 @@ export default function Tournaments() {
   const records = useMemo(() => expandMatchRows(matchData), [matchData])
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
-    useFacetedFilter(records, FACETS, { competition: ['VCT'] })
+    useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   const playersByMatch = useMemo(() => groupMatchPlayers(matchPlayerData), [matchPlayerData])
 

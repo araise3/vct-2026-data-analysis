@@ -40,7 +40,7 @@ export default function TeamProfile() {
 
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
-    useFacetedFilter(records, FACETS, { competition: ['VCT'] })
+    useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   const stats = useMemo(() => aggregateTeamBuckets(filtered), [filtered])
 

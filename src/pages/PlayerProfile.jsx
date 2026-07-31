@@ -36,7 +36,7 @@ export default function PlayerProfile() {
 
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
-    useFacetedFilter(records, FACETS, { competition: ['VCT'] })
+    useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   const stats = useMemo(
     () => aggregatePlayerBuckets(filtered, { ratedOnly }),
@@ -108,15 +108,22 @@ export default function PlayerProfile() {
   // Every match this player appeared in, ignoring the filters entirely --
   // derived from the scoreboard rows rather than from their buckets, so a
   // match can only appear if there's a box score behind it. The
-  // Performances strip runs off THIS, deliberately unfiltered: it's a
-  // career-shape view, and re-scoping it to whatever Event filter is
-  // active (narrowing to a single event collapses it to a couple of bars)
-  // would make it useless. Everything else on the page stays scoped.
+  // Performances strip runs off THIS, deliberately unfiltered on
+  // region/event/split/etc: it's a career-shape view, and re-scoping it to
+  // whatever Event filter is active (narrowing to a single event collapses
+  // it to a couple of bars) would make it useless. Everything else on the
+  // page stays scoped.
+  //
+  // Year is the one dimension pinned rather than left open, to 2026 only --
+  // by product decision, not an oversight: since 2025 season data was added
+  // to the dataset, a purely unfiltered strip would silently blend a
+  // player's prior-season form into what's meant to read as "this player's
+  // current-season match-by-match shape."
   const allMatchRows = useMemo(() => {
     if (!matchData || !matchPlayerData) return []
     const mine = new Set()
     for (const r of matchPlayerData.rows) if (r.p === decodedName) mine.add(r.m)
-    return expandMatchRows(matchData).filter((m) => mine.has(m.id))
+    return expandMatchRows(matchData).filter((m) => mine.has(m.id) && m.year === 2026)
   }, [matchData, matchPlayerData, decodedName])
 
   const matchRows = useMemo(

@@ -40,7 +40,7 @@ export default function Players() {
   const records = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
-    useFacetedFilter(records, FACETS, { competition: ['VCT'] })
+    useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   // player_agents.json is the same bucket shape as player_buckets but keyed
   // by player+agent, so it can't just join the FACETS list (a player's own

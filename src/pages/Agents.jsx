@@ -72,7 +72,7 @@ export default function Agents() {
   const buckets = data?.buckets ?? []
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
-    useFacetedFilter(buckets, FACETS, { competition: ['VCT'] })
+    useFacetedFilter(buckets, FACETS, { competition: ['VCT'], year: [2026] })
 
   // Reorders only the win-rate table's own map columns (see winRateColumns
   // below) -- the pick-rate table keeps its own fixed column order

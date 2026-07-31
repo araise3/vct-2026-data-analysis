@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useData } from '../lib/useData'
-import { useFacetedFilter } from '../lib/useFacetedFilter'
 import { expandMatchRows, groupMatchPlayers } from '../lib/entityBuckets'
-import FilterPanel, { FACETS } from '../components/FilterPanel'
 import MatchHistory from '../components/MatchHistory'
 import { eventLabel, phaseLabel, num } from '../lib/format'
 
@@ -14,12 +12,10 @@ import { eventLabel, phaseLabel, num } from '../lib/format'
  * sharing an event id, and each match already carries the
  * "Phase: Round" string this groups on (`w`).
  *
- * Runs on the same shared FilterPanel as every other page, so Region /
- * Competition / Split narrow which tournaments appear rather than needing
- * a bespoke control. Event/Phase/Week chips are redundant with the page's
- * own structure but are left in place rather than special-cased out --
- * they still work, and diverging from the shared panel here would be a
- * surprise.
+ * Deliberately has no FilterPanel, unlike every other page -- this is meant
+ * to be a complete index of every tournament in the dataset (every
+ * region/competition/year/split), not a scoped view, so there is nothing to
+ * filter by design rather than an oversight.
  */
 function Chevron({ open }) {
   return (
@@ -38,9 +34,6 @@ export default function Tournaments() {
   const { data: matchPlayerData } = useData('match_players')
 
   const records = useMemo(() => expandMatchRows(matchData), [matchData])
-  const { selections, setFacet, clearAll, filtered, options, activeCount,
-          dateRange, setDateRange, dateBounds } =
-    useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   const playersByMatch = useMemo(() => groupMatchPlayers(matchPlayerData), [matchPlayerData])
 
@@ -51,7 +44,7 @@ export default function Tournaments() {
   // order visibly wrong is obvious.
   const tournaments = useMemo(() => {
     const byEvent = new Map()
-    for (const m of filtered) {
+    for (const m of records) {
       if (!byEvent.has(m.event)) {
         byEvent.set(m.event, {
           event: m.event,
@@ -86,7 +79,7 @@ export default function Tournaments() {
       })
     }
     return out.sort((a, b) => (b.lastDate || '').localeCompare(a.lastDate || ''))
-  }, [filtered])
+  }, [records])
 
   // All collapsed by default -- expanding every tournament at once would
   // mount ~500 match rows, and auto-opening "the most recent one" meant the
@@ -104,26 +97,13 @@ export default function Tournaments() {
       <div>
         <h1 className="font-display text-2xl font-semibold text-ink">Tournaments</h1>
         <p className="text-muted text-sm mt-1">
-          {tournaments.length} tournaments · {num(filtered.length)} matches in scope
+          {tournaments.length} tournaments · {num(records.length)} matches
         </p>
       </div>
 
-      <FilterPanel
-        options={options}
-        selections={selections}
-        setFacet={setFacet}
-        clearAll={clearAll}
-        activeCount={activeCount}
-        dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
-        summary={`${tournaments.length} tournaments`}
-      />
-
       {tournaments.length === 0 ? (
         <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
-          <p className="text-muted text-sm">No tournaments match this filter combination.</p>
-          <button onClick={clearAll} className="text-accent-bright text-sm hover:underline mt-2">
-            Clear all filters
-          </button>
+          <p className="text-muted text-sm">No tournaments found.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">

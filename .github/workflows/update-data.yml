@@ -52,6 +52,8 @@ jobs:
     env:
       VLR_DB_PATH: data_cache/vlr_vct_2026.db
       VLR_EWC_DB_PATH: data_cache/vlr_ewc_2026.db
+      VLR_VCT_2025_DB_PATH: data_cache/vlr_vct_2025.db
+      VLR_EWC_2025_DB_PATH: data_cache/vlr_ewc_2025.db
 
     steps:
       - uses: actions/checkout@v4
@@ -94,6 +96,32 @@ jobs:
             echo "No usable db-snapshot release found."
           fi
 
+      # 2025 historical backfill -- frozen, one-time data (see CLAUDE.md)
+      # that will never be re-scraped, so unlike the 2026 DBs above there's
+      # no "build from scratch" fallback and no daily refresh: these two
+      # files were seeded once into the db-snapshot-2025 release and only
+      # need fetching when genuinely absent from data_cache (first run after
+      # this step was added, or a cache eviction) -- after that the SAME
+      # cache save step below (path: data_cache, the whole directory) keeps
+      # them around for free, so this doesn't need its own cache key or a
+      # force_full_rebuild guard (that flag is about rebuilding the current
+      # season from scratch; it has nothing to do with a frozen prior
+      # season). Without this step, every export silently drops 2025 data --
+      # confirmed live: the first run after 2025 data was added to the site
+      # overwrote it with a 2026-only export within one scheduled cycle,
+      # because this workflow had no way to know the 2025 DBs existed.
+      - name: Restore 2025 historical databases (release fallback)
+        if: hashFiles('data_cache/vlr_vct_2025.db') == ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p data_cache
+          if gh release download db-snapshot-2025 --pattern '*.db' --dir data_cache --clobber; then
+            echo "Restored 2025 historical DBs from release."
+          else
+            echo "::warning::No db-snapshot-2025 release found -- 2025 season data will be empty in this export."
+          fi
+
       # Neither layer above is guaranteed to have anything -- the very first
       # run ever, or both lost at once. Rather than fail and wait for a human,
       # let the scrapers' own init_db() create a fresh database and scrape
@@ -105,7 +133,11 @@ jobs:
         run: |
           mkdir -p data_cache
           if [ "${{ inputs.force_full_rebuild }}" = "true" ]; then
-            rm -f data_cache/*.db
+            # Only the current-season files -- force_full_rebuild means
+            # "rebuild 2026 from scratch", not "discard the frozen 2025
+            # backfill too" (which has no rebuild path and would just cost
+            # a redundant release re-download for nothing).
+            rm -f "$VLR_DB_PATH" "$VLR_EWC_DB_PATH"
             echo "::warning::force_full_rebuild requested -- discarding any restored database."
           fi
           if [ -f "$VLR_DB_PATH" ]; then
@@ -114,6 +146,11 @@ jobs:
             echo "::warning::No existing database (cache miss, no snapshot, or a forced rebuild)."
             echo "This run will scrape everything from scratch (~1300 requests, ~1hr)."
             echo "Every run after this one restores normally and only fetches what's new."
+          fi
+          if [ -f "$VLR_VCT_2025_DB_PATH" ]; then
+            echo "2025 historical DB ready: $(du -h "$VLR_VCT_2025_DB_PATH" | cut -f1)"
+          else
+            echo "::warning::No 2025 historical DB present -- 2025 season data will be missing from this export."
           fi
 
       # Exit codes are meaningful (see failure_exit_code() / ScrapeFailure in the
@@ -166,6 +203,13 @@ jobs:
       # snapshot up to 24h stale still saves the entire season's re-scrape.
       # Without this the release would stay frozen at whenever it was seeded,
       # so a cache loss months later would silently cost every scrape since.
+      #
+      # Uploads the 2026 filenames specifically, NOT a data_cache/*.db glob --
+      # data_cache now also holds the frozen 2025 files (restored by the step
+      # above), and a wildcard would re-upload those into this rolling
+      # current-season release too, duplicating them for no reason (they
+      # already have their own permanent db-snapshot-2025 release that is
+      # never refreshed, since 2025 data doesn't change).
       - name: Refresh release snapshot
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -177,7 +221,7 @@ jobs:
           gh release view db-snapshot >/dev/null 2>&1 || \
             gh release create db-snapshot --title 'Scraper DB snapshot' \
               --notes 'Seed/recovery copy of the scraper SQLite databases for CI. Replaced automatically; not a source of truth.'
-          gh release upload db-snapshot data_cache/*.db --clobber
+          gh release upload db-snapshot "$VLR_DB_PATH" "$VLR_EWC_DB_PATH" --clobber
           echo "Snapshot refreshed."
 
       # Writes only the files it generates; liquipedia_rosters.json is produced

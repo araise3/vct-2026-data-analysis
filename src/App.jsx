@@ -1,16 +1,28 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import TopNav from './components/TopNav'
-import Overview from './pages/Overview'
-import Players from './pages/Players'
-import PlayerProfile from './pages/PlayerProfile'
-import Teams from './pages/Teams'
-import TeamProfile from './pages/TeamProfile'
-import Agents from './pages/Agents'
-import Tournaments from './pages/Tournaments'
-import MatchRedirect from './pages/MatchRedirect'
-import Economy from './pages/Economy'
-import Graphics from './pages/Graphics'
-import Records from './pages/Records'
+
+/*
+  Every page is lazy so a visit only downloads the route it actually opened.
+  Statically importing all eleven put them in one 322KB bundle, which meant
+  landing on the Overview page also paid for the Graphics page's html-to-image
+  dependency -- by far the heaviest thing in the tree, and used by exactly one
+  route that most visits never reach.
+
+  TopNav (and therefore SearchBar) stays static: it renders on every route, so
+  splitting it would only add a round trip to the first paint of every page.
+*/
+const Overview = lazy(() => import('./pages/Overview'))
+const Players = lazy(() => import('./pages/Players'))
+const PlayerProfile = lazy(() => import('./pages/PlayerProfile'))
+const Teams = lazy(() => import('./pages/Teams'))
+const TeamProfile = lazy(() => import('./pages/TeamProfile'))
+const Agents = lazy(() => import('./pages/Agents'))
+const Tournaments = lazy(() => import('./pages/Tournaments'))
+const MatchRedirect = lazy(() => import('./pages/MatchRedirect'))
+const Economy = lazy(() => import('./pages/Economy'))
+const Graphics = lazy(() => import('./pages/Graphics'))
+const Records = lazy(() => import('./pages/Records'))
 
 export default function App() {
   return (
@@ -38,6 +50,10 @@ export default function App() {
           matching TopNav's inner row so content lines up with the nav.
         */}
         <main className="w-full max-w-content mx-auto min-w-0 flex-1 px-4 md:px-6 py-8">
+          {/* Same "Loading…" line every page already renders while its own
+              JSON is in flight, so a chunk fetch looks identical to a data
+              fetch rather than introducing a second, different spinner. */}
+          <Suspense fallback={<div className="text-muted text-sm">Loading…</div>}>
           <Routes>
             <Route path="/" element={<Overview />} />
             <Route path="/players" element={<Players />} />
@@ -54,6 +70,7 @@ export default function App() {
             <Route path="/records" element={<Records />} />
             <Route path="/graphics" element={<Graphics />} />
           </Routes>
+          </Suspense>
         </main>
         {/* Was the sidebar's bottom-pinned caption; now a real footer, in
             the same centered wrapper so it aligns with the content. */}

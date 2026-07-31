@@ -107,8 +107,19 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
       // scaleDivergingColor), not the current view's own min/max, so they
       // don't need a domain computed here at all.
       if (col.colorScale && !col.diverging) {
-        const values = rows.map((r) => r[col.key]).filter((v) => v !== null && v !== undefined && !Number.isNaN(v))
-        ranges[col.key] = values.length ? [Math.min(...values), Math.max(...values)] : [0, 1]
+        // Single pass, no intermediate arrays and no Math.min(...values):
+        // spreading a row set into an argument list is O(rows) stack slots
+        // per column, which is both slower than a loop and a real (if
+        // distant) blow-up risk on a table with enough rows.
+        let min = Infinity
+        let max = -Infinity
+        for (const r of rows) {
+          const v = r[col.key]
+          if (v === null || v === undefined || Number.isNaN(v)) continue
+          if (v < min) min = v
+          if (v > max) max = v
+        }
+        ranges[col.key] = min === Infinity ? [0, 1] : [min, max]
       }
     })
     return ranges

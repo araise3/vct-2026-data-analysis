@@ -14,6 +14,14 @@ import { eventLabel, roundLabel, vlrMatchUrl } from '../lib/format'
  *   - null                     -> a neutral "team1 vs team2" row, which is
  *     what the Tournaments page wants since neither side is the subject
  *
+ * `playersByMatch` (from groupMatchPlayers) is ONLY needed for a player
+ * perspective -- it resolves which team that player was on for each match,
+ * which a fixed meta.team can't do across a mid-season transfer. A team or
+ * neutral perspective already knows whose row it is, so those callers should
+ * not load match_players.json at all: it's the site's second-largest data
+ * file (3.9MB / 10,974 rows) and two pages were fetching it purely to hand
+ * over a Map that this component never read.
+ *
  * Rows open the match on vlr.gg in a new tab. This site used to render its
  * own /matches/:id page instead, which cost 525 per-match JSON files (9.5MB,
  * 45% of all site data) to reproduce a view VLR already serves, keeps live,
@@ -94,6 +102,14 @@ export default function MatchHistory({
         : myScore > oppScore
       return {
         match: m,
+        // Whether "ours" is team2 -- used below to flip the per-map pills
+        // (m.maps[].s1/s2 are stored match-absolute, team1's score first,
+        // straight off the scraper's team1_score/team2_score columns) onto
+        // the same my-score-first convention the Result column next to them
+        // already uses. Without this, a perspective row could read "W 2–0"
+        // in Result while its own map pills showed "8–13 / 10–13" -- correct
+        // numbers, but silently relative to the OTHER team.
+        flipped: isTeam2,
         myTeam, opponent, myScore, oppScore, won,
       }
     })
@@ -142,7 +158,7 @@ export default function MatchHistory({
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ match: m, opponent, myScore, oppScore, won }) => {
+          {rows.map(({ match: m, opponent, myScore, oppScore, won, flipped }) => {
             return (
               <tr
                 key={m.id}
@@ -244,15 +260,27 @@ export default function MatchHistory({
                     with whatever digit count that particular score has. */}
                 <td className="px-3 py-1.5 border-b border-hairline whitespace-nowrap">
                   <span className="flex items-center gap-1.5">
-                    {m.maps?.map((mp, i) => (
-                      <span
-                        key={`${mp.map}-${i}`}
-                        className="text-[11px] text-muted/80 bg-surface2 rounded-full px-1.5 py-0.5 leading-none whitespace-nowrap w-11 text-center"
-                        title={`${mp.map} ${mp.s1}–${mp.s2}${mp.ot ? ' (OT)' : ''}`}
-                      >
-                        {mp.s1}<span className="text-muted/40">–</span>{mp.s2}
-                      </span>
-                    ))}
+                    {/* mp.s1/s2 are stored match-absolute (team1's score
+                        first), but a perspective row's Result column is
+                        my-score-first -- flip the pair here too when "ours"
+                        is team2, so a pill never disagrees with the Result
+                        badge sitting right next to it in the same row. The
+                        neutral Tournaments view (perspective === null) has
+                        no "ours" to be relative to, so it's left as-is,
+                        matching that view's own team1-first Score column. */}
+                    {m.maps?.map((mp, i) => {
+                      const first = flipped ? mp.s2 : mp.s1
+                      const second = flipped ? mp.s1 : mp.s2
+                      return (
+                        <span
+                          key={`${mp.map}-${i}`}
+                          className="text-[11px] text-muted/80 bg-surface2 rounded-full px-1.5 py-0.5 leading-none whitespace-nowrap w-11 text-center"
+                          title={`${mp.map} ${first}–${second}${mp.ot ? ' (OT)' : ''}`}
+                        >
+                          {first}<span className="text-muted/40">–</span>{second}
+                        </span>
+                      )
+                    })}
                   </span>
                 </td>
                 <td className="px-3 py-1.5 border-b border-hairline text-right">

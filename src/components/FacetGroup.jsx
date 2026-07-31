@@ -2,13 +2,16 @@
  * A single faceted filter dimension: a labelled group of multi-selectable
  * chips. Every option renders identically regardless of whether it's
  * currently "reachable" given other active filters -- no dimming, no
- * disabling. `options` still carries an `available` flag from
- * useFacetedFilter (other code may still want it), but this component
- * deliberately ignores it: dimming a chip based on other facets read as a
- * bug (e.g. picking a specific VCT-only event dimmed the EWC chip in
- * Competition, which is multi-select/OR'd -- clicking EWC there doesn't
- * replace VCT, it adds to it, so it was never actually unreachable). Every
- * chip just stays clickable and lets the result set speak for itself.
+ * disabling: dimming a chip based on other facets read as a bug (e.g.
+ * picking a specific VCT-only event dimmed the EWC chip in Competition,
+ * which is multi-select/OR'd -- clicking EWC there doesn't replace VCT, it
+ * adds to it, so it was never actually unreachable). Every chip just stays
+ * clickable and lets the result set speak for itself.
+ *
+ * `options` used to carry a per-value `available` flag that this component
+ * ignored; it has since been removed from useFacetedFilter, where
+ * recomputing it on every selection change was the single most expensive
+ * thing any filter interaction did. See that file's own comment.
  */
 export default function FacetGroup({ label, options, selected, onChange, renderLabel, hideLabel = false }) {
   function toggle(value) {

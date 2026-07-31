@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useData } from '../lib/useData'
+import { useData, useIdle } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import { expandBuckets, aggregatePlayerBuckets, aggregateSideBuckets, groupByEntity, teamInScope } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
@@ -27,15 +27,29 @@ const optionCenterStyle = { textAlign: 'center' }
 
 
 export default function Players() {
-  const { data, loading } = useData('player_buckets')
-  const { data: sideData } = useData('player_sides')
-  const { data: agentData } = useData('player_agents')
   const [ratedOnly, setRatedOnly] = useState(false)
   const [search, setSearch] = useState('')
   const [minRounds, setMinRounds] = useState(0)
   const [side, setSide] = useState('both') // 'both' | 't' (attack) | 'ct' (defend)
   const [agent, setAgent] = useState('')
   const [country, setCountry] = useState('')
+
+  // This page used to fetch all three of these on mount -- 14.1MB of JSON
+  // (3.9 + 4.7 + 5.5) parsed on the main thread before the table it renders
+  // by default needs any of the last two:
+  //   - player_sides feeds ONLY the Attack/Defend toggle, so it's fetched
+  //     when the toggle actually leaves 'both'. Nothing on the default view
+  //     reads it, not even to build a control's options.
+  //   - player_agents is needed sooner than "when an agent is picked",
+  //     because the Agent dropdown's option list is derived from it (the
+  //     agents actually present in the data, rather than a hardcoded list
+  //     that would silently miss the next agent release). So it loads on
+  //     idle instead of not at all -- off the critical path, but there well
+  //     before anyone opens the dropdown.
+  const idle = useIdle()
+  const { data, loading } = useData('player_buckets')
+  const { data: sideData } = useData(side === 'both' ? null : 'player_sides')
+  const { data: agentData } = useData(idle ? 'player_agents' : null)
 
   const records = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
   const { selections, setFacet, clearAll, filtered, options, activeCount,
@@ -81,6 +95,14 @@ export default function Players() {
   // player_buckets.json. Filtered by the SAME active selections as the
   // main table so switching side never changes which players/events are
   // in scope, only which numbers are shown for them.
+  //
+  // Because that file is now fetched on demand rather than up front, there's
+  // a window where a side is selected but its data hasn't landed. Every row
+  // would render as "—" across the headline columns in that window (the
+  // no-side-data branch below), which looks like broken data rather than a
+  // pending fetch -- so the table is swapped for a one-line loading state
+  // instead. It's once per session; useData caches the parsed file.
+  const sideLoading = side !== 'both' && !sideData
   const sideRecords = useMemo(() => (sideData ? expandBuckets(sideData, 'p') : []), [sideData])
   const sideStatsByPlayer = useMemo(() => {
     if (side === 'both') return null
@@ -98,18 +120,23 @@ export default function Players() {
     return out
   }, [sideRecords, selections, dateRange, side])
 
-  const rows = useMemo(() => {
+  // One row per player in scope, fully aggregated. Deliberately does NOT
+  // apply the search box / min-rounds / agent / country filters: those are
+  // per-row predicates over an already-built row (see `rows` below), and
+  // folding them in here meant every keystroke in the search box re-ran
+  // groupByEntity plus a full aggregatePlayerBuckets pass over every player
+  // in scope to produce rows it was about to discard anyway. This memo now
+  // only re-runs when something that genuinely changes a player's NUMBERS
+  // changes -- the facet scope, the rated-only toggle, or the side toggle.
+  const allRows = useMemo(() => {
     if (!data) return []
     const grouped = groupByEntity(filtered)
     const out = []
     for (const [player, buckets] of grouped) {
-      if (playersWithAgent && !playersWithAgent.has(player)) continue
       const meta = data.meta[player]
       if (!meta) continue
-      if (country && meta.countryName !== country) continue
       const s = aggregatePlayerBuckets(buckets, { ratedOnly })
       if (!s || !s.mapsPlayed) continue
-      if (s.roundsPlayed < minRounds) continue
 
       // Side toggle only swaps the headline stats (Rating/ACS/K:D/KAST/
       // ADR/HS%/Kills/Deaths/Assists/FK/FD) -- Maps/Rounds/Clutches/
@@ -172,12 +199,24 @@ export default function Players() {
 
       out.push(row)
     }
+    return out.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
+  }, [filtered, data, ratedOnly, side, sideStatsByPlayer])
+
+  // The cheap per-row filters, applied to the already-aggregated rows. All
+  // four are plain predicates on a finished row, so a keystroke or a
+  // min-rounds bump costs one pass over ~430 objects instead of a full
+  // re-aggregation. Sort order is inherited from allRows -- a filter only
+  // ever removes rows, never reorders them.
+  const rows = useMemo(() => {
     const q = search.trim().toLowerCase()
-    const searched = q
-      ? out.filter((p) => p.player.toLowerCase().includes(q) || p.team?.toLowerCase().includes(q))
-      : out
-    return searched.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
-  }, [filtered, data, ratedOnly, search, minRounds, side, sideStatsByPlayer, playersWithAgent, country])
+    return allRows.filter((p) => {
+      if (playersWithAgent && !playersWithAgent.has(p.player)) return false
+      if (country && p.countryName !== country) return false
+      if (p.roundsPlayed < minRounds) return false
+      if (q && !p.player.toLowerCase().includes(q) && !p.team?.toLowerCase().includes(q)) return false
+      return true
+    })
+  }, [allRows, playersWithAgent, country, minRounds, search])
 
   if (loading || !data) return <div className="text-muted text-sm">Loading…</div>
 
@@ -325,7 +364,11 @@ export default function Players() {
         maps than the rest of the row; "Only maps with a Rating 2.0" makes every stat consistent.
       </div>
 
-      {rows.length === 0 ? (
+      {sideLoading ? (
+        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
+          <p className="text-muted text-sm">Loading attack/defend splits…</p>
+        </div>
+      ) : rows.length === 0 ? (
         <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
           <p className="text-muted text-sm">No players match this filter combination.</p>
         </div>

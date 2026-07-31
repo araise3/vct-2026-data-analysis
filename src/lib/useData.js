@@ -3,6 +3,33 @@ import { useEffect, useState } from 'react'
 const cache = {}
 
 /**
+ * True once the browser has been idle after mount -- for data a page needs
+ * *eventually* but not to render anything on first paint.
+ *
+ * Passing `useData(idle ? 'x' : null)` keeps a secondary file from competing
+ * with the page's primary one for bandwidth and (more importantly) main-thread
+ * parse time while the first view is still being built. The Players page loads
+ * three of these files totalling ~14MB of JSON; without this they all land at
+ * once and every JSON.parse blocks the same thread the table is rendering on.
+ *
+ * requestIdleCallback isn't in Safari, hence the setTimeout fallback. The
+ * timeout on the idle request itself matters too: on a page that stays busy,
+ * "idle" may never arrive on its own, and this data should still load.
+ */
+export function useIdle(timeout = 2000) {
+  const [idle, setIdle] = useState(false)
+  useEffect(() => {
+    if (typeof requestIdleCallback === 'function') {
+      const h = requestIdleCallback(() => setIdle(true), { timeout })
+      return () => cancelIdleCallback(h)
+    }
+    const h = setTimeout(() => setIdle(true), 200)
+    return () => clearTimeout(h)
+  }, [timeout])
+  return idle
+}
+
+/**
  * Fetches `public/data/{name}.json` once and memoises it for the session.
  *
  * `name` may contain a slash, for data nested under `public/data/`. No

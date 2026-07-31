@@ -29,10 +29,10 @@ export default function PlayerProfile() {
 
   // Scope to this player first, so the facet options only ever show
   // events/weeks this player actually appeared in.
-  const records = useMemo(() => {
-    if (!data) return []
-    return expandBuckets(data, 'p').filter((r) => r.id === decodedName)
-  }, [data, decodedName])
+  const records = useMemo(
+    () => (data ? expandBuckets(data, 'p', (b) => b.p === decodedName) : []),
+    [data, decodedName]
+  )
 
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
@@ -65,7 +65,7 @@ export default function PlayerProfile() {
   // multi-kills/econ aren't available broken out by agent the way they
   // are on the Players table.
   const agentRecords = useMemo(
-    () => (agentData ? expandBuckets(agentData, 'p').filter((r) => r.id === decodedName) : []),
+    () => (agentData ? expandBuckets(agentData, 'p', (b) => b.p === decodedName) : []),
     [agentData, decodedName]
   )
   const agentInScope = useMemo(
@@ -98,21 +98,23 @@ export default function PlayerProfile() {
     return s ? { agent: 'Overall', ...s } : null
   }, [agentInScope])
 
-  // Role badge next to the player's name (see render below): inferred from
-  // the whole field's agent pools in the current scope, same as the peer
-  // comparison panel used to need -- "compare to other Duelists" required
-  // both the peer GROUP and peer STATS restricted to Duelist agents, but
-  // the role inference itself is still useful on its own as a label even
-  // without that panel.
-  const peerAgentRecords = useMemo(() => {
-    if (!agentData) return []
-    return expandBuckets(agentData, 'p')
-      .filter((r) => matchesFilters(r, FACETS, selections, dateRange))
-  }, [agentData, selections, dateRange])
-
-  const rolesByPlayer = useMemo(() => rolesInScope(peerAgentRecords), [peerAgentRecords])
-
-  const role = rolesByPlayer.get(decodedName) ?? null
+  // Role badge next to the player's name (see render below), inferred from
+  // the agents this player actually played in the current scope.
+  //
+  // Derived from `agentInScope` -- THIS player's rows -- not from every
+  // player's. It used to expand and filter the whole 21,233-bucket
+  // player_agents file on every selection change to build a role map for
+  // the entire field, then read exactly one entry out of it. rolesInScope()
+  // groups by player and computes each one's dominant role independently
+  // (see its body), so restricting the input to one player is the same
+  // answer for that player, for ~1/500th of the work. The whole-field pass
+  // was a leftover from the peer-comparison panel that has since been
+  // removed -- "compare to other Duelists" genuinely needed every player's
+  // role; a badge does not.
+  const role = useMemo(
+    () => rolesInScope(agentInScope).get(decodedName) ?? null,
+    [agentInScope, decodedName]
+  )
 
   // Match history. The scoreboard rows carry no event/week of their own,
   // so the filtering happens on the match records (which expandMatchRows

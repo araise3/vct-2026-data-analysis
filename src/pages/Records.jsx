@@ -55,15 +55,26 @@ export default function Records() {
   // themselves below.
   const matchesSelections = (r) => matchesFilters(r, FACETS, selections, dateRange)
 
-  const seriesRows = useMemo(() => {
-    if (!seriesData) return []
-    return expandSeriesRows(seriesData).filter((r) => r.fullyTimed && matchesSelections(r))
-  }, [seriesData, selections, dateRange])
+  // Same split as playerRecords below: expand once per dataset, then only
+  // re-run the cheap match test when the selections change.
+  const allSeriesRows = useMemo(
+    () => (seriesData ? expandSeriesRows(seriesData).filter((r) => r.fullyTimed) : []),
+    [seriesData]
+  )
+  const allMapRows = useMemo(
+    () => (mapLengthData ? expandMapLengthRows(mapLengthData) : []),
+    [mapLengthData]
+  )
 
-  const mapRows = useMemo(() => {
-    if (!mapLengthData) return []
-    return expandMapLengthRows(mapLengthData).filter(matchesSelections)
-  }, [mapLengthData, selections, dateRange])
+  const seriesRows = useMemo(
+    () => allSeriesRows.filter(matchesSelections),
+    [allSeriesRows, selections, dateRange]
+  )
+
+  const mapRows = useMemo(
+    () => allMapRows.filter(matchesSelections),
+    [allMapRows, selections, dateRange]
+  )
 
   const activeDurationRows = durationView === 'series' ? seriesRows : mapRows
 
@@ -81,9 +92,18 @@ export default function Records() {
   // else on this page. A season-long aggregate, unlike the kill-record
   // cards below (which are single-match records) -- there's no season-
   // long entity page it fits better on than here.
+  // Expanded once per dataset, not once per filter change -- this memo
+  // depends on `selections`, so leaving expandBuckets inside it re-walked
+  // all 10,894 player buckets (~8ms) on every chip click, rebuilding an
+  // identical intermediate each time.
+  const playerRecords = useMemo(
+    () => (playerData ? expandBuckets(playerData, 'p') : []),
+    [playerData]
+  )
+
   const aceLeaders = useMemo(() => {
     if (!playerData) return []
-    const filteredPlayers = expandBuckets(playerData, 'p').filter(matchesSelections)
+    const filteredPlayers = playerRecords.filter(matchesSelections)
     const out = []
     for (const [player, buckets] of groupByEntity(filteredPlayers)) {
       const meta = playerData.meta[player]
@@ -94,7 +114,7 @@ export default function Records() {
                  countryName: meta.countryName, totalAce: s.totalAce, mapsPlayed: s.mapsPlayed })
     }
     return out
-  }, [playerData, selections, dateRange])
+  }, [playerData, playerRecords, selections, dateRange])
 
   // Kill records: the single highest individual kill total across an
   // entire series (summed across every map of that match for one

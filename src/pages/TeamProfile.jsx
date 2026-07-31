@@ -4,7 +4,7 @@ import { useData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandBuckets, aggregateTeamBuckets, aggregatePlayerBuckets, groupByEntity,
-  expandMatchRows, groupMatchPlayers, aggregateTeamMapBuckets, summarizeTeamMapStats,
+  expandMatchRows, aggregateTeamMapBuckets, summarizeTeamMapStats,
 } from '../lib/entityBuckets'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
@@ -28,15 +28,14 @@ export default function TeamProfile() {
   const { data: playerData, loading: playersLoading } = useData('player_buckets')
   const { data: liquipediaData } = useData('liquipedia_rosters')
   const { data: matchData } = useData('match_results')
-  const { data: matchPlayerData } = useData('match_players')
   const { data: teamMapData } = useData('team_map_buckets')
 
   // Scope to this team first, so facet options only show events this
   // team actually played in.
-  const records = useMemo(() => {
-    if (!teamData) return []
-    return expandBuckets(teamData, 't').filter((r) => r.id === decodedName)
-  }, [teamData, decodedName])
+  const records = useMemo(
+    () => (teamData ? expandBuckets(teamData, 't', (b) => b.t === decodedName) : []),
+    [teamData, decodedName]
+  )
 
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds } =
@@ -64,13 +63,21 @@ export default function TeamProfile() {
   // page's active facet selections rather than the useFacetedFilter hook
   // itself (same pattern MatchHistory's matchRows below uses for a
   // second, differently-shaped dataset).
-  const mapStats = useMemo(() => {
-    if (!teamMapData) return []
-    const recs = expandBuckets(teamMapData, 't').filter(
-      (r) => r.id === decodedName && matchesFilters(r, FACETS, selections, dateRange)
-    )
-    return aggregateTeamMapBuckets(recs)
-  }, [teamMapData, decodedName, selections, dateRange])
+  //
+  // Expanded once per team (not per filter change) so changing a facet only
+  // re-runs the cheap matchesFilters pass over this team's own few dozen
+  // rows, rather than re-expanding all 5,618 buckets in the file first.
+  const teamMapRecords = useMemo(
+    () => (teamMapData ? expandBuckets(teamMapData, 't', (b) => b.t === decodedName) : []),
+    [teamMapData, decodedName]
+  )
+
+  const mapStats = useMemo(
+    () => aggregateTeamMapBuckets(
+      teamMapRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange))
+    ),
+    [teamMapRecords, selections, dateRange]
+  )
 
   const mapStatsOverall = useMemo(() => summarizeTeamMapStats(mapStats), [mapStats])
 
@@ -127,6 +134,27 @@ export default function TeamProfile() {
       .sort((a, b) => a.date.localeCompare(b.date))
   }, [filtered])
 
+  // Every player bucket belonging to THIS team, expanded once per team
+  // rather than once per filter change (the roster memo below depends on
+  // `filtered`, so leaving the expansion inside it re-walked all 10,894
+  // buckets in player_buckets.json on every chip click -- ~8ms of pure
+  // rework for a set that can't change unless the file or the team does).
+  //
+  // Filtered by each BUCKET's own team field, not the player's single
+  // static meta.team -- a player who switches teams mid-season (e.g.
+  // Cloud: GIANTX -> FNATIC for Stage 2) has buckets under BOTH teams,
+  // and meta.team only ever reflects whichever team their first-ever
+  // match happened to be for. Using meta.team here meant Cloud was
+  // completely absent from FNATIC's roster despite having real,
+  // correctly-team-tagged Stage 2 buckets -- and would show as
+  // permanently on GIANTX even after leaving. Filtering per-bucket
+  // means a mid-season transfer correctly shows up on BOTH team pages,
+  // each only for the buckets that actually belong to it.
+  const teamPlayerRecords = useMemo(
+    () => (playerData ? expandBuckets(playerData, 'p', (b) => b.t === decodedName) : []),
+    [playerData, decodedName]
+  )
+
   // Roster reflects the same filter scope: apply the team's active facet
   // selections to the player buckets, keeping only this team's players.
   const roster = useMemo(() => {
@@ -145,19 +173,9 @@ export default function TeamProfile() {
       weekDates.set(k, cur ? [cur[0] < r.d ? cur[0] : r.d, cur[1] > r.d ? cur[1] : r.d] : [r.d, r.d])
     }
     const scopedKeys = new Set(filtered.map((r) => `${r.e}|${r.w}`))
-    // Filter by each BUCKET's own team field, not the player's single
-    // static meta.team -- a player who switches teams mid-season (e.g.
-    // Cloud: GIANTX -> FNATIC for Stage 2) has buckets under BOTH teams,
-    // and meta.team only ever reflects whichever team their first-ever
-    // match happened to be for. Using meta.team here meant Cloud was
-    // completely absent from FNATIC's roster despite having real,
-    // correctly-team-tagged Stage 2 buckets -- and would show as
-    // permanently on GIANTX even after leaving. Filtering per-bucket
-    // means a mid-season transfer correctly shows up on BOTH team pages,
-    // each only for the buckets that actually belong to it.
-    const recs = expandBuckets(playerData, 'p').filter(
-      (r) => r.t === decodedName && scopedKeys.has(`${r.e}|${r.w}`)
-    )
+    // teamPlayerRecords is already narrowed to this team's buckets (see
+    // above); all that's left here is the current filter scope.
+    const recs = teamPlayerRecords.filter((r) => scopedKeys.has(`${r.e}|${r.w}`))
     const out = []
     for (const [player, buckets] of groupByEntity(recs)) {
       const s = aggregatePlayerBuckets(buckets)
@@ -191,21 +209,29 @@ export default function TeamProfile() {
       p.mapShare = teamMaps ? Math.min(1, p.mapsPlayed / teamMaps) : null
     }
     return out.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
-  }, [playerData, decodedName, filtered, stats])
+  }, [playerData, teamPlayerRecords, filtered, stats])
 
   // Match history, filtered by the same active facets as everything else
   // on the page. Matched on team1/team2 rather than on the scoreboard rows'
   // own team, so a match still lists even if its box score was never
   // published -- its match page then shows the empty-state.
-  const playersByMatch = useMemo(() => groupMatchPlayers(matchPlayerData), [matchPlayerData])
-  const matchRows = useMemo(() => {
-    if (!matchData) return []
-    return expandMatchRows(matchData).filter(
-      (m) =>
-        (m.team1 === decodedName || m.team2 === decodedName) &&
-        matchesFilters(m, FACETS, selections, dateRange)
-    )
-  }, [matchData, decodedName, selections, dateRange])
+  //
+  // No match_players.json is loaded for this: MatchHistory only reads
+  // playersByMatch on a *player* perspective (to resolve which team that
+  // player was on for each match, since a transfer changes it). A team
+  // perspective already knows whose row it is, so fetching that 3.9MB file
+  // and building its 10,974-row Map here produced nothing that was read.
+  const teamMatches = useMemo(
+    () => expandMatchRows(matchData).filter(
+      (m) => m.team1 === decodedName || m.team2 === decodedName
+    ),
+    [matchData, decodedName]
+  )
+
+  const matchRows = useMemo(
+    () => teamMatches.filter((m) => matchesFilters(m, FACETS, selections, dateRange)),
+    [teamMatches, selections, dateRange]
+  )
 
   if (teamsLoading || playersLoading) return <div className="text-muted text-sm">Loading…</div>
 
@@ -372,7 +398,6 @@ export default function TeamProfile() {
             </p>
             <MatchHistory
               matches={matchRows}
-              playersByMatch={playersByMatch}
               perspective={{ type: 'team', name: decodedName }}
             />
           </div>

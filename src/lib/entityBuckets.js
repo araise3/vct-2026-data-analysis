@@ -65,8 +65,26 @@ function eventFields(ev, week) {
   }
 }
 
-export function expandBuckets(data, keyField) {
-  const { events, buckets } = data
+/**
+ * `keep`, when given, is a predicate run against the RAW bucket, before any
+ * expansion work happens -- so use it whenever a caller wants a subset.
+ *
+ * Profile pages want exactly one player's/team's records out of a file
+ * holding everyone's, and the natural spelling of that
+ * (`expandBuckets(data, 'p').filter((r) => r.id === name)`) builds a fully
+ * expanded record -- an object spread plus two scoped-value string
+ * concatenations -- for all ~21,000 buckets before throwing away all but a
+ * couple of dozen of them. Measured on the real files: 10.9ms for
+ * player_agents that way, 0.2ms filtering first.
+ *
+ * The predicate sees the raw bucket, not the expanded record, so it can
+ * only test stored fields (`b.p`, `b.t`, `b.e`) -- never the derived facet
+ * fields (region/event/phase/split), which don't exist yet at that point.
+ * Filtering on those still belongs in a separate pass over the result.
+ */
+export function expandBuckets(data, keyField, keep = null) {
+  const { events } = data
+  const buckets = keep ? data.buckets.filter(keep) : data.buckets
   return buckets.map((b) => ({
     ...b,
     id: b[keyField],

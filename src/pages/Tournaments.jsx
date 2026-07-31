@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useData } from '../lib/useData'
-import { expandMatchRows, groupMatchPlayers } from '../lib/entityBuckets'
+import { expandMatchRows } from '../lib/entityBuckets'
 import MatchHistory from '../components/MatchHistory'
 import { eventLabel, phaseLabel, num } from '../lib/format'
 
@@ -30,12 +30,14 @@ function Chevron({ open }) {
 }
 
 export default function Tournaments() {
+  // No match_players.json here: this page renders MatchHistory with
+  // perspective={null}, and that component only ever reads playersByMatch to
+  // resolve which team a *player* was on for a given match. Fetching it
+  // anyway cost a 3.9MB download + parse and a 10,974-row Map build whose
+  // result was never read once.
   const { data: matchData, loading } = useData('match_results')
-  const { data: matchPlayerData } = useData('match_players')
 
   const records = useMemo(() => expandMatchRows(matchData), [matchData])
-
-  const playersByMatch = useMemo(() => groupMatchPlayers(matchPlayerData), [matchPlayerData])
 
   // event -> { meta, phases: [{ phase, matches }] }, newest tournament
   // first. "Newest" is the latest match date in the event rather than the
@@ -152,7 +154,6 @@ export default function Tournaments() {
                         </h3>
                         <MatchHistory
                           matches={matches}
-                          playersByMatch={playersByMatch}
                           perspective={null}
                           showEvent={false}
                         />

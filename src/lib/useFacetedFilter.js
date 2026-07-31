@@ -10,11 +10,19 @@ import { SCOPE_SEP } from './entityBuckets'
  * "Americas + EMEA, Playoffs only, any week" expressible -- something the
  * old cascading single-select model couldn't represent at all.
  *
- * Option availability per dimension is computed against the *other*
- * dimensions' active filters (standard faceted-search behaviour), so a
- * chip is only greyed out if picking it would genuinely yield nothing
- * given everything else currently selected -- selecting a value never
- * makes its own siblings disappear.
+ * `options` is deliberately just the full value list per dimension, with
+ * no per-value "is this still reachable given the other dimensions"
+ * availability flag. It used to carry one, computed the standard
+ * faceted-search way, but FacetGroup stopped reading it when chip
+ * dimming/disabling was removed (see that component's own comment on why
+ * dimming read as a bug), leaving the computation with no consumer at all.
+ * It was not free: it re-ran matchesFilters for every record x every facet
+ * on every selection change -- 11.5ms per filter click over
+ * player_buckets' 10,894 records, measured, against 2.8ms for the plain
+ * value list. Dropping it also takes `selections`/`dateRange` out of this
+ * memo's dependencies entirely, so the list is now computed once per
+ * dataset instead of once per interaction. Restoring availability means
+ * restoring the matchesExcept pass, not just re-adding a flag.
  */
 const EMPTY_RANGE = { from: '', to: '' }
 
@@ -76,17 +84,15 @@ function matchesOneFacet(record, sel, recordValue) {
  * player rows on a team-driven page) against the same active selections.
  * Keeping it here means the date range can't be forgotten at a call site.
  *
- * `exceptFacet`, when given, is skipped -- this is also what the hook uses
- * internally to compute per-facet chip availability (a chip's own
- * selections shouldn't be able to grey out its own siblings), so there's
- * exactly one copy of the actual matching loop in the file.
+ * This used to take an `exceptFacet` argument (skip one dimension), which
+ * existed solely for the chip-availability pass the hook no longer runs --
+ * see the note at the top of this file. Nothing else ever passed it, so it
+ * went with that pass rather than staying as a dead branch inside a loop
+ * that runs once per record per facet.
  */
-export function matchesFilters(record, facets, selections, dateRange = EMPTY_RANGE, exceptFacet = null) {
+export function matchesFilters(record, facets, selections, dateRange = EMPTY_RANGE) {
   if (!inDateRange(record, dateRange)) return false
-  return facets.every((f) => {
-    if (f === exceptFacet) return true
-    return matchesOneFacet(record, selections[f], record[f])
-  })
+  return facets.every((f) => matchesOneFacet(record, selections[f], record[f]))
 }
 
 export function useFacetedFilter(records, facets, initial = {}) {
@@ -109,35 +115,29 @@ export function useFacetedFilter(records, facets, initial = {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [facets])
 
-  const matchesExcept = useCallback(
-    (record, exceptFacet) => matchesFilters(record, facets, selections, dateRange, exceptFacet),
-    [facets, selections, dateRange]
-  )
-
   const filtered = useMemo(
-    () => records.filter((r) => matchesExcept(r, null)),
-    [records, matchesExcept]
+    () => records.filter((r) => matchesFilters(r, facets, selections, dateRange)),
+    [records, facets, selections, dateRange]
   )
 
-  // For each dimension: every value that exists at all, flagged with
-  // whether it's still reachable given the other dimensions' filters.
+  // For each dimension: every value that exists in the data at all.
+  // Depends only on the records, NOT on the current selections -- see the
+  // note on availability at the top of this file.
   const options = useMemo(() => {
     const out = {}
     for (const facet of facets) {
       const allValues = new Set()
-      const availableValues = new Set()
       for (const r of records) {
         const v = r[facet]
         if (v === undefined || v === null) continue
         allValues.add(v)
-        if (matchesExcept(r, facet)) availableValues.add(v)
       }
       out[facet] = [...allValues]
         .sort((a, b) => String(a).localeCompare(String(b)))
-        .map((value) => ({ value, available: availableValues.has(value) }))
+        .map((value) => ({ value }))
     }
     return out
-  }, [records, facets, matchesExcept])
+  }, [records, facets])
 
   const activeCount =
     facets.reduce((n, f) => n + (selections[f]?.length || 0), 0) +

@@ -7,7 +7,9 @@ import {
   expandMatchRows, groupMatchPlayers,
 } from '../lib/entityBuckets'
 import { rolesInScope } from '../lib/peerComparison'
+import { buildRadarProfile } from '../lib/radarProfile'
 import TrendChart from '../components/TrendChart'
+import RadarChart from '../components/RadarChart'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import KpiCard from '../components/KpiCard'
 import DataTable from '../components/DataTable'
@@ -56,6 +58,23 @@ export default function PlayerProfile() {
   const stats = useMemo(
     () => aggregatePlayerBuckets(filtered, { ratedOnly }),
     [filtered, ratedOnly]
+  )
+
+  // Peer-relative radar profile. Needs EVERY player's buckets, not just
+  // this player's, so it re-expands the full file once (memoized on `data`
+  // alone -- the expensive part, ~10.9ms over 10,894 buckets) and then
+  // re-filters that flat array against the page's active selections on
+  // every filter change (cheap, plain predicates), rather than re-running
+  // expandBuckets per selection. Same expand-once-then-filter split the
+  // efficiency pass applied elsewhere on this page.
+  const allPlayerRecords = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
+  const radarScope = useMemo(
+    () => allPlayerRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange)),
+    [allPlayerRecords, selections, dateRange]
+  )
+  const radar = useMemo(
+    () => buildRadarProfile(radarScope, decodedName, { ratedOnly }),
+    [radarScope, decodedName, ratedOnly]
   )
 
   // Per-agent breakdown, filtered by the same active facet selections as
@@ -384,6 +403,21 @@ export default function PlayerProfile() {
             ) : (
               <span className="font-display text-3xl font-semibold text-muted">—</span>
             )}
+          </div>
+        </div>
+      )}
+
+      {radar && (
+        <div className="bg-surface border border-hairline rounded-2xl p-5">
+          <h3 className="font-display text-sm font-semibold text-ink mb-1">Performance profile</h3>
+          <p className="text-muted text-xs mb-4">
+            Each spoke is its own scale — position is {decodedName}'s percentile within qualified
+            players (rounds played ≥ half the scope's median, min 20) in the current filter scope,
+            not an absolute value. Hover a point for rank.
+            {!radar.subjectQualified && ' Small sample — this player is below the qualification bar in this scope.'}
+          </p>
+          <div className="max-w-xl mx-auto">
+            <RadarChart axes={radar.axes} />
           </div>
         </div>
       )}

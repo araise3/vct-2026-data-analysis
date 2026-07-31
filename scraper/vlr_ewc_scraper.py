@@ -362,7 +362,8 @@ def init_db(path: str = DB_PATH) -> sqlite3.Connection:
             match_date TEXT,
             match_url TEXT,
             status TEXT DEFAULT 'unknown',
-            last_checked_at TEXT
+            last_checked_at TEXT,
+            first_partial_at TEXT
         );
 
         CREATE TABLE IF NOT EXISTS maps (

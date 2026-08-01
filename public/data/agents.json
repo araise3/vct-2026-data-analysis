@@ -29091,15 +29091,15 @@
         "Sova": 14,
         "Cypher": 10,
         "Phoenix": 9,
-        "Viper": 5,
         "Chamber": 5,
+        "Viper": 5,
         "Fade": 4,
         "Sage": 4,
         "Harbor": 3,
         "Vyse": 3,
-        "Waylay": 2,
-        "Jett": 2,
         "Raze": 2,
+        "Jett": 2,
+        "Waylay": 2,
         "Astra": 1,
         "Skye": 1,
         "Tejo": 1,
@@ -29145,8 +29145,8 @@
           "Sova": 4,
           "Cypher": 3,
           "Jett": 2,
-          "Phoenix": 2,
           "Neon": 2,
+          "Phoenix": 2,
           "Vyse": 1,
           "Veto": 1,
           "Yoru": 1
@@ -29154,13 +29154,13 @@
         "Breeze": {
           "Sova": 4,
           "Phoenix": 3,
-          "Harbor": 3,
           "Neon": 3,
+          "Harbor": 3,
           "Cypher": 2,
           "Viper": 2,
-          "Waylay": 1,
           "Astra": 1,
-          "Chamber": 1
+          "Chamber": 1,
+          "Waylay": 1
         },
         "Haven": {
           "Sova": 4,
@@ -29195,12 +29195,12 @@
         "Sunset": {
           "Omen": 4,
           "Neon": 3,
-          "Phoenix": 2,
-          "Cypher": 2,
-          "Sova": 2,
           "Fade": 2,
           "Chamber": 2,
           "Sage": 2,
+          "Sova": 2,
+          "Phoenix": 2,
+          "Cypher": 2,
           "Waylay": 1
         }
       }

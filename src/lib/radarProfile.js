@@ -139,12 +139,25 @@ export function buildRadarProfile(records, subjectName, { ratedOnly = false, com
     }
     // Widen to always cover the subject (and the compared player, if any)
     // -- otherwise a player who sits outside the peer field's own p5-p95
-    // band (a real outlier, or the only unqualified data point when
-    // peerValues is thin) would clamp to the rim/center and look like an
-    // ordinary top/bottom score rather than the actual extreme it is.
-    lo = Math.min(lo, subjectValue)
-    hi = Math.max(hi, subjectValue)
-    if (hasCompare) {
+    // band (a real outlier, or the only data point when peerValues is
+    // thin) would clamp to the rim/center and look like an ordinary
+    // top/bottom score rather than the actual extreme it is.
+    //
+    // Gated on *Qualified* though: an unqualified player's value is exactly
+    // the kind of number this bar exists to distrust (small/noisy sample),
+    // so it still plots -- clamped to the rim by the norm clamp below --
+    // but doesn't get to redefine the domain for a qualified peer field.
+    // Real bug this fixes: on a wide multi-year/multi-competition scope the
+    // qualification bar (half the field's median rounds) balloons past what
+    // most single-season players clear, so comparing against any such
+    // player let their real-but-noisy value collapse several axes at once
+    // (domain floor = their own number = norm exactly 0), producing a
+    // degenerate spiked polygon instead of a legible "near the bottom".
+    if (subjectQualified) {
+      lo = Math.min(lo, subjectValue)
+      hi = Math.max(hi, subjectValue)
+    }
+    if (hasCompare && compareQualified) {
       lo = Math.min(lo, compareValue)
       hi = Math.max(hi, compareValue)
     }

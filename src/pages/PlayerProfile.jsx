@@ -8,10 +8,8 @@ import {
 } from '../lib/entityBuckets'
 import { rolesInScope } from '../lib/peerComparison'
 import { buildRadarProfile } from '../lib/radarProfile'
-import TrendChart from '../components/TrendChart'
 import RadarChart from '../components/RadarChart'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
-import KpiCard from '../components/KpiCard'
 import DataTable from '../components/DataTable'
 import MatchHistory from '../components/MatchHistory'
 import PerformanceStrip from '../components/PerformanceStrip'
@@ -219,39 +217,6 @@ export default function PlayerProfile() {
     }
     return best
   }, [allMatchRows, playersByMatch, decodedName])
-
-  // Rating over time: one point per day the player actually played,
-  // rounds-weighted within the day so a 3-map day isn't averaged flat
-  // against a 1-map day.
-  //
-  // This MUST stay above the early returns below, not after them. It
-  // used to sit after `if (loading) return` / `if (!meta) return`, which
-  // is a Rules-of-Hooks violation: on a cold data cache, the first render
-  // has loading=true and bails out before ever calling this hook; once
-  // the fetch resolves, the same component instance re-renders with
-  // loading=false and DOES call it -- a different hook count between two
-  // renders of the same instance, which React throws on. With no error
-  // boundary anywhere in the tree, that throw unmounts the entire app,
-  // which is what showed up as the whole page going blank/dark. It only
-  // reproduced when player_buckets.json hadn't already been fetched in
-  // that tab (a fresh tab, a direct link, anywhere that lands on a
-  // profile without having hit /players first) -- once cached, loading
-  // is false from the very first render and the mismatch never occurs,
-  // which is why "it's fine after a refresh" once the data's warm looked
-  // like a fix rather than a race that happened not to trigger.
-  const trend = useMemo(() => {
-    const byDate = new Map()
-    for (const b of filtered) {
-      if (!b.date || !b.ratR) continue
-      const cur = byDate.get(b.date) || { s: 0, r: 0, maps: 0 }
-      cur.s += b.ratS; cur.r += b.ratR; cur.maps += b.maps
-      byDate.set(b.date, cur)
-    }
-    return [...byDate.entries()]
-      .filter(([, v]) => v.r > 0)
-      .map(([date, v]) => ({ date, value: v.s / v.r, n: v.maps }))
-      .sort((a, b) => a.date.localeCompare(b.date))
-  }, [filtered])
 
   if (loading) return <div className="text-muted text-sm">Loading…</div>
 
@@ -535,26 +500,6 @@ export default function PlayerProfile() {
         </div>
       ) : (
         <>
-          {/* Maps/Rounds/Rating/ACS/K-D/KAST/ADR/HS% used to duplicate a
-              KPI-card grid here -- they're now the Agents table's Overall
-              row above, so only the stats that table CAN'T show (no
-              econ/objective data in player_agents.json) live in cards.
-              Plants/Defuses moved into the Totals grid below (counting
-              stats belong together); Consistency (rating SD) was removed
-              per direct feedback. */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KpiCard label="Avg Econ" value={stats.utilMaps ? num(stats.avgEcon, 0) : '—'} />
-          </div>
-
-          <div className="bg-surface border border-hairline rounded-2xl p-5">
-            <h3 className="font-display text-sm font-semibold text-ink mb-1">Rating over time</h3>
-            <p className="text-muted text-xs mb-4">
-              One point per match day in scope, rounds-weighted within the day. Dashed line is
-              the 1.00 baseline.
-            </p>
-            <TrendChart points={trend} baseline={1} format={(v) => v.toFixed(2)} />
-          </div>
-
           <div className="bg-surface border border-hairline rounded-2xl p-5">
             <h3 className="font-display text-sm font-semibold text-ink mb-4">Totals</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

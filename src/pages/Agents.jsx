@@ -17,7 +17,6 @@ function aggregate(buckets) {
   const mapAgentCounts = {}
   const mapTotalRows = {}
   let totalRows = 0
-  let totalMapRounds = 0
   let totalAtkWinRounds = 0
   let totalDefWinRounds = 0
 
@@ -31,7 +30,6 @@ function aggregate(buckets) {
       mapStats[mapName].rounds += s.rounds
       mapStats[mapName].atkWinRounds += s.atkWinRounds
       mapStats[mapName].defWinRounds += s.defWinRounds
-      totalMapRounds += s.rounds
       totalAtkWinRounds += s.atkWinRounds
       totalDefWinRounds += s.defWinRounds
     }
@@ -49,19 +47,43 @@ function aggregate(buckets) {
     .map(([agent, count]) => ({ agent, pickRate: teamSlots ? count / teamSlots : 0 }))
     .sort((a, b) => b.pickRate - a.pickRate)
 
+  // atkWinPct/defWinPct deliberately do NOT divide by s.rounds (the map's
+  // total round count, including overtime). atkWinRounds/defWinRounds come
+  // from the maps table's per-side header score, which is REGULATION-only
+  // by construction, not by a data gap: VLR's own header publishes a THIRD,
+  // separate number for OT round wins (a plain <span class="mod-ot">) with
+  // no attack/defense split of its own, verified directly against a real OT
+  // match page -- so OT isn't missing, it's just never side-attributed in
+  // this source, the same deliberate tradeoff export_from_db.py's team-level
+  // atk/def split already documents and has verified (atk+def == map score
+  // exactly on every regulation map, 0 mismatches). Separately, a small set
+  // of maps (mostly China) have no header breakdown published AT ALL --
+  // that IS a genuine gap, and export_from_db.py fills those with 0 rather
+  // than leaving them out of s.rounds. Dividing by s.rounds mixes both
+  // cases into the denominator regardless of cause, which is why ATK WIN% +
+  // DEF WIN% fell short of 100%. atkWinRounds + defWinRounds is precisely
+  // the round count this source actually attributes to a side (whatever the
+  // reason it doesn't cover the rest), so using that as the shared
+  // denominator makes the two percentages complementary by construction --
+  // the same "divide by what has the data, not by everything" pattern
+  // multiKillsPerMap uses for its own China gap.
   const mapWinRates = Object.entries(mapStats)
-    .map(([mapName, s]) => ({
-      mapName,
-      roundsPlayed: s.rounds,
-      atkWinPct: s.rounds ? s.atkWinRounds / s.rounds : 0,
-      defWinPct: s.rounds ? s.defWinRounds / s.rounds : 0,
-    }))
+    .map(([mapName, s]) => {
+      const sideRounds = s.atkWinRounds + s.defWinRounds
+      return {
+        mapName,
+        roundsPlayed: s.rounds,
+        atkWinPct: sideRounds ? s.atkWinRounds / sideRounds : 0,
+        defWinPct: sideRounds ? s.defWinRounds / sideRounds : 0,
+      }
+    })
     .sort((a, b) => b.roundsPlayed - a.roundsPlayed)
 
+  const totalSideRounds = totalAtkWinRounds + totalDefWinRounds
   return {
     pickRates, mapWinRates, mapAgentCounts, mapTotalRows, totalRows,
-    overallAtkWinPct: totalMapRounds ? totalAtkWinRounds / totalMapRounds : null,
-    overallDefWinPct: totalMapRounds ? totalDefWinRounds / totalMapRounds : null,
+    overallAtkWinPct: totalSideRounds ? totalAtkWinRounds / totalSideRounds : null,
+    overallDefWinPct: totalSideRounds ? totalDefWinRounds / totalSideRounds : null,
   }
 }
 

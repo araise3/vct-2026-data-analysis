@@ -255,11 +255,23 @@ jobs:
           echo "::error::Could not push after 3 attempts."
           exit 1
 
-      # Runs after publishing, so valid data still reaches the site while the
-      # run itself is still reported as failed. Without this an incomplete
-      # scrape would show up as a green check.
-      - name: Mark run failed if scrape was incomplete
-        if: steps.scrape_vct.outputs.code != '0' || steps.scrape_ewc.outputs.code != '0'
-        run: |
-          echo "::error::Scrape was incomplete (VCT exit ${{ steps.scrape_vct.outputs.code }}, EWC exit ${{ steps.scrape_ewc.outputs.code }}). Check the logs above for which events or matches failed."
-          exit 1
+      # There used to be a step here that turned any non-zero scrape exit code
+      # into a hard job failure, on the reasoning that an incomplete scrape
+      # shouldn't show up as a green check. Removed: exit 1 ("something failed
+      # but what landed is still valid" -- see failure_exit_code() in the
+      # scrapers / scraper/README.md's exit-code table) is not just a
+      # transient-run signal, it's also the permanent, steady-state result for
+      # matches VLR itself never published a box score for -- confirmed real
+      # cases in CLAUDE.md (13 EWC 2026 China Qualifier matches, 2 VCT 2025
+      # matches), which the scraper correctly leaves as 'partial' and keeps
+      # rechecking for up to RECHECK_GRACE_DAYS. While an affected event still
+      # has other live/upcoming matches, that recheck (and the exit-1 result)
+      # repeats every single run indefinitely -- so this step made the
+      # workflow's pass/fail badge permanently red for a known, expected data
+      # gap rather than an actionable problem, which is exactly the kind of
+      # signal nobody can act on and everyone learns to ignore. The exit-1
+      # ::warning:: annotations already emitted by the Scrape VCT / Scrape EWC
+      # steps above still give full visibility into which matches/events
+      # didn't land, without failing the run over it. A real abort (exit >=2,
+      # e.g. vlr.gg refusing the client) still fails the job immediately,
+      # inside those same steps -- that path is unaffected by this removal.

@@ -49,18 +49,65 @@ export function ratingTier(v) {
 }
 
 // Event names come out of the scrape title-cased ("Vct 2026 Emea Stage
-// 1"), which reads wrong for the acronyms in them. Lives here rather than
-// in FilterPanel because the match history and Tournaments page label the
-// same events outside the filter UI.
+// 1"), which reads wrong for the acronyms in them, and each competition's
+// raw naming convention buries the year in a different spot (VCT puts it
+// right after "Vct"; EWC's qualifiers bury it before the region). Lives
+// here rather than in FilterPanel because the match history, Tournaments
+// page, and PlayerProfile's event picker all label the same raw event
+// names outside the filter UI. Pattern-based (not a per-event lookup) so
+// a brand-new event next season formats correctly with no code change --
+// only Champions 2025's host city is a one-off override, since that's a
+// real-world fact ("Paris") this data has no field for, not a naming
+// convention that generalizes.
 //
-// Note the region acronym is fixed anywhere in the string, not just at the
-// start like "Vct" -- it appears mid-name ("Vct 2026 Emea Kickoff"), and
-// the word boundaries keep it from touching a real word that merely starts
-// with those letters.
+// Note region/stage words are matched anywhere in the string, not just at
+// a fixed position -- "Emea" appears mid-name on VCT ("Vct 2026 Emea
+// Kickoff") but trails on EWC's older naming ("...Emea Qualifier") -- and
+// word boundaries keep the match from touching a real word that merely
+// starts with those letters.
 export function eventLabel(name) {
-  return (name || '')
-    .replace(/^Vct\b/, 'VCT')
-    .replace(/\bEmea\b/g, 'EMEA')
+  const raw = name || ''
+
+  // 2025's Pacific qualifier carries the full "X Asian Champions League"
+  // co-sanctioning credit in its raw name (vlr.gg's own title for it) --
+  // shortened here to match every other qualifier's plain "<Region>
+  // Qualifier <year>" shape, a one-off override rather than a naming
+  // convention (2026's Pacific Qualifier has no such credit in its name).
+  if (raw === 'Esports World Cup 2025 Pacific X Asian Champions League Qualifier') {
+    return 'EWC Pacific Qualifier 2025'
+  }
+
+  // Esports World Cup: abbreviated to EWC, year moved to the end --
+  // "Esports World Cup 2026 Americas Qualifier" -> "EWC Americas
+  // Qualifier 2026", "Esports World Cup 2026" -> "EWC 2026".
+  const ewc = raw.match(/^Esports World Cup (\d{4})\s*(.*)$/)
+  if (ewc) {
+    const [, year, rest] = ewc
+    const restLabel = rest.replace(/\bEmea\b/g, 'EMEA').trim()
+    return restLabel ? `EWC ${restLabel} ${year}` : `EWC ${year}`
+  }
+
+  // Champions 2025 was held in Paris -- the only Champions this data
+  // needs a host city for; 2026's isn't hardcoded anywhere else on the
+  // site, so it isn't invented here either.
+  if (raw === 'Valorant Champions 2025') return 'Champions Paris 2025'
+
+  // Masters/Champions: drop the "Valorant" prefix -- city/year (Masters)
+  // or year alone (Champions) already trail in the raw name, so nothing
+  // else needs to move.
+  const withoutValorant = raw.replace(/^Valorant\s+/, '')
+  if (withoutValorant !== raw) return withoutValorant
+
+  // Domestic VCT events: drop the "Vct" prefix and move the year from the
+  // front to the end -- "Vct 2026 Americas Kickoff" -> "Americas Kickoff
+  // 2026".
+  const vct = raw.match(/^Vct (\d{4}) (.+)$/)
+  if (vct) {
+    const [, year, rest] = vct
+    return `${rest.replace(/\bEmea\b/g, 'EMEA')} ${year}`
+  }
+
+  return raw.replace(/^Vct\b/, 'VCT').replace(/\bEmea\b/g, 'EMEA')
 }
 
 // Short codes for the Teams table's Region column -- freeing up column

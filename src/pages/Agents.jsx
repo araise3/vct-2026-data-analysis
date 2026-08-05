@@ -111,14 +111,32 @@ export default function Agents() {
 
   const scoped = useMemo(() => aggregate(filtered), [filtered])
 
+  // Both matrix tables used to always render every map in data.mapNames
+  // (the site's full-season map pool), so a filter scope narrow enough to
+  // exclude a map (one event, one week, etc.) still showed that map's
+  // column full of "—" placeholders instead of just not showing it.
+  // Restricting to maps actually present in the scoped aggregation --
+  // separately per table, since win-rate data (mapStats) and pick-rate data
+  // (mapAgentCounts) aren't guaranteed to carry exactly the same map set --
+  // makes each table reflect only what's actually in scope.
+  const winRateMapNames = useMemo(() => {
+    if (!data) return []
+    const inScope = new Set(scoped.mapWinRates.map((r) => r.mapName))
+    return data.mapNames.filter((m) => inScope.has(m))
+  }, [data, scoped])
+  const pickRateMapNames = useMemo(
+    () => (data ? data.mapNames.filter((m) => scoped.mapTotalRows[m]) : []),
+    [data, scoped]
+  )
+
   const orderedMapNames = useMemo(() => {
     if (!data) return []
-    if (!mapSort.key) return data.mapNames
+    if (!mapSort.key) return winRateMapNames
     const statKey = mapSort.key === 'atkWin' ? 'atkWinPct' : 'defWinPct'
     const rates = Object.fromEntries(scoped.mapWinRates.map((m) => [m.mapName, m[statKey]]))
-    const sorted = [...data.mapNames].sort((a, b) => (rates[b] ?? -1) - (rates[a] ?? -1))
+    const sorted = [...winRateMapNames].sort((a, b) => (rates[b] ?? -1) - (rates[a] ?? -1))
     return mapSort.dir === 'asc' ? sorted.reverse() : sorted
-  }, [data, scoped, mapSort])
+  }, [data, scoped, mapSort, winRateMapNames])
 
   // Two small rows (ATK WIN, DEF WIN) shaped exactly like an agent row --
   // an "Overall" value plus one value per map -- so they can render through
@@ -215,7 +233,7 @@ export default function Agents() {
   const pickRateColumns = [
     labelColumn,
     { key: 'overall', label: 'Overall', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : pct(v, 1)) },
-    ...data.mapNames.map((m) => ({
+    ...pickRateMapNames.map((m) => ({
       key: m, label: m, align: 'right', colorScale: true, width: mapColumnWidth,
       format: (v) => (v === null || v === undefined ? '—' : pct(v, 1)),
     })),

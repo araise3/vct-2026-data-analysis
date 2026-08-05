@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
-import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandBuckets, aggregatePlayerBuckets, aggregateAgentBuckets, teamInScope,
   expandMatchRows, groupMatchPlayers,
@@ -9,14 +8,15 @@ import {
 import { rolesInScope } from '../lib/peerComparison'
 import { buildRadarProfile } from '../lib/radarProfile'
 import RadarChart from '../components/RadarChart'
-import FilterPanel, { FACETS } from '../components/FilterPanel'
+import FilterChips from '../components/FilterChips'
+import EventPicker from '../components/EventPicker'
 import DataTable from '../components/DataTable'
 import MatchHistory from '../components/MatchHistory'
 import PerformanceStrip from '../components/PerformanceStrip'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import AgentIcon from '../components/AgentIcon'
-import { rating, pct, num, ratingTier, vlrMatchUrl } from '../lib/format'
+import { rating, pct, num, ratingTier, vlrMatchUrl, eventLabel } from '../lib/format'
 
 export default function PlayerProfile() {
   const { name } = useParams()
@@ -34,31 +34,28 @@ export default function PlayerProfile() {
   const [compareInput, setCompareInput] = useState('')
   const [compareName, setCompareName] = useState('')
 
-  // Scope to this player first, so the facet options only ever show
-  // events/weeks this player actually appeared in.
+  // Every one of this player's own buckets, across every year/competition --
+  // the page-wide multi-facet FilterPanel (region/event/phase/week/split/
+  // competition + date range) this used to run through was built for list
+  // pages with dozens of entities in scope at once; on a single player's
+  // profile it was mostly empty chip groups. Replaced with one fixed rule
+  // instead: everything below except the Kill Record (a career-wide fact,
+  // see bestKillMatch) and the Agents table (its own small year/event
+  // picker, see below) pins to this player's most recent season.
   const records = useMemo(
     () => (data ? expandBuckets(data, 'p', (b) => b.p === decodedName) : []),
     [data, decodedName]
   )
 
-  const { selections, setFacet, clearAll, filtered, options, activeCount,
-          dateRange, setDateRange, dateBounds } =
-    useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
+  const recentYear = useMemo(
+    () => (records.length ? Math.max(...records.map((r) => r.year)) : null),
+    [records]
+  )
 
-  // Fall back to 2025 when this player has no 2026 data at all -- a player
-  // who left the scene before 2026 (retired, benched with no matches,
-  // roster cut) would otherwise land on a page that opens completely empty
-  // under the site-wide 2026 default, with no obvious reason why. Applied
-  // once via a ref-guarded effect once `data` has loaded, not passed as the
-  // hook's own `initial` selection, because it has to be derived from
-  // `records` (this player's own buckets across every year), which doesn't
-  // exist yet on the first render before the fetch resolves.
-  const yearFallbackApplied = useRef(false)
-  useEffect(() => {
-    if (yearFallbackApplied.current || !data) return
-    yearFallbackApplied.current = true
-    if (!records.some((r) => r.year === 2026)) setFacet('year', [2025])
-  }, [data, records, setFacet])
+  const filtered = useMemo(
+    () => records.filter((r) => r.year === recentYear),
+    [records, recentYear]
+  )
 
   const stats = useMemo(
     () => aggregatePlayerBuckets(filtered, { ratedOnly }),
@@ -68,14 +65,12 @@ export default function PlayerProfile() {
   // Peer-relative radar profile. Needs EVERY player's buckets, not just
   // this player's, so it re-expands the full file once (memoized on `data`
   // alone -- the expensive part, ~10.9ms over 10,894 buckets) and then
-  // re-filters that flat array against the page's active selections on
-  // every filter change (cheap, plain predicates), rather than re-running
-  // expandBuckets per selection. Same expand-once-then-filter split the
-  // efficiency pass applied elsewhere on this page.
+  // narrows that flat array to the subject's own most recent season (cheap,
+  // a plain predicate), rather than re-running expandBuckets per render.
   const allPlayerRecords = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
   const radarScope = useMemo(
-    () => allPlayerRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange)),
-    [allPlayerRecords, selections, dateRange]
+    () => allPlayerRecords.filter((r) => r.year === recentYear),
+    [allPlayerRecords, recentYear]
   )
   const radar = useMemo(
     () => buildRadarProfile(radarScope, decodedName, { ratedOnly, compareName: compareName || null }),
@@ -83,9 +78,9 @@ export default function PlayerProfile() {
   )
 
   // Names available to compare against -- every player who has at least
-  // one bucket in the current filter scope, so the suggestion list always
-  // matches who could actually plot a second polygon. Not restricted to
-  // qualified peers (see buildRadarProfile's bar) -- a thin comparison is
+  // one bucket in the subject's most recent season, so the suggestion list
+  // always matches who could actually plot a second polygon. Not restricted
+  // to qualified peers (see buildRadarProfile's bar) -- a thin comparison is
   // still meaningful, same as the subject themself being shown unqualified.
   const compareOptions = useMemo(() => {
     const ids = new Set()
@@ -103,20 +98,96 @@ export default function PlayerProfile() {
     setCompareName('')
   }
 
-  // Per-agent breakdown, filtered by the same active facet selections as
-  // the rest of the page. player_agents.json is a deliberately lean
-  // schema (see export_from_db.py) -- only maps/rounds/rating/ACS/kills/
-  // deaths are tracked per (player, agent, event, week), so KAST/ADR/HS%/
-  // multi-kills/econ aren't available broken out by agent the way they
-  // are on the Players table.
+  // Every one of this player's per-agent buckets, across every year --
+  // player_agents.json is a deliberately lean schema (see export_from_db.py)
+  // -- only maps/rounds/rating/ACS/kills/deaths are tracked per (player,
+  // agent, event, week), so KAST/ADR/HS%/multi-kills/econ aren't available
+  // broken out by agent the way they are on the Players table.
   const agentRecords = useMemo(
     () => (agentData ? expandBuckets(agentData, 'p', (b) => b.p === decodedName) : []),
     [agentData, decodedName]
   )
-  const agentInScope = useMemo(
-    () => agentRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange)),
-    [agentRecords, selections, dateRange]
+
+  // Most Played Agent card + the role badge next to the player's name both
+  // pin to the most recent season, same rule as the rest of the header --
+  // NOT the Agents table's own year/event pickers below, which the user
+  // can switch independently without the header cards jumping around
+  // underneath them.
+  const agentRecordsRecentYear = useMemo(
+    () => agentRecords.filter((r) => r.year === recentYear),
+    [agentRecords, recentYear]
   )
+  const mostPlayedAgent = useMemo(() => {
+    const grouped = new Map()
+    for (const r of agentRecordsRecentYear) {
+      if (!grouped.has(r.ag)) grouped.set(r.ag, [])
+      grouped.get(r.ag).push(r)
+    }
+    let best = null
+    for (const [agent, buckets] of grouped) {
+      const s = aggregateAgentBuckets(buckets)
+      if (!s || !s.mapsPlayed) continue
+      if (!best || s.mapsPlayed > best.mapsPlayed) best = { agent, ...s }
+    }
+    return best
+  }, [agentRecordsRecentYear])
+
+  const role = useMemo(
+    () => rolesInScope(agentRecordsRecentYear).get(decodedName) ?? null,
+    [agentRecordsRecentYear, decodedName]
+  )
+
+  // The Agents table's own scope controls -- the one part of this page
+  // that's still user-adjustable, per direct request. Two independent
+  // pickers, both small and both scoped to this table alone:
+  //   - a year picker (FilterChips, same as everywhere else on the site)
+  //   - a multi-select event search (EventPicker) -- more than one event
+  //     can be added into scope at once, ORed together below
+  // Any committed events take priority over the year chips when both are
+  // "set" -- the chips grey out (see the wrapper below) as the visual cue
+  // that they're not the thing currently driving the table.
+  const [agentYear, setAgentYear] = useState(null)
+  const [agentEventOverrides, setAgentEventOverrides] = useState([])
+  useEffect(() => {
+    setAgentYear(null)
+    setAgentEventOverrides([])
+  }, [decodedName])
+
+  const agentYearOptions = useMemo(
+    () => [...new Set(agentRecords.map((r) => r.year))].sort((a, b) => a - b),
+    [agentRecords]
+  )
+  const effectiveAgentYear = agentYear ?? recentYear
+
+  // Every event this player has at least one AGENT bucket in, most recent
+  // first (by raw event id -- ids increase with time within a season and
+  // 2026's range sits entirely above 2025's, confirmed in
+  // export_from_db.py's own verification notes -- so this needs no
+  // separate date lookup).
+  const agentEventOptions = useMemo(() => {
+    const latestIdByEvent = new Map()
+    for (const r of agentRecords) {
+      const cur = latestIdByEvent.get(r.event)
+      if (cur === undefined || r.e > cur) latestIdByEvent.set(r.event, r.e)
+    }
+    return [...latestIdByEvent.entries()].sort((a, b) => b[1] - a[1]).map(([evt]) => evt)
+  }, [agentRecords])
+
+  function addAgentEvent(evt) {
+    setAgentEventOverrides((prev) => (prev.includes(evt) ? prev : [...prev, evt]))
+  }
+  function removeAgentEvent(evt) {
+    setAgentEventOverrides((prev) => prev.filter((e) => e !== evt))
+  }
+
+  const agentInScope = useMemo(() => {
+    if (agentEventOverrides.length) {
+      const set = new Set(agentEventOverrides)
+      return agentRecords.filter((r) => set.has(r.event))
+    }
+    return effectiveAgentYear === 'All' ? agentRecords : agentRecords.filter((r) => r.year === effectiveAgentYear)
+  }, [agentRecords, effectiveAgentYear, agentEventOverrides])
+
   const agentRows = useMemo(() => {
     const grouped = new Map()
     for (const r of agentInScope) {
@@ -143,23 +214,11 @@ export default function PlayerProfile() {
     return s ? { agent: 'Overall', ...s } : null
   }, [agentInScope])
 
-  // Role badge next to the player's name (see render below), inferred from
-  // the agents this player actually played in the current scope.
-  //
-  // Derived from `agentInScope` -- THIS player's rows -- not from every
-  // player's. It used to expand and filter the whole 21,233-bucket
-  // player_agents file on every selection change to build a role map for
-  // the entire field, then read exactly one entry out of it. rolesInScope()
-  // groups by player and computes each one's dominant role independently
-  // (see its body), so restricting the input to one player is the same
-  // answer for that player, for ~1/500th of the work. The whole-field pass
-  // was a leftover from the peer-comparison panel that has since been
-  // removed -- "compare to other Duelists" genuinely needed every player's
-  // role; a badge does not.
-  const role = useMemo(
-    () => rolesInScope(agentInScope).get(decodedName) ?? null,
-    [agentInScope, decodedName]
-  )
+  const agentScopeLabel = agentEventOverrides.length === 1
+    ? eventLabel(agentEventOverrides[0])
+    : agentEventOverrides.length > 1
+      ? `${agentEventOverrides.length} events`
+      : effectiveAgentYear
 
   // Match history. The scoreboard rows carry no event/week of their own,
   // so the filtering happens on the match records (which expandMatchRows
@@ -169,14 +228,8 @@ export default function PlayerProfile() {
 
   // Every match this player appeared in -- derived from the scoreboard rows
   // rather than from their buckets, so a match can only appear if there's a
-  // box score behind it. Narrowed to the active scope (region/event/split/
-  // year/date range, via matchesFilters) below into `matchRows`, which now
-  // feeds the Performances strip too -- it used to deliberately ignore every
-  // filter (a fixed "career shape" view), but that stopped making sense once
-  // Year became a real per-page selection: the strip should shrink/grow with
-  // the same scope as the rest of the page (including the 2026-with-2025-
-  // fallback default above), not show a fixed history regardless of what's
-  // selected.
+  // box score behind it. Narrowed to the most recent season below into
+  // `matchRows`, which also feeds the Performances strip.
   const allMatchRows = useMemo(() => {
     if (!matchData || !matchPlayerData) return []
     const mine = new Set()
@@ -185,20 +238,20 @@ export default function PlayerProfile() {
   }, [matchData, matchPlayerData, decodedName])
 
   const matchRows = useMemo(
-    () => allMatchRows.filter((m) => matchesFilters(m, FACETS, selections, dateRange)),
-    [allMatchRows, selections, dateRange]
+    () => allMatchRows.filter((m) => m.year === recentYear),
+    [allMatchRows, recentYear]
   )
 
   // Highest-kill series across this player's ENTIRE match history -- the
   // analogue of rft.gg's "Most Kills in 1 Game" card. Deliberately built
-  // from `allMatchRows`, not the filtered `matchRows`: unlike every other
-  // stat on this page, a career-best record shouldn't disappear or shrink
-  // just because the user narrowed the scope to one event -- it's a fixed
-  // fact about the player, not a scoped aggregate. Series totals, not
-  // per-map, and necessarily so: match_players.json is one row per player
-  // per MATCH, and the site no longer ships a per-map breakdown at all
-  // (those files were dropped when match pages became vlr.gg links). Ties
-  // keep the earliest match.
+  // from `allMatchRows`, not the recent-season-scoped `matchRows`: unlike
+  // every other stat on this page, a career-best record shouldn't disappear
+  // or shrink just because a past season isn't the one currently shown --
+  // it's a fixed fact about the player, not a scoped aggregate. Series
+  // totals, not per-map, and necessarily so: match_players.json is one row
+  // per player per MATCH, and the site no longer ships a per-map breakdown
+  // at all (those files were dropped when match pages became vlr.gg links).
+  // Ties keep the earliest match.
   const bestKillMatch = useMemo(() => {
     let best = null
     for (const m of allMatchRows) {
@@ -280,7 +333,7 @@ export default function PlayerProfile() {
             {role && (
               <span
                 className="text-[11px] font-medium uppercase tracking-wide px-2 py-0.5 rounded bg-surface2 text-muted"
-                title="Inferred from the agents played in the current scope — Valorant has no position field"
+                title="Inferred from the agents played in the player's most recent season -- Valorant has no position field"
               >
                 {role}
               </span>
@@ -295,14 +348,11 @@ export default function PlayerProfile() {
         </div>
       </div>
 
-      <FilterPanel
-        options={options}
-        selections={selections}
-        setFacet={setFacet}
-        clearAll={clearAll}
-        activeCount={activeCount}
-        dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
-      >
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <span className="text-muted text-xs">
+          {recentYear ? `Showing the ${recentYear} season` : 'No season data'} — the Agents table
+          below and the Kill Record card have their own scope.
+        </span>
         <label className="flex items-center gap-2 text-xs text-muted">
           <input
             type="checkbox"
@@ -312,7 +362,7 @@ export default function PlayerProfile() {
           />
           Only maps with a Rating 2.0
         </label>
-      </FilterPanel>
+      </div>
 
       {stats && stats.mapsPlayed > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -343,18 +393,18 @@ export default function PlayerProfile() {
             <span className="text-muted text-xs font-medium tracking-wide uppercase">
               Most Played
             </span>
-            {agentRows.length > 0 ? (
+            {mostPlayedAgent ? (
               <>
                 <div className="flex items-center gap-2.5">
-                  <AgentIcon agent={agentRows[0].agent} size={30} />
+                  <AgentIcon agent={mostPlayedAgent.agent} size={30} />
                   <span className="font-display text-2xl font-semibold text-ink">
-                    {agentRows[0].agent}
+                    {mostPlayedAgent.agent}
                   </span>
                 </div>
                 <span className="text-muted text-xs">
-                  {num(agentRows[0].mapsPlayed)}{' '}
-                  {agentRows[0].mapsPlayed === 1 ? 'map' : 'maps'} ·{' '}
-                  {pct(agentRows[0].winPct, 0)} win rate · {rating(agentRows[0].avgRating)} rating
+                  {num(mostPlayedAgent.mapsPlayed)}{' '}
+                  {mostPlayedAgent.mapsPlayed === 1 ? 'map' : 'maps'} ·{' '}
+                  {pct(mostPlayedAgent.winPct, 0)} win rate · {rating(mostPlayedAgent.avgRating)} rating
                 </span>
               </>
             ) : (
@@ -362,7 +412,7 @@ export default function PlayerProfile() {
             )}
           </div>
 
-          {/* Best series by kills. */}
+          {/* Best series by kills -- career-wide, not scoped to recentYear. */}
           <div className="bg-surface border border-hairline rounded-2xl px-6 py-5 flex flex-col gap-1">
             <span className="text-muted text-xs font-medium tracking-wide uppercase">
               Most Kills in a Match
@@ -410,7 +460,7 @@ export default function PlayerProfile() {
           <h3 className="font-display text-sm font-semibold text-ink">Performances</h3>
           <p className="text-muted text-xs">
             One bar per match, oldest to newest — bar height and colour are that series'
-            Rating 2.0. Reflects the filters above.
+            Rating 2.0. {recentYear} season.
           </p>
           <PerformanceStrip
             matches={matchRows}
@@ -420,19 +470,42 @@ export default function PlayerProfile() {
         </div>
       )}
 
-      {agentRows.length > 0 && (
+      {agentRecords.length > 0 && (
         <div className="flex flex-col gap-2">
-          <h3 className="font-display text-sm font-semibold text-ink">Agents</h3>
-          <p className="text-muted text-xs">
-            Per-agent breakdown for the current scope, same columns as the Players table minus
-            Kills/Deaths/Ace/Econ. Overall row is every agent combined.
-          </p>
-          <DataTable
-            columns={agentColumns}
-            rows={agentRows}
-            summaryRow={agentOverall}
-            defaultSortKey="mapsPlayed"
-          />
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <h3 className="font-display text-sm font-semibold text-ink">Agents</h3>
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Year chips only make sense as a scope control while no
+                  event is selected -- once one is, the events themselves
+                  are the scope, so the chips are dropped entirely rather
+                  than left visible-but-dimmed and non-interactive. */}
+              {agentEventOverrides.length === 0 && (
+                <FilterChips
+                  options={['All', ...agentYearOptions]}
+                  value={effectiveAgentYear}
+                  onChange={setAgentYear}
+                />
+              )}
+              <EventPicker
+                options={agentEventOptions}
+                selected={agentEventOverrides}
+                onAdd={addAgentEvent}
+                onRemove={removeAgentEvent}
+              />
+            </div>
+          </div>
+          {agentRows.length > 0 ? (
+            <DataTable
+              columns={agentColumns}
+              rows={agentRows}
+              summaryRow={agentOverall}
+              defaultSortKey="mapsPlayed"
+            />
+          ) : (
+            <div className="bg-surface border border-hairline rounded-2xl p-6 text-center">
+              <p className="text-muted text-sm">No agent data for {agentScopeLabel}.</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -477,7 +550,7 @@ export default function PlayerProfile() {
 
           <p className="text-muted text-xs mb-4">
             Each spoke is its own scale — position is percentile within qualified players (rounds
-            played ≥ half the scope's median, min 20) in the current filter scope, not an absolute
+            played ≥ half the scope's median, min 20) in the {recentYear} season, not an absolute
             value. Hover a point for rank.
             {!radar.subjectQualified && ` Small sample for ${decodedName} — below the qualification bar in this scope.`}
             {radar.compareName && radar.compareQualified === false && ` Small sample for ${radar.compareName} — below the qualification bar in this scope.`}
@@ -494,9 +567,6 @@ export default function PlayerProfile() {
       {!stats ? (
         <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
           <p className="text-muted text-sm">No maps in this scope.</p>
-          <button onClick={clearAll} className="text-accent-bright text-sm hover:underline mt-2">
-            Clear filters
-          </button>
         </div>
       ) : (
         <>
@@ -521,7 +591,7 @@ export default function PlayerProfile() {
           <div className="flex flex-col gap-2">
             <h3 className="font-display text-sm font-semibold text-ink">Match history</h3>
             <p className="text-muted text-xs">
-              {decodedName}'s line in every match in scope — click a row for the full scoreboard.
+              {decodedName}'s line in every {recentYear} match — click a row for the full scoreboard.
             </p>
             <MatchHistory
               matches={matchRows}
@@ -533,8 +603,8 @@ export default function PlayerProfile() {
           {meta.isChina && (
             <div className="bg-surface2/40 border border-hairline rounded-xl px-4 py-3 text-xs text-muted leading-relaxed">
               China-region matches don't publish multi-kill, clutch, or economy data on VLR, so those
-              totals read 0 here unless this player also competed internationally — filter to
-              Region: International above to see their complete numbers.
+              totals read 0 here if this player's {recentYear} season was based in China, even if
+              they also competed internationally.
             </div>
           )}
         </>

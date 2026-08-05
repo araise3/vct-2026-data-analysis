@@ -77,12 +77,29 @@ export default function TopNav() {
           ))}
         </nav>
 
-        {/* `flex-1 justify-end` (same as rft.gg) rather than `ml-auto` on
-            the search box itself -- gives the box a real flex-shrink
-            boundary so it degrades gracefully instead of overflowing the
-            bar on narrow viewports where the nav links already eat most
-            of the width. */}
-        <div className="flex-1 flex justify-end min-w-0">
+        {/* Below `md`: an ordinary flex-1 child, same as before -- shrinks
+            gracefully (down to 0 if it must) so it can never overlap the
+            nav links, which don't reserve room for it (`shrink-0` +
+            horizontal scroll, see above).
+            At `md` and up: pinned to the true viewport edge instead, not
+            just this row's own edge -- this row is wrapped in
+            `max-w-content mx-auto`, so on a browser window wider than that
+            max-width, staying a flex-1 child inside it only ever reached
+            the content column's own right edge, leaving a growing empty
+            gap out to the actual edge of the screen. `md:fixed` breaks it
+            out of the centered row entirely so it stays flush with the
+            real edge regardless of viewport width -- safe to do only from
+            `md` up, where the nav links (by then already wrapped onto
+            their own row's worth of width well short of the viewport
+            edge) have no risk of running underneath it the way they do on
+            a narrow phone-width screen. Sized to the header's own height
+            (`h-[47px]`) and centered within it via flex, rather than
+            `top-1/2 -translate-y-1/2` against the full viewport height --
+            the header is `sticky top-0`, but the search box's fixed
+            positioning is relative to the viewport as a whole, not just
+            the header bar, so that trick would center it in the page
+            instead of in the 47px bar. */}
+        <div className="flex-1 flex justify-end min-w-0 md:flex-none md:fixed md:top-0 md:right-4 lg:right-6 md:h-[47px] md:items-center">
           <SearchBar />
         </div>
       </div>

@@ -23,6 +23,13 @@ const MIN_RATING = 0.4
 const MAX_RATING = 1.8
 const BASELINE = 1.0
 
+// A long career/season can run to 50+ matches, at which point each bar
+// gets too thin to read (and the row just keeps growing sideways). Capped
+// to the most recent MAX_BARS instead of shrinking bars indefinitely --
+// recent form is the more useful default view, with a note (below) when
+// something's actually been trimmed off.
+const MAX_BARS = 30
+
 function toneFor(r) {
   if (r == null) return 'bg-surface2'
   if (r >= 1.15) return 'bg-good'
@@ -38,7 +45,10 @@ function heightPct(r) {
 
 export default function PerformanceStrip({ matches, playersByMatch, playerName }) {
   // Oldest -> newest, left to right, so the strip reads like a timeline.
-  const bars = useMemo(() => {
+  // Trimmed to the most recent MAX_BARS afterward (slice(-MAX_BARS)) --
+  // AFTER sorting, so "most recent" is by actual match date, not however
+  // `matches` happened to be ordered coming in.
+  const { bars, totalCount } = useMemo(() => {
     const out = []
     const ordered = [...matches].sort(
       (a, b) => (a.date || '').localeCompare(b.date || '') || a.id - b.id
@@ -64,7 +74,8 @@ export default function PerformanceStrip({ matches, playersByMatch, playerName }
         k: mine.k, d: mine.d, a: mine.a,
       })
     }
-    return out
+    const totalCount = out.length
+    return { bars: totalCount > MAX_BARS ? out.slice(-MAX_BARS) : out, totalCount }
   }, [matches, playersByMatch, playerName])
 
   if (!bars.length) {
@@ -130,7 +141,11 @@ export default function PerformanceStrip({ matches, playersByMatch, playerName }
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-sm bg-bad inline-block" /> under 0.95
         </span>
-        <span className="ml-auto">Dashed line is 1.00 · click a bar for the match on vlr.gg</span>
+        <span className="ml-auto">
+          Dashed line is 1.00
+          {bars.length < totalCount && ` · showing the most recent ${bars.length} of ${totalCount} matches`}
+          {' '}· click a bar for the match on vlr.gg
+        </span>
       </div>
     </div>
   )

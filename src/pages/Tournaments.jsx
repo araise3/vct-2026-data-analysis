@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useData } from '../lib/useData'
 import { expandMatchRows } from '../lib/entityBuckets'
 import MatchHistory from '../components/MatchHistory'
+import EventLogo from '../components/EventLogo'
 import { eventLabel, phaseLabel, num } from '../lib/format'
 
 /**
@@ -120,6 +121,7 @@ export default function Tournaments() {
                 >
                   <span className="flex items-center gap-3 min-w-0">
                     <span className="text-muted"><Chevron open={open} /></span>
+                    <EventLogo event={t.event} size={28} />
                     <span className="min-w-0">
                       <span className="font-display text-sm font-semibold text-ink block truncate">
                         {eventLabel(t.event)}

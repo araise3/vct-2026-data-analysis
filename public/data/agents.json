@@ -32529,6 +32529,59 @@
     {
       "competition": "VCT",
       "year": 2026,
+      "region": "China",
+      "event": "Vct 2026 China Stage 2",
+      "stage": "Stage 2",
+      "phase": "Play-Ins",
+      "week": "Play-Ins: Upper Round 1",
+      "playerRows": 20,
+      "agentCounts": {
+        "Omen": 4,
+        "Neon": 3,
+        "Fade": 3,
+        "Cypher": 2,
+        "Sage": 2,
+        "Vyse": 2,
+        "Sova": 1,
+        "Waylay": 1,
+        "Raze": 1,
+        "Viper": 1
+      },
+      "mapStats": {
+        "Lotus": {
+          "rounds": 19,
+          "atkWinRounds": 13,
+          "defWinRounds": 6
+        },
+        "Sunset": {
+          "rounds": 24,
+          "atkWinRounds": 11,
+          "defWinRounds": 13
+        }
+      },
+      "mapAgentCounts": {
+        "Lotus": {
+          "Omen": 2,
+          "Vyse": 2,
+          "Fade": 2,
+          "Waylay": 1,
+          "Raze": 1,
+          "Viper": 1,
+          "Neon": 1
+        },
+        "Sunset": {
+          "Cypher": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Sage": 2,
+          "Sova": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2026,
       "region": "EMEA",
       "event": "Vct 2026 Emea Kickoff",
       "stage": "Kickoff",

@@ -38,11 +38,29 @@ import { eventLabel } from '../lib/format'
 // purely by coincidence (confirmed live -- crashies/mada and skuba/brawk
 // landed on near-identical colors on the same NRG table). Evenly
 // spacing hues across exactly this team's own distinct-player count
-// instead guarantees zero collisions for however many players actually
-// appear on this one page, which a global hash can never promise.
-// Ordered by first appearance in the (already chronological) rows rather
-// than alphabetically, purely so the assignment is deterministic and
-// stable across re-renders without needing to sort by anything else.
+// fixed that specific collision, but introduced a subtler version of the
+// same problem: naive linear spacing (i/n * 360) puts CONSECUTIVE roster
+// arrivals at NUMERICALLY adjacent hues too, and two hues barely 20-30
+// apart can still read as near-identical to the eye -- confirmed live
+// again, this time by the user (Verno and mada, two players who joined
+// close together in NRG's own history, landed at 222 and 249 degrees,
+// both squarely in the blue/purple band where human hue discrimination
+// is already weaker than elsewhere on the wheel).
+//
+// Fixed with the golden-angle technique (~137.508 degrees per step) used
+// wherever a sequence of items needs no-two-ever-cluster spacing around
+// a circle (phyllotaxis/sunflower-seed spacing is the classic example) --
+// unlike i/n spacing, consecutive indices land far apart, so roster
+// neighbors in TIME are no longer roster neighbors in HUE. Verified
+// directly (a small script against realistic team sizes) that this holds
+// up as team size grows: minimum pairwise hue gap is ~52 degrees at 5
+// players, ~20 at 13 (NRG's real count), narrowing to ~7 at FURIA's real
+// 32-player historical max -- tight enough at that extreme that hue
+// alone stops being reliable, hence the lightness alternation below
+// giving every other player a brightness offset too, so two players that
+// do end up hue-close still separate on a second visual channel.
+const GOLDEN_ANGLE = 137.508
+
 function buildPlayerColors(rows) {
   const order = []
   const seen = new Set()
@@ -59,8 +77,9 @@ function buildPlayerColors(rows) {
   }
   const colors = new Map()
   order.forEach((player, i) => {
-    const hue = Math.round((i / order.length) * 360)
-    colors.set(player, `hsl(${hue}, 65%, 42%)`)
+    const hue = Math.round((i * GOLDEN_ANGLE) % 360)
+    const lightness = i % 2 === 0 ? 40 : 50
+    colors.set(player, `hsl(${hue}, 65%, ${lightness}%)`)
   })
   return colors
 }

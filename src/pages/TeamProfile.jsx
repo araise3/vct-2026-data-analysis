@@ -331,12 +331,10 @@ export default function TeamProfile() {
 
           <RosterTable team={decodedName} rows={roster} liquipedia={liquipediaData?.teams?.[decodedName]} />
 
-          {liquipediaData?.teams?.[decodedName]?.timeline?.length > 0 && (
+          {playerData && (
             <div className="flex flex-col gap-2">
               <h2 className="font-display text-sm font-semibold text-ink">Roster timeline of {decodedName}</h2>
-              <div className="bg-surface border border-hairline rounded-2xl p-5">
-                <RosterTimeline timeline={liquipediaData.teams[decodedName].timeline} />
-              </div>
+              <RosterTimeline playerBuckets={playerData} team={decodedName} matchResultsRows={matchData?.rows} />
             </div>
           )}
 

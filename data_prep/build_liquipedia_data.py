@@ -174,25 +174,10 @@ def build_team_entry(html, overrides_for_team):
         for c in result["coaches"] if c["status"] == "active"
     ]
 
-    timeline = []
-    for p in result["players"]:
-        timeline.append({
-            "id": p["id"], "name": p["name"], "type": "player",
-            "status": p["status"], "joinDate": p["joinDate"],
-            "leaveDate": p.get("leaveDate"),
-        })
-    for c in result["coaches"]:
-        timeline.append({
-            "id": c["id"], "name": c["name"], "type": "coach",
-            "status": c["status"], "joinDate": c["joinDate"],
-            "leaveDate": c.get("leaveDate"),
-        })
-
     return {
         "players": players_out,
         "formerPlayers": former_players,
         "coaches": coaches,
-        "timeline": timeline,
     }
 
 

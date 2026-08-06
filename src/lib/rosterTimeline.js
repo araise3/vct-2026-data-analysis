@@ -1,0 +1,158 @@
+/**
+ * Event-based "who held which seat" roster history for a team profile --
+ * replaces the old calendar Gantt chart entirely (see RosterTimeline.jsx).
+ * Rows are events (VCT/EWC, chronological); columns are the team's 5
+ * starting seats, each a "seat succession chain" rather than a fixed role
+ * or a person's own lane -- when a starter leaves and someone else takes
+ * over, the new player continues in the SAME column the old one held,
+ * the same way a spreadsheet-style manual roster tracker reads.
+ *
+ * Deliberately NOT scoped to the page's active filter selections (same
+ * independence the old calendar chart already had, via its own separate
+ * Last year/All time toggle) -- this is meant to read as one continuous
+ * team history, not shrink to whatever a Region/Event chip happens to be
+ * set to elsewhere on the page.
+ *
+ * Built entirely from player_buckets.json, already fetched on TeamProfile
+ * for the Players table -- no separate match-level fetch needed. Each
+ * bucket already carries maps played per (player, event, week) with a
+ * team field, so summing `maps` across a player's buckets sharing one
+ * event id gives exactly "how many maps this player played for this team
+ * in this event", which is the input the seat-ranking/succession logic
+ * below needs. Event chronology comes from event id order, not a parsed
+ * date -- verified elsewhere in this codebase that ids are monotonically
+ * increasing across every season (2023 < 2024 < 2025 < 2026 ranges, all
+ * non-overlapping), so a plain numeric sort is exact, not approximate.
+ */
+
+const NUM_SEATS = 5
+
+function seatMaps(seat) {
+  return seat.occupants.reduce((sum, o) => sum + o.maps, 0)
+}
+
+/**
+ * One event's roster snapshot: the top NUM_SEATS players by maps played
+ * become the seats. A 6th+ contributor (a genuine in-event substitution,
+ * not a whole new starter) is folded into whichever of those seats has
+ * the fewest maps that event -- the seat most likely to be the one they
+ * shared -- as a second occupant, per direct instruction: a mid-event
+ * swap should split that one seat's row rather than opening a 6th
+ * column. `primary` is whichever occupant played more of that seat, used
+ * for succession-matching and for the cell's dominant label/color.
+ */
+function buildEventSeats(playerMaps) {
+  const sorted = [...playerMaps.entries()].sort((a, b) => b[1] - a[1])
+  const top = sorted.slice(0, NUM_SEATS)
+  const overflow = sorted.slice(NUM_SEATS)
+
+  const seats = top.map(([player, maps]) => ({ occupants: [{ player, maps }] }))
+  for (const [player, maps] of overflow) {
+    seats.sort((a, b) => seatMaps(a) - seatMaps(b))
+    seats[0].occupants.push({ player, maps })
+  }
+  return seats.map((seat) => ({
+    occupants: seat.occupants,
+    primary: [...seat.occupants].sort((a, b) => b.maps - a.maps)[0].player,
+  }))
+}
+
+/**
+ * Earliest match date per event id, read from match_results.json's own
+ * `rows` (every match on the site, not just this team's -- only the
+ * event->date mapping is needed, so there's no reason to filter first).
+ * Event id order is NOT a safe chronology proxy on its own: EWC 2025's
+ * three regional qualifiers are SYNTHETIC ids (90001-90003, assigned by
+ * export_from_db.py's split_ewc_2025_qualifiers() -- see CLAUDE.md --
+ * nowhere near any real id range) that sort dead last by plain numeric id
+ * despite having happened in May 2025, confirmed live: "EWC Americas
+ * Qualifier 2025" was rendering after the 2026 season entirely before
+ * this was switched to real dates.
+ */
+function buildEventDateOrder(matchResultsRows) {
+  const minDate = new Map()
+  for (const r of matchResultsRows) {
+    const prev = minDate.get(r.e)
+    if (!prev || r.date < prev) minDate.set(r.e, r.date)
+  }
+  return minDate
+}
+
+/**
+ * `playerBucketsData`: the raw { events, meta, buckets } shape from
+ * player_buckets.json (NOT expandBuckets'd -- this only needs the raw
+ * `p`/`e`/`t`/`maps` fields, which are cheap to read directly; see
+ * expandBuckets's own `keep` predicate for the same "filter the raw
+ * bucket before doing any real work" pattern used elsewhere on this site).
+ * `team`: canonical team name, matching the bucket's own `t` field.
+ * `matchResultsRows`: match_results.json's `rows` array, used only to
+ * derive each event's real chronological position (see
+ * buildEventDateOrder above) -- already fetched on TeamProfile.jsx for
+ * Match History, so this adds no new network cost.
+ *
+ * Returns rows in chronological order:
+ *   [{ eventId, event: { name, region, stage, competition, year },
+ *      seats: [seatOrNull x NUM_SEATS] }]
+ */
+export function buildRosterEventTable(playerBucketsData, team, matchResultsRows) {
+  if (!playerBucketsData || !team) return []
+  const { buckets, events } = playerBucketsData
+
+  const perEvent = new Map() // eventId -> Map(player -> mapsPlayed)
+  for (const b of buckets) {
+    if (b.t !== team) continue
+    if (!perEvent.has(b.e)) perEvent.set(b.e, new Map())
+    const m = perEvent.get(b.e)
+    m.set(b.p, (m.get(b.p) || 0) + (b.maps || 0))
+  }
+
+  const eventDate = buildEventDateOrder(matchResultsRows || [])
+  // An event with no match_results row at all (shouldn't happen -- every
+  // event a player has stats for has real matches) falls back to id order
+  // rather than crashing or silently dropping the row.
+  const eventIds = [...perEvent.keys()].sort((a, b) => {
+    const da = eventDate.get(a)
+    const db = eventDate.get(b)
+    if (da && db) return da < db ? -1 : da > db ? 1 : 0
+    return a - b
+  })
+
+  let columns = new Array(NUM_SEATS).fill(null) // current primary occupant per column
+  const rows = []
+
+  for (const eventId of eventIds) {
+    const eventSeats = buildEventSeats(perEvent.get(eventId))
+
+    // Seat succession: a continuing player keeps their existing column;
+    // anyone new (a fresh signing, or stepping into a just-vacated seat)
+    // fills whichever column index is still open, in index order -- this
+    // keeps the same left-to-right column identity stable run over run
+    // without needing to model which specific person a newcomer
+    // "replaced".
+    const assigned = new Array(NUM_SEATS).fill(null)
+    const unassigned = []
+    for (const seat of eventSeats) {
+      const idx = columns.indexOf(seat.primary)
+      if (idx !== -1 && !assigned[idx]) assigned[idx] = seat
+      else unassigned.push(seat)
+    }
+    for (const seat of unassigned) {
+      const idx = assigned.findIndex((s) => !s)
+      if (idx !== -1) assigned[idx] = seat
+      // (more than NUM_SEATS distinct seats in one event is not expected --
+      // overflow players are already folded into an existing seat above --
+      // so a seat silently dropped here would only happen if a team fielded
+      // more than 5 simultaneous seat-holders, which the model doesn't try
+      // to represent.)
+    }
+
+    columns = assigned.map((s) => (s ? s.primary : null))
+    rows.push({
+      eventId,
+      event: events[eventId],
+      seats: assigned,
+    })
+  }
+
+  return rows
+}

@@ -1,158 +1,135 @@
-import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { buildRosterEventTable } from '../lib/rosterTimeline'
+import { eventLabel } from '../lib/format'
 
 /**
- * Gantt-style "who was on the roster when" chart -- one row per
- * person, one horizontal bar per stint (someone who left and later
- * rejoined gets two separate bars on their own row, not one bar
- * spanning the gap).
+ * Event-based "who held which seat" roster table -- replaces the earlier
+ * calendar Gantt chart entirely, per direct request. One row per event
+ * this team has data for (chronological), one column per starting seat.
+ * A seat is a succession chain (see rosterTimeline.js's own docstring for
+ * the full column-assignment rule), not a fixed role or a single
+ * player's own lane -- a departed starter's column is simply inherited by
+ * whoever takes over that seat next.
  *
- * timeline: [{ id, name, type: 'player'|'coach',
- *              status: 'active'|'inactive'|'former',
- *              joinDate, leaveDate }]
- * -- straight from public/data/liquipedia_rosters.json, both players
- * and coaches combined onto one chart since both are "who's part of
- * the team" in the sense this chart is about.
+ * Coaches are deliberately out of scope for this view (dropped along with
+ * the old chart, which used to plot players and coaches on the same
+ * axis) -- this component only ever receives player_buckets data, which
+ * has no coach rows in it at all, so there was nothing to filter here.
  *
- * Rendered as inline SVG with a viewBox, matching TrendChart's
- * conventions elsewhere on this site (no fixed width, scales to its
- * container).
- *
- * "Last year" / "All time" toggle, defaulting to Last year: some teams
- * have 40+ historical entries once every stint is counted, and the
- * full history back to a team's founding is a lot of visual noise for
- * the common case of "who's been around recently".
+ * Consecutive events where one column's PRIMARY occupant didn't change
+ * are merged into a single spanning cell (via a plain HTML `rowSpan`,
+ * computed in computeSpans below) so a multi-event tenure reads as one
+ * continuous block, matching the reference layout this was modelled on.
+ * A row where a seat was split mid-event (two occupants -- see
+ * buildEventSeats in rosterTimeline.js) is never merged into a
+ * neighboring span, on either side: it's a one-event anomaly, not the
+ * start or continuation of a stable run.
  */
-export default function RosterTimeline({ timeline }) {
-  const [range, setRange] = useState('year') // 'year' | 'all'
 
-  const rows = useMemo(() => {
-    if (!timeline?.length) return []
-    // Group by id -- each person is one row, possibly multiple stints.
-    const byId = new Map()
-    for (const t of timeline) {
-      if (!t.joinDate || !/^\d{4}-\d{2}-\d{2}$/.test(t.joinDate)) continue // skip partial/missing dates
-      const key = t.id.toLowerCase()
-      if (!byId.has(key)) byId.set(key, { id: t.id, name: t.name, type: t.type, stints: [] })
-      const leaveDate = t.leaveDate && /^\d{4}-\d{2}-\d{2}$/.test(t.leaveDate) ? t.leaveDate : null
-      byId.get(key).stints.push({ start: t.joinDate, end: leaveDate, status: t.status })
+const SEAT_COLORS = ['#22D3EE', '#E040FB', '#A78BFA', '#FB923C', '#FDE047']
+
+function computeSpans(rows, numSeats) {
+  const grid = rows.map(() => new Array(numSeats).fill(null))
+  for (let c = 0; c < numSeats; c++) {
+    let i = 0
+    while (i < rows.length) {
+      const seat = rows[i].seats[c]
+      const isSplit = seat && seat.occupants.length > 1
+      if (!seat || isSplit) {
+        grid[i][c] = { span: 1, skip: false }
+        i += 1
+        continue
+      }
+      let j = i + 1
+      while (j < rows.length) {
+        const next = rows[j].seats[c]
+        if (!next || next.occupants.length > 1 || next.primary !== seat.primary) break
+        j += 1
+      }
+      grid[i][c] = { span: j - i, skip: false }
+      for (let k = i + 1; k < j; k += 1) grid[k][c] = { span: 0, skip: true }
+      i = j
     }
-    return [...byId.values()].sort((a, b) => {
-      const aStart = Math.min(...a.stints.map((s) => new Date(s.start).getTime()))
-      const bStart = Math.min(...b.stints.map((s) => new Date(s.start).getTime()))
-      return aStart - bStart
-    })
-  }, [timeline])
+  }
+  return grid
+}
 
-  const today = new Date()
-  const windowStart = range === 'year'
-    ? new Date(today.getFullYear() - 1, today.getMonth(), today.getDate())
-    : null
+function SeatCell({ seat, color }) {
+  if (!seat) return <div className="h-9 bg-surface2/40" />
 
-  const visibleRows = useMemo(() => {
-    if (!windowStart) return rows
-    // Keep a row if ANY of its stints overlap the visible window at all.
-    return rows.filter((r) =>
-      r.stints.some((s) => (s.end ? new Date(s.end) : today) >= windowStart)
+  if (seat.occupants.length === 1) {
+    const o = seat.occupants[0]
+    return (
+      <Link
+        to={`/players/${encodeURIComponent(o.player)}`}
+        className="flex items-center justify-center h-full min-h-9 text-ink text-[11px] font-semibold truncate px-1.5 py-1 hover:brightness-110 transition-[filter]"
+        style={{ background: color }}
+        title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'}`}
+      >
+        {o.player}
+      </Link>
     )
-  }, [rows, windowStart])
-
-  if (visibleRows.length === 0) {
-    return <p className="text-muted text-sm">Not enough dated roster history to plot a timeline.</p>
   }
 
-  const allStarts = rows.flatMap((r) => r.stints.map((s) => new Date(s.start).getTime()))
-  const rangeStart = windowStart ? windowStart.getTime() : Math.min(...allStarts)
-  const rangeEnd = today.getTime()
+  // Mid-event seat split -- stack occupants, each sized to its own share
+  // of the seat's total maps played that event (direct instruction: "give
+  // the column half of the row ... depending on how many matches they
+  // played", i.e. proportional height within this one row, not a fixed
+  // 50/50 split).
+  const total = seat.occupants.reduce((s, o) => s + o.maps, 0)
+  return (
+    <div className="flex flex-col h-full min-h-9">
+      {seat.occupants.map((o, i) => (
+        <Link
+          key={o.player}
+          to={`/players/${encodeURIComponent(o.player)}`}
+          className="flex items-center justify-center text-ink text-[9px] font-semibold truncate px-1 hover:brightness-110 transition-[filter]"
+          style={{ background: color, opacity: i === 0 ? 1 : 0.65, height: `${(o.maps / total) * 100}%` }}
+          title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'} this event`}
+        >
+          {o.player}
+        </Link>
+      ))}
+    </div>
+  )
+}
 
-  const W = 700
-  const rowH = 26
-  const pad = { l: 96, r: 12, t: 28, b: 8 }
-  const H = pad.t + pad.b + visibleRows.length * rowH
+export default function RosterTimeline({ playerBuckets, team, matchResultsRows }) {
+  const rows = buildRosterEventTable(playerBuckets, team, matchResultsRows)
 
-  const x = (dateStr) => {
-    const t = Math.max(rangeStart, Math.min(rangeEnd, new Date(dateStr).getTime()))
-    return pad.l + ((t - rangeStart) / (rangeEnd - rangeStart)) * (W - pad.l - pad.r)
+  if (rows.length === 0) {
+    return <p className="text-muted text-sm">Not enough roster history to plot a timeline.</p>
   }
 
-  // Month gridlines/labels across the visible span.
-  const months = []
-  const cursor = new Date(rangeStart)
-  cursor.setDate(1)
-  while (cursor.getTime() <= rangeEnd) {
-    months.push(new Date(cursor))
-    cursor.setMonth(cursor.getMonth() + 1)
-  }
-  const monthFmt = (d) => d.toLocaleDateString('en-US', { month: 'short' })
-
-  const STATUS_COLOR = {
-    active: '#FF4655',   // accent -- current starter
-    inactive: '#9b9c9e', // muted -- current, but benched
-    former: '#4a4d55',   // dim -- no longer on the team
-  }
+  const numSeats = rows[0].seats.length
+  const spans = computeSpans(rows, numSeats)
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex justify-end">
-        <div className="flex rounded-lg overflow-hidden border border-hairline w-fit">
-          {['year', 'all'].map((v) => (
-            <button
-              key={v}
-              onClick={() => setRange(v)}
-              className={`px-3 py-1 text-xs font-medium capitalize transition-colors ${
-                range === v ? 'bg-accent text-white' : 'bg-surface2 text-muted hover:text-ink'
-              }`}
-            >
-              {v === 'year' ? 'Last year' : 'All time'}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img">
-        {months.map((m, i) => {
-          const cx = x(m.toISOString().slice(0, 10))
-          return (
-            <g key={i}>
-              <line x1={cx} x2={cx} y1={pad.t} y2={H - pad.b} stroke="currentColor" className="text-hairline" strokeWidth="1" />
-              <text x={cx} y={pad.t - 8} textAnchor="middle" className="fill-current text-muted" style={{ fontSize: 9 }}>
-                {monthFmt(m)}{m.getMonth() === 0 ? ` '${String(m.getFullYear()).slice(2)}` : ''}
-              </text>
-            </g>
-          )
-        })}
-        <line x1={x(today.toISOString().slice(0, 10))} x2={x(today.toISOString().slice(0, 10))}
-              y1={pad.t} y2={H - pad.b} stroke="currentColor" className="text-ink/40" strokeWidth="1" strokeDasharray="2 2" />
-
-        {visibleRows.map((r, i) => {
-          const cy = pad.t + i * rowH + rowH / 2
-          return (
-            <g key={r.id}>
-              <text x={pad.l - 8} y={cy + 3} textAnchor="end" className="fill-current text-ink/80" style={{ fontSize: 10 }}>
-                {r.id}
-              </text>
-              {r.stints.map((s, j) => {
-                const x1 = x(s.start)
-                const x2 = s.end ? x(s.end) : x(today.toISOString().slice(0, 10))
+    <div className="bg-surface border border-hairline rounded-2xl overflow-auto">
+      <table className="w-full border-separate border-spacing-0 text-xs">
+        <tbody>
+          {rows.map((row, i) => (
+            <tr key={row.eventId}>
+              <td className="pr-3 pl-4 py-1.5 text-right text-muted whitespace-nowrap align-middle border-b border-hairline/60">
+                {eventLabel(row.event?.name)}
+              </td>
+              {row.seats.map((seat, c) => {
+                const cell = spans[i][c]
+                if (cell.skip) return null
                 return (
-                  <rect
-                    key={j}
-                    x={x1} y={cy - 5} width={Math.max(2, x2 - x1)} height={10} rx={2}
-                    fill={STATUS_COLOR[s.status] || STATUS_COLOR.former}
+                  <td
+                    key={c}
+                    rowSpan={cell.span}
+                    className="p-0 align-middle border-b border-hairline/60 border-l border-hairline/30"
                   >
-                    <title>{`${r.id}: ${s.start} \u2013 ${s.end || 'present'} (${s.status})`}</title>
-                  </rect>
+                    <SeatCell seat={seat} color={SEAT_COLORS[c % SEAT_COLORS.length]} />
+                  </td>
                 )
               })}
-            </g>
-          )
-        })}
-      </svg>
-
-      <div className="flex items-center gap-4 text-[10px] text-muted">
-        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: STATUS_COLOR.active }} />Active</span>
-        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: STATUS_COLOR.inactive }} />Inactive</span>
-        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: STATUS_COLOR.former }} />Former</span>
-      </div>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }

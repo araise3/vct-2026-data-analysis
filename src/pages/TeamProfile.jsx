@@ -29,15 +29,14 @@ export default function TeamProfile() {
   const { data: liquipediaData } = useData('liquipedia_rosters')
   const { data: matchData } = useData('match_results')
   const { data: teamMapData } = useData('team_map_buckets')
-  // Both large files (5.5MB/3.9MB) feeding only the roster timeline's
-  // per-event role dots and split-seat chronology -- idle-loaded like
-  // Players.jsx's own player_agents fetch, so they don't compete with the
-  // page's primary data for bandwidth/parse time on first paint. The
-  // timeline itself already renders correctly with either one missing
-  // (role dots just stay hidden; a split seat falls back to its old
-  // maps-descending order) until they land a beat later.
+  // match_players.json (3.9MB) feeds only the roster timeline's split-seat
+  // chronology (see rosterTimeline.js's buildPlayerEventDates) -- idle-
+  // loaded like Players.jsx's own player_agents fetch, so it doesn't
+  // compete with the page's primary data for bandwidth/parse time on
+  // first paint. The timeline itself already renders correctly without it
+  // (a split seat falls back to its old maps-descending order) until it
+  // lands a beat later.
   const idle = useIdle()
-  const { data: agentData } = useData(idle ? 'player_agents' : null)
   const { data: matchPlayerData } = useData(idle ? 'match_players' : null)
 
   // Scope to this team first, so facet options only show events this
@@ -349,7 +348,6 @@ export default function TeamProfile() {
                 team={decodedName}
                 matchResultsRows={matchData?.rows}
                 matchPlayersRows={matchPlayerData?.rows}
-                agentBuckets={agentData}
               />
             </div>
           )}

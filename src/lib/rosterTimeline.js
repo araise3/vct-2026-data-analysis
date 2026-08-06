@@ -24,18 +24,12 @@
  * not event id order -- see that function's own comment for why id order
  * isn't safe.
  *
- * Two more inputs are optional and layer on top of that skeleton without
- * changing it:
- *  - `matchPlayersRows` (match_players.json's `rows`) resolves WITHIN a
- *    split seat cell which occupant actually played first -- see
- *    buildPlayerEventDates below for why the event-row-level date isn't
- *    granular enough for that.
- *  - `agentBucketsData` (raw player_agents.json) tags each occupant with
- *    their inferred role for that event -- see buildEventPlayerRoles.
- * Both are optional (undefined skips the corresponding enrichment) so
- * this stays testable/usable without either large file.
+ * `matchPlayersRows` is an optional extra input that layers on top of that
+ * skeleton without changing it: it resolves WITHIN a split seat cell which
+ * occupant actually played first -- see buildPlayerEventDates below for
+ * why the event-row-level date isn't granular enough for that. Omitting
+ * it leaves split-seat occupants in their old maps-descending order.
  */
-import agentRoles from './agentRoles.json'
 
 const NUM_SEATS = 5
 
@@ -163,47 +157,6 @@ function buildPlayerEventDates(team, matchResultsRows, matchPlayersRows) {
 }
 
 /**
- * Per-(event, player) role, inferred the same way PlayerProfile's header
- * badge is (rolesInScope in peerComparison.js -- majority agent-role by
- * maps played) but keyed by event rather than collapsed to one scope, and
- * working directly off player_agents.json's raw buckets rather than an
- * expanded/filtered array: this needs every player's role in every event
- * at once (there's no single (player) or single (event) scope to filter
- * down to first the way rolesInScope's callers already have), and the raw
- * bucket already carries exactly the three fields (`e`, `p`, `ag`, `maps`)
- * this needs -- expanding first (see expandBuckets's own `keep`-predicate
- * pattern) would build facet fields nothing here reads.
- *
- * A player with no agent recorded, or whose only agents are missing from
- * agentRoles.json (see that file's own note on new-agent coverage),
- * simply has no entry -- callers treat a missing key as "role unknown".
- */
-function buildEventPlayerRoles(agentBucketsData) {
-  const out = new Map()
-  if (!agentBucketsData) return out
-
-  const byKey = new Map() // `${eventId}:${player}` -> Map(role -> maps)
-  for (const b of agentBucketsData.buckets) {
-    const role = agentRoles[b.ag]
-    if (!role) continue
-    const key = `${b.e}:${b.p}`
-    let roleMaps = byKey.get(key)
-    if (!roleMaps) { roleMaps = new Map(); byKey.set(key, roleMaps) }
-    roleMaps.set(role, (roleMaps.get(role) || 0) + (b.maps || 0))
-  }
-
-  for (const [key, roleMaps] of byKey) {
-    let best = null
-    let bestMaps = 0
-    for (const [role, maps] of roleMaps) {
-      if (maps > bestMaps) { best = role; bestMaps = maps }
-    }
-    if (best) out.set(key, best)
-  }
-  return out
-}
-
-/**
  * Earliest match date per event id, read from match_results.json's own
  * `rows` (every match on the site, not just this team's -- only the
  * event->date mapping is needed, so there's no reason to filter first).
@@ -240,18 +193,12 @@ function buildEventDateOrder(matchResultsRows) {
  * `matchPlayersRows` (optional): match_players.json's `rows` array. Only
  * needed for the split-seat chronology fix above; omitting it leaves
  * split-seat occupants in maps-descending order same as before.
- * `agentBucketsData` (optional): the raw player_agents.json shape (same
- * shape as `playerBucketsData`). Only needed to tag each occupant with an
- * inferred role; omitting it leaves every occupant's `role` as null.
  *
  * Returns rows in chronological order:
  *   [{ eventId, event: { name, region, stage, competition, year },
  *      seats: [seatOrNull x NUM_SEATS] }]
- * where each seat's occupants carry `{ player, maps, role }`.
  */
-export function buildRosterEventTable(
-  playerBucketsData, team, matchResultsRows, matchPlayersRows, agentBucketsData
-) {
+export function buildRosterEventTable(playerBucketsData, team, matchResultsRows, matchPlayersRows) {
   if (!playerBucketsData || !team) return []
   const { buckets, events } = playerBucketsData
 
@@ -275,18 +222,12 @@ export function buildRosterEventTable(
   })
 
   const playerDates = buildPlayerEventDates(team, matchResultsRows, matchPlayersRows)
-  const eventRoles = buildEventPlayerRoles(agentBucketsData)
 
   let columns = new Array(NUM_SEATS).fill(null) // current primary occupant per column
   const rows = []
 
   for (const eventId of eventIds) {
     const eventSeats = buildEventSeats(perEvent.get(eventId), eventId, playerDates)
-    for (const seat of eventSeats) {
-      for (const o of seat.occupants) {
-        o.role = eventRoles.get(`${eventId}:${o.player}`) ?? null
-      }
-    }
 
     // Seat succession: a continuing player keeps their existing column;
     // anyone new (a fresh signing, or stepping into a just-vacated seat)

@@ -21,27 +21,16 @@ import { eventLabel } from '../lib/format'
  * computed in computeSpans below) so a multi-event tenure reads as one
  * continuous block, matching the reference layout this was modelled on.
  * A row where a seat was split mid-event (two occupants -- see
- * buildEventSeats in rosterTimeline.js) is never merged into a
- * neighboring span, on either side: it's a one-event anomaly, not the
- * start or continuation of a stable run.
- *
- * Each occupant carries an optional `role` (Duelist/Initiator/Controller/
- * Sentinel, inferred per-event in rosterTimeline.js from the agents they
- * actually played that event -- see buildEventPlayerRoles there). Shown
- * as a small color-coded dot next to the name rather than a text label:
- * these cells are already tight (11px/9px text, sometimes a sliver of a
- * split row), so a role BADGE with its own background would either
- * overflow or force the row taller, but a small dot reads fine at any
- * size and needs no contrast handling against the per-player cell
- * background behind it (own solid color, not text-on-color). Full role
- * name is still in the title tooltip alongside the player name/maps.
+ * buildEventSeats in rosterTimeline.js) merges into a neighboring run on
+ * either side too, as long as the PRIMARY occupant matches -- e.g. a
+ * player who takes over mid-event and then holds the seat through the
+ * following events reads as one continuous block with a small notch for
+ * the outgoing player, not as two separate back-to-back entries for the
+ * same name (see BlockSeatCell below; this was a real user-reported bug).
+ * A split row only stays isolated (its own one-row cell, the original
+ * proportional two-occupant layout) when its primary doesn't match
+ * either neighbor -- a genuine one-event anomaly.
  */
-const ROLE_COLOR = {
-  Duelist: '#FF4655', // this site's own accent red
-  Initiator: '#FFD47D', // the "mid"/gold design token
-  Controller: '#7DD3FC',
-  Sentinel: '#4ADE80',
-}
 
 // Per-PLAYER color, not per-column -- a column is a seat succession
 // chain, not a fixed identity, so tying color to column index made the
@@ -101,14 +90,25 @@ function buildPlayerColors(rows) {
   return colors
 }
 
+// Merges purely on PRIMARY equality between consecutive rows -- a split
+// row (two occupants) is no longer a forced break. This is what lets a
+// hand-off event (e.g. a split seat where the incoming player already
+// has more maps that event, becoming primary) merge forward into that
+// player's following solid-tenure rows, instead of printing their name
+// once inside the split cell and then AGAIN as a new run right below it
+// for what is really one continuous stretch. A span this produces may
+// therefore contain zero, one, or more embedded split rows anywhere in
+// it -- the renderer (see hasEmbeddedSplit / BlockSeatCell below) handles
+// that by overlaying the non-primary occupant's slice on top of the
+// primary's own background rather than assuming every row in a span is
+// single-occupant.
 function computeSpans(rows, numSeats) {
   const grid = rows.map(() => new Array(numSeats).fill(null))
   for (let c = 0; c < numSeats; c++) {
     let i = 0
     while (i < rows.length) {
       const seat = rows[i].seats[c]
-      const isSplit = seat && seat.occupants.length > 1
-      if (!seat || isSplit) {
+      if (!seat) {
         grid[i][c] = { span: 1, skip: false }
         i += 1
         continue
@@ -116,7 +116,7 @@ function computeSpans(rows, numSeats) {
       let j = i + 1
       while (j < rows.length) {
         const next = rows[j].seats[c]
-        if (!next || next.occupants.length > 1 || next.primary !== seat.primary) break
+        if (!next || next.primary !== seat.primary) break
         j += 1
       }
       grid[i][c] = { span: j - i, skip: false }
@@ -137,22 +137,6 @@ function computeSpans(rows, numSeats) {
 // the split case until this was pinned to a real pixel value.
 const ROW_HEIGHT = 36
 
-// Small color-coded role indicator -- see the ROLE_COLOR comment above
-// for why this is a dot rather than a text badge. `null`/unknown role
-// (agent not yet in agentRoles.json, or no agent data loaded at all)
-// renders nothing rather than a placeholder dot, matching this file's
-// existing "missing data disappears, isn't faked" convention.
-function RoleDot({ role }) {
-  if (!role) return null
-  return (
-    <span
-      className="inline-block w-1.5 h-1.5 rounded-full shrink-0"
-      style={{ background: ROLE_COLOR[role] }}
-      title={role}
-    />
-  )
-}
-
 function SeatCell({ seat, colors }) {
   if (!seat) return null
 
@@ -171,11 +155,10 @@ function SeatCell({ seat, colors }) {
     return (
       <Link
         to={`/players/${encodeURIComponent(o.player)}`}
-        className="flex items-center justify-center gap-1 text-ink text-[11px] font-semibold px-1.5 py-1.5 hover:brightness-110 transition-[filter]"
-        title={`${o.player} — ${o.role ? `${o.role} — ` : ''}${o.maps} map${o.maps === 1 ? '' : 's'}`}
+        className="flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 py-1.5 hover:brightness-110 transition-[filter]"
+        title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'}`}
       >
-        <span className="truncate">{o.player}</span>
-        <RoleDot role={o.role} />
+        {o.player}
       </Link>
     )
   }
@@ -185,10 +168,10 @@ function SeatCell({ seat, colors }) {
   // the column half of the row ... depending on how many matches they
   // played", i.e. proportional height within this one row, not a fixed
   // 50/50 split), ordered top-to-bottom by who actually played first (see
-  // buildEventSeats in rosterTimeline.js -- this is the chronology fix,
-  // not new to this pass). Always a single (rowSpan=1) row -- see
-  // computeSpans -- so a fixed-pixel wrapper height is safe and gives the
-  // percentage children below a real number to resolve against.
+  // buildEventSeats in rosterTimeline.js -- this is the chronology fix).
+  // Always a single (rowSpan=1) row -- see computeSpans -- so a
+  // fixed-pixel wrapper height is safe and gives the percentage children
+  // below a real number to resolve against.
   const total = seat.occupants.reduce((s, o) => s + o.maps, 0)
   return (
     <div className="flex flex-col" style={{ height: ROW_HEIGHT }}>
@@ -196,24 +179,95 @@ function SeatCell({ seat, colors }) {
         <Link
           key={o.player}
           to={`/players/${encodeURIComponent(o.player)}`}
-          className="flex items-center justify-center gap-1 text-ink text-[9px] font-semibold px-1 hover:brightness-110 transition-[filter]"
+          className="flex items-center justify-center text-ink text-[9px] font-semibold truncate px-1 hover:brightness-110 transition-[filter]"
           style={{ background: colors.get(o.player), height: `${(o.maps / total) * 100}%` }}
-          title={`${o.player} — ${o.role ? `${o.role} — ` : ''}${o.maps} map${o.maps === 1 ? '' : 's'} this event`}
+          title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'} this event`}
         >
-          <span className="truncate">{o.player}</span>
-          <RoleDot role={o.role} />
+          {o.player}
         </Link>
       ))}
     </div>
   )
 }
 
-export default function RosterTimeline({
-  playerBuckets, team, matchResultsRows, matchPlayersRows, agentBuckets,
-}) {
-  const rows = buildRosterEventTable(
-    playerBuckets, team, matchResultsRows, matchPlayersRows, agentBuckets
+/**
+ * Renders a merged span (multiple rows, one shared `primary`) that has one
+ * or more embedded split rows inside it -- i.e. the primary took over (or
+ * handed off) mid-event at some point within an otherwise-continuous run,
+ * rather than a clean event-to-event boundary. Used instead of the plain
+ * per-row SeatCell above specifically to avoid printing the SAME primary's
+ * name twice back-to-back: once inside the split row, once more as the
+ * start of what the old logic treated as a brand-new run right below it.
+ *
+ * `primary`'s name/background covers the WHOLE span (same as a plain
+ * multi-event tenure) since it's genuinely one continuous identity; each
+ * embedded split row's non-primary occupant is drawn as a small strip
+ * absolutely positioned at that row's own slice of the span (top offset
+ * `rowIndex * ROW_HEIGHT`, sized by their share of maps in that one row --
+ * same proportional-height math SeatCell's own split branch uses, just
+ * pixel-based here since the span's total height is already known exactly
+ * from its row count, rather than needing a percentage of an ambiguous
+ * parent height).
+ *
+ * Absolute positioning (not a fixed-height wrapper div) is deliberate: the
+ * <td> itself doesn't need an explicit height for this to work -- `top`/
+ * `height` in pixels resolve against the nearest positioned ancestor
+ * regardless of that ancestor's own height, and the <td>'s rendered box is
+ * already the right size via native `rowSpan` table layout (the same
+ * mechanism the plain multi-event tenure path already relies on). This
+ * keeps the primary's own label using the exact same "TD background +
+ * vertical-align middle" centering as every other multi-row cell, with the
+ * strips simply painted on top (later in DOM order = on top by default
+ * stacking, no z-index needed).
+ */
+function BlockSeatCell({ blockSeats, primary, colors }) {
+  const primaryMaps = blockSeats.reduce((sum, seat) => {
+    if (!seat) return sum
+    const occ = seat.occupants.find((o) => o.player === primary)
+    return sum + (occ ? occ.maps : 0)
+  }, 0)
+
+  const strips = []
+  blockSeats.forEach((seat, idx) => {
+    if (!seat || seat.occupants.length <= 1) return
+    const rowTop = idx * ROW_HEIGHT
+    const totalRowMaps = seat.occupants.reduce((s, o) => s + o.maps, 0)
+    let offset = 0
+    for (const o of seat.occupants) {
+      const h = (o.maps / totalRowMaps) * ROW_HEIGHT
+      if (o.player !== primary) {
+        strips.push({ key: `${idx}-${o.player}`, top: rowTop + offset, height: h, player: o.player, maps: o.maps })
+      }
+      offset += h
+    }
+  })
+
+  return (
+    <>
+      <Link
+        to={`/players/${encodeURIComponent(primary)}`}
+        className="flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 py-1.5 hover:brightness-110 transition-[filter]"
+        title={`${primary} — ${primaryMaps} map${primaryMaps === 1 ? '' : 's'}`}
+      >
+        {primary}
+      </Link>
+      {strips.map((s) => (
+        <Link
+          key={s.key}
+          to={`/players/${encodeURIComponent(s.player)}`}
+          className="absolute left-0 right-0 flex items-center justify-center text-ink text-[9px] font-semibold truncate px-1 hover:brightness-110 transition-[filter]"
+          style={{ top: s.top, height: s.height, background: colors.get(s.player) }}
+          title={`${s.player} — ${s.maps} map${s.maps === 1 ? '' : 's'} this event`}
+        >
+          {s.player}
+        </Link>
+      ))}
+    </>
   )
+}
+
+export default function RosterTimeline({ playerBuckets, team, matchResultsRows, matchPlayersRows }) {
+  const rows = buildRosterEventTable(playerBuckets, team, matchResultsRows, matchPlayersRows)
 
   if (rows.length === 0) {
     return <p className="text-muted text-sm">Not enough roster history to plot a timeline.</p>
@@ -235,26 +289,38 @@ export default function RosterTimeline({
               {row.seats.map((seat, c) => {
                 const cell = spans[i][c]
                 if (cell.skip) return null
-                // Background goes on the <td> itself for a single-occupant
-                // seat -- see SeatCell's own comment for why that's the
-                // part of this that actually had to change. A split seat
-                // colors its own two sub-divs instead (each occupant gets
-                // its own player color), and an empty seat gets a plain
-                // placeholder fill rather than the table's bare background
-                // showing through unstyled.
-                const bg = !seat
-                  ? undefined
-                  : seat.occupants.length === 1
-                    ? colors.get(seat.occupants[0].player)
-                    : undefined
+                const span = cell.span
+                // An ISOLATED split row (one event, span 1, no matching
+                // neighbor to merge with) still colors its own two
+                // sub-divs via SeatCell rather than the <td> -- there's no
+                // single "whole span" identity yet to hand the <td>. Any
+                // span > 1 has one (its shared `primary`, on every row in
+                // the run by construction -- see computeSpans), even when
+                // one of those rows happens to be split; BlockSeatCell
+                // handles that case, painting the primary across the
+                // whole span with the split row's other occupant overlaid
+                // as a small strip (see its own comment for why).
+                const isIsolatedSplit = span === 1 && seat && seat.occupants.length > 1
+                const blockSeats = span > 1 ? rows.slice(i, i + span).map((r) => r.seats[c]) : null
+                const hasEmbeddedSplit = blockSeats ? blockSeats.some((s) => s && s.occupants.length > 1) : false
+                // Background goes on the <td> itself for anything with a
+                // single whole-span identity (plain tenure OR a merged
+                // span with an embedded split) -- see SeatCell's own
+                // comment for why that's the part of this that actually
+                // had to change. An empty seat gets a plain placeholder
+                // fill rather than the table's bare background showing
+                // through unstyled.
+                const bg = !seat ? undefined : isIsolatedSplit ? undefined : colors.get(seat.primary)
                 return (
                   <td
                     key={c}
-                    rowSpan={cell.span}
-                    className={`p-0 align-middle border-b border-hairline/60 border-l border-hairline/30 ${!seat ? 'bg-surface2/40' : ''}`}
+                    rowSpan={span}
+                    className={`p-0 align-middle border-b border-hairline/60 border-l border-hairline/30 ${!seat ? 'bg-surface2/40' : ''} ${hasEmbeddedSplit ? 'relative' : ''}`}
                     style={bg ? { background: bg } : undefined}
                   >
-                    <SeatCell seat={seat} colors={colors} />
+                    {hasEmbeddedSplit
+                      ? <BlockSeatCell blockSeats={blockSeats} primary={seat.primary} colors={colors} />
+                      : <SeatCell seat={seat} colors={colors} />}
                   </td>
                 )
               })}

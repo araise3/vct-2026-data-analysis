@@ -127,17 +127,28 @@ function computeSpans(rows, numSeats) {
   return grid
 }
 
-// Row height for a single (non-spanned) event row -- only needed as an
-// explicit PIXEL value for the split-seat case below, where two occupants
-// must divide one row proportionally. A percentage height only resolves
-// against a DEFINITE ancestor height, and a <td>'s own height is "auto"
-// (derived from its content), so nesting percentage-height children
-// directly under it silently computes to 0 -- fine by coincidence for a
-// single full-color occupant (nothing to divide), but exactly what broke
-// the split case until this was pinned to a real pixel value.
+// Height of one occupant's own slot within a split cell -- every occupant
+// gets this same fixed height regardless of how many maps they played
+// that event, per direct instruction ("drop the how many maps played =
+// height logic"): the earlier proportional-to-maps split squeezed a
+// lopsided share (e.g. a 1-map stand-in against a 15-map incumbent) down
+// to an illegibly thin sliver, even though the whole point of showing the
+// split at all is to make that stand-in's name readable.
 const ROW_HEIGHT = 36
 
-function SeatCell({ seat, colors }) {
+// A row's rendered height needs to grow to fit whichever of its seats has
+// the most occupants that event (a row can be split in more than one
+// column at once), not just this one column's own occupant count --
+// table rows share one height across every cell in the row regardless of
+// column, so this has to be computed globally, once, up front.
+function computeRowHeights(rows) {
+  return rows.map((row) => {
+    const maxOccupants = row.seats.reduce((m, s) => Math.max(m, s ? s.occupants.length : 1), 1)
+    return maxOccupants * ROW_HEIGHT
+  })
+}
+
+function SeatCell({ seat, colors, height }) {
   if (!seat) return null
 
   if (seat.occupants.length === 1) {
@@ -163,24 +174,36 @@ function SeatCell({ seat, colors }) {
     )
   }
 
-  // Mid-event seat split -- stack occupants, each sized to its own share
-  // of the seat's total maps played that event (direct instruction: "give
-  // the column half of the row ... depending on how many matches they
-  // played", i.e. proportional height within this one row, not a fixed
-  // 50/50 split), ordered top-to-bottom by who actually played first (see
+  // Mid-event seat split -- stack occupants, each given the same fixed
+  // ROW_HEIGHT slot (see above) rather than a maps-proportional share,
+  // ordered top-to-bottom by who actually played first (see
   // buildEventSeats in rosterTimeline.js -- this is the chronology fix).
-  // Always a single (rowSpan=1) row -- see computeSpans -- so a
-  // fixed-pixel wrapper height is safe and gives the percentage children
-  // below a real number to resolve against.
-  const total = seat.occupants.reduce((s, o) => s + o.maps, 0)
+  // Same text size and bordered-stripe treatment as BlockSeatCell's split
+  // regions below -- these used to render smaller (9px, no border) back
+  // when they were squeezed into a fraction of one row; now that a split
+  // gets a full ROW_HEIGHT slot per occupant, there's no reason for it to
+  // read any different from a normal single-occupant cell. `height` (from
+  // computeRowHeights) is this row's actual rendered height, which can
+  // exceed occupants.length * ROW_HEIGHT when some OTHER column is split
+  // further in this same event row -- justify-center absorbs that slack
+  // instead of stretching individual occupant rows.
+  //
+  // Only a border-BOTTOM between consecutive occupants, not border-y on
+  // every one of them -- giving each its own top+bottom doubled up at
+  // every internal seam (two occupants' borders stacked back to back read
+  // as one visibly thicker line, user-reported on Natus Vincere's
+  // Kolosha/ComeBack pair) AND was redundant at the two outer edges, which
+  // are already bordered by the surrounding <td>s' own border-b (this cell
+  // sits in a `border-separate` table, so adjacent cell borders already
+  // touch with no gap).
   return (
-    <div className="flex flex-col" style={{ height: ROW_HEIGHT }}>
-      {seat.occupants.map((o) => (
+    <div className="flex flex-col justify-center" style={{ height }}>
+      {seat.occupants.map((o, i) => (
         <Link
           key={o.player}
           to={`/players/${encodeURIComponent(o.player)}`}
-          className="flex items-center justify-center text-ink text-[9px] font-semibold truncate px-1 hover:brightness-110 transition-[filter]"
-          style={{ background: colors.get(o.player), height: `${(o.maps / total) * 100}%` }}
+          className={`flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 hover:brightness-110 transition-[filter] shrink-0${i < seat.occupants.length - 1 ? ' border-b border-hairline/60' : ''}`}
+          style={{ background: colors.get(o.player), height: ROW_HEIGHT }}
           title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'} this event`}
         >
           {o.player}
@@ -194,75 +217,106 @@ function SeatCell({ seat, colors }) {
  * Renders a merged span (multiple rows, one shared `primary`) that has one
  * or more embedded split rows inside it -- i.e. the primary took over (or
  * handed off) mid-event at some point within an otherwise-continuous run,
- * rather than a clean event-to-event boundary. Used instead of the plain
- * per-row SeatCell above specifically to avoid printing the SAME primary's
- * name twice back-to-back: once inside the split row, once more as the
- * start of what the old logic treated as a brand-new run right below it.
+ * rather than a clean event-to-event boundary.
  *
- * `primary`'s name/background covers the WHOLE span (same as a plain
- * multi-event tenure) since it's genuinely one continuous identity; each
- * embedded split row's non-primary occupant is drawn as a small strip
- * absolutely positioned at that row's own slice of the span (top offset
- * `rowIndex * ROW_HEIGHT`, sized by their share of maps in that one row --
- * same proportional-height math SeatCell's own split branch uses, just
- * pixel-based here since the span's total height is already known exactly
- * from its row count, rather than needing a percentage of an ambiguous
- * parent height).
+ * Built around VISUALLY CONTIGUOUS COLOUR REGIONS, which is the unit the
+ * eye actually reads here -- not table rows, and not "runs of un-split
+ * rows". Two earlier attempts both got the label placement wrong by
+ * grouping on the wrong thing:
+ *   - One label for the whole span: a ~750px column showed its single name
+ *     dead center, leaving most of the colour anonymous.
+ *   - One label per run of SOLID (single-occupant) rows, with the primary's
+ *     own slice of a split row left as unlabeled filler: the filler slice is
+ *     the same colour as the solid run touching it, so the eye sees ONE
+ *     stripe while the label was centered on only the solid part of it.
+ *     User-reported and directly visible on Team Liquid: below the GSR notch
+ *     the yellow is 72px tall (nAts's half of the split row + the final
+ *     event row) but "nAts" was centered in only that last 36px row, so it
+ *     sat flush against the bottom edge; the middle stripe was off by half
+ *     a row the same way.
  *
- * Absolute positioning (not a fixed-height wrapper div) is deliberate: the
- * <td> itself doesn't need an explicit height for this to work -- `top`/
- * `height` in pixels resolve against the nearest positioned ancestor
- * regardless of that ancestor's own height, and the <td>'s rendered box is
- * already the right size via native `rowSpan` table layout (the same
- * mechanism the plain multi-event tenure path already relies on). This
- * keeps the primary's own label using the exact same "TD background +
- * vertical-align middle" centering as every other multi-row cell, with the
- * strips simply painted on top (later in DOM order = on top by default
- * stacking, no z-index needed).
+ * So the span is first flattened into vertical SLOTS in visual top-to-bottom
+ * order (a solid row contributes one primary-owned slot of that row's full
+ * height; a split row contributes one ROW_HEIGHT slot per occupant, walked
+ * in `occupants` order so the chronological stacking from buildEventSeats is
+ * preserved -- the previous code always drew the non-primary occupant on top
+ * regardless of who actually played first). Consecutive slots owned by the
+ * same player then merge into one region, and each region renders as exactly
+ * ONE box with ONE centered label. That makes label placement correct by
+ * construction: a region IS the contiguous block of colour, so centering in
+ * it is centering in what the user sees.
+ *
+ * A split row that is taller than its own occupant count (because a DIFFERENT
+ * column split further in that same event row -- see computeRowHeights) hands
+ * the leftover height to the primary's slot rather than leaving a gap, so the
+ * extra space stays part of the primary's contiguous region instead of
+ * breaking it in two.
  */
-function BlockSeatCell({ blockSeats, primary, colors }) {
-  const primaryMaps = blockSeats.reduce((sum, seat) => {
-    if (!seat) return sum
-    const occ = seat.occupants.find((o) => o.player === primary)
-    return sum + (occ ? occ.maps : 0)
-  }, 0)
-
-  const strips = []
+function BlockSeatCell({ blockSeats, primary, colors, rowHeights, startIndex }) {
+  const slots = []
   blockSeats.forEach((seat, idx) => {
-    if (!seat || seat.occupants.length <= 1) return
-    const rowTop = idx * ROW_HEIGHT
-    const totalRowMaps = seat.occupants.reduce((s, o) => s + o.maps, 0)
-    let offset = 0
+    const rowHeight = rowHeights[startIndex + idx]
+    if (seat.occupants.length === 1) {
+      slots.push({ player: primary, height: rowHeight, maps: seat.occupants[0].maps, split: false })
+      return
+    }
+    const otherCount = seat.occupants.filter((o) => o.player !== primary).length
     for (const o of seat.occupants) {
-      const h = (o.maps / totalRowMaps) * ROW_HEIGHT
-      if (o.player !== primary) {
-        strips.push({ key: `${idx}-${o.player}`, top: rowTop + offset, height: h, player: o.player, maps: o.maps })
-      }
-      offset += h
+      const isPrimary = o.player === primary
+      slots.push({
+        player: o.player,
+        // The primary absorbs whatever the row has beyond one slot per
+        // non-primary occupant (normally just its own ROW_HEIGHT).
+        height: isPrimary ? rowHeight - otherCount * ROW_HEIGHT : ROW_HEIGHT,
+        maps: o.maps,
+        split: !isPrimary,
+      })
     }
   })
 
+  const regions = []
+  for (const s of slots) {
+    const last = regions[regions.length - 1]
+    if (last && last.player === s.player) {
+      last.height += s.height
+      last.maps += s.maps
+    } else {
+      regions.push({ ...s })
+    }
+  }
+
   return (
-    <>
-      <Link
-        to={`/players/${encodeURIComponent(primary)}`}
-        className="flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 py-1.5 hover:brightness-110 transition-[filter]"
-        title={`${primary} — ${primaryMaps} map${primaryMaps === 1 ? '' : 's'}`}
-      >
-        {primary}
-      </Link>
-      {strips.map((s) => (
-        <Link
-          key={s.key}
-          to={`/players/${encodeURIComponent(s.player)}`}
-          className="absolute left-0 right-0 flex items-center justify-center text-ink text-[9px] font-semibold truncate px-1 hover:brightness-110 transition-[filter]"
-          style={{ top: s.top, height: s.height, background: colors.get(s.player) }}
-          title={`${s.player} — ${s.maps} map${s.maps === 1 ? '' : 's'} this event`}
-        >
-          {s.player}
-        </Link>
-      ))}
-    </>
+    <div className="flex flex-col">
+      {regions.map((r, ri) => {
+        // Each split region borders itself top+bottom to separate it from a
+        // solid primary stripe -- but two split regions can sit directly
+        // back to back (e.g. Kolosha then ComeBack, no solid row between
+        // them), and giving BOTH their own full border-y stacks one
+        // region's bottom edge directly against the next one's top edge,
+        // rendering as a visibly thicker (doubled) line at exactly that one
+        // seam. Only draw the side that actually faces a non-split (or
+        // absent) neighbor, so any two adjacent split regions share a
+        // single hairline instead of each contributing their own.
+        const prev = regions[ri - 1]
+        const next = regions[ri + 1]
+        const borderTop = r.split && !prev?.split
+        const borderBottom = r.split && !next?.split
+        return (
+          <Link
+            key={ri}
+            to={`/players/${encodeURIComponent(r.player)}`}
+            // Only a non-primary notch needs its own background and border --
+            // the primary's regions sit on the <td>'s own background (see the
+            // caller) and are separated from each other by those notches.
+            className={`flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 hover:brightness-110 transition-[filter] shrink-0${r.split ? ` border-hairline/60${borderTop ? ' border-t' : ''}${borderBottom ? ' border-b' : ''}` : ''}`}
+            style={{ height: r.height, background: r.split ? colors.get(r.player) : undefined }}
+            title={`${r.player} — ${r.maps} map${r.maps === 1 ? '' : 's'}`}
+          >
+            {r.player}
+          </Link>
+        )
+      })}
+    </div>
   )
 }
 
@@ -276,14 +330,39 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows, 
   const numSeats = rows[0].seats.length
   const spans = computeSpans(rows, numSeats)
   const colors = buildPlayerColors(rows)
+  const rowHeights = computeRowHeights(rows)
 
   return (
     <div className="bg-surface border border-hairline rounded-2xl overflow-auto">
-      <table className="w-full border-separate border-spacing-0 text-xs">
+      <table className="w-full border-separate border-spacing-0 text-xs" style={{ tableLayout: 'fixed' }}>
+        {/* table-layout:fixed + an explicit per-seat <col> width is what makes every seat
+            column a fixed 131px regardless of occupant name length. The label <col> is the
+            ONE column left without a width, so with `w-full` on the table it's the one that
+            absorbs whatever space the container has beyond 5*131px for the seat grid --
+            direct instruction: push the table flush against the right edge and give the
+            leftover room to the event-name column, rather than leaving it as blank space to
+            the table's right (which is what a fixed-total-width table narrower than its
+            container would otherwise do, sitting flush left by default). */}
+        <colgroup>
+          <col />
+          {Array.from({ length: numSeats }).map((_, idx) => (
+            <col key={idx} style={{ width: 131 }} />
+          ))}
+        </colgroup>
         <tbody>
           {rows.map((row, i) => (
             <tr key={row.eventId}>
-              <td className="pr-3 pl-4 py-1.5 text-right text-muted whitespace-nowrap align-middle border-b border-hairline/60">
+              {/* This cell is never consumed by a rowSpan (fresh every row), which is
+                  exactly why it's the one place an explicit height reliably drives this
+                  <tr>'s real rendered height -- a rowSpan'd seat cell further right can
+                  span OVER a split row without ever placing a cell directly in it, so
+                  setting height there wouldn't grow that specific row at all. Forcing it
+                  here keeps every row's actual height in sync with `rowHeights`, which
+                  BlockSeatCell's own per-stripe box heights are summed from. */}
+              <td
+                className="pr-3 pl-4 py-1.5 text-right text-muted whitespace-nowrap align-middle border-b border-hairline/60"
+                style={{ height: rowHeights[i] }}
+              >
                 {eventLabel(row.event?.name)}
               </td>
               {row.seats.map((seat, c) => {
@@ -315,12 +394,12 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows, 
                   <td
                     key={c}
                     rowSpan={span}
-                    className={`p-0 align-middle border-b border-hairline/60 border-l border-hairline/30 ${!seat ? 'bg-surface2/40' : ''} ${hasEmbeddedSplit ? 'relative' : ''}`}
+                    className={`p-0 align-middle border-b border-hairline/60 border-l border-hairline/30 ${!seat ? 'bg-surface2/40' : ''}`}
                     style={bg ? { background: bg } : undefined}
                   >
                     {hasEmbeddedSplit
-                      ? <BlockSeatCell blockSeats={blockSeats} primary={seat.primary} colors={colors} />
-                      : <SeatCell seat={seat} colors={colors} />}
+                      ? <BlockSeatCell blockSeats={blockSeats} primary={seat.primary} colors={colors} rowHeights={rowHeights} startIndex={i} />
+                      : <SeatCell seat={seat} colors={colors} height={rowHeights[i]} />}
                   </td>
                 )
               })}

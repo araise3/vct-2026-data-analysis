@@ -83,8 +83,24 @@ const MIN_OVERFLOW_SHARE = 1 / 3
  * but Neon (more total maps that event) rendered above PxS, reading as
  * "Neon played before PxS" to anyone scanning top-to-bottom. `playerDates`
  * keys are `${eventId}:${player}`, built by buildPlayerEventDates.
+ *
+ * `primary` for a split seat prefers a CONTINUING incumbent -- an occupant
+ * who already held some seat in the immediately preceding event
+ * (`previousColumns`) -- over raw maps count. User-reported bug this
+ * fixes: a seat holder who stepped out briefly (injury/stand-in) and came
+ * right back could log FEWER maps that one transitional event than the
+ * stand-in, which used to make the stand-in "primary" purely on maps,
+ * breaking the seat's succession chain in two -- the incumbent's long
+ * run before the split and their resumed run after it rendered as two
+ * separate same-named blocks with the stand-in's own row sandwiched
+ * between, instead of one continuous tenure with a small notch (the
+ * merge logic in RosterTimeline.jsx's computeSpans only bridges rows
+ * whose `primary` values actually match). Only falls back to maps when
+ * neither occupant (brand new shared seat) or both occupants (a swap
+ * between two already-seated starters, which continuity can't
+ * disambiguate) were previously seated.
  */
-function buildEventSeats(playerMaps, eventId, playerDates) {
+function buildEventSeats(playerMaps, eventId, playerDates, previousColumns) {
   const sorted = [...playerMaps.entries()].sort((a, b) => b[1] - a[1])
   const top = sorted.slice(0, NUM_SEATS)
   const overflow = sorted.slice(NUM_SEATS)
@@ -107,10 +123,13 @@ function buildEventSeats(playerMaps, eventId, playerDates) {
         return da < db ? -1 : da > db ? 1 : 0
       })
     }
-    return {
-      occupants,
-      primary: [...occupants].sort((a, b) => b.maps - a.maps)[0].player,
+    const byMaps = [...occupants].sort((a, b) => b.maps - a.maps)
+    let primary = byMaps[0].player
+    if (occupants.length > 1 && previousColumns) {
+      const continuing = byMaps.filter((o) => previousColumns.includes(o.player))
+      if (continuing.length === 1) primary = continuing[0].player
     }
+    return { occupants, primary }
   })
 }
 
@@ -224,17 +243,35 @@ export function buildRosterEventTable(playerBucketsData, team, matchResultsRows,
   const playerDates = buildPlayerEventDates(team, matchResultsRows, matchPlayersRows)
 
   let columns = new Array(NUM_SEATS).fill(null) // current primary occupant per column
+  // Every player's own most recent column, persisted for the team's WHOLE
+  // history rather than just one event back (unlike `columns`, which is
+  // overwritten every iteration and so forgets a seat's occupant the moment
+  // someone else fills it). Needed for a returning player: `columns.indexOf`
+  // alone only re-seats someone who held a seat in the IMMEDIATELY prior
+  // event, so a player who steps out for several events (someone else holds
+  // their old seat, then THAT person also leaves) fell through to the same
+  // "first open column, in index order" fallback as a brand-new signing --
+  // user-reported on Team Liquid: trexx held column 1 (Stage 2 2025 through
+  // Champions 2025), wayne then held it for four events, and when wayne left
+  // AND MiniBoo left in the same event, trexx returning got shuffled into
+  // MiniBoo's old column instead of reclaiming their own, with the brand-new
+  // Kicks landing in column 1 by sheer luck of coming first in maps-sorted
+  // order. Checked after the immediate-continuation pass but before the
+  // blind index-order fallback, so a genuine newcomer still can't bump a
+  // returning player out of the column that newcomer never held.
+  const homeColumn = new Map()
   const rows = []
 
   for (const eventId of eventIds) {
-    const eventSeats = buildEventSeats(perEvent.get(eventId), eventId, playerDates)
+    const eventSeats = buildEventSeats(perEvent.get(eventId), eventId, playerDates, columns)
 
     // Seat succession: a continuing player keeps their existing column;
-    // anyone new (a fresh signing, or stepping into a just-vacated seat)
-    // fills whichever column index is still open, in index order -- this
-    // keeps the same left-to-right column identity stable run over run
-    // without needing to model which specific person a newcomer
-    // "replaced".
+    // a returning player reclaims their own former column if it's open;
+    // anyone else (a fresh signing, or two returning players both wanting
+    // the same former column) fills whichever column index is still open,
+    // in index order -- this keeps the same left-to-right column identity
+    // stable run over run without needing to model which specific person a
+    // newcomer "replaced".
     const assigned = new Array(NUM_SEATS).fill(null)
     const unassigned = []
     for (const seat of eventSeats) {
@@ -242,7 +279,13 @@ export function buildRosterEventTable(playerBucketsData, team, matchResultsRows,
       if (idx !== -1 && !assigned[idx]) assigned[idx] = seat
       else unassigned.push(seat)
     }
+    const stillUnassigned = []
     for (const seat of unassigned) {
+      const home = homeColumn.get(seat.primary)
+      if (home !== undefined && !assigned[home]) assigned[home] = seat
+      else stillUnassigned.push(seat)
+    }
+    for (const seat of stillUnassigned) {
       const idx = assigned.findIndex((s) => !s)
       if (idx !== -1) assigned[idx] = seat
       // (more than NUM_SEATS distinct seats in one event is not expected --
@@ -253,6 +296,9 @@ export function buildRosterEventTable(playerBucketsData, team, matchResultsRows,
     }
 
     columns = assigned.map((s) => (s ? s.primary : null))
+    assigned.forEach((seat, idx) => {
+      if (seat) homeColumn.set(seat.primary, idx)
+    })
     rows.push({
       eventId,
       event: events[eventId],

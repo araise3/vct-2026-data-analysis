@@ -54,16 +54,35 @@ function computeSpans(rows, numSeats) {
   return grid
 }
 
+// Row height for a single (non-spanned) event row -- only needed as an
+// explicit PIXEL value for the split-seat case below, where two occupants
+// must divide one row proportionally. A percentage height only resolves
+// against a DEFINITE ancestor height, and a <td>'s own height is "auto"
+// (derived from its content), so nesting percentage-height children
+// directly under it silently computes to 0 -- fine by coincidence for a
+// single full-color occupant (nothing to divide), but exactly what broke
+// the split case until this was pinned to a real pixel value.
+const ROW_HEIGHT = 36
+
 function SeatCell({ seat, color }) {
-  if (!seat) return <div className="h-9 bg-surface2/40" />
+  if (!seat) return null
 
   if (seat.occupants.length === 1) {
     const o = seat.occupants[0]
+    // Background lives on the <td> itself (see the caller), not here --
+    // a <td>'s background always covers its full rendered box, including
+    // every row a rowSpan merges in, which is exactly the property a
+    // percentage-height child can't reliably reproduce (see the multi-
+    // event bug this replaced: a 16-event tenure rendered as one row's
+    // worth of color with the remaining 15 rows visually blank, even
+    // though the rowSpan attribute itself was already correct). This
+    // element only needs to center the label -- vertical-align on the
+    // <td> (native table layout, not a flex/percentage hack) does that
+    // correctly across however many rows are spanned.
     return (
       <Link
         to={`/players/${encodeURIComponent(o.player)}`}
-        className="flex items-center justify-center h-full min-h-9 text-ink text-[11px] font-semibold truncate px-1.5 py-1 hover:brightness-110 transition-[filter]"
-        style={{ background: color }}
+        className="flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 py-1.5 hover:brightness-110 transition-[filter]"
         title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'}`}
       >
         {o.player}
@@ -75,10 +94,12 @@ function SeatCell({ seat, color }) {
   // of the seat's total maps played that event (direct instruction: "give
   // the column half of the row ... depending on how many matches they
   // played", i.e. proportional height within this one row, not a fixed
-  // 50/50 split).
+  // 50/50 split). Always a single (rowSpan=1) row -- see computeSpans --
+  // so a fixed-pixel wrapper height is safe and gives the percentage
+  // children below a real number to resolve against.
   const total = seat.occupants.reduce((s, o) => s + o.maps, 0)
   return (
-    <div className="flex flex-col h-full min-h-9">
+    <div className="flex flex-col" style={{ height: ROW_HEIGHT }}>
       {seat.occupants.map((o, i) => (
         <Link
           key={o.player}
@@ -116,13 +137,27 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows }
               {row.seats.map((seat, c) => {
                 const cell = spans[i][c]
                 if (cell.skip) return null
+                const color = SEAT_COLORS[c % SEAT_COLORS.length]
+                // Background goes on the <td> itself for a single-occupant
+                // seat -- see SeatCell's own comment for why that's the
+                // part of this that actually had to change. A split seat
+                // colors its own two sub-divs instead (each needs a
+                // different color/opacity), and an empty seat gets a
+                // plain placeholder fill rather than the table's bare
+                // background showing through unstyled.
+                const bg = !seat
+                  ? undefined
+                  : seat.occupants.length === 1
+                    ? color
+                    : undefined
                 return (
                   <td
                     key={c}
                     rowSpan={cell.span}
-                    className="p-0 align-middle border-b border-hairline/60 border-l border-hairline/30"
+                    className={`p-0 align-middle border-b border-hairline/60 border-l border-hairline/30 ${!seat ? 'bg-surface2/40' : ''}`}
+                    style={bg ? { background: bg } : undefined}
                   >
-                    <SeatCell seat={seat} color={SEAT_COLORS[c % SEAT_COLORS.length]} />
+                    <SeatCell seat={seat} color={color} />
                   </td>
                 )
               })}

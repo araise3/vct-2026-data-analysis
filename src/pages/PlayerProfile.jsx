@@ -25,7 +25,6 @@ export default function PlayerProfile() {
   const { data: agentData } = useData('player_agents')
   const { data: matchData } = useData('match_results')
   const { data: matchPlayerData } = useData('match_players')
-  const [ratedOnly, setRatedOnly] = useState(false)
   // Radar comparison target. Kept as two pieces of state -- `compareInput`
   // is the live text of the field, `compareName` is what actually gets
   // passed to buildRadarProfile() -- so a mid-typing "no data for 'as'"
@@ -58,8 +57,8 @@ export default function PlayerProfile() {
   )
 
   const stats = useMemo(
-    () => aggregatePlayerBuckets(filtered, { ratedOnly }),
-    [filtered, ratedOnly]
+    () => aggregatePlayerBuckets(filtered),
+    [filtered]
   )
 
   // Peer-relative radar profile. Needs EVERY player's buckets, not just
@@ -73,8 +72,8 @@ export default function PlayerProfile() {
     [allPlayerRecords, recentYear]
   )
   const radar = useMemo(
-    () => buildRadarProfile(radarScope, decodedName, { ratedOnly, compareName: compareName || null }),
-    [radarScope, decodedName, ratedOnly, compareName]
+    () => buildRadarProfile(radarScope, decodedName, { compareName: compareName || null }),
+    [radarScope, decodedName, compareName]
   )
 
   // Names available to compare against -- every player who has at least
@@ -228,8 +227,10 @@ export default function PlayerProfile() {
 
   // Every match this player appeared in -- derived from the scoreboard rows
   // rather than from their buckets, so a match can only appear if there's a
-  // box score behind it. Narrowed to the most recent season below into
-  // `matchRows`, which also feeds the Performances strip.
+  // box score behind it. Feeds both Match history (paginated, see
+  // `sortedMatchRows`/`matchLimit` below) and the Performances strip
+  // directly -- neither is scoped to recentYear the way the rest of the
+  // page is.
   const allMatchRows = useMemo(() => {
     if (!matchData || !matchPlayerData) return []
     const mine = new Set()
@@ -237,16 +238,30 @@ export default function PlayerProfile() {
     return expandMatchRows(matchData).filter((m) => mine.has(m.id))
   }, [matchData, matchPlayerData, decodedName])
 
-  const matchRows = useMemo(
-    () => allMatchRows.filter((m) => m.year === recentYear),
-    [allMatchRows, recentYear]
+  // Match history newest-first, across every year -- no longer pinned to
+  // recentYear like the rest of the page. Paginated 30 at a time rather
+  // than rendered in full, since a long career can run to hundreds of
+  // matches; `matchLimit` resets whenever the profile switches players.
+  const sortedMatchRows = useMemo(
+    () => [...allMatchRows].sort(
+      (a, b) => (b.date || '').localeCompare(a.date || '') || b.id - a.id
+    ),
+    [allMatchRows]
+  )
+  const [matchLimit, setMatchLimit] = useState(30)
+  useEffect(() => {
+    setMatchLimit(30)
+  }, [decodedName])
+  const visibleMatchRows = useMemo(
+    () => sortedMatchRows.slice(0, matchLimit),
+    [sortedMatchRows, matchLimit]
   )
 
   // Highest-kill series across this player's ENTIRE match history -- the
   // analogue of rft.gg's "Most Kills in 1 Game" card. Deliberately built
-  // from `allMatchRows`, not the recent-season-scoped `matchRows`: unlike
+  // from the unpaginated `allMatchRows`, not `visibleMatchRows`: unlike
   // every other stat on this page, a career-best record shouldn't disappear
-  // or shrink just because a past season isn't the one currently shown --
+  // or shrink just because it falls past the current "Load more" page --
   // it's a fixed fact about the player, not a scoped aggregate. Series
   // totals, not per-map, and necessarily so: match_players.json is one row
   // per player per MATCH, and the site no longer ships a per-map breakdown
@@ -348,22 +363,6 @@ export default function PlayerProfile() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <span className="text-muted text-xs">
-          {recentYear ? `Showing the ${recentYear} season` : 'No season data'} — the Agents table
-          below and the Kill Record card have their own scope.
-        </span>
-        <label className="flex items-center gap-2 text-xs text-muted">
-          <input
-            type="checkbox"
-            checked={ratedOnly}
-            onChange={(e) => setRatedOnly(e.target.checked)}
-            className="accent-accent w-4 h-4"
-          />
-          Only maps with a Rating 2.0
-        </label>
-      </div>
-
       {stats && stats.mapsPlayed > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Headline rating + qualitative tier + map record. */}
@@ -455,15 +454,15 @@ export default function PlayerProfile() {
         </div>
       )}
 
-      {matchRows.length > 0 && (
+      {allMatchRows.length > 0 && (
         <div className="flex flex-col gap-2">
           <h3 className="font-display text-sm font-semibold text-ink">Performances</h3>
           <p className="text-muted text-xs">
             One bar per match, oldest to newest — bar height and colour are that series'
-            Rating 2.0. {recentYear} season.
+            Rating 2.0. Most recent 30 matches, across every season.
           </p>
           <PerformanceStrip
-            matches={matchRows}
+            matches={allMatchRows}
             playersByMatch={playersByMatch}
             playerName={decodedName}
           />
@@ -591,13 +590,22 @@ export default function PlayerProfile() {
           <div className="flex flex-col gap-2">
             <h3 className="font-display text-sm font-semibold text-ink">Match history</h3>
             <p className="text-muted text-xs">
-              {decodedName}'s line in every {recentYear} match — click a row for the full scoreboard.
+              {decodedName}'s line in every match — click a row for the full scoreboard.
             </p>
             <MatchHistory
-              matches={matchRows}
+              matches={visibleMatchRows}
               playersByMatch={playersByMatch}
               perspective={{ type: 'player', name: decodedName }}
             />
+            {matchLimit < sortedMatchRows.length && (
+              <button
+                type="button"
+                onClick={() => setMatchLimit((l) => Math.min(l + 30, sortedMatchRows.length))}
+                className="self-center text-xs font-medium text-muted hover:text-accent-bright transition-colors px-4 py-2 rounded-lg border border-hairline hover:border-accent-bright/40"
+              >
+                Load more ({sortedMatchRows.length - matchLimit} more)
+              </button>
+            )}
           </div>
 
           {meta.isChina && (

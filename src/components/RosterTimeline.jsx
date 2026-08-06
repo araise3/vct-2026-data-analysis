@@ -24,7 +24,24 @@ import { eventLabel } from '../lib/format'
  * buildEventSeats in rosterTimeline.js) is never merged into a
  * neighboring span, on either side: it's a one-event anomaly, not the
  * start or continuation of a stable run.
+ *
+ * Each occupant carries an optional `role` (Duelist/Initiator/Controller/
+ * Sentinel, inferred per-event in rosterTimeline.js from the agents they
+ * actually played that event -- see buildEventPlayerRoles there). Shown
+ * as a small color-coded dot next to the name rather than a text label:
+ * these cells are already tight (11px/9px text, sometimes a sliver of a
+ * split row), so a role BADGE with its own background would either
+ * overflow or force the row taller, but a small dot reads fine at any
+ * size and needs no contrast handling against the per-player cell
+ * background behind it (own solid color, not text-on-color). Full role
+ * name is still in the title tooltip alongside the player name/maps.
  */
+const ROLE_COLOR = {
+  Duelist: '#FF4655', // this site's own accent red
+  Initiator: '#FFD47D', // the "mid"/gold design token
+  Controller: '#7DD3FC',
+  Sentinel: '#4ADE80',
+}
 
 // Per-PLAYER color, not per-column -- a column is a seat succession
 // chain, not a fixed identity, so tying color to column index made the
@@ -120,6 +137,22 @@ function computeSpans(rows, numSeats) {
 // the split case until this was pinned to a real pixel value.
 const ROW_HEIGHT = 36
 
+// Small color-coded role indicator -- see the ROLE_COLOR comment above
+// for why this is a dot rather than a text badge. `null`/unknown role
+// (agent not yet in agentRoles.json, or no agent data loaded at all)
+// renders nothing rather than a placeholder dot, matching this file's
+// existing "missing data disappears, isn't faked" convention.
+function RoleDot({ role }) {
+  if (!role) return null
+  return (
+    <span
+      className="inline-block w-1.5 h-1.5 rounded-full shrink-0"
+      style={{ background: ROLE_COLOR[role] }}
+      title={role}
+    />
+  )
+}
+
 function SeatCell({ seat, colors }) {
   if (!seat) return null
 
@@ -138,10 +171,11 @@ function SeatCell({ seat, colors }) {
     return (
       <Link
         to={`/players/${encodeURIComponent(o.player)}`}
-        className="flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 py-1.5 hover:brightness-110 transition-[filter]"
-        title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'}`}
+        className="flex items-center justify-center gap-1 text-ink text-[11px] font-semibold px-1.5 py-1.5 hover:brightness-110 transition-[filter]"
+        title={`${o.player} — ${o.role ? `${o.role} — ` : ''}${o.maps} map${o.maps === 1 ? '' : 's'}`}
       >
-        {o.player}
+        <span className="truncate">{o.player}</span>
+        <RoleDot role={o.role} />
       </Link>
     )
   }
@@ -150,9 +184,11 @@ function SeatCell({ seat, colors }) {
   // of the seat's total maps played that event (direct instruction: "give
   // the column half of the row ... depending on how many matches they
   // played", i.e. proportional height within this one row, not a fixed
-  // 50/50 split). Always a single (rowSpan=1) row -- see computeSpans --
-  // so a fixed-pixel wrapper height is safe and gives the percentage
-  // children below a real number to resolve against.
+  // 50/50 split), ordered top-to-bottom by who actually played first (see
+  // buildEventSeats in rosterTimeline.js -- this is the chronology fix,
+  // not new to this pass). Always a single (rowSpan=1) row -- see
+  // computeSpans -- so a fixed-pixel wrapper height is safe and gives the
+  // percentage children below a real number to resolve against.
   const total = seat.occupants.reduce((s, o) => s + o.maps, 0)
   return (
     <div className="flex flex-col" style={{ height: ROW_HEIGHT }}>
@@ -160,19 +196,24 @@ function SeatCell({ seat, colors }) {
         <Link
           key={o.player}
           to={`/players/${encodeURIComponent(o.player)}`}
-          className="flex items-center justify-center text-ink text-[9px] font-semibold truncate px-1 hover:brightness-110 transition-[filter]"
+          className="flex items-center justify-center gap-1 text-ink text-[9px] font-semibold px-1 hover:brightness-110 transition-[filter]"
           style={{ background: colors.get(o.player), height: `${(o.maps / total) * 100}%` }}
-          title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'} this event`}
+          title={`${o.player} — ${o.role ? `${o.role} — ` : ''}${o.maps} map${o.maps === 1 ? '' : 's'} this event`}
         >
-          {o.player}
+          <span className="truncate">{o.player}</span>
+          <RoleDot role={o.role} />
         </Link>
       ))}
     </div>
   )
 }
 
-export default function RosterTimeline({ playerBuckets, team, matchResultsRows }) {
-  const rows = buildRosterEventTable(playerBuckets, team, matchResultsRows)
+export default function RosterTimeline({
+  playerBuckets, team, matchResultsRows, matchPlayersRows, agentBuckets,
+}) {
+  const rows = buildRosterEventTable(
+    playerBuckets, team, matchResultsRows, matchPlayersRows, agentBuckets
+  )
 
   if (rows.length === 0) {
     return <p className="text-muted text-sm">Not enough roster history to plot a timeline.</p>

@@ -11,11 +11,12 @@ import teamLogos from '../lib/teamLogos.json'
  * Render-only: everything it shows arrives via props, so the same tree
  * is used both for the live preview and for the PNG snapshot.
  *
- * External images (team logo CDN, flag CDN) are routed through the
- * wsrv.nl image proxy, which serves permissive CORS headers -- without
- * that, html-to-image can't inline them and exported PNGs would come out
- * with blank tiles whenever the origin CDN doesn't send
- * Access-Control-Allow-Origin.
+ * Team logos are already local (public/logos/); flags are too, now (see
+ * Flag.jsx's own comment -- public/flags/, fetched once by
+ * scraper/download_flags.py). `corsSafe` is kept as a no-op passthrough for
+ * any `/`-rooted path rather than removed, since it's still the thing that
+ * would let a future external image source route through the wsrv.nl CORS
+ * proxy html-to-image needs for anything NOT same-origin.
  */
 
 export function corsSafe(url) {
@@ -226,7 +227,7 @@ const StatCard = forwardRef(function StatCard(
                 <LogoTile team={r.team} size={top ? 88 : 72} />
                 {r.countryCode && (
                   <img
-                    src={corsSafe(`https://flagcdn.com/${r.countryCode}.svg`)}
+                    src={`${import.meta.env.BASE_URL}flags/${r.countryCode.toLowerCase()}.svg`}
                     alt={r.countryName || r.countryCode}
                     crossOrigin="anonymous"
                     style={{

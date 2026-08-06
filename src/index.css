@@ -20,6 +20,16 @@ html, body {
   padding: 0;
 }
 
+/* Reserve the vertical scrollbar's gutter on every page, even ones short
+   enough not to need it (e.g. Economy). Without this, navigating between a
+   tall page and a short one toggles the scrollbar on/off, and since the
+   whole layout is mx-auto-centered, losing/gaining that ~15px shifts the
+   entire page left/right -- this is what caused the Economy tab click to
+   visibly shove the page over. */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   background-color: #131619;
   color: #fafafa;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 const cache = {}
+const inflight = {}
 
 /**
  * True once the browser has been idle after mount -- for data a page needs
@@ -27,6 +28,44 @@ export function useIdle(timeout = 2000) {
     return () => clearTimeout(h)
   }, [timeout])
   return idle
+}
+
+/**
+ * Fetches and caches `public/data/{name}.json`, sharing one in-flight
+ * request across every caller (a prefetch on nav hover and the page's own
+ * `useData` call, which lands a beat later, must not both hit the network).
+ */
+function fetchAndCache(name) {
+  if (cache[name]) return Promise.resolve(cache[name])
+  if (inflight[name]) return inflight[name]
+  const p = fetch(`${import.meta.env.BASE_URL}data/${name}.json`)
+    .then((r) => {
+      if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
+      return r.json()
+    })
+    .then((json) => {
+      cache[name] = json
+      delete inflight[name]
+      return json
+    })
+    .catch((err) => {
+      delete inflight[name]
+      throw err
+    })
+  inflight[name] = p
+  return p
+}
+
+/**
+ * Fire-and-forget prefetch, for warming the cache before a page that needs
+ * `name` actually mounts -- TopNav calls this on a nav link's hover/focus,
+ * so by the time a click lands the fetch is already done or well underway
+ * instead of only starting after the destination page renders. Errors are
+ * swallowed here; the eventual `useData` call in the mounted page still
+ * surfaces them normally.
+ */
+export function prefetchData(name) {
+  if (name) fetchAndCache(name).catch(() => {})
 }
 
 /**
@@ -81,13 +120,11 @@ export function useData(name) {
     // overwriting the newer result.
     let cancelled = false
     setState({ data: null, loading: true, error: false })
-    fetch(`${import.meta.env.BASE_URL}data/${name}.json`)
-      .then((r) => {
-        if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
-        return r.json()
-      })
+    // Shares one in-flight request with a `prefetchData` call already
+    // started on nav hover (see that function's own comment) rather than
+    // firing a second, redundant fetch for the same file.
+    fetchAndCache(name)
       .then((json) => {
-        cache[name] = json
         if (!cancelled) setState({ data: json, loading: false, error: false })
       })
       .catch(() => {

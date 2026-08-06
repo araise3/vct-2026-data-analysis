@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { useData } from '../lib/useData'
+import { useData, useIdle } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandBuckets, aggregateTeamBuckets, aggregatePlayerBuckets, groupByEntity,
@@ -29,6 +29,16 @@ export default function TeamProfile() {
   const { data: liquipediaData } = useData('liquipedia_rosters')
   const { data: matchData } = useData('match_results')
   const { data: teamMapData } = useData('team_map_buckets')
+  // Both large files (5.5MB/3.9MB) feeding only the roster timeline's
+  // per-event role dots and split-seat chronology -- idle-loaded like
+  // Players.jsx's own player_agents fetch, so they don't compete with the
+  // page's primary data for bandwidth/parse time on first paint. The
+  // timeline itself already renders correctly with either one missing
+  // (role dots just stay hidden; a split seat falls back to its old
+  // maps-descending order) until they land a beat later.
+  const idle = useIdle()
+  const { data: agentData } = useData(idle ? 'player_agents' : null)
+  const { data: matchPlayerData } = useData(idle ? 'match_players' : null)
 
   // Scope to this team first, so facet options only show events this
   // team actually played in.
@@ -334,7 +344,13 @@ export default function TeamProfile() {
           {playerData && (
             <div className="flex flex-col gap-2">
               <h2 className="font-display text-sm font-semibold text-ink">Roster timeline of {decodedName}</h2>
-              <RosterTimeline playerBuckets={playerData} team={decodedName} matchResultsRows={matchData?.rows} />
+              <RosterTimeline
+                playerBuckets={playerData}
+                team={decodedName}
+                matchResultsRows={matchData?.rows}
+                matchPlayersRows={matchPlayerData?.rows}
+                agentBuckets={agentData}
+              />
             </div>
           )}
 

@@ -1,15 +1,23 @@
 import { NavLink } from 'react-router-dom'
 import SearchBar from './SearchBar'
+import { prefetchData } from '../lib/useData'
 
+// `data`: the file(s) each route's page fetches unconditionally on mount
+// (deferred/toggle-gated files -- player_sides, the idle-loaded
+// player_agents on Players, etc. -- are deliberately left out, same reasoning
+// those pages already defer them for). Kept next to `items` rather than
+// derived from the page modules themselves, since those are lazy-loaded and
+// inspecting them would defeat the point of splitting them out in the first
+// place.
 const items = [
-  { to: '/', label: 'Overview' },
-  { to: '/players', label: 'Players' },
-  { to: '/teams', label: 'Teams' },
-  { to: '/agents', label: 'Agents' },
-  { to: '/tournaments', label: 'Tournaments' },
-  { to: '/economy', label: 'Economy' },
-  { to: '/records', label: 'Records' },
-  { to: '/graphics', label: 'Graphics' },
+  { to: '/', label: 'Overview', data: ['player_buckets', 'team_buckets'] },
+  { to: '/players', label: 'Players', data: ['player_buckets'] },
+  { to: '/teams', label: 'Teams', data: ['team_buckets'] },
+  { to: '/agents', label: 'Agents', data: ['agents'] },
+  { to: '/tournaments', label: 'Tournaments', data: ['match_results'] },
+  { to: '/economy', label: 'Economy', data: ['team_buckets'] },
+  { to: '/records', label: 'Records', data: ['match_results', 'series_length', 'map_length', 'player_buckets'] },
+  { to: '/graphics', label: 'Graphics', data: ['player_buckets', 'team_buckets', 'series_length', 'map_length'] },
 ]
 
 /**
@@ -55,11 +63,19 @@ export default function TopNav() {
             line would change the bar's height, and every sticky offset
             below it, only on small viewports. */}
         <nav className="flex items-center space-x-2 md:space-x-4 h-full shrink-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:w-0">
-          {items.map(({ to, label }) => (
+          {items.map(({ to, label, data }) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/'}
+              // Prefetch the destination page's data on hover/focus -- both,
+              // not just hover, so keyboard/tab navigation gets the same
+              // head start a mouse hover does. The route's own JS chunk is
+              // a few KB (React.lazy already split it, see App.jsx) and
+              // loads well within a hover's lead time regardless; the actual
+              // multi-MB JSON is what benefits from starting early.
+              onMouseEnter={() => data.forEach(prefetchData)}
+              onFocus={() => data.forEach(prefetchData)}
               className={({ isActive }) =>
                 [
                   'relative text-xs font-semibold transition-colors flex items-center whitespace-nowrap',

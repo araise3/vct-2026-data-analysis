@@ -26,7 +26,28 @@ import { eventLabel } from '../lib/format'
  * start or continuation of a stable run.
  */
 
-const SEAT_COLORS = ['#22D3EE', '#E040FB', '#A78BFA', '#FB923C', '#FDE047']
+// Per-PLAYER color, not per-column -- a column is a seat succession
+// chain, not a fixed identity, so tying color to column index made the
+// same color mean a different person team to team (and row-run to
+// row-run within one team). Hashing the player's own handle instead
+// gives every player a fixed, consistent color wherever they appear on
+// this table. A simple string hash -> hue keeps this deterministic
+// (same player always renders the same color, including across reloads)
+// rather than truly random, which would repaint on every render and
+// make color meaningless as an identity cue. Saturation/lightness are
+// fixed so every hue stays legible under the white label text this site
+// already uses on colored cells; only the hue varies per player.
+function hashHue(name) {
+  let hash = 0
+  for (let i = 0; i < name.length; i += 1) {
+    hash = (hash * 31 + name.charCodeAt(i)) | 0
+  }
+  return Math.abs(hash) % 360
+}
+
+function playerColor(name) {
+  return `hsl(${hashHue(name)}, 65%, 42%)`
+}
 
 function computeSpans(rows, numSeats) {
   const grid = rows.map(() => new Array(numSeats).fill(null))
@@ -64,7 +85,7 @@ function computeSpans(rows, numSeats) {
 // the split case until this was pinned to a real pixel value.
 const ROW_HEIGHT = 36
 
-function SeatCell({ seat, color }) {
+function SeatCell({ seat }) {
   if (!seat) return null
 
   if (seat.occupants.length === 1) {
@@ -100,12 +121,12 @@ function SeatCell({ seat, color }) {
   const total = seat.occupants.reduce((s, o) => s + o.maps, 0)
   return (
     <div className="flex flex-col" style={{ height: ROW_HEIGHT }}>
-      {seat.occupants.map((o, i) => (
+      {seat.occupants.map((o) => (
         <Link
           key={o.player}
           to={`/players/${encodeURIComponent(o.player)}`}
           className="flex items-center justify-center text-ink text-[9px] font-semibold truncate px-1 hover:brightness-110 transition-[filter]"
-          style={{ background: color, opacity: i === 0 ? 1 : 0.65, height: `${(o.maps / total) * 100}%` }}
+          style={{ background: playerColor(o.player), height: `${(o.maps / total) * 100}%` }}
           title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'} this event`}
         >
           {o.player}
@@ -137,18 +158,17 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows }
               {row.seats.map((seat, c) => {
                 const cell = spans[i][c]
                 if (cell.skip) return null
-                const color = SEAT_COLORS[c % SEAT_COLORS.length]
                 // Background goes on the <td> itself for a single-occupant
                 // seat -- see SeatCell's own comment for why that's the
                 // part of this that actually had to change. A split seat
-                // colors its own two sub-divs instead (each needs a
-                // different color/opacity), and an empty seat gets a
-                // plain placeholder fill rather than the table's bare
-                // background showing through unstyled.
+                // colors its own two sub-divs instead (each occupant gets
+                // its own player color), and an empty seat gets a plain
+                // placeholder fill rather than the table's bare background
+                // showing through unstyled.
                 const bg = !seat
                   ? undefined
                   : seat.occupants.length === 1
-                    ? color
+                    ? playerColor(seat.occupants[0].player)
                     : undefined
                 return (
                   <td
@@ -157,7 +177,7 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows }
                     className={`p-0 align-middle border-b border-hairline/60 border-l border-hairline/30 ${!seat ? 'bg-surface2/40' : ''}`}
                     style={bg ? { background: bg } : undefined}
                   >
-                    <SeatCell seat={seat} color={color} />
+                    <SeatCell seat={seat} />
                   </td>
                 )
               })}

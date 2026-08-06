@@ -1,10 +1,24 @@
 {
-  "_comment": "Manual corrections applied on top of Liquipedia's scraped data, for real-world changes Liquipedia hasn't been updated to reflect yet. Each entry is scoped to one team + one player handle (case-insensitive). Re-applied every time the data is rebuilt, so these survive re-scrapes rather than needing to be re-patched by hand each time. Add more entries the same shape as this one when you spot another gap.",
+  "_comment": "Manual corrections applied on top of Liquipedia's scraped data, for real-world changes Liquipedia hasn't been updated to reflect yet, OR to fix a VLR/Liquipedia handle mismatch (see 'vlrId' below). Each entry is scoped to one team + one player handle as Liquipedia spells it (case-insensitive). Re-applied every time the data is rebuilt, so these survive re-scrapes rather than needing to be re-patched by hand each time. Add more entries the same shape as this one when you spot another gap. Supported keys per player: 'playerStatus' (STARTER/BENCHED/etc, wins over whatever Liquipedia's table currently says) and 'vlrId' (rewrites the emitted id to match the handle used in this site's own VLR-derived stats -- RosterTable.jsx joins Liquipedia data against VLR stats by exact lowercased handle, and a mismatch there silently drops the player from the team page with no visible error, even though they have real stats and current Liquipedia status).",
 
   "LOUD": {
     "cauanzin": {
       "playerStatus": "BENCHED",
       "note": "Manually verified 2026-07-26: replaced by DaviH, not yet reflected on Liquipedia's Active/Inactive table."
+    }
+  },
+
+  "LEVIATÁN": {
+    "spikeziN": {
+      "vlrId": "spike",
+      "note": "Same person (Rodrigo Lombardi, Brazil, confirmed via matching flag/team) -- VLR's own stats use the handle 'spike', Liquipedia's page ID is 'spikeziN'. Without this override he silently disappears from LEVIATÁN's team page despite having real match stats and current STARTER status on Liquipedia."
+    }
+  },
+
+  "Bilibili Gaming": {
+    "whz": {
+      "vlrId": "whzy",
+      "note": "Same person (Wang Haozhe, China, confirmed via matching flag/team) -- VLR's own stats use the handle 'whzy', Liquipedia's page ID is 'whz'. Same class of gap as LEVIATÁN's spikeziN/spike above."
     }
   }
 }

@@ -478,12 +478,32 @@ def extract_roster_from_html(html: str):
     Confirmed against Leviatán's actual dumped HTML (2026-07-26). Real
     table shapes, each using class table2__table:
       Player Roster / Active:   ID, Name, Join Date
+                            OR:  ID, Name, <empty header>, Join Date
       Player Roster / Former:   ID, Name, Join Date, Leave Date, New Team
+                            OR:  ID, Name, <empty header>, Join Date,
+                                 Leave Date, New Team
       Organization  / Active:   ID, Name, <empty header>, Join Date
       Organization  / Former:   ID, Name, <empty header>, Join Date,
                                  Leave Date, New Team
 
-    Three real bugs an earlier version had, all traced to the SAME root
+    The Player Roster table's empty-header column is NOT universal --
+    confirmed against a second real page: LEVIATÁN's Active table has
+    exactly 3 columns (no blank header) while FULL SENSE's has 4. It
+    appears only when at least one row on that page needs it, and it
+    carries the same thing the Organization table's identically-shaped
+    blank column carries: a per-row status/position note ("Substitute",
+    etc.) -- confirmed against FULL SENSE's Leviathan, whose Active row
+    reads id=Leviathan, name=Thanyathon Nakmee, that column="Substitute",
+    joinDate=2026-07-03. This is real, load-bearing data (a plain
+    starter/bench split can't represent "on the active roster but plays
+    substitute, not starter"), so it's captured below as `position` on
+    every player row instead of being discarded -- infer_headers already
+    labels that column "role" positionally (shared with the
+    Organization-table codepath below), but an earlier version of the
+    player-building loop never read `row["role"]`, only the staff loop
+    did.
+
+    Three more real bugs an earlier version had, all traced to the SAME root
     cause and fixed together:
 
     1. role was always None (so coaches always came back empty): the
@@ -611,6 +631,7 @@ def extract_roster_from_html(html: str):
                 "id": pid,
                 "name": row.get("name"),
                 "status": status,
+                "position": row.get("role"),
                 "joinDate": row.get("join date"),
                 "leaveDate": row.get("leave date"),
                 "newTeam": row.get("new team"),

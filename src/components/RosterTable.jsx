@@ -56,17 +56,24 @@ function activeRange(first, last) {
 }
 
 /**
- * Real status from Liquipedia's own Active/Inactive table split, ONLY
- * -- labeled Starter/Benched to match VLR's own terminology. An earlier
- * version additionally tried inferring status from that team's
- * History/Timeline prose (natural-language parsing, fragile, ~7%
- * genuinely undetermined even after several rounds of bug fixes);
- * dropped entirely in favor of this reliable table-based signal alone.
+ * Real status from Liquipedia's own Active/Inactive table split -- labeled
+ * Starter/Benched to match VLR's own terminology. An earlier version
+ * additionally tried inferring status from that team's History/Timeline
+ * prose (natural-language parsing, fragile, ~7% genuinely undetermined
+ * even after several rounds of bug fixes); dropped entirely in favor of
+ * this reliable table-based signal alone.
+ *
+ * Anything other than the literal STARTER/BENCHED (e.g. SUBSTITUTE, or
+ * whatever else Liquipedia's roster table uses in that same slot -- see
+ * derive_player_status in build_liquipedia_data.py) renders as a plain
+ * neutral badge with that value as its own label, generalizing to values
+ * this component doesn't need to know about in advance.
  */
 function statusBadge(status) {
+  if (!status) return null
   if (status === 'STARTER') return { label: 'STARTER', cls: 'bg-good/15 text-good border-good/30' }
   if (status === 'BENCHED') return { label: 'BENCHED', cls: 'bg-bad/15 text-bad border-bad/30' }
-  return null
+  return { label: status, cls: 'bg-mid/15 text-mid border-mid/30' }
 }
 
 const th = 'px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted whitespace-nowrap'
@@ -97,6 +104,23 @@ export default function RosterTable({ team, rows, liquipedia }) {
   // roster instead of trying to blacklist every way someone could be
   // gone.
   const currentRows = liquipedia ? rows.filter((p) => lqPlayersById.has(p.player.toLowerCase())) : rows
+
+  // Sorted by role, starters first -- Array.prototype.sort is stable
+  // (guaranteed since ES2019), so within each tier this preserves
+  // whatever order currentRows already came in (rating desc, set by
+  // TeamProfile.jsx), it doesn't need its own secondary sort key here.
+  // A middle tier for anything other than the literal STARTER/BENCHED
+  // (SUBSTITUTE, STAND-IN, INACTIVE, or whatever other note Liquipedia's
+  // roster table carries -- see statusBadge above) reads as "still on
+  // the active roster, just not starting", which belongs between full
+  // starters and fully benched players rather than arbitrarily lumped
+  // with either.
+  const ROLE_RANK = { STARTER: 0, BENCHED: 2 }
+  const roleRank = (status) => ROLE_RANK[status] ?? 1
+  const sortedRows = [...currentRows].sort(
+    (a, b) => roleRank(lqPlayersById.get(a.player.toLowerCase())?.playerStatus)
+      - roleRank(lqPlayersById.get(b.player.toLowerCase())?.playerStatus)
+  )
 
   return (
     <div className="flex flex-col gap-4">
@@ -141,9 +165,9 @@ export default function RosterTable({ team, rows, liquipedia }) {
               </tr>
             </thead>
             <tbody>
-              {currentRows.map((p, i) => {
+              {sortedRows.map((p, i) => {
                 const lq = lqPlayersById.get(p.player.toLowerCase())
-                const last = i === currentRows.length - 1
+                const last = i === sortedRows.length - 1
                 const bd = last ? '' : 'border-b border-hairline'
                 return (
                   <tr key={p.player} className="hover:bg-surface2/40 transition-colors">
@@ -191,7 +215,7 @@ export default function RosterTable({ team, rows, liquipedia }) {
                   </tr>
                 )
               })}
-              {currentRows.length === 0 && (
+              {sortedRows.length === 0 && (
                 <tr>
                   <td className="px-4 py-4 text-muted text-xs" colSpan={10}>
                     No players in this scope.

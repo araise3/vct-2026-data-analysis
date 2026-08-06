@@ -32533,6 +32533,77 @@
       "event": "Vct 2026 China Stage 2",
       "stage": "Stage 2",
       "phase": "Play-Ins",
+      "week": "Play-Ins: Upper Quarterfinals",
+      "playerRows": 30,
+      "agentCounts": {
+        "Omen": 5,
+        "Neon": 5,
+        "Cypher": 4,
+        "Waylay": 3,
+        "Fade": 3,
+        "Raze": 2,
+        "Viper": 2,
+        "Astra": 1,
+        "Tejo": 1,
+        "Chamber": 1,
+        "Sova": 1,
+        "Phoenix": 1,
+        "Skye": 1
+      },
+      "mapStats": {
+        "Split": {
+          "rounds": 21,
+          "atkWinRounds": 13,
+          "defWinRounds": 8
+        },
+        "Summit": {
+          "rounds": 13,
+          "atkWinRounds": 1,
+          "defWinRounds": 12
+        },
+        "Sunset": {
+          "rounds": 24,
+          "atkWinRounds": 7,
+          "defWinRounds": 17
+        }
+      },
+      "mapAgentCounts": {
+        "Split": {
+          "Waylay": 2,
+          "Viper": 2,
+          "Neon": 2,
+          "Omen": 2,
+          "Fade": 1,
+          "Skye": 1
+        },
+        "Summit": {
+          "Cypher": 2,
+          "Raze": 2,
+          "Astra": 1,
+          "Waylay": 1,
+          "Tejo": 1,
+          "Omen": 1,
+          "Neon": 1,
+          "Fade": 1
+        },
+        "Sunset": {
+          "Omen": 2,
+          "Cypher": 2,
+          "Neon": 2,
+          "Chamber": 1,
+          "Sova": 1,
+          "Phoenix": 1,
+          "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2026,
+      "region": "China",
+      "event": "Vct 2026 China Stage 2",
+      "stage": "Stage 2",
+      "phase": "Play-Ins",
       "week": "Play-Ins: Upper Round 1",
       "playerRows": 50,
       "agentCounts": {
@@ -32542,11 +32613,11 @@
         "Sova": 5,
         "Fade": 4,
         "Phoenix": 3,
-        "Sage": 2,
-        "Vyse": 2,
+        "Viper": 2,
         "Waylay": 2,
         "Raze": 2,
-        "Viper": 2,
+        "Vyse": 2,
+        "Sage": 2,
         "Astra": 1,
         "Kayo": 1,
         "Breach": 1,
@@ -32604,14 +32675,14 @@
           "Breach": 1
         },
         "Sunset": {
-          "Cypher": 4,
           "Neon": 4,
+          "Cypher": 4,
           "Omen": 4,
           "Sova": 3,
           "Sage": 2,
-          "Fade": 1,
           "Phoenix": 1,
-          "Viper": 1
+          "Viper": 1,
+          "Fade": 1
         }
       }
     },

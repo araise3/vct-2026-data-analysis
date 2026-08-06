@@ -54,6 +54,8 @@ jobs:
       VLR_EWC_DB_PATH: data_cache/vlr_ewc_2026.db
       VLR_VCT_2025_DB_PATH: data_cache/vlr_vct_2025.db
       VLR_EWC_2025_DB_PATH: data_cache/vlr_ewc_2025.db
+      VLR_VCT_2024_DB_PATH: data_cache/vlr_vct_2024.db
+      VLR_VCT_2023_DB_PATH: data_cache/vlr_vct_2023.db
 
     steps:
       - uses: actions/checkout@v4
@@ -120,6 +122,24 @@ jobs:
             echo "Restored 2025 historical DBs from release."
           else
             echo "::warning::No db-snapshot-2025 release found -- 2025 season data will be empty in this export."
+          fi
+
+      # Same frozen-season shape as the 2025 restore above, one release
+      # earlier (db-snapshot-2023-2024, holding vlr_vct_2023.db and
+      # vlr_vct_2024.db -- VCT only, EWC did not exist before 2025). Kept as
+      # its own step/release rather than folded into db-snapshot-2025's,
+      # since that release is scoped to one season pair and this is a
+      # separate one seeded at a different time.
+      - name: Restore 2023/2024 historical databases (release fallback)
+        if: hashFiles('data_cache/vlr_vct_2024.db') == ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p data_cache
+          if gh release download db-snapshot-2023-2024 --pattern '*.db' --dir data_cache --clobber; then
+            echo "Restored 2023/2024 historical DBs from release."
+          else
+            echo "::warning::No db-snapshot-2023-2024 release found -- 2023/2024 season data will be empty in this export."
           fi
 
       # Neither layer above is guaranteed to have anything -- the very first

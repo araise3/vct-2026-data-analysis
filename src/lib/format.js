@@ -107,6 +107,19 @@ export function eventLabel(name) {
     return `${rest.replace(/\bEmea\b/g, 'EMEA')} ${year}`
   }
 
+  // 2023/2024 backfill events: VLR's own raw names for these two seasons
+  // are titled "Champions Tour <year> <rest>" rather than "Vct <year>
+  // <rest>" (2025/2026's shape) -- confirmed against the real scraped
+  // names, not assumed from the later seasons' pattern. Same year-to-the-
+  // end treatment as the "Vct" case above, e.g. "Champions Tour 2024
+  // Masters Madrid" -> "Masters Madrid 2024", "Champions Tour 2023 Emea
+  // League" -> "EMEA League 2023".
+  const ct = raw.match(/^Champions Tour (\d{4}) (.+)$/)
+  if (ct) {
+    const [, year, rest] = ct
+    return `${rest.replace(/\bEmea\b/g, 'EMEA')} ${year}`
+  }
+
   return raw.replace(/^Vct\b/, 'VCT').replace(/\bEmea\b/g, 'EMEA')
 }
 

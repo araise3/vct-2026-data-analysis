@@ -32,15 +32,20 @@ export const FACET_LABELS = {
 // reads wrong -- Split's season progression, not alphabetized, with
 // Qualifier (an EWC-only concept, orthogonal to the VCT Kickoff/Stage 1/
 // Stage 2 progression) pushed to the end rather than sorting ahead of
-// "Stage" alphabetically. Year is oldest-first (2025 before 2026), per
-// direct request -- matches the hook's own default ascending sort, so
-// this entry mostly exists to keep Year's ordering rule explicit and
-// co-located with Split's rather than silently relying on the default.
+// "Stage" alphabetically. Year is oldest-first, per direct request --
+// matches the hook's own default ascending sort, so this entry mostly
+// exists to keep Year's ordering rule explicit and co-located with
+// Split's rather than silently relying on the default. Listed out to
+// 2023 (the 2023/2024 historical backfill's earliest season) rather than
+// just 2025/2026, since an unlisted value sorts AFTER every listed one
+// (see orderOptions below) -- leaving 2023/2024 off would have put them
+// after 2026 instead of before 2025, breaking the oldest-first order this
+// array exists to guarantee.
 // Values not listed here keep their place at the end, in whatever order the
 // hook already sorted them.
 const FACET_ORDER = {
   split: ['Kickoff', 'Stage 1', 'Stage 2', 'Qualifier'],
-  year: [2025, 2026],
+  year: [2023, 2024, 2025, 2026],
 }
 
 function orderOptions(facet, opts) {

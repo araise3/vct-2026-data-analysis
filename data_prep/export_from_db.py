@@ -29,6 +29,13 @@ EWC_DB_PATH = os.environ.get("VLR_EWC_DB_PATH", "C:/Users/leona/Desktop/scrape v
 # is: load_db() tolerates either being absent.
 VCT_2025_DB_PATH = os.environ.get("VLR_VCT_2025_DB_PATH", os.path.join(_REPO_ROOT, "scraper", "vlr_vct_2025.db"))
 EWC_2025_DB_PATH = os.environ.get("VLR_EWC_2025_DB_PATH", os.path.join(_REPO_ROOT, "scraper", "vlr_ewc_2025.db"))
+# 2023/2024 historical backfill -- same one-time-scrape shape as the 2025 pair
+# above, built by scraper/vlr_vct_2023_scraper.py / vlr_vct_2024_scraper.py.
+# VCT only: EWC (Esports World Cup) did not exist before 2025 -- confirmed
+# directly against vlr.gg's own event search (no "Esports World Cup 2023"/
+# "...2024" event exists at all), not assumed from the 2025+ pattern.
+VCT_2023_DB_PATH = os.environ.get("VLR_VCT_2023_DB_PATH", os.path.join(_REPO_ROOT, "scraper", "vlr_vct_2023.db"))
+VCT_2024_DB_PATH = os.environ.get("VLR_VCT_2024_DB_PATH", os.path.join(_REPO_ROOT, "scraper", "vlr_vct_2024.db"))
 OUT = os.environ.get("VLR_OUT", os.path.join(_REPO_ROOT, "public", "data"))
 
 CHINA_TEAMS = ['All Gamers', 'Bilibili Gaming', 'Dragon Ranger Gaming', 'EDward Gaming',
@@ -159,6 +166,11 @@ def main():
     # being absent), same as EWC_DB_PATH above.
     vct_2025 = load_db(VCT_2025_DB_PATH, "VCT", 2025)
     ewc_2025 = load_db(EWC_2025_DB_PATH, "EWC", 2025)
+    # 2023/2024 historical backfill -- VCT only (no EWC before 2025, see the
+    # path constants above). Same optional-file tolerance as every other
+    # historical DB here.
+    vct_2024 = load_db(VCT_2024_DB_PATH, "VCT", 2024)
+    vct_2023 = load_db(VCT_2023_DB_PATH, "VCT", 2023)
 
     # From here on, `vct` and `ewc` are each a union across every season for
     # that competition -- every line below this point that reads vct[...]/
@@ -194,7 +206,7 @@ def main():
             for name, df in tables.items()
         }
 
-    vct = drop_showmatches(merge_dbs(vct_2026, vct_2025))
+    vct = drop_showmatches(merge_dbs(vct_2026, vct_2025, vct_2024, vct_2023))
     ewc = drop_showmatches(merge_dbs(ewc_2026, ewc_2025))
 
     # VLR's own event names for two 2025 events are stray one-offs that break
@@ -211,6 +223,17 @@ def main():
     EVENT_NAME_OVERRIDES = {
         "Champions Tour 2025 China Kickoff": "Vct 2025 China Kickoff",
         "Champions Tour 2025 Masters Bangkok": "Valorant Masters Bangkok 2025",
+        # Every scraper (this season and every historical one) derives an
+        # event's `name` from its URL slug alone (slug.replace("-", " ")
+        # .title()), never from VLR's own page title -- fine for every event
+        # so far since vlr.gg slugs are plain lowercase-hyphenated ASCII, but
+        # LOCK//IN São Paulo (2023) is the first event whose REAL name has
+        # characters a slug can't represent at all (the "//" and the "ã"),
+        # so the slug-derived name comes out as "Lock In S O Paulo" no
+        # matter how the scraper is written. Restored here the same way the
+        # two 2025 one-offs above are, rather than changing the shared
+        # slug-titling logic every other event still depends on working.
+        "Champions Tour 2023 Lock In S O Paulo": "Champions Tour 2023 LOCK//IN São Paulo",
     }
     vct["events"]["name"] = vct["events"]["name"].replace(EVENT_NAME_OVERRIDES)
 
@@ -305,7 +328,8 @@ def main():
 
     nationality = pd.concat(
         [load_nationality(DB_PATH), load_nationality(EWC_DB_PATH),
-         load_nationality(VCT_2025_DB_PATH), load_nationality(EWC_2025_DB_PATH)],
+         load_nationality(VCT_2025_DB_PATH), load_nationality(EWC_2025_DB_PATH),
+         load_nationality(VCT_2024_DB_PATH), load_nationality(VCT_2023_DB_PATH)],
         ignore_index=True
     ).drop_duplicates(subset='player', keep='first')
     nationality_map = nationality.set_index('player')[['country_code', 'country_name']].to_dict('index')

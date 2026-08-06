@@ -29,24 +29,40 @@ import { eventLabel } from '../lib/format'
 // Per-PLAYER color, not per-column -- a column is a seat succession
 // chain, not a fixed identity, so tying color to column index made the
 // same color mean a different person team to team (and row-run to
-// row-run within one team). Hashing the player's own handle instead
-// gives every player a fixed, consistent color wherever they appear on
-// this table. A simple string hash -> hue keeps this deterministic
-// (same player always renders the same color, including across reloads)
-// rather than truly random, which would repaint on every render and
-// make color meaningless as an identity cue. Saturation/lightness are
-// fixed so every hue stays legible under the white label text this site
-// already uses on colored cells; only the hue varies per player.
-function hashHue(name) {
-  let hash = 0
-  for (let i = 0; i < name.length; i += 1) {
-    hash = (hash * 31 + name.charCodeAt(i)) | 0
+// row-run within one team).
+//
+// Colors only need to be distinct WITHIN one team's table -- a color NRG
+// uses is free to also appear on FNATIC's page, nobody compares the two
+// side by side. A per-player hash (tried first) doesn't guarantee that:
+// two unrelated players can hash to the same or a visually-close hue
+// purely by coincidence (confirmed live -- crashies/mada and skuba/brawk
+// landed on near-identical colors on the same NRG table). Evenly
+// spacing hues across exactly this team's own distinct-player count
+// instead guarantees zero collisions for however many players actually
+// appear on this one page, which a global hash can never promise.
+// Ordered by first appearance in the (already chronological) rows rather
+// than alphabetically, purely so the assignment is deterministic and
+// stable across re-renders without needing to sort by anything else.
+function buildPlayerColors(rows) {
+  const order = []
+  const seen = new Set()
+  for (const row of rows) {
+    for (const seat of row.seats) {
+      if (!seat) continue
+      for (const o of seat.occupants) {
+        if (!seen.has(o.player)) {
+          seen.add(o.player)
+          order.push(o.player)
+        }
+      }
+    }
   }
-  return Math.abs(hash) % 360
-}
-
-function playerColor(name) {
-  return `hsl(${hashHue(name)}, 65%, 42%)`
+  const colors = new Map()
+  order.forEach((player, i) => {
+    const hue = Math.round((i / order.length) * 360)
+    colors.set(player, `hsl(${hue}, 65%, 42%)`)
+  })
+  return colors
 }
 
 function computeSpans(rows, numSeats) {
@@ -85,7 +101,7 @@ function computeSpans(rows, numSeats) {
 // the split case until this was pinned to a real pixel value.
 const ROW_HEIGHT = 36
 
-function SeatCell({ seat }) {
+function SeatCell({ seat, colors }) {
   if (!seat) return null
 
   if (seat.occupants.length === 1) {
@@ -126,7 +142,7 @@ function SeatCell({ seat }) {
           key={o.player}
           to={`/players/${encodeURIComponent(o.player)}`}
           className="flex items-center justify-center text-ink text-[9px] font-semibold truncate px-1 hover:brightness-110 transition-[filter]"
-          style={{ background: playerColor(o.player), height: `${(o.maps / total) * 100}%` }}
+          style={{ background: colors.get(o.player), height: `${(o.maps / total) * 100}%` }}
           title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'} this event`}
         >
           {o.player}
@@ -145,6 +161,7 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows }
 
   const numSeats = rows[0].seats.length
   const spans = computeSpans(rows, numSeats)
+  const colors = buildPlayerColors(rows)
 
   return (
     <div className="bg-surface border border-hairline rounded-2xl overflow-auto">
@@ -168,7 +185,7 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows }
                 const bg = !seat
                   ? undefined
                   : seat.occupants.length === 1
-                    ? playerColor(seat.occupants[0].player)
+                    ? colors.get(seat.occupants[0].player)
                     : undefined
                 return (
                   <td
@@ -177,7 +194,7 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows }
                     className={`p-0 align-middle border-b border-hairline/60 border-l border-hairline/30 ${!seat ? 'bg-surface2/40' : ''}`}
                     style={bg ? { background: bg } : undefined}
                   >
-                    <SeatCell seat={seat} />
+                    <SeatCell seat={seat} colors={colors} />
                   </td>
                 )
               })}

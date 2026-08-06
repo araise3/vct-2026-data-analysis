@@ -31,6 +31,27 @@ function seatMaps(seat) {
   return seat.occupants.reduce((sum, o) => sum + o.maps, 0)
 }
 
+// An overflow occupant needs to represent at least this share of a
+// seat's resulting total maps to get its own visible split -- otherwise
+// it's folded away entirely and the primary occupant keeps the whole
+// cell. User-reported from a real render: a 7-map Benkai stint sharing a
+// seat with a 24-map "something" (22.6% share) rendered as an
+// illegibly thin sliver and read as noise, not real roster information.
+// Calibrated against every real overflow case in the current dataset
+// (110 of them, `node`-computed directly against player_buckets.json,
+// not guessed) rather than picked to fit this one example: share alone
+// forms a smooth, gapless spread from ~3% to 50% with no natural cutoff,
+// but 1/3 lands cleanly between the genuinely trivial single/double-map
+// appearances (Paper Rex's cgrs at 1 map/3.3%, Sentinels' Victor at 2
+// maps/16.7%, Marved at 3 maps/27.3% -- all correctly dropped) and the
+// real near-50/50 in-event swaps this feature exists to surface
+// (Sentinels' TenZ/Marved at 48.1%, Gen.G's eKo/Sylvan at 48.3%, T1's
+// carpe/Rossy at an even 50% -- all correctly kept). Equivalent to
+// requiring the overflow occupant's own maps to be at least half the
+// primary occupant's, which is the more intuitive way to state the same
+// rule: maps >= primary/2  <=>  maps/(maps+primary) >= 1/3.
+const MIN_OVERFLOW_SHARE = 1 / 3
+
 /**
  * One event's roster snapshot: the top NUM_SEATS players by maps played
  * become the seats. A 6th+ contributor (a genuine in-event substitution,
@@ -38,8 +59,11 @@ function seatMaps(seat) {
  * the fewest maps that event -- the seat most likely to be the one they
  * shared -- as a second occupant, per direct instruction: a mid-event
  * swap should split that one seat's row rather than opening a 6th
- * column. `primary` is whichever occupant played more of that seat, used
- * for succession-matching and for the cell's dominant label/color.
+ * column. That fold-in only happens if it clears MIN_OVERFLOW_SHARE
+ * (see above); otherwise the contributor is dropped from the table
+ * entirely rather than rendered as an unreadably thin band. `primary` is
+ * whichever occupant played more of that seat, used for succession-
+ * matching and for the cell's dominant label/color.
  */
 function buildEventSeats(playerMaps) {
   const sorted = [...playerMaps.entries()].sort((a, b) => b[1] - a[1])
@@ -49,7 +73,10 @@ function buildEventSeats(playerMaps) {
   const seats = top.map(([player, maps]) => ({ occupants: [{ player, maps }] }))
   for (const [player, maps] of overflow) {
     seats.sort((a, b) => seatMaps(a) - seatMaps(b))
-    seats[0].occupants.push({ player, maps })
+    const weakest = seats[0]
+    const share = maps / (maps + seatMaps(weakest))
+    if (share < MIN_OVERFLOW_SHARE) continue
+    weakest.occupants.push({ player, maps })
   }
   return seats.map((seat) => ({
     occupants: seat.occupants,

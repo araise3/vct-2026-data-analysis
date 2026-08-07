@@ -34,12 +34,13 @@ export default function Records() {
 
   const records = useMemo(() => expandMatchRows(data), [data])
   const { selections, setFacet, clearAll, options, activeCount,
-          dateRange, setDateRange, dateBounds } =
+          dateRange, setDateRange, dateBounds,
+          includeHiddenEvents, setIncludeHiddenEvents } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   const matches = useMemo(
-    () => records.filter((r) => matchesFilters(r, FACETS, selections, dateRange)),
-    [records, selections, dateRange]
+    () => records.filter((r) => matchesFilters(r, FACETS, selections, dateRange, includeHiddenEvents)),
+    [records, selections, dateRange, includeHiddenEvents]
   )
 
   const teams = useMemo(
@@ -53,7 +54,7 @@ export default function Records() {
   // are second/third, independently-shaped record sets filtered by the
   // same values. Moved here from the Teams page along with the cards
   // themselves below.
-  const matchesSelections = (r) => matchesFilters(r, FACETS, selections, dateRange)
+  const matchesSelections = (r) => matchesFilters(r, FACETS, selections, dateRange, includeHiddenEvents)
 
   // Same split as playerRecords below: expand once per dataset, then only
   // re-run the cheap match test when the selections change.
@@ -68,12 +69,12 @@ export default function Records() {
 
   const seriesRows = useMemo(
     () => allSeriesRows.filter(matchesSelections),
-    [allSeriesRows, selections, dateRange]
+    [allSeriesRows, selections, dateRange, includeHiddenEvents]
   )
 
   const mapRows = useMemo(
     () => allMapRows.filter(matchesSelections),
-    [allMapRows, selections, dateRange]
+    [allMapRows, selections, dateRange, includeHiddenEvents]
   )
 
   const activeDurationRows = durationView === 'series' ? seriesRows : mapRows
@@ -114,7 +115,7 @@ export default function Records() {
                  countryName: meta.countryName, totalAce: s.totalAce, mapsPlayed: s.mapsPlayed })
     }
     return out
-  }, [playerData, playerRecords, selections, dateRange])
+  }, [playerData, playerRecords, selections, dateRange, includeHiddenEvents])
 
   // Kill records: the single highest individual kill total across an
   // entire series (summed across every map of that match for one
@@ -240,6 +241,7 @@ export default function Records() {
         options={options} selections={selections} setFacet={setFacet} clearAll={clearAll}
         activeCount={activeCount}
         dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
+        includeHiddenEvents={includeHiddenEvents} setIncludeHiddenEvents={setIncludeHiddenEvents}
         summary={`${matches.length} matches`}
       />
 

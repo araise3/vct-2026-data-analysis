@@ -101,7 +101,8 @@ export default function Teams() {
 
   const records = useMemo(() => (data ? expandBuckets(data, 't') : []), [data])
   const { selections, setFacet, clearAll, filtered, options, activeCount,
-          dateRange, setDateRange, dateBounds } =
+          dateRange, setDateRange, dateBounds,
+          includeHiddenEvents, setIncludeHiddenEvents } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   const rows = useMemo(() => {
@@ -170,6 +171,7 @@ export default function Teams() {
         clearAll={clearAll}
         activeCount={activeCount}
         dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
+        includeHiddenEvents={includeHiddenEvents} setIncludeHiddenEvents={setIncludeHiddenEvents}
         summary={`${rows.length} teams`}
       />
 
@@ -216,7 +218,8 @@ export default function Teams() {
           <p className="text-muted text-xs">
             Pistol Win% assumes 2 pistol rounds per map. China teams show — since VLR doesn't
             publish economy data for that region. "Eternal Fire" reflects one EMEA franchise slot
-            held sequentially by two orgs (ULF Esports, then Eternal Fire).
+            held sequentially by two orgs (ULF Esports, then Eternal Fire); "FULL SENSE" reflects
+            one Pacific franchise slot held sequentially by two orgs (TALON, then FULL SENSE).
           </p>
         </>
       )}

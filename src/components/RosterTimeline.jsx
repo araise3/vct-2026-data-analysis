@@ -109,19 +109,52 @@ function computeSpans(rows, numSeats) {
     while (i < rows.length) {
       const seat = rows[i].seats[c]
       if (!seat) {
-        grid[i][c] = { span: 1, skip: false }
+        grid[i][c] = { span: 1, skip: false, primary: null }
         i += 1
         continue
       }
-      let j = i + 1
-      while (j < rows.length) {
-        const next = rows[j].seats[c]
-        if (!next || next.primary !== seat.primary) break
-        j += 1
+      // How many consecutive FOLLOWING rows keep `player` as their primary?
+      const forwardRun = (player) => {
+        let n = 0
+        while (i + 1 + n < rows.length) {
+          const next = rows[i + 1 + n].seats[c]
+          if (!next || next.primary !== player) break
+          n += 1
+        }
+        return n
       }
-      grid[i][c] = { span: j - i, skip: false }
-      for (let k = i + 1; k < j; k += 1) grid[k][c] = { span: 0, skip: true }
-      i = j
+
+      // A hand-off row (two occupants: one leaving, one arriving) has to pick
+      // ONE of them as the span's identity, and rosterTimeline.js's own
+      // `primary` picks by maps-played//backward-looking incumbency -- which is
+      // the wrong side of the hand-off whenever the ARRIVING player is the one
+      // who stays. That case rendered the arriving player twice in a row: once
+      // as a notch inside the hand-off cell, then again as a brand new span
+      // directly beneath it, so one continuous tenure read as two separate
+      // blocks of the same colour split by a hairline (user-reported on FURIA:
+      // Palla, arriving mid-EWC-Americas-Qualifier-2025 and then holding the
+      // seat through Americas Stage 2 2025).
+      //
+      // So the span's primary is whichever occupant actually CONTINUES the
+      // furthest forward, falling back to the row's own primary when nothing
+      // separates them. Only a strictly longer forward run overrides it, which
+      // keeps every non-hand-off row behaving exactly as before, and fixes this
+      // for any future hand-off rather than special-casing one player.
+      let primary = seat.primary
+      let bestRun = forwardRun(primary)
+      for (const o of seat.occupants) {
+        if (o.player === primary) continue
+        const run = forwardRun(o.player)
+        if (run > bestRun) {
+          primary = o.player
+          bestRun = run
+        }
+      }
+
+      const span = 1 + bestRun
+      grid[i][c] = { span, skip: false, primary }
+      for (let k = i + 1; k < i + span; k += 1) grid[k][c] = { span: 0, skip: true }
+      i += span
     }
   }
   return grid
@@ -135,6 +168,39 @@ function computeSpans(rows, numSeats) {
 // to an illegibly thin sliver, even though the whole point of showing the
 // split at all is to make that stand-in's name readable.
 const ROW_HEIGHT = 36
+
+// Every seat <td> carries a 1px `border-b`, and because the table is
+// `border-box`, that border lives INSIDE the cell's own height rather than
+// on top of it. So a cell filled with exactly the sum of the row heights it
+// spans actually demands one pixel MORE than those rows were given, and the
+// browser resolves that by quietly inflating the rows themselves -- which
+// then compounds, since every column's cells span a different number of rows
+// and each inflates by a different total. That's what made two columns in one
+// row render visibly taller than their neighbours (user-reported on FURIA:
+// stellar, jakee). Subtracting this from whatever fills a cell keeps the
+// cell's border-box exactly equal to the rows it spans, so nothing inflates
+// and every column in a row lines up to the pixel.
+const CELL_BORDER = 1
+
+// EVERY rule in this table is this exact class -- one colour, FULLY OPAQUE, no
+// `/60` or `/30` opacity suffix. Both halves of that matter:
+//
+//   * One colour, because mixing opacities made identical 1px lines render at
+//     visibly different strengths depending on which edge they were, and the
+//     eye read the lighter-outlined cells as a different SIZE rather than a
+//     different shade -- that (not any real height difference) is what
+//     "stellar and jakee look taller" turned out to be.
+//   * Fully opaque, because a seat cell's background is its span primary's
+//     player colour, and it paints underneath its own border box. Any
+//     translucent border therefore lets that primary colour bleed through the
+//     1px strip -- which, next to a notch of a DIFFERENT player, shows up as a
+//     sliver of the wrong colour along the notch's edge (reported as green
+//     leaking down the left of FURIA's Loss notch, the green being Palla's
+//     colour showing through the `border-l border-hairline/30`). An opaque
+//     border covers the background completely, so there is nothing to bleed.
+//
+// Do not reintroduce an opacity suffix on any border in this component.
+const CELL_RULE = 'border-hairline'
 
 // A row's rendered height needs to grow to fit whichever of its seats has
 // the most occupants that event (a row can be split in more than one
@@ -197,18 +263,25 @@ function SeatCell({ seat, colors, height }) {
   // sits in a `border-separate` table, so adjacent cell borders already
   // touch with no gap).
   return (
-    <div className="flex flex-col justify-center" style={{ height }}>
-      {seat.occupants.map((o, i) => (
-        <Link
-          key={o.player}
-          to={`/players/${encodeURIComponent(o.player)}`}
-          className={`flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 hover:brightness-110 transition-[filter] shrink-0${i < seat.occupants.length - 1 ? ' border-b border-hairline/60' : ''}`}
-          style={{ background: colors.get(o.player), height: ROW_HEIGHT }}
-          title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'} this event`}
-        >
-          {o.player}
-        </Link>
-      ))}
+    <div className="flex flex-col justify-center" style={{ height: height - CELL_BORDER }}>
+      {seat.occupants.map((o, i) => {
+        const last = i === seat.occupants.length - 1
+        return (
+          <Link
+            key={o.player}
+            to={`/players/${encodeURIComponent(o.player)}`}
+            className={`flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 hover:brightness-110 transition-[filter] shrink-0${last ? '' : ` border-b ${CELL_RULE}`}`}
+            // The last slot gives up CELL_BORDER so the stack matches the
+            // cell's own inner height (see CELL_BORDER) -- and, incidentally,
+            // so every occupant shows the same amount of COLOUR: each of the
+            // others spends its own last pixel on the seam border below it.
+            style={{ background: colors.get(o.player), height: last ? ROW_HEIGHT - CELL_BORDER : ROW_HEIGHT }}
+            title={`${o.player} — ${o.maps} map${o.maps === 1 ? '' : 's'} this event`}
+          >
+            {o.player}
+          </Link>
+        )
+      })}
     </div>
   )
 }
@@ -285,30 +358,35 @@ function BlockSeatCell({ blockSeats, primary, colors, rowHeights, startIndex }) 
     }
   }
 
+  // See CELL_BORDER: the <td> spends its own last pixel on its border-b, so
+  // the regions have to add up to one pixel less than the rows they span or
+  // the browser inflates those rows to make room.
+  if (regions.length) regions[regions.length - 1].height -= CELL_BORDER
+
   return (
     <div className="flex flex-col">
       {regions.map((r, ri) => {
-        // Each split region borders itself top+bottom to separate it from a
-        // solid primary stripe -- but two split regions can sit directly
-        // back to back (e.g. Kolosha then ComeBack, no solid row between
-        // them), and giving BOTH their own full border-y stacks one
-        // region's bottom edge directly against the next one's top edge,
-        // rendering as a visibly thicker (doubled) line at exactly that one
-        // seam. Only draw the side that actually faces a non-split (or
-        // absent) neighbor, so any two adjacent split regions share a
-        // single hairline instead of each contributing their own.
-        const prev = regions[ri - 1]
+        // Exactly one hairline per seam, always drawn as the border-BOTTOM of
+        // the region ABOVE it. Deriving it from a single side this way is what
+        // keeps it consistent: the earlier version gave each split region its
+        // own top AND bottom border, which doubled up wherever two of them sat
+        // back to back (Natus Vincere's Kolosha/ComeBack), and then a fix for
+        // THAT left the first region in a span with no top border at all while
+        // its neighbours had one -- so its colour band ran a pixel taller than
+        // theirs and the column read as slightly too tall (FURIA's stellar and
+        // jakee). A seam only exists BETWEEN two regions, so there's no edge
+        // case at either end: the span's outer edges are already bordered by
+        // the table itself (the row above's border-b, and this <td>'s own).
         const next = regions[ri + 1]
-        const borderTop = r.split && !prev?.split
-        const borderBottom = r.split && !next?.split
+        const seam = !!next && (r.split || next.split)
         return (
           <Link
             key={ri}
             to={`/players/${encodeURIComponent(r.player)}`}
-            // Only a non-primary notch needs its own background and border --
-            // the primary's regions sit on the <td>'s own background (see the
+            // Only a non-primary notch needs its own background -- the
+            // primary's regions sit on the <td>'s own background (see the
             // caller) and are separated from each other by those notches.
-            className={`flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 hover:brightness-110 transition-[filter] shrink-0${r.split ? ` border-hairline/60${borderTop ? ' border-t' : ''}${borderBottom ? ' border-b' : ''}` : ''}`}
+            className={`flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 hover:brightness-110 transition-[filter] shrink-0${seam ? ` border-b ${CELL_RULE}` : ''}`}
             style={{ height: r.height, background: r.split ? colors.get(r.player) : undefined }}
             title={`${r.player} — ${r.maps} map${r.maps === 1 ? '' : 's'}`}
           >
@@ -360,7 +438,7 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows, 
                   here keeps every row's actual height in sync with `rowHeights`, which
                   BlockSeatCell's own per-stripe box heights are summed from. */}
               <td
-                className="pr-3 pl-4 py-1.5 text-right text-muted whitespace-nowrap align-middle border-b border-hairline/60"
+                className={`pr-3 pl-4 py-1.5 text-right text-muted whitespace-nowrap align-middle border-b ${CELL_RULE}`}
                 style={{ height: rowHeights[i] }}
               >
                 {eventLabel(row.event?.name)}
@@ -389,16 +467,38 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows, 
                 // had to change. An empty seat gets a plain placeholder
                 // fill rather than the table's bare background showing
                 // through unstyled.
-                const bg = !seat ? undefined : isIsolatedSplit ? undefined : colors.get(seat.primary)
+                // cell.primary, NOT seat.primary -- on a hand-off row the span
+                // deliberately adopts the ARRIVING occupant instead of the
+                // row's own primary (see computeSpans), and the background has
+                // to follow that choice or the merged tenure paints in the
+                // departing player's colour.
+                const bg = !seat ? undefined : isIsolatedSplit ? undefined : colors.get(cell.primary)
+                // BlockSeatCell's regions are explicitly stacked top-down to sum to
+                // this <td>'s intended height, but a rowSpan'd <td> spanning several
+                // physical <tr>s doesn't always render at EXACTLY the sum of those
+                // rows' own specified heights -- the browser's own table-layout
+                // algorithm has final say once several columns' differing rowSpans
+                // compete for the same row boundaries, and can settle on a height a
+                // pixel or two off from what the regions add up to. `align-middle`
+                // would center the whole region stack in that leftover slack, which
+                // silently shifted the FIRST region's label down by half of it --
+                // user-reported on FURIA (jakee, stellar). Anchoring top instead
+                // lets any such slack fall after the last region, where it's just
+                // invisible padding above the next cell's border, rather than a
+                // visible offset on the first one. SeatCell's own two-occupant split
+                // (isIsolatedSplit) doesn't need this -- it sets an explicit height
+                // on its own wrapper and centers via `justify-center` internally,
+                // independent of the <td>'s vertical-align.
+                const seatAlign = hasEmbeddedSplit ? 'align-top' : 'align-middle'
                 return (
                   <td
                     key={c}
                     rowSpan={span}
-                    className={`p-0 align-middle border-b border-hairline/60 border-l border-hairline/30 ${!seat ? 'bg-surface2/40' : ''}`}
+                    className={`p-0 ${seatAlign} border-b ${CELL_RULE} border-l ${CELL_RULE} ${!seat ? 'bg-surface2/40' : ''}`}
                     style={bg ? { background: bg } : undefined}
                   >
                     {hasEmbeddedSplit
-                      ? <BlockSeatCell blockSeats={blockSeats} primary={seat.primary} colors={colors} rowHeights={rowHeights} startIndex={i} />
+                      ? <BlockSeatCell blockSeats={blockSeats} primary={cell.primary} colors={colors} rowHeights={rowHeights} startIndex={i} />
                       : <SeatCell seat={seat} colors={colors} height={rowHeights[i]} />}
                   </td>
                 )

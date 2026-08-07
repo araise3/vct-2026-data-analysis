@@ -376,6 +376,18 @@ def main():
         if v in ('ULF Esports', 'Eternal Fire'):
             name_to_canon[k] = 'Eternal Fire'
 
+    # TALON / FULL SENSE merge, same shape as ULF/Eternal Fire above: Riot
+    # terminated TALON's VCT Pacific partnership 2025-11-18 (overdue player
+    # payments) and FULL SENSE took the slot 2025-12-08, acquiring TALON's
+    # roster in the process (confirmed on Liquipedia's FULL SENSE page
+    # timeline: "FULL SENSE becomes a VCT Partner Team taking the spot left
+    # by TALON. In addition they also acquire the roster from the
+    # organization."). Same slot, sequential, never played each other --
+    # canonical name is "FULL SENSE" (the current, active org), not TALON.
+    for k, v in list(name_to_canon.items()):
+        if v in ('TALON', 'FULL SENSE'):
+            name_to_canon[k] = 'FULL SENSE'
+
     matches['c1'] = matches['team1'].map(name_to_canon).fillna(matches['team1'])
     matches['c2'] = matches['team2'].map(name_to_canon).fillna(matches['team2'])
     mps['canonical_team'] = mps['team'].map(name_to_canon).fillna(mps['team'])

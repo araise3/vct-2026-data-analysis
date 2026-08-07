@@ -11,7 +11,8 @@ export default function Economy() {
   const { data, loading } = useData('team_buckets')
   const records = useMemo(() => (data ? expandBuckets(data, 't') : []), [data])
   const { selections, setFacet, clearAll, filtered, options, activeCount,
-          dateRange, setDateRange, dateBounds } =
+          dateRange, setDateRange, dateBounds,
+          includeHiddenEvents, setIncludeHiddenEvents } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   const econ = useMemo(() => aggregateEconomyBuckets(filtered), [filtered])
@@ -35,6 +36,7 @@ export default function Economy() {
         selections={selections} setFacet={setFacet} clearAll={clearAll}
         options={options} activeCount={activeCount}
         dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
+        includeHiddenEvents={includeHiddenEvents} setIncludeHiddenEvents={setIncludeHiddenEvents}
         summary={`${num(econ.totalRounds)} rounds in scope`}
       />
 

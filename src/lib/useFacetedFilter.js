@@ -27,6 +27,27 @@ import { SCOPE_SEP } from './entityBuckets'
 const EMPTY_RANGE = { from: '', to: '' }
 
 /**
+ * Events left out of every page's scope by default, regardless of Year/
+ * Event facet selections, with a checkbox (rendered by FilterPanel) to
+ * bring them back. Champions Tour 2023 Champions China Qualifier: a
+ * scrappy regional qualifier bracket (obscure amateur teams like "Douyu
+ * Gaming", "Gank Gaming", "Kingzone" -- see project-history's team-logo
+ * backfill entry) that otherwise slips back into scope the moment a page's
+ * Year facet includes 2023, alongside every legitimate 2023 event (Masters
+ * Tokyo, Champions, the real regional Leagues). A dedicated exclusion
+ * rather than something expressible via the Year/Event facets alone --
+ * those are OR'd inclusion lists, so leaving this out by default while
+ * keeping every OTHER 2023 event in requires either re-selecting all of
+ * them individually (fragile: a future 2023 event addition wouldn't be
+ * picked up automatically) or a separate default-off toggle, which is
+ * what this is. Direct request, not a data-quality judgment call made
+ * unilaterally.
+ */
+export const HIDDEN_BY_DEFAULT_EVENTS = new Set([
+  'Champions Tour 2023 Champions China Qualifier',
+])
+
+/**
  * Is a record's date inside the selected range?
  *
  * Every record -- bucket or match-level row -- carries exactly one date,
@@ -90,7 +111,8 @@ function matchesOneFacet(record, sel, recordValue) {
  * went with that pass rather than staying as a dead branch inside a loop
  * that runs once per record per facet.
  */
-export function matchesFilters(record, facets, selections, dateRange = EMPTY_RANGE) {
+export function matchesFilters(record, facets, selections, dateRange = EMPTY_RANGE, includeHiddenEvents = false) {
+  if (!includeHiddenEvents && HIDDEN_BY_DEFAULT_EVENTS.has(record.event)) return false
   if (!inDateRange(record, dateRange)) return false
   return facets.every((f) => matchesOneFacet(record, selections[f], record[f]))
 }
@@ -100,6 +122,7 @@ export function useFacetedFilter(records, facets, initial = {}) {
     Object.fromEntries(facets.map((f) => [f, initial[f] ?? []]))
   )
   const [dateRange, setDateRangeState] = useState(EMPTY_RANGE)
+  const [includeHiddenEvents, setIncludeHiddenEvents] = useState(false)
 
   const setFacet = useCallback((facet, values) => {
     setSelections((prev) => ({ ...prev, [facet]: values }))
@@ -112,22 +135,27 @@ export function useFacetedFilter(records, facets, initial = {}) {
   const clearAll = useCallback(() => {
     setSelections(Object.fromEntries(facets.map((f) => [f, initial[f] ?? []])))
     setDateRangeState(EMPTY_RANGE)
+    setIncludeHiddenEvents(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [facets])
 
   const filtered = useMemo(
-    () => records.filter((r) => matchesFilters(r, facets, selections, dateRange)),
-    [records, facets, selections, dateRange]
+    () => records.filter((r) => matchesFilters(r, facets, selections, dateRange, includeHiddenEvents)),
+    [records, facets, selections, dateRange, includeHiddenEvents]
   )
 
   // For each dimension: every value that exists in the data at all.
   // Depends only on the records, NOT on the current selections -- see the
-  // note on availability at the top of this file.
+  // note on availability at the top of this file. DOES depend on
+  // includeHiddenEvents though, so a hidden event's own Event/Phase/Week
+  // chips disappear from the pickable options while it's excluded, rather
+  // than offering a chip that would filter down to nothing.
   const options = useMemo(() => {
     const out = {}
     for (const facet of facets) {
       const allValues = new Set()
       for (const r of records) {
+        if (!includeHiddenEvents && HIDDEN_BY_DEFAULT_EVENTS.has(r.event)) continue
         const v = r[facet]
         if (v === undefined || v === null) continue
         allValues.add(v)
@@ -137,7 +165,7 @@ export function useFacetedFilter(records, facets, initial = {}) {
         .map((value) => ({ value }))
     }
     return out
-  }, [records, facets])
+  }, [records, facets, includeHiddenEvents])
 
   const activeCount =
     facets.reduce((n, f) => n + (selections[f]?.length || 0), 0) +
@@ -159,5 +187,6 @@ export function useFacetedFilter(records, facets, initial = {}) {
   return {
     selections, setFacet, clearAll, filtered, options, activeCount,
     dateRange, setDateRange, dateBounds,
+    includeHiddenEvents, setIncludeHiddenEvents,
   }
 }

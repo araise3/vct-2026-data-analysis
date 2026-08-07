@@ -47,7 +47,8 @@ export default function TeamProfile() {
   )
 
   const { selections, setFacet, clearAll, filtered, options, activeCount,
-          dateRange, setDateRange, dateBounds } =
+          dateRange, setDateRange, dateBounds,
+          includeHiddenEvents, setIncludeHiddenEvents } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   // Fall back to 2025 when this team has no 2026 data at all -- same
@@ -83,9 +84,9 @@ export default function TeamProfile() {
 
   const mapStats = useMemo(
     () => aggregateTeamMapBuckets(
-      teamMapRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange))
+      teamMapRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange, includeHiddenEvents))
     ),
-    [teamMapRecords, selections, dateRange]
+    [teamMapRecords, selections, dateRange, includeHiddenEvents]
   )
 
   const mapStatsOverall = useMemo(() => summarizeTeamMapStats(mapStats), [mapStats])
@@ -238,8 +239,8 @@ export default function TeamProfile() {
   )
 
   const matchRows = useMemo(
-    () => teamMatches.filter((m) => matchesFilters(m, FACETS, selections, dateRange)),
-    [teamMatches, selections, dateRange]
+    () => teamMatches.filter((m) => matchesFilters(m, FACETS, selections, dateRange, includeHiddenEvents)),
+    [teamMatches, selections, dateRange, includeHiddenEvents]
   )
 
   if (teamsLoading || playersLoading) return <div className="text-muted text-sm">Loading…</div>
@@ -275,6 +276,7 @@ export default function TeamProfile() {
         clearAll={clearAll}
         activeCount={activeCount}
         dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
+        includeHiddenEvents={includeHiddenEvents} setIncludeHiddenEvents={setIncludeHiddenEvents}
       />
 
       {!stats || !stats.mapsPlayed ? (

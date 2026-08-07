@@ -2,6 +2,7 @@ import { useState } from 'react'
 import FacetGroup from './FacetGroup'
 import { unscopeValue } from '../lib/entityBuckets'
 import { eventLabel } from '../lib/format'
+import { HIDDEN_BY_DEFAULT_EVENTS } from '../lib/useFacetedFilter'
 
 /**
  * `eventPhase` / `eventWeek` hold event-scoped values ("Vct 2026 Americas
@@ -104,6 +105,7 @@ function Chevron({ open }) {
 export default function FilterPanel({
   selections, setFacet, clearAll, options, activeCount, children, summary,
   dateRange, setDateRange, dateBounds,
+  includeHiddenEvents, setIncludeHiddenEvents,
   defaultOpen = false,
 }) {
   const [open, setOpen] = useState(defaultOpen)
@@ -287,6 +289,18 @@ export default function FilterPanel({
                 })}
               </div>
             ))
+          )}
+
+          {setIncludeHiddenEvents && (
+            <label className="flex items-center gap-2 text-[11px] text-muted/70 hover:text-muted w-fit cursor-pointer">
+              <input
+                type="checkbox"
+                checked={!!includeHiddenEvents}
+                onChange={(e) => setIncludeHiddenEvents(e.target.checked)}
+                className="accent-accent w-3.5 h-3.5"
+              />
+              Include {[...HIDDEN_BY_DEFAULT_EVENTS].map(eventLabel).join(', ')} (excluded by default)
+            </label>
           )}
 
           {children}

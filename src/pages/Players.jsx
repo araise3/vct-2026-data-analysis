@@ -53,7 +53,8 @@ export default function Players() {
 
   const records = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
   const { selections, setFacet, clearAll, filtered, options, activeCount,
-          dateRange, setDateRange, dateBounds } =
+          dateRange, setDateRange, dateBounds,
+          includeHiddenEvents, setIncludeHiddenEvents } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   // player_agents.json is the same bucket shape as player_buckets but keyed
@@ -71,11 +72,11 @@ export default function Players() {
     const set = new Set()
     for (const r of agentRecords) {
       if (r.ag !== agent) continue
-      if (!matchesFilters(r, FACETS, selections, dateRange)) continue
+      if (!matchesFilters(r, FACETS, selections, dateRange, includeHiddenEvents)) continue
       set.add(r.p)
     }
     return set
-  }, [agentRecords, agent, selections, dateRange])
+  }, [agentRecords, agent, selections, dateRange, includeHiddenEvents])
 
   // Nationality, unlike agent, is static per player -- no separate bucket
   // dataset or scope-matching needed, just the same meta.countryName every
@@ -109,7 +110,7 @@ export default function Players() {
     const byPlayer = new Map()
     for (const r of sideRecords) {
       if (r.s !== side) continue
-      if (!matchesFilters(r, FACETS, selections, dateRange)) continue
+      if (!matchesFilters(r, FACETS, selections, dateRange, includeHiddenEvents)) continue
       if (!byPlayer.has(r.p)) byPlayer.set(r.p, [])
       byPlayer.get(r.p).push(r)
     }
@@ -118,7 +119,7 @@ export default function Players() {
       out.set(player, aggregateSideBuckets(buckets))
     }
     return out
-  }, [sideRecords, selections, dateRange, side])
+  }, [sideRecords, selections, dateRange, side, includeHiddenEvents])
 
   // One row per player in scope, fully aggregated. Deliberately does NOT
   // apply the search box / min-rounds / agent / country filters: those are
@@ -281,6 +282,7 @@ export default function Players() {
         clearAll={clearAll}
         activeCount={activeCount}
         dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
+        includeHiddenEvents={includeHiddenEvents} setIncludeHiddenEvents={setIncludeHiddenEvents}
         summary={`${rows.length} players`}
       >
         <div className="flex items-center gap-5 flex-wrap pt-1">

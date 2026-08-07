@@ -73,13 +73,14 @@ export default function Overview() {
   // the same selections are applied to the player buckets -- so both
   // halves of the page always describe the same scope.
   const { selections, setFacet, clearAll, filtered: filteredTeams, options, activeCount,
-          dateRange, setDateRange, dateBounds } =
+          dateRange, setDateRange, dateBounds,
+          includeHiddenEvents, setIncludeHiddenEvents } =
     useFacetedFilter(teamRecords, FACETS, { competition: ['VCT'], year: [2026] })
 
   const filteredPlayers = useMemo(
     () =>
-      playerRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange)),
-    [playerRecords, selections, dateRange]
+      playerRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange, includeHiddenEvents)),
+    [playerRecords, selections, dateRange, includeHiddenEvents]
   )
 
   const kpis = useMemo(
@@ -146,6 +147,7 @@ export default function Overview() {
         selections={selections} setFacet={setFacet} clearAll={clearAll}
         options={options} activeCount={activeCount}
         dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
+        includeHiddenEvents={includeHiddenEvents} setIncludeHiddenEvents={setIncludeHiddenEvents}
       />
 
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">

@@ -93,7 +93,8 @@ export default function Agents() {
   const { data, loading } = useData('agents')
   const buckets = data?.buckets ?? []
   const { selections, setFacet, clearAll, filtered, options, activeCount,
-          dateRange, setDateRange, dateBounds } =
+          dateRange, setDateRange, dateBounds,
+          includeHiddenEvents, setIncludeHiddenEvents } =
     useFacetedFilter(buckets, FACETS, { competition: ['VCT'], year: [2026] })
 
   // Reorders only the win-rate table's own map columns (see winRateColumns
@@ -256,6 +257,7 @@ export default function Agents() {
         clearAll={clearAll}
         activeCount={activeCount}
         dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
+        includeHiddenEvents={includeHiddenEvents} setIncludeHiddenEvents={setIncludeHiddenEvents}
         summary={`${num(scoped.totalRows / 5)} team-maps in scope`}
       />
 

@@ -66,7 +66,8 @@ export default function Graphics() {
     [data, isPlayers]
   )
   const { selections, setFacet, clearAll, filtered, options, activeCount,
-          dateRange, setDateRange, dateBounds } =
+          dateRange, setDateRange, dateBounds,
+          includeHiddenEvents, setIncludeHiddenEvents } =
     useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
 
   const rows = useMemo(() => {
@@ -82,7 +83,7 @@ export default function Graphics() {
       // `filtered` already covers.
       const eligible = expandFn(source).filter((r) => {
         if (stat.matchLevel === 'series' && !r.fullyTimed) return false
-        return matchesFilters(r, FACETS, selections, dateRange)
+        return matchesFilters(r, FACETS, selections, dateRange, includeHiddenEvents)
       })
       const out = eligible.map((r) => ({
         id: r.id,
@@ -123,7 +124,7 @@ export default function Graphics() {
     return out.slice(0, topN)
   }, [
     filtered, data, isPlayers, isMatchLevel, stat, selections, dateRange, seriesData, mapLengthData,
-    ratedOnly, minRounds, minMaps, topN, bottom,
+    ratedOnly, minRounds, minMaps, topN, bottom, includeHiddenEvents,
   ])
 
   // Auto title / subtitle from current settings; overridable.
@@ -214,6 +215,7 @@ export default function Graphics() {
         clearAll={clearAll}
         activeCount={activeCount}
         dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
+        includeHiddenEvents={includeHiddenEvents} setIncludeHiddenEvents={setIncludeHiddenEvents}
         summary={`${rows.length} rows on card`}
         defaultOpen={false}
       />

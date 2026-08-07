@@ -302,5 +302,9 @@
   "Fire Flux Esports": {
     "logo": "/logos/fire-flux-esports.png",
     "tag": "Fire Flux Esports"
+  },
+  "ULF Esports": {
+    "logo": "/logos/ulf-esports.png",
+    "tag": "ULF Esports"
   }
 }

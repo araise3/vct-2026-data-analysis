@@ -56867,26 +56867,32 @@
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 4",
-      "playerRows": 20,
+      "playerRows": 40,
       "agentCounts": {
-        "Sova": 4,
-        "Viper": 3,
-        "Omen": 2,
-        "Kayo": 2,
-        "Jett": 2,
-        "Neon": 1,
+        "Sova": 8,
+        "Viper": 5,
+        "Neon": 4,
+        "Omen": 3,
+        "Kayo": 3,
+        "Chamber": 3,
+        "Astra": 3,
+        "Jett": 3,
+        "Phoenix": 3,
+        "Harbor": 2,
         "Cypher": 1,
-        "Chamber": 1,
         "Waylay": 1,
-        "Astra": 1,
-        "Phoenix": 1,
-        "Harbor": 1
+        "Yoru": 1
       },
       "mapStats": {
         "Breeze": {
-          "rounds": 16,
-          "atkWinRounds": 9,
-          "defWinRounds": 7
+          "rounds": 35,
+          "atkWinRounds": 16,
+          "defWinRounds": 19
+        },
+        "Haven": {
+          "rounds": 22,
+          "atkWinRounds": 11,
+          "defWinRounds": 11
         },
         "Summit": {
           "rounds": 24,
@@ -56896,13 +56902,24 @@
       },
       "mapAgentCounts": {
         "Breeze": {
-          "Jett": 2,
-          "Viper": 2,
-          "Sova": 2,
+          "Viper": 4,
+          "Sova": 4,
+          "Jett": 3,
+          "Harbor": 2,
+          "Kayo": 2,
           "Omen": 1,
           "Phoenix": 1,
-          "Harbor": 1,
-          "Kayo": 1
+          "Astra": 1,
+          "Neon": 1,
+          "Yoru": 1
+        },
+        "Haven": {
+          "Sova": 2,
+          "Phoenix": 2,
+          "Chamber": 2,
+          "Neon": 2,
+          "Astra": 1,
+          "Omen": 1
         },
         "Summit": {
           "Sova": 2,
@@ -63504,8 +63521,8 @@
         "Raze": 8,
         "Vyse": 5,
         "Waylay": 5,
-        "Astra": 3,
         "Harbor": 3,
+        "Astra": 3,
         "Deadlock": 2,
         "Skye": 2,
         "Kayo": 1,
@@ -63550,8 +63567,8 @@
       },
       "mapAgentCounts": {
         "Ascent": {
-          "Sova": 12,
           "Omen": 12,
+          "Sova": 12,
           "Phoenix": 9,
           "Cypher": 9,
           "Jett": 5,
@@ -63612,19 +63629,19 @@
           "Omen": 6,
           "Viper": 6,
           "Fade": 5,
-          "Yoru": 3,
-          "Neon": 3,
-          "Sova": 3,
           "Chamber": 3,
-          "Vyse": 2,
+          "Sova": 3,
+          "Neon": 3,
+          "Yoru": 3,
           "Phoenix": 2,
-          "Astra": 1,
-          "Cypher": 1,
+          "Vyse": 2,
           "Kayo": 1,
           "Harbor": 1,
           "Waylay": 1,
           "Sage": 1,
-          "Jett": 1
+          "Jett": 1,
+          "Astra": 1,
+          "Cypher": 1
         },
         "Sunset": {
           "Omen": 4,

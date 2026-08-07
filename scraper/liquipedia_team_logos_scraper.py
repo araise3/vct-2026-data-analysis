@@ -133,6 +133,29 @@ TEAM_NAME_MAP = {
     "Xi Lai Gaming": "XLG Esports",
     "ZETA DIVISION": "ZETA DIVISION",
     "A Team": "A Team",
+    # 2023/2024 backfill + tier-2 play-in teams (added when historical years and
+    # play-in brackets were added to the dataset) -- most match our canonical name
+    # exactly, only these differ from the {{Team|X}} alias Liquipedia expects:
+    "Attacking Soul Esports": "Attacking Soul Esports",
+    "BLEED": "Bleed Esports",
+    "Douyu Gaming": "Douyu Gaming",
+    "Eintracht Frankfurt": "Eintracht Frankfurt",
+    "Enterprise Esports": "Enterprise Esports",
+    "Four Angry Men": "Four Angry Men",
+    "Gank Gaming": "Gank Gaming",
+    "Giants Gaming": "Giants",
+    "Invincible Gaming": "Invincible Gaming",
+    "Joblife": "Joblife",
+    "Kingzone": "KING-ZONE",
+    "Monarch Effect": "Monarch Effect",
+    "Night Wings Gaming": "Night Wings Gaming",
+    "Number One Player": "Number One Player",
+    "REBORN": "REBORN",
+    "Rare Atom": "Rare Atom",
+    "Royal Never Give Up": "Royal Never Give Up",
+    "Shenzhen NTER": "NTER (Chinese team)",
+    "Totoro Gaming": "Totoro Gaming",
+    "Weibo Gaming": "Weibo Gaming",
 }
 
 # Tags already known (kept from the previous src/lib/teamLogos.json where
@@ -158,6 +181,13 @@ TAGS = {
     "Team Vitality": "VIT", "Titan Esports Club": "TEC", "Trace Esports": "TE",
     "VARREL": "VL", "Wolves Esports": "WOL", "Xi Lai Gaming": "XLG",
     "ZETA DIVISION": "ZETA", "A Team": "AT",
+    "Attacking Soul Esports": "ASE", "BLEED": "BLD", "Douyu Gaming": "DYG",
+    "Eintracht Frankfurt": "SGE", "Enterprise Esports": "ENT", "Four Angry Men": "4AM",
+    "Gank Gaming": "GANK", "Giants Gaming": "GIA", "Invincible Gaming": "IVG",
+    "Joblife": "JL", "Kingzone": "KZ", "Monarch Effect": "ME",
+    "Night Wings Gaming": "NWG", "Number One Player": "N1P",
+    "REBORN": "RE", "Rare Atom": "RA", "Royal Never Give Up": "RNG",
+    "Shenzhen NTER": "NTER", "Totoro Gaming": "TOTO", "Weibo Gaming": "WBG",
 }
 
 
@@ -227,7 +257,14 @@ def fetch_team_icons(s, titles):
     render together in one ~46KB response with the preprocessor nowhere
     near its node-count limit, so there's no need to chunk this at all.
 
-    Returns {team_name: (dark_filename_or_None, light_filename_or_None)}.
+    Returns {title: (dark_filename_or_None, light_filename_or_None)}, keyed by the
+    input `titles` themselves (matched positionally against the rendered spans, in
+    the same order the {{Team|X}} calls were written) -- NOT by the rendered
+    `data-highlighting-class` label. Those two differ for any disambiguated page
+    title, e.g. "NTER (Chinese team)" renders with highlighting-class "NTER", so
+    keying on the rendered label silently dropped every such team from the result
+    (confirmed on Shenzhen NTER: the span was there, `icons_by_title.get(title)`
+    in main() just never matched it).
     """
     text = "\n".join(f"{{{{Team|{t}}}}}" for t in titles)
     digest = hashlib.md5(text.encode("utf-8")).hexdigest()
@@ -248,6 +285,17 @@ def fetch_team_icons(s, titles):
         with open(path, "w", encoding="utf-8") as f:
             json.dump({"html": html}, f)
 
+    # Liquipedia's rendered span is currently
+    # `<span class="team-template-team-standard" data-highlighting-class="X">`
+    # (hyphenated attribute, class before data-highlighting-class) -- an earlier
+    # version of this script matched the attributes unhyphenated and in the
+    # opposite order, which silently produced zero matches for every team in a
+    # batch (the split's lookahead never fired, so the whole HTML stayed one
+    # unparsed blob) rather than raising, so drift in Liquipedia's markup here
+    # fails silent, not loud. Re-run with `--inspect` on any team that turns up
+    # with no icon to check whether this has drifted again before assuming the
+    # team itself lacks a logo.
+    #
     # Split on each team's opening marker span rather than trying to match
     # a whole block with a lookahead for "the next span or end of string" --
     # that lookahead approach silently failed to capture the very last team
@@ -256,21 +304,25 @@ def fetch_team_icons(s, titles):
     # `.*?</span>` against arbitrary nested spans is fragile right at the
     # true end of the string. Splitting is simpler and has no such edge case.
     parts = re.split(
-        r'(?=<span data-highlightingclass="[^"]+" class="team-template-team-standard">)',
+        r'(?=<span class="team-template-team-standard" data-highlighting-class="[^"]+">)',
         html,
     )
+    matched = [
+        p for p in parts
+        if re.match(r'<span class="team-template-team-standard" data-highlighting-class="[^"]+">', p)
+    ]
+    if len(matched) != len(titles):
+        print(f"  [warn] rendered {len(matched)} team spans for {len(titles)} requested titles -- "
+              f"positional zip below may misalign, check with --inspect")
+
     icons = {}
-    for part in parts:
-        m = re.match(r'<span data-highlightingclass="([^"]+)" class="team-template-team-standard">', part)
-        if not m:
-            continue
-        name = m.group(1)
+    for title, part in zip(titles, matched):
         dark = re.search(r'darkmode"[^>]*>.*?src="([^"]+)"', part, re.S)
         light = re.search(r'lightmode"[^>]*>.*?src="([^"]+)"', part, re.S)
         single = re.search(r'team-template-image-icon"[^>]*>.*?src="([^"]+)"', part, re.S)
         dark_fn = thumb_url_to_filename(dark.group(1)) if dark else None
         light_fn = thumb_url_to_filename(light.group(1)) if light else thumb_url_to_filename(single.group(1)) if single else None
-        icons[name] = (dark_fn, light_fn)
+        icons[title] = (dark_fn, light_fn)
     return icons
 
 

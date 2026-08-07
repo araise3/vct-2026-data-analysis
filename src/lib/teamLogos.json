@@ -218,5 +218,85 @@
   "A Team": {
     "logo": "/logos/a-team.png",
     "tag": "AT"
+  },
+  "Attacking Soul Esports": {
+    "logo": "/logos/attacking-soul-esports.png",
+    "tag": "ASE"
+  },
+  "BLEED": {
+    "logo": "/logos/bleed.png",
+    "tag": "BLD"
+  },
+  "Douyu Gaming": {
+    "logo": "/logos/douyu-gaming.png",
+    "tag": "DYG"
+  },
+  "Eintracht Frankfurt": {
+    "logo": "/logos/eintracht-frankfurt.png",
+    "tag": "SGE"
+  },
+  "Enterprise Esports": {
+    "logo": "/logos/enterprise-esports.png",
+    "tag": "ENT"
+  },
+  "Four Angry Men": {
+    "logo": "/logos/four-angry-men.png",
+    "tag": "4AM"
+  },
+  "Gank Gaming": {
+    "logo": "/logos/gank-gaming.png",
+    "tag": "GANK"
+  },
+  "Giants Gaming": {
+    "logo": "/logos/giants-gaming.png",
+    "tag": "GIA"
+  },
+  "Invincible Gaming": {
+    "logo": "/logos/invincible-gaming.png",
+    "tag": "IVG"
+  },
+  "Joblife": {
+    "logo": "/logos/joblife.png",
+    "tag": "JL"
+  },
+  "Kingzone": {
+    "logo": "/logos/kingzone.png",
+    "tag": "KZ"
+  },
+  "Monarch Effect": {
+    "logo": "/logos/monarch-effect.png",
+    "tag": "ME"
+  },
+  "Night Wings Gaming": {
+    "logo": "/logos/night-wings-gaming.png",
+    "tag": "NWG"
+  },
+  "Number One Player": {
+    "logo": "/logos/number-one-player.png",
+    "tag": "N1P"
+  },
+  "REBORN": {
+    "logo": "/logos/reborn.png",
+    "tag": "RE"
+  },
+  "Rare Atom": {
+    "logo": "/logos/rare-atom.png",
+    "tag": "RA"
+  },
+  "Royal Never Give Up": {
+    "logo": "/logos/royal-never-give-up.png",
+    "tag": "RNG"
+  },
+  "Totoro Gaming": {
+    "logo": "/logos/totoro-gaming.png",
+    "tag": "TOTO"
+  },
+  "Weibo Gaming": {
+    "logo": "/logos/weibo-gaming.png",
+    "tag": "WBG"
+  },
+  "Shenzhen NTER": {
+    "logo": "/logos/shenzhen-nter.png",
+    "tag": "NTER"
   }
 }

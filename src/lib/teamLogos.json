@@ -298,5 +298,9 @@
   "Shenzhen NTER": {
     "logo": "/logos/shenzhen-nter.png",
     "tag": "NTER"
+  },
+  "Fire Flux Esports": {
+    "logo": "/logos/fire-flux-esports.png",
+    "tag": "Fire Flux Esports"
   }
 }

@@ -63691,23 +63691,23 @@
       "stage": "Stage 2",
       "phase": "Play-Ins",
       "week": "Play-Ins: Upper Round 1",
-      "playerRows": 80,
+      "playerRows": 110,
       "agentCounts": {
-        "Omen": 13,
-        "Neon": 9,
-        "Cypher": 8,
-        "Viper": 8,
-        "Sova": 8,
-        "Fade": 6,
-        "Phoenix": 6,
+        "Omen": 19,
+        "Neon": 14,
+        "Viper": 11,
+        "Cypher": 10,
+        "Phoenix": 10,
+        "Sova": 10,
+        "Fade": 9,
         "Jett": 5,
+        "Raze": 4,
         "Waylay": 3,
-        "Raze": 2,
+        "Skye": 3,
+        "Chamber": 3,
+        "Vyse": 2,
         "Kayo": 2,
         "Harbor": 2,
-        "Skye": 2,
-        "Chamber": 2,
-        "Vyse": 1,
         "Brimstone": 1,
         "Yoru": 1,
         "Astra": 1
@@ -63723,15 +63723,20 @@
           "atkWinRounds": 13,
           "defWinRounds": 8
         },
+        "Haven": {
+          "rounds": 24,
+          "atkWinRounds": 13,
+          "defWinRounds": 11
+        },
         "Lotus": {
-          "rounds": 18,
-          "atkWinRounds": 11,
-          "defWinRounds": 7
+          "rounds": 34,
+          "atkWinRounds": 20,
+          "defWinRounds": 14
         },
         "Split": {
-          "rounds": 39,
-          "atkWinRounds": 22,
-          "defWinRounds": 17
+          "rounds": 62,
+          "atkWinRounds": 29,
+          "defWinRounds": 33
         },
         "Summit": {
           "rounds": 40,
@@ -63759,20 +63764,30 @@
           "Jett": 1,
           "Omen": 1
         },
-        "Lotus": {
+        "Haven": {
+          "Phoenix": 2,
+          "Sova": 2,
+          "Cypher": 2,
           "Omen": 2,
-          "Raze": 2,
-          "Fade": 2,
-          "Viper": 2,
+          "Neon": 2
+        },
+        "Lotus": {
+          "Omen": 4,
+          "Raze": 4,
+          "Fade": 3,
+          "Viper": 3,
+          "Vyse": 2,
           "Cypher": 1,
-          "Vyse": 1
+          "Chamber": 1,
+          "Skye": 1,
+          "Neon": 1
         },
         "Split": {
-          "Omen": 4,
-          "Viper": 3,
-          "Neon": 3,
-          "Fade": 2,
-          "Phoenix": 2,
+          "Omen": 6,
+          "Viper": 5,
+          "Neon": 5,
+          "Fade": 4,
+          "Phoenix": 4,
           "Waylay": 2,
           "Skye": 2,
           "Jett": 1,

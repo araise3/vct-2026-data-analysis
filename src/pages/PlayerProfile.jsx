@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, useSearchParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import {
   expandBuckets, aggregatePlayerBuckets, aggregateAgentBuckets, teamInScope,
@@ -30,8 +30,13 @@ export default function PlayerProfile() {
   // passed to buildRadarProfile() -- so a mid-typing "no data for 'as'"
   // caveat doesn't flash on every keystroke; the name only "commits" on
   // blur/Enter, same as picking a suggestion from the datalist.
-  const [compareInput, setCompareInput] = useState('')
-  const [compareName, setCompareName] = useState('')
+  // Seeded from ?compare=, which is how the Events page's Compare Players
+  // card hands off a pair -- it can only navigate to ONE player's profile, so
+  // the second name has to ride in the query string or it's silently lost.
+  const [searchParams] = useSearchParams()
+  const seededCompare = searchParams.get('compare') || ''
+  const [compareInput, setCompareInput] = useState(seededCompare)
+  const [compareName, setCompareName] = useState(seededCompare)
 
   // Every one of this player's own buckets, across every year/competition --
   // the page-wide multi-facet FilterPanel (region/event/phase/week/split/

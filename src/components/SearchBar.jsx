@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useData } from '../lib/useData'
+import { buildCoachIndex } from '../lib/coaches'
 import TeamLogo from './TeamLogo'
 import Flag from './Flag'
 
@@ -18,16 +19,18 @@ function matchRank(name, query) {
 }
 
 /**
- * Global player/team search, living in TopNav's inner row (same spot as
- * rft.gg's). Data source is `player_buckets.json` / `team_buckets.json`'s
+ * Global player/team/coach search, living in TopNav's inner row (same spot
+ * as rft.gg's). Data source is `player_buckets.json` / `team_buckets.json`'s
  * `meta` objects -- the same per-entity metadata (team, region, flag)
- * every list page already reads off these files, keyed by name, so no new
- * data file was needed.
+ * every list page already reads off these files, keyed by name -- plus
+ * `liquipedia_rosters.json` for coaches, run through the same
+ * `buildCoachIndex` CoachProfile.jsx uses so a coach who's worked at
+ * several teams surfaces once, not once per team.
  *
- * Both files are only fetched once the user actually focuses the box (see
- * `everFocused` and the matching comment on `useData`), not on mount --
+ * All three files are only fetched once the user actually focuses the box
+ * (see `everFocused` and the matching comment on `useData`), not on mount --
  * TopNav renders on every route, and several routes don't otherwise load
- * either multi-MB file.
+ * any of these multi-MB files.
  */
 export default function SearchBar() {
   const navigate = useNavigate()
@@ -40,6 +43,8 @@ export default function SearchBar() {
 
   const { data: playerData } = useData(everFocused ? 'player_buckets' : null)
   const { data: teamData } = useData(everFocused ? 'team_buckets' : null)
+  const { data: liquipediaData } = useData(everFocused ? 'liquipedia_rosters' : null)
+  const coachIndex = useMemo(() => buildCoachIndex(liquipediaData), [liquipediaData])
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -66,10 +71,26 @@ export default function SearchBar() {
       }
     }
 
-    return [...players, ...teams]
+    // Sub-label is whichever stint has no `leaveDate` (still current), or
+    // failing that the most recently started one -- same "current, else
+    // most recent" precedence CoachProfile.jsx's own header uses.
+    const coaches = []
+    for (const coach of coachIndex.values()) {
+      const rank = matchRank(coach.id, q)
+      if (rank !== null) {
+        const current = coach.stints.find((s) => !s.leaveDate)
+          ?? [...coach.stints].sort((a, b) => (b.joinDate || '').localeCompare(a.joinDate || ''))[0]
+        coaches.push({
+          type: 'coach', name: coach.id, rank,
+          sub: current?.team, countryCode: coach.flag, countryName: coach.name,
+        })
+      }
+    }
+
+    return [...players, ...teams, ...coaches]
       .sort((a, b) => a.rank - b.rank || a.name.localeCompare(b.name))
       .slice(0, MAX_RESULTS)
-  }, [query, playerData, teamData])
+  }, [query, playerData, teamData, coachIndex])
 
   useEffect(() => { setActiveIndex(0) }, [results])
 
@@ -85,9 +106,11 @@ export default function SearchBar() {
     return () => document.removeEventListener('mousedown', onClickOutside)
   }, [])
 
+  const ROUTE_BASE = { player: 'players', team: 'teams', coach: 'coaches' }
+
   function go(result) {
     if (!result) return
-    navigate(`/${result.type === 'player' ? 'players' : 'teams'}/${encodeURIComponent(result.name)}`)
+    navigate(`/${ROUTE_BASE[result.type]}/${encodeURIComponent(result.name)}`)
     setQuery('')
     setOpen(false)
     inputRef.current?.blur()
@@ -138,7 +161,7 @@ export default function SearchBar() {
       {open && query.trim() !== '' && (
         <div className="absolute right-0 mt-1.5 w-[280px] max-h-[360px] overflow-auto bg-surface border border-hairline rounded-xl shadow-lg py-1.5 z-50">
           {results.length === 0 ? (
-            <div className="px-3 py-3 text-xs text-muted">No players or teams found.</div>
+            <div className="px-3 py-3 text-xs text-muted">No players, teams, or coaches found.</div>
           ) : (
             results.map((r, i) => (
               <button
@@ -151,10 +174,10 @@ export default function SearchBar() {
                   i === activeIndex ? 'bg-surface2' : ''
                 }`}
               >
-                {r.type === 'player' ? (
-                  <Flag countryCode={r.countryCode} countryName={r.countryName} size={16} />
-                ) : (
+                {r.type === 'team' ? (
                   <TeamLogo team={r.name} size={18} showName={false} />
+                ) : (
+                  <Flag countryCode={r.countryCode} countryName={r.countryName} size={16} />
                 )}
                 <span className="flex flex-col min-w-0 leading-tight">
                   <span className="text-xs font-medium text-ink truncate">{r.name}</span>

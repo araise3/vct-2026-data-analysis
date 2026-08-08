@@ -17,8 +17,10 @@ const Players = lazy(() => import('./pages/Players'))
 const PlayerProfile = lazy(() => import('./pages/PlayerProfile'))
 const Teams = lazy(() => import('./pages/Teams'))
 const TeamProfile = lazy(() => import('./pages/TeamProfile'))
+const CoachProfile = lazy(() => import('./pages/CoachProfile'))
 const Agents = lazy(() => import('./pages/Agents'))
 const Tournaments = lazy(() => import('./pages/Tournaments'))
+const TournamentDetail = lazy(() => import('./pages/TournamentDetail'))
 const MatchRedirect = lazy(() => import('./pages/MatchRedirect'))
 const Economy = lazy(() => import('./pages/Economy'))
 const Graphics = lazy(() => import('./pages/Graphics'))
@@ -60,8 +62,10 @@ export default function App() {
             <Route path="/players/:name" element={<PlayerProfile />} />
             <Route path="/teams" element={<Teams />} />
             <Route path="/teams/:name" element={<TeamProfile />} />
+            <Route path="/coaches/:id" element={<CoachProfile />} />
             <Route path="/agents" element={<Agents />} />
             <Route path="/tournaments" element={<Tournaments />} />
+            <Route path="/tournaments/:event" element={<TournamentDetail />} />
             {/* Legacy: this used to be the site's own match page. Kept as a
                 redirect so already-shared links don't render blank -- see
                 MatchRedirect. */}

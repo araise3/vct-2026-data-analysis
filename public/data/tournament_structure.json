@@ -1,0 +1,986 @@
+{
+  "_meta": {
+    "source": "Liquipedia",
+    "license": "CC-BY-SA 3.0",
+    "attribution": "Tournament structure (groups, tiebreaker rules, bracket seeding) from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0."
+  },
+  "stages": {
+    "vct-2026-emea-stage-2": {
+      "displayName": "EMEA Stage 2 2026",
+      "groups": {
+        "Group Alpha": {
+          "teams": [
+            "Team Vitality",
+            "FUT Esports",
+            "Gentle Mates",
+            "BBL Esports",
+            "Natus Vincere",
+            "PCIFIC Esports"
+          ]
+        },
+        "Group Omega": {
+          "teams": [
+            "Team Heretics",
+            "Eternal Fire",
+            "FNATIC",
+            "Team Liquid",
+            "GIANTX",
+            "Karmine Corp"
+          ]
+        }
+      },
+      "tiebreakers": [
+        "h2h_match_score",
+        "h2h_map_diff",
+        "h2h_round_diff",
+        "map_diff",
+        "round_diff",
+        "sov_score"
+      ],
+      "seedOutcomes": {
+        "1": {
+          "slug": "have_a_bye_into_the_upper_bracket_semifinals",
+          "text": "have a bye into the Upper Bracket Semifinals"
+        },
+        "2": {
+          "slug": "advance_to_upper_bracket_round_1",
+          "text": "advance to Upper Bracket Round 1"
+        },
+        "3": {
+          "slug": "advance_to_play_ins_upper_bracket_round_2",
+          "text": "advance to Play-Ins Upper Bracket Round 2"
+        },
+        "4": {
+          "slug": "advance_to_play_ins_upper_bracket_round_2",
+          "text": "advance to Play-Ins Upper Bracket Round 2"
+        },
+        "5": {
+          "slug": "advance_to_play_ins_upper_bracket_round_1",
+          "text": "advance to Play-Ins Upper Bracket Round 1"
+        },
+        "6": {
+          "slug": "advance_to_play_ins_upper_bracket_round_1",
+          "text": "advance to Play-Ins Upper Bracket Round 1"
+        }
+      },
+      "brackets": {
+        "playIns": [
+          {
+            "round": 1,
+            "match": 1,
+            "opponent1": "Omega #6",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 1,
+            "match": 2,
+            "opponent1": "Alpha #5",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 1,
+            "match": 3,
+            "opponent1": "Alpha #6",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 1,
+            "match": 4,
+            "opponent1": "Omega #5",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 2,
+            "match": 1,
+            "opponent1": "Alpha #3",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 2,
+            "opponent1": "Omega #4",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 3,
+            "opponent1": "Omega #3",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 4,
+            "opponent1": "Alpha #4",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 5,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 6,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 7,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 8,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": null
+          }
+        ],
+        "playoffs": [
+          {
+            "round": 1,
+            "match": 1,
+            "opponent1": "Omega #2",
+            "opponent2": "Play-Ins #1-2"
+          },
+          {
+            "round": 1,
+            "match": 2,
+            "opponent1": "Alpha #2",
+            "opponent2": "Play-Ins #1-2"
+          },
+          {
+            "round": 1,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": "Play-Ins #3-4"
+          },
+          {
+            "round": 1,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": "Play-Ins #3-4"
+          },
+          {
+            "round": 2,
+            "match": 1,
+            "opponent1": "Alpha #1",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 2,
+            "opponent1": "Omega #1",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 5,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          }
+        ]
+      }
+    },
+    "vct-2026-americas-stage-2": {
+      "displayName": "Americas Stage 2 2026",
+      "groups": {
+        "Group Alpha": {
+          "teams": [
+            "NRG",
+            "LEVIATÁN",
+            "MIBR",
+            "FURIA",
+            "ENVY",
+            "Evil Geniuses"
+          ]
+        },
+        "Group Omega": {
+          "teams": [
+            "G2 Esports",
+            "100 Thieves",
+            "KRÜ Esports",
+            "LOUD",
+            "Sentinels",
+            "Cloud9"
+          ]
+        }
+      },
+      "tiebreakers": [
+        "h2h_match_score",
+        "h2h_map_diff",
+        "h2h_round_diff",
+        "map_diff",
+        "round_diff"
+      ],
+      "seedOutcomes": {
+        "1": {
+          "slug": "have_a_bye_into_the_upper_bracket_semifinals",
+          "text": "have a bye into the Upper Bracket Semifinals"
+        },
+        "2": {
+          "slug": "advance_to_upper_bracket_round_1",
+          "text": "advance to Upper Bracket Round 1"
+        },
+        "3": {
+          "slug": "advance_to_play_ins_upper_bracket_round_2",
+          "text": "advance to Play-Ins Upper Bracket Round 2"
+        },
+        "4": {
+          "slug": "advance_to_play_ins_upper_bracket_round_2",
+          "text": "advance to Play-Ins Upper Bracket Round 2"
+        },
+        "5": {
+          "slug": "advance_to_play_ins_upper_bracket_round_1",
+          "text": "advance to Play-Ins Upper Bracket Round 1"
+        },
+        "6": {
+          "slug": "advance_to_play_ins_upper_bracket_round_1",
+          "text": "advance to Play-Ins Upper Bracket Round 1"
+        }
+      },
+      "brackets": {
+        "playIns": [
+          {
+            "round": 1,
+            "match": 1,
+            "opponent1": "Omega #6",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 1,
+            "match": 2,
+            "opponent1": "Alpha #5",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 1,
+            "match": 3,
+            "opponent1": "Alpha #6",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 1,
+            "match": 4,
+            "opponent1": "Omega #5",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 2,
+            "match": 1,
+            "opponent1": "Alpha #3",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 2,
+            "opponent1": "Omega #4",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 3,
+            "opponent1": "Omega #3",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 4,
+            "opponent1": "Alpha #4",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 5,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 6,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 7,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 8,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": null
+          }
+        ],
+        "playoffs": [
+          {
+            "round": 1,
+            "match": 1,
+            "opponent1": "Omega #2",
+            "opponent2": "Play-Ins #1-2"
+          },
+          {
+            "round": 1,
+            "match": 2,
+            "opponent1": "Alpha #2",
+            "opponent2": "Play-Ins #1-2"
+          },
+          {
+            "round": 1,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": "Play-Ins #3-4"
+          },
+          {
+            "round": 1,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": "Play-Ins #3-4"
+          },
+          {
+            "round": 2,
+            "match": 1,
+            "opponent1": "Alpha #1",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 2,
+            "opponent1": "Omega #1",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 5,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          }
+        ]
+      }
+    },
+    "vct-2026-pacific-stage-2": {
+      "displayName": "Pacific Stage 2 2026",
+      "groups": {
+        "Group Alpha": {
+          "teams": [
+            "FULL SENSE",
+            "Global Esports",
+            "Rex Regum Qeon",
+            "Nongshim RedForce",
+            "ZETA DIVISION",
+            "Gen.G"
+          ]
+        },
+        "Group Omega": {
+          "teams": [
+            "Paper Rex",
+            "T1",
+            "KIWOOM DRX",
+            "DetonatioN FocusMe",
+            "Team Secret",
+            "VARREL"
+          ]
+        }
+      },
+      "tiebreakers": [
+        "h2h_match_score",
+        "h2h_map_diff",
+        "h2h_round_diff",
+        "map_diff",
+        "round_diff"
+      ],
+      "seedOutcomes": {
+        "1": {
+          "slug": "have_a_bye_into_the_upper_bracket_semifinals",
+          "text": "have a bye into the Upper Bracket Semifinals"
+        },
+        "2": {
+          "slug": "advance_to_upper_bracket_round_1",
+          "text": "advance to Upper Bracket Round 1"
+        },
+        "3": {
+          "slug": "advance_to_play_ins_upper_bracket_round_2",
+          "text": "advance to Play-Ins Upper Bracket Round 2"
+        },
+        "4": {
+          "slug": "advance_to_play_ins_upper_bracket_round_2",
+          "text": "advance to Play-Ins Upper Bracket Round 2"
+        },
+        "5": {
+          "slug": "advance_to_play_ins_upper_bracket_round_1",
+          "text": "advance to Play-Ins Upper Bracket Round 1"
+        },
+        "6": {
+          "slug": "advance_to_play_ins_upper_bracket_round_1",
+          "text": "advance to Play-Ins Upper Bracket Round 1"
+        }
+      },
+      "brackets": {
+        "playIns": [
+          {
+            "round": 1,
+            "match": 1,
+            "opponent1": "Omega #6",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 1,
+            "match": 2,
+            "opponent1": "Alpha #5",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 1,
+            "match": 3,
+            "opponent1": "Alpha #6",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 1,
+            "match": 4,
+            "opponent1": "Omega #5",
+            "opponent2": "Challengers Team"
+          },
+          {
+            "round": 2,
+            "match": 1,
+            "opponent1": "Alpha #3",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 2,
+            "opponent1": "Omega #4",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 3,
+            "opponent1": "Omega #3",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 4,
+            "opponent1": "Alpha #4",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 5,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 6,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 7,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 8,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": null
+          }
+        ],
+        "playoffs": [
+          {
+            "round": 1,
+            "match": 1,
+            "opponent1": "Omega #2",
+            "opponent2": "Play-In #1-2"
+          },
+          {
+            "round": 1,
+            "match": 2,
+            "opponent1": "Alpha #2",
+            "opponent2": "Play-In #1-2"
+          },
+          {
+            "round": 1,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": "Play-In #3-4"
+          },
+          {
+            "round": 1,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": "Play-In #3-4"
+          },
+          {
+            "round": 2,
+            "match": 1,
+            "opponent1": "Alpha #1",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 2,
+            "opponent1": "Omega #1",
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 5,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          }
+        ]
+      }
+    },
+    "vct-2026-china-stage-2": {
+      "displayName": "China Stage 2 2026",
+      "groups": {
+        "Group Alpha": {
+          "teams": [
+            "EDward Gaming",
+            "TYLOO",
+            "JDG Esports",
+            "Trace Esports",
+            "Nova Esports",
+            "FunPlus Phoenix"
+          ]
+        },
+        "Group Omega": {
+          "teams": [
+            "Xi Lai Gaming",
+            "All Gamers",
+            "Dragon Ranger Gaming",
+            "Titan Esports Club",
+            "Bilibili Gaming",
+            "Wolves Esports"
+          ]
+        }
+      },
+      "tiebreakers": [
+        "h2h_match_score",
+        "h2h_map_diff",
+        "h2h_round_diff",
+        "map_diff",
+        "round_diff"
+      ],
+      "seedOutcomes": {
+        "1": {
+          "slug": "from_each_group_advance_to_playoffs",
+          "text": "from each group advance to Playoffs"
+        },
+        "2": {
+          "slug": "from_each_group_advance_to_playoffs",
+          "text": "from each group advance to Playoffs"
+        },
+        "3": {
+          "slug": "advances_to_play_ins_upper_bracket_round_2_an_opening_loss_will_send_them_to_lower_bracket_quarterfinal",
+          "text": "advances to Play-Ins Upper Bracket Round 2, an opening loss will send them to Lower Bracket Quarterfinal"
+        },
+        "4": {
+          "slug": "advance_to_play_ins_upper_bracket_round_2_an_opening_loss_will_send_them_to_lower_bracket_round_1",
+          "text": "advance to Play-Ins Upper Bracket Round 2, an opening loss will send them to Lower Bracket Round 1"
+        },
+        "5": {
+          "slug": "advance_to_play_ins_upper_bracket_round_2_an_opening_loss_will_send_them_to_lower_bracket_round_1",
+          "text": "advance to Play-Ins Upper Bracket Round 2, an opening loss will send them to Lower Bracket Round 1"
+        },
+        "6": {
+          "slug": "advance_to_play_ins_upper_bracket_round_1",
+          "text": "advance to Play-Ins Upper Bracket Round 1"
+        }
+      },
+      "brackets": {
+        "playIns": [
+          {
+            "round": 1,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 1,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 1,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 1,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 5,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 6,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          }
+        ],
+        "playoffs": [
+          {
+            "round": 1,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 1,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 1,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 1,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 1,
+            "match": 5,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 1,
+            "match": 6,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 3,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 2,
+            "match": 4,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 3,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 4,
+            "match": 2,
+            "opponent1": null,
+            "opponent2": null
+          },
+          {
+            "round": 5,
+            "match": 1,
+            "opponent1": null,
+            "opponent2": null
+          }
+        ]
+      }
+    }
+  }
+}

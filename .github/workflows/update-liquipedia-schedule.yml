@@ -1,0 +1,128 @@
+name: Update Liquipedia schedule data
+
+# The Events page (/tournaments) needs two things this site's own VLR-derived
+# data cannot supply:
+#   * public/data/upcoming_matches.json -- the fixture calendar in the right
+#     rail. match_results.json is completed matches only (zero future-dated
+#     rows), so without this the calendar has literally nothing to show.
+#   * public/data/event_meta.json -- event dates, prize pool and host city for
+#     the centre column's Teams/Prize/Location trio. events.json has those
+#     columns but they are null on every row.
+#
+# WHY A SEPARATE WORKFLOW FROM update-liquipedia-data.yml
+# -------------------------------------------------------
+# That job takes 25-30 minutes (the roster fetch pays action=parse's 32s/team
+# rate limit across ~50 teams) and runs once daily. A fixture list published
+# behind it would be up to 24 hours stale, which for a "what's on today" rail
+# is worse than not shipping one. This job makes ONE request in its usual
+# --matches-only mode, so it can run every 3 hours for essentially no cost.
+#
+# ToU compliance is unchanged from the sibling scrapers (see
+# liquipedia_schedule_scraper.py's own docstring): custom User-Agent carrying
+# the LIQUIPEDIA_CONTACT secret, request spacing, on-disk response caching,
+# and CC-BY-SA 3.0 attribution carried into both output files' _meta -- which
+# the Events page now actually renders.
+
+on:
+  schedule:
+    # Every 3 hours at :40, deliberately off both the VLR data workflow's
+    # slots and the daily roster job's :15 -- three workflows now commit to
+    # public/data, and staggering them keeps the rebase-retry below a rare
+    # fallback rather than the normal path.
+    - cron: '40 */3 * * *'
+  workflow_dispatch:
+    inputs:
+      refresh_event_meta:
+        description: 'Also re-fetch event metadata (dates/prize/location). Off by default -- those change rarely and cost ~16 extra requests.'
+        type: boolean
+        default: false
+      no_cache:
+        description: 'Ignore the on-disk API response cache.'
+        type: boolean
+        default: false
+
+# Independent of the other two workflows' groups: this writes only its own
+# two files, and a slow roster run should never delay a fixture refresh.
+concurrency:
+  group: update-liquipedia-schedule
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    # One action=parse call plus (optionally) ~16 action=query calls at 2.5s.
+    # Ample, while still capping a genuinely stuck run.
+    timeout-minutes: 20
+
+    env:
+      LIQUIPEDIA_CONTACT: ${{ secrets.LIQUIPEDIA_CONTACT }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scraper/requirements.txt
+
+      # Own cache dir/key, so a failure here cannot touch the roster or
+      # tournament-structure caches. The match feed's own TTL is 1h (set in
+      # the scraper, not here) precisely so this 3-hourly job never replays a
+      # stale fixture list; event metadata keeps the usual 24h.
+      - name: Restore schedule API response cache
+        if: inputs.no_cache != true
+        uses: actions/cache/restore@v4
+        with:
+          path: scraper/.liquipedia_schedule_cache
+          key: liquipedia-schedule-cache-${{ github.run_id }}
+          restore-keys: liquipedia-schedule-cache-
+
+      - name: Fetch fixtures (and optionally event metadata)
+        run: |
+          ARGS=""
+          if [ "${{ inputs.no_cache }}" = "true" ]; then
+            ARGS="$ARGS --no-cache"
+          fi
+          # Scheduled runs only refresh the fixture list -- one request.
+          # Event metadata is opt-in via workflow_dispatch.
+          if [ "${{ inputs.refresh_event_meta }}" != "true" ]; then
+            ARGS="$ARGS --matches-only"
+          fi
+          python scraper/liquipedia_schedule_scraper.py $ARGS
+
+      - name: Save schedule API response cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: scraper/.liquipedia_schedule_cache
+          key: liquipedia-schedule-cache-${{ github.run_id }}
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/upcoming_matches.json public/data/event_meta.json
+          if git diff --staged --quiet; then
+            echo "No schedule changes -- nothing to publish."
+            exit 0
+          fi
+          git commit -m "Update Liquipedia schedule data $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # Three workflows now push to main on overlapping schedules, so a
+          # rejected push is a normal race rather than an anomaly.
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Pushed."
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt); rebasing onto latest main."
+            git pull --rebase --autostash origin main
+          done
+          echo "::error::Could not push after 3 attempts."
+          exit 1

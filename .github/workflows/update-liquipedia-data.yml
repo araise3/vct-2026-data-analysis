@@ -103,16 +103,47 @@ jobs:
           path: scraper/.liquipedia_cache
           key: liquipedia-cache-${{ github.run_id }}
 
+      # Group composition, tiebreaker rules, and bracket seeding for the
+      # currently-live/incomplete VCT stages (TARGET_STAGES in the scraper
+      # itself, currently the 4 2026 Stage 2 regions) -- a handful of raw
+      # wikitext fetches (action=query, 2.5s/request, not the 32s
+      # action=parse the roster fetch above needs), trivial to piggyback on
+      # this same daily job rather than standing up a separate workflow.
+      # Own cache dir/key so a restore/save failure here can't touch the
+      # roster fetch's own cache.
+      - name: Restore tournament-structure API response cache
+        if: inputs.no_cache != true
+        uses: actions/cache/restore@v4
+        with:
+          path: scraper/.liquipedia_tournament_cache
+          key: liquipedia-tournament-cache-${{ github.run_id }}
+          restore-keys: liquipedia-tournament-cache-
+
+      - name: Fetch tournament structure and build public/data/tournament_structure.json
+        run: |
+          if [ "${{ inputs.no_cache }}" = "true" ]; then
+            python scraper/liquipedia_tournament_scraper.py --no-cache
+          else
+            python scraper/liquipedia_tournament_scraper.py
+          fi
+
+      - name: Save tournament-structure API response cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: scraper/.liquipedia_tournament_cache
+          key: liquipedia-tournament-cache-${{ github.run_id }}
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data/liquipedia_rosters.json
+          git add public/data/liquipedia_rosters.json public/data/tournament_structure.json
           if git diff --staged --quiet; then
-            echo "No roster changes -- nothing to publish."
+            echo "No roster or tournament-structure changes -- nothing to publish."
             exit 0
           fi
-          git commit -m "Update Liquipedia roster data $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git commit -m "Update Liquipedia roster/tournament data $(date -u '+%Y-%m-%d %H:%M UTC')"
           # Rebase before pushing: this can overlap with the VLR data
           # workflow's own commit to main (different file, but same branch),
           # and losing this run's data to a rejected push would mean the

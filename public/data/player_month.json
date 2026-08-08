@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "source": "Derived from player_agents.json",
+    "generatedAt": "2026-08-08T22:57:27Z",
+    "qualificationRounds": 32,
+    "playersConsidered": 200
+  },
+  "month": "2026-08",
+  "player": "Chronicle",
+  "team": "Team Vitality",
+  "countryCode": "ru",
+  "countryName": "Russian Federation",
+  "rating": 1.54,
+  "acs": 272.0,
+  "kd": 1.91,
+  "kast": 0.7955,
+  "adr": 169.0,
+  "hs": 0.1956,
+  "maps": 3,
+  "rounds": 64
+}

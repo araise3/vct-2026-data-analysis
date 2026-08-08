@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { buildRosterEventTable, buildEventDateOrder } from '../lib/rosterTimeline'
+import { coachAt } from '../lib/coaches'
 import { eventLabel } from '../lib/format'
 
 /**
@@ -219,12 +220,31 @@ const CELL_RULE = 'border-surface/60'
 // case is exempted. Do not give this an opacity suffix.
 const NOTCH_RULE = 'border-surface'
 
-// Head coach's block uses one fixed, deliberately desaturated fill --
-// NOT a slot in the golden-angle player palette -- so it reads as "support
-// staff, a different kind of thing from a starting seat" at a glance,
-// reinforcing the physical gap column (see COACH_GAP below) rather than
-// competing with the vivid per-player hues for attention.
-const COACH_FILL = '#4a5164'
+// Head coach blocks get their own per-coach colour, same golden-angle
+// spacing as buildPlayerColors below (so consecutive coaches never land on
+// numerically-adjacent, visually-similar hues either) but LOW saturation/
+// lightness -- distinct enough to tell two different coaches' tenures apart
+// at a glance (a real gap: a team with several coaches over its history all
+// rendered in one identical grey, making every hand-off invisible), while
+// staying visibly muted next to the vivid per-player seat colours so the
+// coach section still reads as "support staff, a different kind of thing"
+// rather than competing with the seat grid for attention.
+function buildCoachColors(coaches) {
+  const order = []
+  const seen = new Set()
+  for (const c of coaches || []) {
+    if (c && !seen.has(c.id)) {
+      seen.add(c.id)
+      order.push(c.id)
+    }
+  }
+  const colors = new Map()
+  order.forEach((id, i) => {
+    const hue = Math.round((i * GOLDEN_ANGLE) % 360)
+    colors.set(id, `hsl(${hue}, 28%, 34%)`)
+  })
+  return colors
+}
 
 // Width of the blank spacer column between the last seat and the coach
 // column -- a real `<col>`/`<td>` with no border and no fill (so the
@@ -266,23 +286,12 @@ function computeRowHeights(rows) {
  * covering coach and renders blank, same as an empty player seat.
  *
  * Liquipedia dates can legitimately overlap by a day or two around a
- * handover (the outgoing coach's leaveDate and the incoming one's
- * joinDate aren't always perfectly adjacent) -- `coachAt` breaks that tie
- * by preferring whichever coach's tenure STARTED more recently, i.e. the
- * incoming one, which is the intuitively "current" answer for any date
- * inside the overlap.
+ * handover -- `coachAt` (../lib/coaches.js, shared with TeamProfile.jsx's
+ * own scoped Coaching Staff lookup) breaks that tie by preferring
+ * whichever coach's tenure STARTED more recently, i.e. the incoming one,
+ * which is the intuitively "current" answer for any date inside the
+ * overlap.
  */
-function coachAt(date, coaches) {
-  if (!date) return null
-  let match = null
-  for (const c of coaches) {
-    if (!c.joinDate || c.joinDate > date) continue
-    if (c.leaveDate && date >= c.leaveDate) continue
-    if (!match || c.joinDate > match.joinDate) match = c
-  }
-  return match
-}
-
 function computeCoachSpans(rows, eventDate, coaches) {
   const at = (i) => coachAt(eventDate.get(rows[i].eventId), coaches)
   const grid = []
@@ -492,6 +501,7 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows, 
   const numSeats = rows[0].seats.length
   const spans = computeSpans(rows, numSeats)
   const colors = buildPlayerColors(rows)
+  const coachColors = buildCoachColors(headCoaches)
   const rowHeights = computeRowHeights(rows)
   // Reuses the exact site-wide event-date lookup `buildRosterEventTable`
   // already computes internally for row ORDER -- see computeCoachSpans'
@@ -617,15 +627,16 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows, 
                     <td
                       rowSpan={cell.span}
                       className={`p-0 align-middle border-b ${CELL_RULE} ${!cell.coach ? 'bg-surface2/40' : ''}`}
-                      style={cell.coach ? { background: COACH_FILL } : undefined}
+                      style={cell.coach ? { background: coachColors.get(cell.coach.id) } : undefined}
                     >
                       {cell.coach && (
-                        <span
-                          className="flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 py-1.5"
+                        <Link
+                          to={`/coaches/${encodeURIComponent(cell.coach.id)}`}
+                          className="flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 py-1.5 hover:brightness-110 transition-[filter]"
                           title={`${cell.coach.id} — Head Coach`}
                         >
                           {cell.coach.id}
-                        </span>
+                        </Link>
                       )}
                     </td>
                   </>

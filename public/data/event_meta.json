@@ -1,0 +1,202 @@
+{
+  "_meta": {
+    "source": "Liquipedia",
+    "license": "CC-BY-SA 3.0",
+    "attribution": "Event dates, prize pools and locations from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
+    "generatedAt": "2026-08-08T22:43:06Z"
+  },
+  "events": {
+    "Vct 2026 Americas Kickoff": {
+      "liquipediaPage": "VCT/2026/Americas League/Kickoff",
+      "displayName": "VCT 2026: Americas Kickoff",
+      "startDate": "2026-01-15",
+      "endDate": "2026-02-15",
+      "prizePoolUsd": null,
+      "country": "United States",
+      "countryCode": "us",
+      "city": "Los Angeles",
+      "venue": "Riot Games Arena",
+      "tier": "S-Tier"
+    },
+    "Vct 2026 Emea Kickoff": {
+      "liquipediaPage": "VCT/2026/EMEA League/Kickoff",
+      "displayName": "VCT 2026: EMEA Kickoff",
+      "startDate": "2026-01-20",
+      "endDate": "2026-02-15",
+      "prizePoolUsd": null,
+      "country": "Germany",
+      "countryCode": "de",
+      "city": "Berlin",
+      "venue": "Riot Games Arena",
+      "tier": "S-Tier"
+    },
+    "Vct 2026 Pacific Kickoff": {
+      "liquipediaPage": "VCT/2026/Pacific League/Kickoff",
+      "displayName": "VCT 2026: Pacific Kickoff",
+      "startDate": "2026-01-22",
+      "endDate": "2026-02-15",
+      "prizePoolUsd": null,
+      "country": "South Korea",
+      "countryCode": "kr",
+      "city": "Seoul",
+      "venue": "Sangam Colosseum",
+      "tier": "S-Tier"
+    },
+    "Vct 2026 China Kickoff": {
+      "liquipediaPage": "VCT/2026/China League/Kickoff",
+      "displayName": "VCT 2026: China Kickoff",
+      "startDate": "2026-01-22",
+      "endDate": "2026-02-09",
+      "prizePoolUsd": null,
+      "country": "China",
+      "countryCode": "cn",
+      "city": "Guangzhou",
+      "venue": "Poly World Trade Center Expo",
+      "tier": "S-Tier"
+    },
+    "Vct 2026 Americas Stage 1": {
+      "liquipediaPage": "VCT/2026/Americas League/Stage 1",
+      "displayName": "VCT 2026: Americas Stage 1",
+      "startDate": "2026-04-10",
+      "endDate": "2026-05-24",
+      "prizePoolUsd": null,
+      "country": "United States",
+      "countryCode": "us",
+      "city": "Los Angeles",
+      "venue": "Riot Games Arena",
+      "tier": "S-Tier"
+    },
+    "Vct 2026 Emea Stage 1": {
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 1",
+      "displayName": "VCT 2026: EMEA Stage 1",
+      "startDate": "2026-04-01",
+      "endDate": "2026-05-17",
+      "prizePoolUsd": null,
+      "country": "Germany",
+      "countryCode": "de",
+      "city": "Berlin",
+      "venue": "Riot Games Arena",
+      "tier": "S-Tier"
+    },
+    "Vct 2026 Pacific Stage 1": {
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 1",
+      "displayName": "VCT 2026: Pacific Stage 1",
+      "startDate": "2026-04-03",
+      "endDate": "2026-05-17",
+      "prizePoolUsd": null,
+      "country": "South Korea",
+      "countryCode": "kr",
+      "city": "Seoul",
+      "venue": null,
+      "tier": "S-Tier"
+    },
+    "Vct 2026 China Stage 1": {
+      "liquipediaPage": "VCT/2026/China League/Stage 1",
+      "displayName": "VCT 2026: China Stage 1",
+      "startDate": "2026-03-31",
+      "endDate": "2026-05-10",
+      "prizePoolUsd": null,
+      "country": "China",
+      "countryCode": "cn",
+      "city": "Hangzhou",
+      "venue": "West Lake Gymnasium",
+      "tier": "S-Tier"
+    },
+    "Vct 2026 Americas Stage 2": {
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "displayName": "VCT 2026: Americas Stage 2",
+      "startDate": "2026-07-16",
+      "endDate": "2026-09-06",
+      "prizePoolUsd": 250000,
+      "country": "United States",
+      "countryCode": "us",
+      "city": "Los Angeles",
+      "venue": "Riot Games Arena",
+      "tier": "S-Tier"
+    },
+    "Vct 2026 Emea Stage 2": {
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
+      "displayName": "VCT 2026: EMEA Stage 2",
+      "startDate": "2026-07-15",
+      "endDate": "2026-08-30",
+      "prizePoolUsd": 250000,
+      "country": "Germany",
+      "countryCode": "de",
+      "city": "Berlin",
+      "venue": "Riot Games Arena",
+      "tier": "S-Tier"
+    },
+    "Vct 2026 Pacific Stage 2": {
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "displayName": "VCT 2026: Pacific Stage 2",
+      "startDate": "2026-07-16",
+      "endDate": "2026-09-06",
+      "prizePoolUsd": 250000,
+      "country": "South Korea",
+      "countryCode": "kr",
+      "city": "Seoul",
+      "venue": null,
+      "tier": "S-Tier"
+    },
+    "Vct 2026 China Stage 2": {
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "displayName": "VCT 2026: China Stage 2",
+      "startDate": "2026-07-09",
+      "endDate": "2026-08-23",
+      "prizePoolUsd": 250000,
+      "country": "China",
+      "countryCode": "cn",
+      "city": "Changsha",
+      "venue": "Helong Gymnasium",
+      "tier": "S-Tier"
+    },
+    "Valorant Masters Santiago 2026": {
+      "liquipediaPage": "VCT/2026/Stage 1/Masters",
+      "displayName": "VALORANT Masters Santiago 2026",
+      "startDate": "2026-02-28",
+      "endDate": "2026-03-15",
+      "prizePoolUsd": 1000000,
+      "country": "Chile",
+      "countryCode": "cl",
+      "city": "Santiago",
+      "venue": "Espacio Riesco",
+      "tier": "S-Tier"
+    },
+    "Valorant Masters London 2026": {
+      "liquipediaPage": "VCT/2026/Stage 2/Masters",
+      "displayName": "VALORANT Masters London 2026",
+      "startDate": "2026-06-06",
+      "endDate": "2026-06-21",
+      "prizePoolUsd": 1000000,
+      "country": "Great Britain",
+      "countryCode": "gb",
+      "city": "London",
+      "venue": "Copper Box Arena",
+      "tier": "S-Tier"
+    },
+    "Valorant Champions 2026": {
+      "liquipediaPage": "VCT/2026/Champions",
+      "displayName": "VALORANT Champions 2026",
+      "startDate": "2026-09-24",
+      "endDate": "2026-10-18",
+      "prizePoolUsd": 2250000,
+      "country": "China",
+      "countryCode": "cn",
+      "city": "Shanghai",
+      "venue": null,
+      "tier": "S-Tier"
+    },
+    "Esports World Cup 2026": {
+      "liquipediaPage": "Esports World Cup/2026",
+      "displayName": "Esports World Cup 2026",
+      "startDate": "2026-07-02",
+      "endDate": "2026-07-12",
+      "prizePoolUsd": 2000000,
+      "country": "France",
+      "countryCode": "fr",
+      "city": "Paris",
+      "venue": "Paris Expo Porte de Versailles",
+      "tier": "S-Tier"
+    }
+  }
+}

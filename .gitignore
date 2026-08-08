@@ -8,6 +8,8 @@ scraper/venv/
 scraper/.liquipedia_cache/
 scraper/.liquipedia_logo_cache/
 scraper/.liquipedia_event_logo_cache/
+scraper/.liquipedia_tournament_cache/
+scraper/.liquipedia_schedule_cache/
 
 # Scraper SQLite databases. Kept out of git deliberately: ~8MB of binary that
 # deltas badly, committed on every automated run, would balloon history. CI
@@ -20,6 +22,7 @@ __pycache__/
 
 # Session context for Claude Code -- kept locally updated, never committed/pushed
 CLAUDE.md
+.claude/skills/
 
 # Machine-local Claude Code permission grants (absolute paths, per-machine).
 # .claude/launch.json IS committed -- it's the shared dev-server config.

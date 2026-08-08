@@ -1,173 +1,161 @@
 import { useMemo, useState } from 'react'
 import { useData } from '../lib/useData'
 import { expandMatchRows } from '../lib/entityBuckets'
-import MatchHistory from '../components/MatchHistory'
-import EventLogo from '../components/EventLogo'
-import { eventLabel, phaseLabel, num } from '../lib/format'
+import { buildEventList, splitByStatus, groupByMonth, currentCircuits } from '../lib/eventMeta'
+import { normalizeUpcoming, defaultDayKey, recentResults } from '../lib/schedule'
+import EventRow from '../components/EventRow'
+import FilterChips from '../components/FilterChips'
+import { UpcomingRail, ResultsRail } from '../components/MatchRail'
+import CircuitList from '../components/CircuitList'
+import PlayerOfMonthCard from '../components/PlayerOfMonthCard'
+import ComparePlayersCard from '../components/ComparePlayersCard'
+import { monthLabel, num } from '../lib/format'
 
 /**
- * Every tournament, broken into its stages, each listing its matches.
+ * The Events index, rebuilt after rft.gg/events: a three-column page with
+ * the circuit list on the left, the event list in the centre, and a calendar
+ * of upcoming matches on the right.
  *
- * Built entirely from match_results.json + match_players.json -- no new
- * export needed, since a "tournament" here is just the set of matches
- * sharing an event id, and each match already carries the
- * "Phase: Round" string this groups on (`w`).
+ * Route stays `/tournaments` (and rows still link to
+ * `/tournaments/{name}` -> TournamentDetail.jsx). The page no longer renders
+ * any match list of its own -- expanding a row inline was replaced by the
+ * per-event page, matching rft.gg, whose event cards are plain links too.
  *
- * Deliberately has no FilterPanel, unlike every other page -- this is meant
- * to be a complete index of every tournament in the dataset (every
- * region/competition/year/split), not a scoped view, so there is nothing to
- * filter by design rather than an oversight.
+ * The one structural fix behind the visible change: this builds its list from
+ * `match_results.json`'s own events LOOKUP rather than by grouping match
+ * ROWS, so an event with no matches yet is no longer invisible (see
+ * src/lib/eventMeta.js -- Valorant Champions 2026 was, and it's the single
+ * most interesting row on the Scheduled tab).
  */
-function Chevron({ open }) {
-  return (
-    <svg
-      viewBox="0 0 16 16" width="14" height="14" fill="none"
-      className={`shrink-0 transition-transform duration-150 ${open ? '' : '-rotate-90'}`}
-    >
-      <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6"
-            strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
+
+const TABS = ['Scheduled', 'Finished']
 
 export default function Tournaments() {
-  // No match_players.json here: this page renders MatchHistory with
-  // perspective={null}, and that component only ever reads playersByMatch to
-  // resolve which team a *player* was on for a given match. Fetching it
-  // anyway cost a 3.9MB download + parse and a 10,974-row Map build whose
-  // result was never read once.
   const { data: matchData, loading } = useData('match_results')
+  const { data: eventMetaData } = useData('event_meta')
+  const { data: upcomingData } = useData('upcoming_matches')
+  const { data: playerMonthData } = useData('player_month')
 
   const records = useMemo(() => expandMatchRows(matchData), [matchData])
 
-  // event -> { meta, phases: [{ phase, matches }] }, newest tournament
-  // first. "Newest" is the latest match date in the event rather than the
-  // event id: ids are only roughly chronological (they're VLR's own
-  // creation order), and a tournament list is one place where getting the
-  // order visibly wrong is obvious.
-  const tournaments = useMemo(() => {
-    const byEvent = new Map()
-    for (const m of records) {
-      if (!byEvent.has(m.event)) {
-        byEvent.set(m.event, {
-          event: m.event,
-          region: m.region,
-          split: m.split,
-          competition: m.competition,
-          matches: [],
-        })
-      }
-      byEvent.get(m.event).matches.push(m)
-    }
+  const events = useMemo(
+    () => buildEventList(matchData, records, eventMetaData, upcomingData),
+    [matchData, records, eventMetaData, upcomingData]
+  )
 
-    const out = []
-    for (const t of byEvent.values()) {
-      const dates = t.matches.map((m) => m.date).filter(Boolean).sort()
-      // Phases keep the order they first appear in chronologically
-      // (Group Stage before Playoffs), not alphabetical -- a bracket reads
-      // wrong any other way.
-      const byPhase = new Map()
-      for (const m of [...t.matches].sort((a, b) =>
-        (a.date || '').localeCompare(b.date || '') || a.id - b.id
-      )) {
-        const p = phaseLabel(m.w) || 'Matches'
-        if (!byPhase.has(p)) byPhase.set(p, [])
-        byPhase.get(p).push(m)
-      }
-      out.push({
-        ...t,
-        firstDate: dates[0] || null,
-        lastDate: dates[dates.length - 1] || null,
-        phases: [...byPhase.entries()].map(([phase, matches]) => ({ phase, matches })),
-      })
-    }
-    return out.sort((a, b) => (b.lastDate || '').localeCompare(a.lastDate || ''))
-  }, [records])
+  const { scheduled, finished } = useMemo(() => splitByStatus(events), [events])
 
-  // All collapsed by default -- expanding every tournament at once would
-  // mount ~500 match rows, and auto-opening "the most recent one" meant the
-  // same card (currently Pacific Stage 2, since tournaments are sorted by
-  // last match date) kept expanding itself back open on every visit even
-  // after the user had collapsed it, since `expanded` only ever tracked
-  // an explicit override and reset on reload.
-  const [expanded, setExpanded] = useState('')
-  const openEvent = expanded
+  // Scheduled leads, since a live season is what someone opening this page is
+  // most likely after -- but never land on a blank tab, so an off-season with
+  // nothing scheduled falls back to Finished.
+  const [tab, setTab] = useState(null)
+  const activeTab = tab ?? (scheduled.length > 0 ? 'Scheduled' : 'Finished')
+  const isScheduled = activeTab === 'Scheduled'
+  const shown = isScheduled ? scheduled : finished
+  // Group on whichever date the tab is sorted by, or the same month reappears
+  // further down the list (see groupByMonth's own note).
+  const months = useMemo(
+    () => groupByMonth(shown, isScheduled ? (e) => e.startDate : (e) => e.endDate),
+    [shown, isScheduled]
+  )
+
+  const schedule = useMemo(
+    () => normalizeUpcoming(upcomingData, records),
+    [upcomingData, records]
+  )
+  const recent = useMemo(() => recentResults(records, 8), [records])
+  const circuits = useMemo(() => currentCircuits(events), [events])
+
+  // Deduped so the two Liquipedia files don't repeat the same licence line if
+  // their wording ever converges.
+  const attribution = useMemo(() => [...new Set(
+    [eventMetaData?._meta?.attribution, upcomingData?._meta?.attribution].filter(Boolean)
+  )], [eventMetaData, upcomingData])
 
   if (loading) return <div className="text-muted text-sm">Loading…</div>
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-display text-2xl font-semibold text-ink">Tournaments</h1>
-        <p className="text-muted text-sm mt-1">
-          {tournaments.length} tournaments · {num(records.length)} matches
-        </p>
+    // rft.gg's own events-page grid, verbatim: one column on mobile, the
+    // circuit rail from lg, the match rail from xl. Both rails are direct
+    // grid children (not nested in the centre column) so bringing them back
+    // on mobile later is a CSS `order` swap rather than a second instance --
+    // rendering either aside twice would fork the day-strip and compare-box
+    // state.
+    //
+    // `max-w-[1104px] mx-auto` makes THIS page pixel-width-identical to
+    // rft.gg's own events page (measured live off their DOM: their content
+    // wrapper is 1152px minus 24px padding each side = 1104px usable, which
+    // is where their 220/616/220 column split with a 24px gap comes from).
+    // Deliberately scoped to this page rather than changing the site-wide
+    // `max-w-content` token (1160px) that <main>/TopNav/the footer all
+    // share -- that number is a considered match to vlr.gg's own width
+    // (see tailwind.config.js's own comment), unrelated to this page's
+    // rft.gg clone and not something this fix should quietly move for
+    // every other page.
+    <div className="mx-auto grid max-w-[1104px] grid-cols-1 gap-6 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)_220px]">
+      <aside className="hidden lg:flex lg:flex-col lg:gap-4">
+        <CircuitList circuits={circuits} />
+        <PlayerOfMonthCard data={playerMonthData} />
+        <ComparePlayersCard />
+      </aside>
+
+      <div className="flex min-w-0 flex-col gap-4">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h1 className="font-display text-2xl font-semibold text-ink">Events</h1>
+            <p className="mt-1 text-sm text-muted">
+              {events.length} events · {num(records.length)} matches
+            </p>
+          </div>
+          <FilterChips options={TABS} value={activeTab} onChange={setTab} />
+        </div>
+
+        <div className="overflow-hidden rounded-2xl border border-hairline bg-surface">
+          {shown.length === 0 ? (
+            <p className="px-5 py-8 text-center text-sm text-muted">
+              No {activeTab.toLowerCase()} events.
+            </p>
+          ) : (
+            months.map((g) => (
+              <div key={g.key}>
+                <div className="border-b border-hairline bg-surface2/40 px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted">
+                  {g.anchorDate ? monthLabel(g.anchorDate) : 'Dates TBD'}
+                </div>
+                <div className="divide-y divide-hairline/60 px-2 py-1">
+                  {g.events.map((e) => (
+                    <EventRow key={e.name} event={e} />
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* CC-BY-SA 3.0 requires attribution wherever Liquipedia content is
+            displayed -- every scraper here asserts this in its docstring, but
+            until now nothing in src/ actually rendered it. The dates, prize
+            pools, locations and fixture list on this page are all Liquipedia's,
+            so this is where the obligation lands. Reads the strings from the
+            data itself rather than hardcoding them, so a licence change in the
+            pipeline surfaces here automatically. */}
+        {attribution.length > 0 && (
+          <p className="px-1 text-[11px] leading-relaxed text-muted/60">
+            {attribution.join(' ')}
+          </p>
+        )}
       </div>
 
-      {tournaments.length === 0 ? (
-        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
-          <p className="text-muted text-sm">No tournaments found.</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {tournaments.map((t) => {
-            const open = openEvent === t.event
-            return (
-              <div key={t.event} className="bg-surface border border-hairline rounded-2xl overflow-hidden">
-                <button
-                  onClick={() => setExpanded(open ? '' : t.event)}
-                  className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-surface2/40 transition-colors"
-                  aria-expanded={open}
-                >
-                  <span className="flex items-center gap-3 min-w-0">
-                    <span className="text-muted"><Chevron open={open} /></span>
-                    <EventLogo event={t.event} size={28} />
-                    <span className="min-w-0">
-                      <span className="font-display text-sm font-semibold text-ink block truncate">
-                        {eventLabel(t.event)}
-                      </span>
-                      <span className="text-muted text-xs">
-                        {[t.region, t.split, t.competition].filter(Boolean).join(' · ')}
-                      </span>
-                    </span>
-                  </span>
-                  <span className="text-right shrink-0">
-                    <span className="text-muted text-xs block whitespace-nowrap">
-                      {t.firstDate === t.lastDate
-                        ? t.firstDate
-                        : `${t.firstDate || '…'} → ${t.lastDate || '…'}`}
-                    </span>
-                    <span className="text-muted/70 text-[11px]">
-                      {t.matches.length} {t.matches.length === 1 ? 'match' : 'matches'} ·{' '}
-                      {t.phases.length} {t.phases.length === 1 ? 'stage' : 'stages'}
-                    </span>
-                  </span>
-                </button>
-
-                {open && (
-                  <div className="px-5 pb-5 flex flex-col gap-5 border-t border-hairline pt-4">
-                    {t.phases.map(({ phase, matches }) => (
-                      <div key={phase} className="flex flex-col gap-2">
-                        <h3 className="text-[11px] uppercase tracking-wide font-semibold text-ink">
-                          {phase}
-                          <span className="text-muted/60 font-normal ml-2">
-                            {matches.length}
-                          </span>
-                        </h3>
-                        <MatchHistory
-                          matches={matches}
-                          perspective={null}
-                          showEvent={false}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      )}
+      {/* Sticky, but capped and scrollable: the rail is taller than the
+          viewport once both cards are in, and a plain `sticky top-6` would
+          pin its top and strand the bottom rows permanently out of reach. */}
+      <aside className="hidden xl:flex xl:flex-col xl:gap-4">
+        <UpcomingRail
+          days={schedule.days}
+          defaultDayKey={defaultDayKey()}
+          fetchedAt={schedule.fetchedAt}
+        />
+        <ResultsRail matches={recent} />
+      </aside>
     </div>
   )
 }

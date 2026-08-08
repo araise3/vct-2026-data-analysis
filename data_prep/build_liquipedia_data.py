@@ -11,10 +11,13 @@ from_html's output: active/inactive/former players, all coaching/staff
 roles, real names) into the shape the site actually consumes: STARTER/
 BENCHED/other player status (VLR-style terminology; see
 derive_player_status for how a real Substitute/Loan/etc. note in that
-same slot takes priority), a separate formerPlayers list, a per-team
-timeline (players + coaches, every status, for the roster timeline
-chart), and manual corrections applied on top for real-world changes
-Liquipedia hasn't caught up to yet (liquipedia_overrides.json).
+same slot takes priority), a formerPlayers list carrying that SAME
+per-stint status derivation (see derive_stint_status) so a historical
+Year/Event scope on TeamProfile can show a real STARTER/BENCHED badge
+instead of guessing from maps played, a per-team timeline (players +
+coaches, every status, for the roster timeline chart), and manual
+corrections applied on top for real-world changes Liquipedia hasn't
+caught up to yet (liquipedia_overrides.json).
 
 This used to be redone from scratch as a throwaway script every time a
 correction was needed, which meant no single reproducible path from
@@ -111,6 +114,32 @@ def derive_player_status(status, position):
     return "STARTER" if status == "active" else "BENCHED"
 
 
+def derive_stint_status(position):
+    """
+    Real per-STINT status for a FORMER player row -- a different question
+    from derive_player_status above, which answers "are they on the roster
+    RIGHT NOW" (active/inactive). extract_roster_from_html already carries
+    the same `position` note (Substitute/Stand-in/Loan/etc, the Player
+    Roster table's blank-header column) on Former rows as it does on
+    Active ones -- it just wasn't being read here. A former stint's
+    `position` note still means the same thing during THAT stint; the
+    absence of one means they held an ordinary rostered spot for that
+    window, NOT "benched" -- calling derive_player_status(status="former",
+    ...) here would wrongly return BENCHED for every plain historical
+    starter, since that function's fallback is keyed on CURRENT active/
+    inactive status, which every former row fails by definition.
+
+    This is what makes a real (not maps-played-inferred) historical
+    STARTER/BENCHED badge possible at all: `formerPlayers` already records
+    every past stint with its own [joinDate, leaveDate) window (confirmed
+    live against 100 Thieves: bang alone has 3 separate stints spanning
+    2022-2024), so the frontend can pick whichever stint's window covers
+    the period being displayed and use ITS status, instead of guessing
+    from maps played.
+    """
+    return position.strip().upper() if position else "STARTER"
+
+
 def build_team_entry(html, overrides_for_team):
     result = extract_roster_from_html(html)
 
@@ -121,6 +150,8 @@ def build_team_entry(html, overrides_for_team):
     players = []
     for p in active_raw + inactive_raw:
         players.append({**p, "playerStatus": derive_player_status(p["status"], p.get("position"))})
+
+    former = [{**p, "playerStatus": derive_stint_status(p.get("position"))} for p in former_raw]
 
     # Manual overrides applied last, so they always win over whatever
     # Liquipedia's page currently says -- for real-world changes
@@ -142,11 +173,24 @@ def build_team_entry(html, overrides_for_team):
     # player entirely: real match stats, current Liquipedia STARTER
     # status, but absent from the team page with no error or indication
     # why.
+    #
+    # Applied to `former` too, not just `players` -- a handle mismatch is a
+    # property of the PERSON, not of whichever stint happens to currently
+    # be active, so a past stint under the same Liquipedia id needs the
+    # same rewrite or RosterTable.jsx's historical-stint lookup would fail
+    # the same join for exactly the players this override exists for.
+    # `playerStatus` overrides stay CURRENT-roster-only (see
+    # liquipedia_overrides.json's own doc comment) -- "Liquipedia hasn't
+    # caught up yet" is inherently about right now, not a past stint.
     override_by_id = {k.lower(): v for k, v in overrides_for_team.items()}
     for row in players:
         ov = override_by_id.get(row["id"].lower())
         if ov and "playerStatus" in ov:
             row["playerStatus"] = ov["playerStatus"]
+        if ov and "vlrId" in ov:
+            row["id"] = ov["vlrId"]
+    for row in former:
+        ov = override_by_id.get(row["id"].lower())
         if ov and "vlrId" in ov:
             row["id"] = ov["vlrId"]
 
@@ -163,9 +207,9 @@ def build_team_entry(html, overrides_for_team):
         {
             "id": p["id"], "name": p["name"], "joinDate": p["joinDate"],
             "leaveDate": p.get("leaveDate"), "newTeam": p.get("newTeam"),
-            "flag": p["flag"],
+            "flag": p["flag"], "playerStatus": p["playerStatus"],
         }
-        for p in former_raw
+        for p in former
     ]
 
     # Both active AND former coaches, per direct request -- this used to

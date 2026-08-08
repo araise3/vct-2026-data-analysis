@@ -15,7 +15,8 @@ import RosterTable from '../components/RosterTable'
 import RosterTimeline from '../components/RosterTimeline'
 import DataTable from '../components/DataTable'
 import { rating, pct, num, eventLabel } from '../lib/format'
-import TrendChart from '../components/TrendChart'
+import { buildEventDateOrder } from '../lib/rosterTimeline'
+import { coachAt } from '../lib/coaches'
 
 // win_condition values as scraped straight from VLR's round-end icon
 // filename (elim.webp -> "elim", etc.) -- labeled/ordered for display.
@@ -34,19 +35,16 @@ export default function TeamProfile() {
   // same underlying list. `liquipedia_rosters.json`'s `coaches` now
   // carries BOTH active and former Head Coaches (build_liquipedia_data.py
   // used to throw former ones away at the build step; see its own comment)
-  // -- `headCoaches` is that full history, sorted oldest-first, feeding
-  // RosterTimeline's succession chain; `headCoach` narrows it to whichever
-  // one is currently active, for the Coaching Staff card and its win-rate
-  // (a fixed "since NOW's coach took over" fact, not a historical one).
+  // -- this is that full history, sorted oldest-first, feeding
+  // RosterTimeline's succession chain (deliberately unscoped -- see that
+  // component's own comment) AND, further down, whichever of these
+  // actually covered the page's currently selected scope (coachesInScope,
+  // computed once `filtered` exists below) for the Coaching Staff card.
   const headCoaches = useMemo(
     () => (liquipediaData?.teams?.[decodedName]?.coaches ?? [])
       .filter((c) => (c.role || '').toLowerCase().includes('head coach'))
       .sort((a, b) => (a.joinDate || '').localeCompare(b.joinDate || '')),
     [liquipediaData, decodedName]
-  )
-  const headCoach = useMemo(
-    () => headCoaches.find((c) => c.status === 'active') ?? null,
-    [headCoaches]
   )
   const { data: matchData } = useData('match_results')
   const { data: teamMapData } = useData('team_map_buckets')
@@ -96,8 +94,7 @@ export default function TeamProfile() {
   )
   // This team's own most recent season -- not a hardcoded 2026, since a
   // team that folded before 2026 (or hasn't debuted yet) still has its own
-  // "current" season both to default to and to compare a selected scope
-  // against (see rosterIsCurrent below).
+  // "current" season to default to.
   const latestYear = useMemo(
     () => (records.length ? Math.max(...records.map((r) => r.year)) : null),
     [records]
@@ -142,28 +139,104 @@ export default function TeamProfile() {
 
   const filtered = useMemo(() => records.filter(inScope), [records, inScope])
 
+  // Single reference date for the WHOLE roster's status badges (see
+  // RosterTable's findStintAt) -- the latest date actually in the
+  // selected scope, so picking a whole season (or a specific end-of-year
+  // event like Champions) shows the roster the way it stood AT THAT
+  // POINT, not each player's own last-active date. Direct request: a
+  // player who started early in the season and was benched before the
+  // scope's own last event should read as BENCHED for that scope, not
+  // STARTER just because STARTER is what they were during the weeks they
+  // personally played. `filtered` already carries a real per-day `date`
+  // (team buckets are keyed per calendar day, see expandBuckets), so this
+  // is just its max.
+  const asOfDate = useMemo(() => {
+    let max = null
+    for (const r of filtered) {
+      if (r.date && (!max || r.date > max)) max = r.date
+    }
+    return max
+  }, [filtered])
+
+  // Does the selected scope reach this team's own most recent season?
+  // Liquipedia only ever describes the CURRENT roster (plus a former-
+  // players log), so `findStintAt`'s "as of asOfDate" matching in
+  // RosterTable is only meaningful when the scope's end actually sits
+  // near the present -- for a purely historical scope (e.g. Year=2023 on
+  // a team still active in 2026) it's answering a question nobody asked
+  // ("was this person confirmed-departed as of some arbitrary date years
+  // ago") instead of the simpler one that's actually wanted: who has real
+  // stats for this team in this scope. RosterTable uses this to switch
+  // from the Liquipedia-whitelisted/status-badged view to a plain
+  // stats-only roster (every player in `roster` below, no filtering, no
+  // STARTER/BENCHED/captain) for that case -- direct request, since
+  // per-bucket team tagging (see `roster`'s own comment) already handles
+  // mid-season transfers correctly with no Liquipedia data needed at all.
+  const rosterIsCurrent = useMemo(
+    () => filtered.some((r) => r.year === latestYear),
+    [filtered, latestYear]
+  )
+
+  // Which head coach(es) actually covered the currently selected Year/
+  // Event scope -- the Coaching Staff card used to always show whoever is
+  // coaching the team RIGHT NOW regardless of scope, so picking a past
+  // year (or an event from before the current coach's tenure) still
+  // showed today's coach, which is the same "always show today's state"
+  // bug the Players table below used to have too (see RosterTable.jsx's
+  // own comment on `currentRows` for how that one's fixed now). Reuses
+  // `coachAt`, the same per-event covering-coach
+  // lookup RosterTimeline's own coach column already runs, against every
+  // DISTINCT event actually present in `filtered` -- so a scope spanning
+  // a coaching change (e.g. selecting two years that had different
+  // coaches) correctly surfaces every coach who covered part of it, not
+  // just one.
+  //
+  // Direct request, mirroring `rosterIsCurrent`'s split for the player
+  // table above: an ONGOING-season scope should show only whoever is
+  // coaching the team right now (a single row, not the season's whole
+  // coaching-change history), while a purely historical scope still lists
+  // every coach who covered any part of it. `currentCoach` is whichever
+  // head coach has no `leaveDate` (still in the role) -- ties broken
+  // toward the most recent `joinDate`, matching `coachAt`'s own tie-break
+  // for a same-day handover, though in practice Liquipedia only ever
+  // leaves one Head Coach entry open at a time.
+  const currentCoach = useMemo(() => {
+    const active = headCoaches.filter((c) => !c.leaveDate)
+    if (!active.length) return null
+    return active.reduce((a, b) => (b.joinDate > a.joinDate ? b : a))
+  }, [headCoaches])
+  const eventDateForCoach = useMemo(
+    () => buildEventDateOrder(matchData?.rows || []),
+    [matchData]
+  )
+  const coachesInScope = useMemo(() => {
+    if (!headCoaches.length) return []
+    if (rosterIsCurrent) return currentCoach ? [currentCoach] : []
+    const dated = [...new Set(filtered.map((r) => r.e))]
+      .map((id) => eventDateForCoach.get(id))
+      .filter(Boolean)
+      .sort()
+    const seen = new Set()
+    const out = []
+    for (const date of dated) {
+      const c = coachAt(date, headCoaches)
+      // Keyed on id+joinDate, not just id -- a coach who left and later
+      // came back is two genuinely separate stints, and should get its
+      // own row rather than being silently deduped into one.
+      const key = c && `${c.id}|${c.joinDate}`
+      if (c && !seen.has(key)) {
+        seen.add(key)
+        out.push(c)
+      }
+    }
+    return out
+  }, [filtered, headCoaches, eventDateForCoach, rosterIsCurrent, currentCoach])
+
   const scopeLabel = eventOverrides.length === 1
     ? eventLabel(eventOverrides[0])
     : eventOverrides.length > 1
       ? `${eventOverrides.length} events`
       : effectiveYear === 'All' ? 'All years' : effectiveYear
-
-  // Whether the currently selected scope includes this team's most recent
-  // season -- decides whether RosterTable enforces its "must be on
-  // Liquipedia's CURRENT roster" whitelist (see that component's own
-  // comment). That whitelist exists to hide players who've since left but
-  // still have real stats in a wide-enough scope; applied unconditionally,
-  // though, it also hid a HISTORICAL season's real roster whenever none of
-  // today's players happened to be on the team back then (e.g. picking
-  // Year=2023 on a team whose entire 2023 lineup has since turned over --
-  // every 2023 player got filtered out, leaving "No players in this scope"
-  // despite the team having real matches that year). A purely-historical
-  // scope shows that season's actual roster instead, so the whitelist only
-  // applies once the scope reaches back to the present.
-  const rosterIsCurrent = useMemo(
-    () => latestYear != null && filtered.some((r) => r.year === latestYear),
-    [filtered, latestYear]
-  )
 
   const stats = useMemo(() => aggregateTeamBuckets(filtered), [filtered])
 
@@ -210,40 +283,6 @@ export default function TeamProfile() {
     { key: 'otPct', label: 'OT%', align: 'right', format: (v, row) => (row.mapsPlayed ? pct(v) : '—') },
     { key: 'otMaps', label: 'OT', align: 'right', format: (v, row) => (row.otMaps ? `${row.otWon}/${row.otMaps}` : '—') },
   ], [])
-
-  // Round-number win curve. TrendChart plots against dates, so round
-  // numbers are mapped onto arbitrary consecutive days purely as an
-  // x-axis -- the spacing is what matters, not the actual dates. Index 24
-  // is the OT catch-all (see aggregateTeamBuckets), labeled accordingly.
-  const roundCurve = useMemo(() => {
-    if (!stats) return []
-    const out = []
-    for (let i = 0; i < 25; i++) {
-      const played = stats.roundsPlayedByNum[i]
-      if (!played) continue
-      out.push({
-        date: `2000-01-${String(i + 1).padStart(2, '0')}`,
-        label: i === 24 ? 'OT' : `Round ${i + 1}`,
-        value: stats.roundsWonByNum[i] / played,
-        n: played,
-      })
-    }
-    return out
-  }, [stats])
-
-  const ratingTrend = useMemo(() => {
-    const byDate = new Map()
-    for (const b of filtered) {
-      if (!b.date || !b.ratR) continue
-      const cur = byDate.get(b.date) || { s: 0, r: 0, maps: 0 }
-      cur.s += b.ratS; cur.r += b.ratR; cur.maps += b.mapP || 0
-      byDate.set(b.date, cur)
-    }
-    return [...byDate.entries()]
-      .filter(([, v]) => v.r > 0)
-      .map(([date, v]) => ({ date, value: v.s / v.r, n: v.maps }))
-      .sort((a, b) => a.date.localeCompare(b.date))
-  }, [filtered])
 
   // Every player bucket belonging to THIS team, expanded once per team
   // rather than once per scope change (the roster memo below depends on
@@ -482,9 +521,10 @@ export default function TeamProfile() {
         team={decodedName}
         rows={roster}
         liquipedia={liquipediaData?.teams?.[decodedName]}
-        enforceCurrentRoster={rosterIsCurrent}
-        matches={teamMatches}
-        headCoach={headCoach}
+        matches={matchRows}
+        coaches={coachesInScope}
+        asOfDate={asOfDate}
+        rosterIsCurrent={rosterIsCurrent}
       />
 
       {playerData && (
@@ -502,23 +542,6 @@ export default function TeamProfile() {
 
       {stats && stats.mapsPlayed > 0 && (
         <>
-          {roundCurve.length > 0 && (
-            <div className="bg-surface border border-hairline rounded-2xl p-5">
-              <h3 className="font-display text-sm font-semibold text-ink mb-1">
-                Round win% by round number
-              </h3>
-              <p className="text-muted text-xs mb-4">
-                Rounds 1 and 13 are the pistols; OT rounds are lumped into one bucket since OT
-                length varies map to map. Dashed line is 50%.
-              </p>
-              <TrendChart
-                points={roundCurve}
-                baseline={0.5}
-                format={(v) => `${Math.round(v * 100)}%`}
-              />
-            </div>
-          )}
-
           {Object.keys(stats.winConditions || {}).length > 0 && (
             <div className="bg-surface border border-hairline rounded-2xl p-5">
               <h3 className="font-display text-sm font-semibold text-ink mb-1">
@@ -544,14 +567,6 @@ export default function TeamProfile() {
               </div>
             </div>
           )}
-
-          <div className="bg-surface border border-hairline rounded-2xl p-5">
-            <h3 className="font-display text-sm font-semibold text-ink mb-1">Rating over time</h3>
-            <p className="text-muted text-xs mb-4">
-              Team's average player rating per match day in scope. Dashed line is 1.00.
-            </p>
-            <TrendChart points={ratingTrend} baseline={1} format={(v) => v.toFixed(2)} />
-          </div>
 
           <div className="flex flex-col gap-2">
             <h3 className="font-display text-sm font-semibold text-ink">Match history</h3>

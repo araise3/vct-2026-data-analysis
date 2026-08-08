@@ -181,6 +181,129 @@ export function compact(v) {
   return new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(v)
 }
 
+// ---------------------------------------------------------------------------
+// Dates
+//
+// Two DIFFERENT kinds of value live here and must not be conflated:
+//
+//   * ISO date strings ("2026-08-06") are CALENDAR dates with no timezone.
+//     They are always parsed by splitting the string, never via `new Date(s)`
+//     -- the Date constructor reads a bare YYYY-MM-DD as UTC midnight, which
+//     renders as the PREVIOUS day for every viewer west of UTC. Every event
+//     date and match date in public/data is this kind.
+//
+//   * Unix timestamps (upcoming_matches.json's `timestamp`) are absolute
+//     INSTANTS. There `new Date(ts * 1000)` plus local getters is exactly
+//     right, and is the whole reason the scraper ships a timestamp rather
+//     than a pre-formatted date -- a date baked at scrape time would be the
+//     wrong day for anyone in a different timezone.
+// ---------------------------------------------------------------------------
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const MONTHS_FULL = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+]
+
+/** "2026-08-06" -> "Aug 6". Null-safe (returns null, not "—", so callers can
+ * decide their own placeholder -- RosterTable's activeRange relies on this). */
+export function shortDate(iso) {
+  if (!iso) return null
+  const [, m, d] = iso.split('-').map(Number)
+  return `${MONTHS[m - 1]} ${d}`
+}
+
+/** "2026-08-06" -> "Aug 6, 2026". Same shape as shortDate but carrying the
+ * year, for contexts spanning multiple seasons (a coach's stint history). */
+export function longDate(iso) {
+  if (!iso) return null
+  const [y, m, d] = iso.split('-').map(Number)
+  return `${MONTHS[m - 1]} ${d}, ${y}`
+}
+
+/** "2026-08-06" -> "AUGUST 2026", for the centre column's month group headers. */
+export function monthLabel(iso) {
+  if (!iso) return ''
+  const [y, m] = iso.split('-').map(Number)
+  return `${MONTHS_FULL[m - 1]} ${y}`.toUpperCase()
+}
+
+/** A local Date -> `{ month: "AUG", day: "6" }`, for the right rail's date
+ * strip -- rft.gg's own day tabs stack these as two separate lines rather
+ * than one "AUG 6" string (confirmed against its live markup:
+ * `<span class="text-[8px] font-bold">AUG</span><span class="text-xs
+ * font-medium">6</span>`), so the two pieces are kept separate here rather
+ * than pre-joined. Takes a Date (not an ISO string) because the strip's days
+ * are derived from real timestamps in the viewer's own timezone. */
+export function dayStripParts(date) {
+  return { month: MONTHS[date.getMonth()].toUpperCase(), day: String(date.getDate()) }
+}
+
+/** Unix seconds -> the viewer's local "17:00". */
+export function matchTime(ts) {
+  if (ts === null || ts === undefined) return ''
+  const d = new Date(ts * 1000)
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+/** Unix seconds -> local calendar day as "YYYY-MM-DD", the key the date strip
+ * groups on. Deliberately built from local getters rather than
+ * toISOString().slice(0,10), which would bucket by UTC day and put an evening
+ * match in the Americas on tomorrow's tab. */
+export function localDateKey(ts) {
+  const d = new Date(ts * 1000)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+/** "2026-07-16" + "2026-09-06" -> "Jul 16 – Sep 6"; collapses to one date
+ * when both sides are the same day, and tolerates either side missing. */
+export function dateRangeLabel(start, end) {
+  const a = shortDate(start)
+  const b = shortDate(end)
+  if (!a && !b) return ''
+  if (!a) return b
+  if (!b) return a
+  return a === b ? a : `${a} – ${b}`
+}
+
+// Whole days between two ISO dates, via a UTC anchor so a DST boundary in the
+// viewer's zone can't make a day count come out 1 short (a local-midnight
+// subtraction is 23 or 25 hours across a transition).
+function daysBetween(fromIso, toIso) {
+  const [y1, m1, d1] = fromIso.split('-').map(Number)
+  const [y2, m2, d2] = toIso.split('-').map(Number)
+  return Math.round((Date.UTC(y2, m2 - 1, d2) - Date.UTC(y1, m1 - 1, d1)) / 86400000)
+}
+
+/** Today as "YYYY-MM-DD" in the viewer's own timezone. */
+export function todayKey(now = new Date()) {
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+}
+
+/**
+ * Event countdown badge, mirroring rft.gg's own: `now` while an event is
+ * running, `in 46d` before it starts, `ended` after.
+ *
+ * Returns `{ text, tone }` rather than a bare string so the caller picks the
+ * colour -- there is no single right accent for all three states.
+ * An event with no known dates returns null (render nothing), never a guess.
+ */
+export function countdown(startDate, endDate, now = new Date()) {
+  if (!startDate && !endDate) return null
+  const today = todayKey(now)
+  const start = startDate || endDate
+  const end = endDate || startDate
+  if (today < start) {
+    const d = daysBetween(today, start)
+    // Past ~2 months a day count stops being readable at a glance; rft.gg
+    // keeps days throughout, so this does too rather than inventing a
+    // months unit it never shows.
+    return { text: `in ${d}d`, tone: 'muted' }
+  }
+  if (today > end) return { text: 'ended', tone: 'muted' }
+  return { text: 'now', tone: 'live' }
+}
+
 // Maps a value's position within [min, max] to VLR's own stats-table
 // heatmap color. Reverse-engineered from a real vlr.gg/stats page source
 // (not guessed): every colored cell there is `hsl(var(--stat-h), 20%, 45%)`,

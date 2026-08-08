@@ -10,19 +10,34 @@ import { SCOPE_SEP } from './entityBuckets'
  * "Americas + EMEA, Playoffs only, any week" expressible -- something the
  * old cascading single-select model couldn't represent at all.
  *
- * `options` is deliberately just the full value list per dimension, with
- * no per-value "is this still reachable given the other dimensions"
- * availability flag. It used to carry one, computed the standard
- * faceted-search way, but FacetGroup stopped reading it when chip
- * dimming/disabling was removed (see that component's own comment on why
- * dimming read as a bug), leaving the computation with no consumer at all.
- * It was not free: it re-ran matchesFilters for every record x every facet
- * on every selection change -- 11.5ms per filter click over
- * player_buckets' 10,894 records, measured, against 2.8ms for the plain
- * value list. Dropping it also takes `selections`/`dateRange` out of this
- * memo's dependencies entirely, so the list is now computed once per
- * dataset instead of once per interaction. Restoring availability means
- * restoring the matchesExcept pass, not just re-adding a flag.
+ * `options` is a one-directional HIERARCHY, not the symmetric "is this
+ * value still reachable given every other facet" availability flag that
+ * used to live here and was removed (see FacetGroup's own comment): that
+ * version dimmed a chip based on ANY other active facet regardless of
+ * direction -- e.g. picking a specific VCT-only Event dimmed the EWC chip
+ * under Competition, which reads backwards (Competition is conceptually
+ * the parent of Event, not the other way round) and is exactly the
+ * "feels like a bug" case that got it deleted.
+ *
+ * This version only ever narrows DOWNWARD: a facet's value list is built
+ * from records that already match every facet BEFORE it in the `facets`
+ * array (its "ancestors"), never facets after it. `facets` is passed in
+ * pre-ordered top-down (year -> competition -> region -> split -> event ->
+ * eventPhase -> eventWeek, see FilterPanel's FACETS/TOP_FACETS), matching
+ * the order the chips actually render in, so picking Year narrows Event's
+ * option list but picking Event never narrows Year's. A facet's own
+ * CURRENTLY SELECTED values are always kept in its option list even if an
+ * ancestor change since they were picked would otherwise exclude them --
+ * a chip should never vanish purely as a side effect of touching a
+ * different facet; the user can still see it and deliberately deselect it
+ * (matching this codebase's existing rule that an active selection is
+ * never hidden, e.g. FilterPanel's collapsed-facet handling).
+ *
+ * This does re-add `selections` to the memo's dependencies (the old,
+ * removed version dropped it specifically to avoid recomputing on every
+ * click), but it's a much cheaper computation than what was removed: only
+ * ancestor facets are tested per record (not every facet x every value),
+ * the same order of work the un-narrowed value-list pass already did.
  */
 const EMPTY_RANGE = { from: '', to: '' }
 
@@ -144,28 +159,32 @@ export function useFacetedFilter(records, facets, initial = {}) {
     [records, facets, selections, dateRange, includeHiddenEvents]
   )
 
-  // For each dimension: every value that exists in the data at all.
-  // Depends only on the records, NOT on the current selections -- see the
-  // note on availability at the top of this file. DOES depend on
-  // includeHiddenEvents though, so a hidden event's own Event/Phase/Week
-  // chips disappear from the pickable options while it's excluded, rather
-  // than offering a chip that would filter down to nothing.
+  // For each dimension: every value reachable given its ANCESTORS' current
+  // selections (see the note on hierarchy at the top of this file), plus
+  // whatever's already selected on this facet itself. Also depends on
+  // includeHiddenEvents, so a hidden event's own Event/Phase/Week chips
+  // disappear from the pickable options while it's excluded, rather than
+  // offering a chip that would filter down to nothing.
   const options = useMemo(() => {
     const out = {}
-    for (const facet of facets) {
+    for (let i = 0; i < facets.length; i++) {
+      const facet = facets[i]
+      const ancestors = facets.slice(0, i)
       const allValues = new Set()
       for (const r of records) {
         if (!includeHiddenEvents && HIDDEN_BY_DEFAULT_EVENTS.has(r.event)) continue
+        if (!ancestors.every((af) => matchesOneFacet(r, selections[af], r[af]))) continue
         const v = r[facet]
         if (v === undefined || v === null) continue
         allValues.add(v)
       }
+      for (const v of selections[facet] || []) allValues.add(v)
       out[facet] = [...allValues]
         .sort((a, b) => String(a).localeCompare(String(b)))
         .map((value) => ({ value }))
     }
     return out
-  }, [records, facets, includeHiddenEvents])
+  }, [records, facets, selections, includeHiddenEvents])
 
   const activeCount =
     facets.reduce((n, f) => n + (selections[f]?.length || 0), 0) +

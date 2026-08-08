@@ -168,10 +168,21 @@ def build_team_entry(html, overrides_for_team):
         for p in former_raw
     ]
 
+    # Both active AND former coaches, per direct request -- this used to
+    # filter to `status == "active"` only, which is fine for the Coaching
+    # Staff card (still just wants today's head coach, see RosterTable.jsx)
+    # but silently threw away exactly the data the roster timeline's new
+    # coach column needs to show a real succession of past coaches instead
+    # of "blank, then one name forever from whatever the CURRENT coach's
+    # join date happens to be". `extract_roster_from_html` already captures
+    # former coaches with real join/leave dates (Organization section's
+    # Former table) -- this was purely a build-step filter, not a scraper
+    # gap, so no change was needed upstream to unlock it.
     coaches = [
         {"id": c["id"], "name": c["name"], "role": c["role"],
-         "joinDate": c["joinDate"], "flag": c["flag"]}
-        for c in result["coaches"] if c["status"] == "active"
+         "joinDate": c["joinDate"], "leaveDate": c.get("leaveDate"),
+         "flag": c["flag"], "status": c["status"]}
+        for c in result["coaches"]
     ]
 
     return {

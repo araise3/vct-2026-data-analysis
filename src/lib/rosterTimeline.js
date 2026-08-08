@@ -187,7 +187,7 @@ function buildPlayerEventDates(team, matchResultsRows, matchPlayersRows) {
  * Qualifier 2025" was rendering after the 2026 season entirely before
  * this was switched to real dates.
  */
-function buildEventDateOrder(matchResultsRows) {
+export function buildEventDateOrder(matchResultsRows) {
   const minDate = new Map()
   for (const r of matchResultsRows) {
     const prev = minDate.get(r.e)

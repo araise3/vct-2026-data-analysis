@@ -9,9 +9,14 @@
  * clickable and lets the result set speak for itself.
  *
  * `options` used to carry a per-value `available` flag that this component
- * ignored; it has since been removed from useFacetedFilter, where
- * recomputing it on every selection change was the single most expensive
- * thing any filter interaction did. See that file's own comment.
+ * ignored; it was removed from useFacetedFilter for being both expensive
+ * and, worse, symmetric (any facet could dim any other, including
+ * "backwards" cases like Event dimming Competition). `options` now instead
+ * arrives PRE-NARROWED by a one-directional parent -> child hierarchy
+ * (Year -> Competition -> Region -> Split -> Event -> Phase/Week) computed
+ * in useFacetedFilter -- this component still renders every value it's
+ * handed identically either way, it just receives a shorter list once an
+ * ancestor facet is picked. See that file's own comment for the hierarchy.
  */
 export default function FacetGroup({ label, options, selected, onChange, renderLabel, hideLabel = false }) {
   function toggle(value) {

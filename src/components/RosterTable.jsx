@@ -56,6 +56,37 @@ function activeRange(first, last) {
 }
 
 /**
+ * Match win/loss record for `team` from `joinDate` onward -- the head
+ * coach's own tenure record, not scoped to whatever Year/Event the rest of
+ * the page is currently showing. Deliberately unscoped, same reasoning as
+ * PlayerProfile's bestKillMatch/allMatchRows: "since becoming head coach"
+ * is a fixed historical fact about the coach, not something that should
+ * shrink or disappear because the page's Year chip moved elsewhere.
+ *
+ * Match-level (not map-level), matching the KPI card convention already
+ * used for "Matches" on TeamProfile -- a coach's record is talked about in
+ * series won/lost, not individual maps. Ties (s1 === s2, an undecided/
+ * abandoned series) and matches with no reported score are skipped rather
+ * than counted either way.
+ */
+function coachRecordSince(matches, team, joinDate) {
+  if (!joinDate || !matches) return null
+  let wins = 0
+  let losses = 0
+  for (const m of matches) {
+    if (!m.date || m.date < joinDate) continue
+    if (m.s1 == null || m.s2 == null || m.s1 === m.s2) continue
+    const isTeam1 = m.team1 === team
+    const isTeam2 = m.team2 === team
+    if (!isTeam1 && !isTeam2) continue
+    if (isTeam1 ? m.s1 > m.s2 : m.s2 > m.s1) wins++
+    else losses++
+  }
+  const played = wins + losses
+  return played ? { wins, losses, winPct: wins / played } : null
+}
+
+/**
  * Real status from Liquipedia's own Active/Inactive table split -- labeled
  * Starter/Benched to match VLR's own terminology. An earlier version
  * additionally tried inferring status from that team's History/Timeline
@@ -79,14 +110,14 @@ function statusBadge(status) {
 const th = 'px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted whitespace-nowrap'
 const td = 'px-4 py-3 text-sm whitespace-nowrap align-middle'
 
-export default function RosterTable({ team, rows, liquipedia }) {
-  // Head Coach only -- drop Assistant Coach/Analyst/other coaching
-  // roles, and only ever show one slot even if Liquipedia's Organization
-  // section currently lists more than one "Head Coach"-titled entry
-  // (e.g. a coaching change caught mid-transition). Takes the first
-  // match rather than trying to disambiguate which one is "really"
-  // current.
-  const headCoach = (liquipedia?.coaches ?? []).find((c) => (c.role || '').toLowerCase().includes('head coach'))
+export default function RosterTable({ team, rows, liquipedia, enforceCurrentRoster = true, matches, headCoach }) {
+  // headCoach itself is computed once by TeamProfile.jsx (also feeds
+  // RosterTimeline's coach column below the roster) -- Head Coach only,
+  // dropping Assistant Coach/Analyst/other coaching roles, and only ever
+  // one slot even if Liquipedia's Organization section currently lists
+  // more than one "Head Coach"-titled entry (e.g. a coaching change caught
+  // mid-transition); see that computation's own comment.
+  const coachRecord = headCoach ? coachRecordSince(matches, team, headCoach.joinDate) : null
   const lqPlayersById = new Map(
     (liquipedia?.players ?? []).map((p) => [p.id.toLowerCase(), p])
   )
@@ -103,7 +134,20 @@ export default function RosterTable({ team, rows, liquipedia }) {
   // from the page entirely, so this whitelists against the current
   // roster instead of trying to blacklist every way someone could be
   // gone.
-  const currentRows = liquipedia ? rows.filter((p) => lqPlayersById.has(p.player.toLowerCase())) : rows
+  //
+  // `enforceCurrentRoster` (set by TeamProfile.jsx based on whether the
+  // active filter scope reaches this team's most recent season) turns
+  // that whitelist off for a purely historical scope -- applied
+  // unconditionally, it also erased a past season's real roster whenever
+  // none of today's players happened to be on the team back then (e.g.
+  // picking a year before every current player joined left "No players
+  // in this scope" despite the team having real matches that year).
+  // Direct request: a historical-only scope should show that season's
+  // actual roster instead, so the whitelist only applies once the scope
+  // reaches back to the present.
+  const currentRows = liquipedia && enforceCurrentRoster
+    ? rows.filter((p) => lqPlayersById.has(p.player.toLowerCase()))
+    : rows
 
   // Sorted by role, starters first -- Array.prototype.sort is stable
   // (guaranteed since ES2019), so within each tier this preserves
@@ -136,6 +180,11 @@ export default function RosterTable({ team, rows, liquipedia }) {
               <div className="flex items-center gap-6 text-xs text-muted">
                 <span>Head Coach</span>
                 {headCoach.joinDate && <span>Since {shortDate(headCoach.joinDate)}</span>}
+                {coachRecord && (
+                  <span className={`font-medium ${coachRecord.winPct >= 0.5 ? 'text-good' : 'text-ink/80'}`}>
+                    {coachRecord.wins}–{coachRecord.losses} ({pct(coachRecord.winPct)})
+                  </span>
+                )}
               </div>
             </div>
           </div>

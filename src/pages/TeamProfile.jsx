@@ -1,19 +1,20 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useData, useIdle } from '../lib/useData'
-import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
+import { HIDDEN_BY_DEFAULT_EVENTS } from '../lib/useFacetedFilter'
 import {
   expandBuckets, aggregateTeamBuckets, aggregatePlayerBuckets, groupByEntity,
   expandMatchRows, aggregateTeamMapBuckets, summarizeTeamMapStats,
 } from '../lib/entityBuckets'
-import FilterPanel, { FACETS } from '../components/FilterPanel'
+import FilterChips from '../components/FilterChips'
+import EventPicker from '../components/EventPicker'
 import KpiCard from '../components/KpiCard'
 import MatchHistory from '../components/MatchHistory'
 import TeamLogo from '../components/TeamLogo'
 import RosterTable from '../components/RosterTable'
 import RosterTimeline from '../components/RosterTimeline'
 import DataTable from '../components/DataTable'
-import { rating, pct, num } from '../lib/format'
+import { rating, pct, num, eventLabel } from '../lib/format'
 import TrendChart from '../components/TrendChart'
 
 // win_condition values as scraped straight from VLR's round-end icon
@@ -27,6 +28,26 @@ export default function TeamProfile() {
   const { data: teamData, loading: teamsLoading } = useData('team_buckets')
   const { data: playerData, loading: playersLoading } = useData('player_buckets')
   const { data: liquipediaData } = useData('liquipedia_rosters')
+  // Head Coach ONLY (Assistant Coach/Analyst/etc. dropped), computed once
+  // here rather than separately inside both RosterTable (the Coaching
+  // Staff card) and RosterTimeline (its coach column) since both need the
+  // same underlying list. `liquipedia_rosters.json`'s `coaches` now
+  // carries BOTH active and former Head Coaches (build_liquipedia_data.py
+  // used to throw former ones away at the build step; see its own comment)
+  // -- `headCoaches` is that full history, sorted oldest-first, feeding
+  // RosterTimeline's succession chain; `headCoach` narrows it to whichever
+  // one is currently active, for the Coaching Staff card and its win-rate
+  // (a fixed "since NOW's coach took over" fact, not a historical one).
+  const headCoaches = useMemo(
+    () => (liquipediaData?.teams?.[decodedName]?.coaches ?? [])
+      .filter((c) => (c.role || '').toLowerCase().includes('head coach'))
+      .sort((a, b) => (a.joinDate || '').localeCompare(b.joinDate || '')),
+    [liquipediaData, decodedName]
+  )
+  const headCoach = useMemo(
+    () => headCoaches.find((c) => c.status === 'active') ?? null,
+    [headCoaches]
+  )
   const { data: matchData } = useData('match_results')
   const { data: teamMapData } = useData('team_map_buckets')
   // match_players.json (3.9MB) feeds only the roster timeline's split-seat
@@ -39,54 +60,134 @@ export default function TeamProfile() {
   const idle = useIdle()
   const { data: matchPlayerData } = useData(idle ? 'match_players' : null)
 
-  // Scope to this team first, so facet options only show events this
-  // team actually played in.
+  // Every bucket belonging to this team, across every year -- the base the
+  // page's Year/Event scope control (below) is built from. The one event
+  // this site hides by default sitewide (see HIDDEN_BY_DEFAULT_EVENTS' own
+  // comment -- a scrappy 2023 China qualifier bracket of amateur teams) is
+  // excluded unconditionally here rather than toggleable: the old
+  // FilterPanel's checkbox for re-including it went away along with the
+  // rest of that panel (see below), and no current franchise team's page
+  // needs it back.
   const records = useMemo(
-    () => (teamData ? expandBuckets(teamData, 't', (b) => b.t === decodedName) : []),
+    () => (teamData
+      ? expandBuckets(teamData, 't', (b) => b.t === decodedName)
+        .filter((r) => !HIDDEN_BY_DEFAULT_EVENTS.has(r.event))
+      : []),
     [teamData, decodedName]
   )
 
-  const { selections, setFacet, clearAll, filtered, options, activeCount,
-          dateRange, setDateRange, dateBounds,
-          includeHiddenEvents, setIncludeHiddenEvents } =
-    useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
-
-  // Fall back to 2025 when this team has no 2026 data at all -- same
-  // reasoning/mechanism as PlayerProfile.jsx: a team that isn't part of the
-  // 2026 franchising lineup (folded, didn't make the cut) would otherwise
-  // land on a page that opens completely empty under the site-wide 2026
-  // default. Derived from `records` (this team's own buckets across every
-  // year) once `teamData` has loaded, not passed as the hook's `initial`
-  // selection, since `records` doesn't exist yet on the first render.
-  const yearFallbackApplied = useRef(false)
+  // Scope control: a single Year (or "All"), replaced entirely by hand-
+  // picked Events the moment any are added -- the same model as
+  // PlayerProfile's Agent-table picker (FilterChips + EventPicker, events
+  // override the year chip rather than adding to it), just driving the
+  // WHOLE page here instead of one table. Direct request, replacing the
+  // page-wide FilterPanel (Competition/Region/Split/Phase-Week/date-range)
+  // entirely -- none of those survive. Resets when switching teams.
+  const [year, setYear] = useState(null)
+  const [eventOverrides, setEventOverrides] = useState([])
   useEffect(() => {
-    if (yearFallbackApplied.current || !teamData) return
-    yearFallbackApplied.current = true
-    if (!records.some((r) => r.year === 2026)) setFacet('year', [2025])
-  }, [teamData, records, setFacet])
+    setYear(null)
+    setEventOverrides([])
+  }, [decodedName])
+
+  const yearOptions = useMemo(
+    () => [...new Set(records.map((r) => r.year))].sort((a, b) => a - b),
+    [records]
+  )
+  // This team's own most recent season -- not a hardcoded 2026, since a
+  // team that folded before 2026 (or hasn't debuted yet) still has its own
+  // "current" season both to default to and to compare a selected scope
+  // against (see rosterIsCurrent below).
+  const latestYear = useMemo(
+    () => (records.length ? Math.max(...records.map((r) => r.year)) : null),
+    [records]
+  )
+  const effectiveYear = year ?? latestYear
+
+  // Every event this team has at least one bucket in, most recent first (by
+  // raw event id -- ids increase with time within and across seasons, see
+  // export_from_db.py's own verification notes -- so this needs no separate
+  // date lookup).
+  const eventOptions = useMemo(() => {
+    const latestIdByEvent = new Map()
+    for (const r of records) {
+      const cur = latestIdByEvent.get(r.event)
+      if (cur === undefined || r.e > cur) latestIdByEvent.set(r.event, r.e)
+    }
+    return [...latestIdByEvent.entries()].sort((a, b) => b[1] - a[1]).map(([evt]) => evt)
+  }, [records])
+
+  function addEvent(evt) {
+    setEventOverrides((prev) => (prev.includes(evt) ? prev : [...prev, evt]))
+  }
+  function removeEvent(evt) {
+    setEventOverrides((prev) => prev.filter((e) => e !== evt))
+  }
+  function resetScope() {
+    setYear(null)
+    setEventOverrides([])
+  }
+
+  // Does a record belong to the current scope? Once any events are added
+  // they take over entirely (OR'd together) and the year chip stops
+  // applying -- matching PlayerProfile's Agent-table picker exactly.
+  // useCallback (not a plain function) so every useMemo below that filters
+  // by it can list `inScope` itself as a dependency instead of duplicating
+  // this same two-line predicate three times.
+  const inScope = useCallback((r) => (
+    eventOverrides.length
+      ? eventOverrides.includes(r.event)
+      : effectiveYear === 'All' || r.year === effectiveYear
+  ), [effectiveYear, eventOverrides])
+
+  const filtered = useMemo(() => records.filter(inScope), [records, inScope])
+
+  const scopeLabel = eventOverrides.length === 1
+    ? eventLabel(eventOverrides[0])
+    : eventOverrides.length > 1
+      ? `${eventOverrides.length} events`
+      : effectiveYear === 'All' ? 'All years' : effectiveYear
+
+  // Whether the currently selected scope includes this team's most recent
+  // season -- decides whether RosterTable enforces its "must be on
+  // Liquipedia's CURRENT roster" whitelist (see that component's own
+  // comment). That whitelist exists to hide players who've since left but
+  // still have real stats in a wide-enough scope; applied unconditionally,
+  // though, it also hid a HISTORICAL season's real roster whenever none of
+  // today's players happened to be on the team back then (e.g. picking
+  // Year=2023 on a team whose entire 2023 lineup has since turned over --
+  // every 2023 player got filtered out, leaving "No players in this scope"
+  // despite the team having real matches that year). A purely-historical
+  // scope shows that season's actual roster instead, so the whitelist only
+  // applies once the scope reaches back to the present.
+  const rosterIsCurrent = useMemo(
+    () => latestYear != null && filtered.some((r) => r.year === latestYear),
+    [filtered, latestYear]
+  )
 
   const stats = useMemo(() => aggregateTeamBuckets(filtered), [filtered])
 
   // Map Stats table -- team_map_buckets.json is scoped/expanded exactly
   // like team_buckets.json (same event/week/day grain, plus a map name
-  // dimension), so it goes through matchesFilters directly against this
-  // page's active facet selections rather than the useFacetedFilter hook
-  // itself (same pattern MatchHistory's matchRows below uses for a
-  // second, differently-shaped dataset).
+  // dimension), so it goes through the same `inScope` predicate directly
+  // rather than through `filtered` itself (same pattern MatchHistory's
+  // matchRows below uses for a second, differently-shaped dataset).
   //
-  // Expanded once per team (not per filter change) so changing a facet only
-  // re-runs the cheap matchesFilters pass over this team's own few dozen
-  // rows, rather than re-expanding all 5,618 buckets in the file first.
+  // Expanded once per team (not per scope change) so changing the Year/
+  // Event picker only re-runs the cheap `inScope` pass over this team's own
+  // few dozen rows, rather than re-expanding all 5,618 buckets in the file
+  // first.
   const teamMapRecords = useMemo(
-    () => (teamMapData ? expandBuckets(teamMapData, 't', (b) => b.t === decodedName) : []),
+    () => (teamMapData
+      ? expandBuckets(teamMapData, 't', (b) => b.t === decodedName)
+        .filter((r) => !HIDDEN_BY_DEFAULT_EVENTS.has(r.event))
+      : []),
     [teamMapData, decodedName]
   )
 
   const mapStats = useMemo(
-    () => aggregateTeamMapBuckets(
-      teamMapRecords.filter((r) => matchesFilters(r, FACETS, selections, dateRange, includeHiddenEvents))
-    ),
-    [teamMapRecords, selections, dateRange, includeHiddenEvents]
+    () => aggregateTeamMapBuckets(teamMapRecords.filter(inScope)),
+    [teamMapRecords, inScope]
   )
 
   const mapStatsOverall = useMemo(() => summarizeTeamMapStats(mapStats), [mapStats])
@@ -145,7 +246,7 @@ export default function TeamProfile() {
   }, [filtered])
 
   // Every player bucket belonging to THIS team, expanded once per team
-  // rather than once per filter change (the roster memo below depends on
+  // rather than once per scope change (the roster memo below depends on
   // `filtered`, so leaving the expansion inside it re-walked all 10,894
   // buckets in player_buckets.json on every chip click -- ~8ms of pure
   // rework for a set that can't change unless the file or the team does).
@@ -165,8 +266,8 @@ export default function TeamProfile() {
     [playerData, decodedName]
   )
 
-  // Roster reflects the same filter scope: apply the team's active facet
-  // selections to the player buckets, keeping only this team's players.
+  // Roster reflects the same scope: apply the team's active Year/Event
+  // selection to the player buckets, keeping only this team's players.
   const roster = useMemo(() => {
     if (!playerData) return []
     // (event|week) -> [earliest, latest] date THIS team actually played
@@ -184,7 +285,7 @@ export default function TeamProfile() {
     }
     const scopedKeys = new Set(filtered.map((r) => `${r.e}|${r.w}`))
     // teamPlayerRecords is already narrowed to this team's buckets (see
-    // above); all that's left here is the current filter scope.
+    // above); all that's left here is the current scope.
     const recs = teamPlayerRecords.filter((r) => scopedKeys.has(`${r.e}|${r.w}`))
     const out = []
     for (const [player, buckets] of groupByEntity(recs)) {
@@ -221,9 +322,9 @@ export default function TeamProfile() {
     return out.sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0))
   }, [playerData, teamPlayerRecords, filtered, stats])
 
-  // Match history, filtered by the same active facets as everything else
-  // on the page. Matched on team1/team2 rather than on the scoreboard rows'
-  // own team, so a match still lists even if its box score was never
+  // Match history, filtered by the same scope as everything else on the
+  // page. Matched on team1/team2 rather than on the scoreboard rows' own
+  // team, so a match still lists even if its box score was never
   // published -- its match page then shows the empty-state.
   //
   // No match_players.json is loaded for this: MatchHistory only reads
@@ -232,15 +333,32 @@ export default function TeamProfile() {
   // perspective already knows whose row it is, so fetching that 3.9MB file
   // and building its 10,974-row Map here produced nothing that was read.
   const teamMatches = useMemo(
-    () => expandMatchRows(matchData).filter(
-      (m) => m.team1 === decodedName || m.team2 === decodedName
-    ),
+    () => expandMatchRows(matchData)
+      .filter((m) => m.team1 === decodedName || m.team2 === decodedName)
+      .filter((m) => !HIDDEN_BY_DEFAULT_EVENTS.has(m.event)),
     [matchData, decodedName]
   )
 
-  const matchRows = useMemo(
-    () => teamMatches.filter((m) => matchesFilters(m, FACETS, selections, dateRange, includeHiddenEvents)),
-    [teamMatches, selections, dateRange, includeHiddenEvents]
+  const matchRows = useMemo(() => teamMatches.filter(inScope), [teamMatches, inScope])
+
+  // Paginated 30 at a time, same as PlayerProfile's Match history -- a
+  // franchise slot's history can now run back to LOCK//IN 2023 (see the
+  // roster-timeline entries in project-history), long enough that rendering
+  // every row at once made this section the tallest thing on the page.
+  // `matchLimit` resets whenever the profile switches teams.
+  const sortedMatchRows = useMemo(
+    () => [...matchRows].sort(
+      (a, b) => (b.date || '').localeCompare(a.date || '') || b.id - a.id
+    ),
+    [matchRows]
+  )
+  const [matchLimit, setMatchLimit] = useState(30)
+  useEffect(() => {
+    setMatchLimit(30)
+  }, [decodedName])
+  const visibleMatchRows = useMemo(
+    () => sortedMatchRows.slice(0, matchLimit),
+    [sortedMatchRows, matchLimit]
   )
 
   if (teamsLoading || playersLoading) return <div className="text-muted text-sm">Loading…</div>
@@ -269,21 +387,39 @@ export default function TeamProfile() {
         </div>
       </div>
 
-      <FilterPanel
-        options={options}
-        selections={selections}
-        setFacet={setFacet}
-        clearAll={clearAll}
-        activeCount={activeCount}
-        dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
-        includeHiddenEvents={includeHiddenEvents} setIncludeHiddenEvents={setIncludeHiddenEvents}
-      />
+      {/* Whole-page scope control: a Year (or "All"), replaced entirely by
+          hand-picked Events the moment any are added -- see the comment on
+          `inScope` above for why. Replaces the old multi-facet FilterPanel
+          (Competition/Region/Split/Phase-Week/date-range) sitewide-style
+          control with the simpler model PlayerProfile's Agent table already
+          uses, per direct request. */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {eventOverrides.length === 0 && (
+          <FilterChips options={['All', ...yearOptions]} value={effectiveYear} onChange={setYear} />
+        )}
+        <EventPicker
+          options={eventOptions}
+          selected={eventOverrides}
+          onAdd={addEvent}
+          onRemove={removeEvent}
+        />
+      </div>
 
+      {/* Match-stat sections (KPIs/Map Stats/round curve/win conditions/
+          rating trend/match history) stay gated on `stats.mapsPlayed` --
+          Roster identity (Coaching Staff + Players, below) and its timeline
+          deliberately are NOT: Coaching Staff comes from Liquipedia's
+          always-current snapshot (unrelated to whatever scope is selected)
+          and RosterTimeline already reads the team's full, unfiltered
+          history on its own (see its own comment on why it isn't scoped at
+          all). Both used to sit inside this same gate, so picking a scope
+          with zero matches for this team hid the coach and roster too, even
+          though neither one actually depends on this scope being non-empty. */}
       {!stats || !stats.mapsPlayed ? (
         <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
-          <p className="text-muted text-sm">No maps in this scope.</p>
-          <button onClick={clearAll} className="text-accent-bright text-sm hover:underline mt-2">
-            Clear filters
+          <p className="text-muted text-sm">No maps for {scopeLabel}.</p>
+          <button onClick={resetScope} className="text-accent-bright text-sm hover:underline mt-2">
+            Reset scope
           </button>
         </div>
       ) : (
@@ -339,21 +475,33 @@ export default function TeamProfile() {
               />
             </div>
           )}
+        </>
+      )}
 
-          <RosterTable team={decodedName} rows={roster} liquipedia={liquipediaData?.teams?.[decodedName]} />
+      <RosterTable
+        team={decodedName}
+        rows={roster}
+        liquipedia={liquipediaData?.teams?.[decodedName]}
+        enforceCurrentRoster={rosterIsCurrent}
+        matches={teamMatches}
+        headCoach={headCoach}
+      />
 
-          {playerData && (
-            <div className="flex flex-col gap-2">
-              <h2 className="font-display text-sm font-semibold text-ink">Roster timeline of {decodedName}</h2>
-              <RosterTimeline
-                playerBuckets={playerData}
-                team={decodedName}
-                matchResultsRows={matchData?.rows}
-                matchPlayersRows={matchPlayerData?.rows}
-              />
-            </div>
-          )}
+      {playerData && (
+        <div className="flex flex-col gap-2">
+          <h2 className="font-display text-sm font-semibold text-ink">Roster timeline of {decodedName}</h2>
+          <RosterTimeline
+            playerBuckets={playerData}
+            team={decodedName}
+            matchResultsRows={matchData?.rows}
+            matchPlayersRows={matchPlayerData?.rows}
+            headCoaches={headCoaches}
+          />
+        </div>
+      )}
 
+      {stats && stats.mapsPlayed > 0 && (
+        <>
           {roundCurve.length > 0 && (
             <div className="bg-surface border border-hairline rounded-2xl p-5">
               <h3 className="font-display text-sm font-semibold text-ink mb-1">
@@ -411,9 +559,18 @@ export default function TeamProfile() {
               Every {decodedName} match in scope — click a row for map scores and the full scoreboard.
             </p>
             <MatchHistory
-              matches={matchRows}
+              matches={visibleMatchRows}
               perspective={{ type: 'team', name: decodedName }}
             />
+            {matchLimit < sortedMatchRows.length && (
+              <button
+                type="button"
+                onClick={() => setMatchLimit((l) => Math.min(l + 30, sortedMatchRows.length))}
+                className="self-center text-xs font-medium text-muted hover:text-accent-bright transition-colors px-4 py-2 rounded-lg border border-hairline hover:border-accent-bright/40"
+              >
+                Load more ({sortedMatchRows.length - matchLimit} more)
+              </button>
+            )}
           </div>
         </>
       )}

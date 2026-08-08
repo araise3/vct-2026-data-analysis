@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { buildRosterEventTable } from '../lib/rosterTimeline'
+import { buildRosterEventTable, buildEventDateOrder } from '../lib/rosterTimeline'
 import { eventLabel } from '../lib/format'
 
 /**
@@ -11,10 +11,13 @@ import { eventLabel } from '../lib/format'
  * player's own lane -- a departed starter's column is simply inherited by
  * whoever takes over that seat next.
  *
- * Coaches are deliberately out of scope for this view (dropped along with
- * the old chart, which used to plot players and coaches on the same
- * axis) -- this component only ever receives player_buckets data, which
- * has no coach rows in it at all, so there was nothing to filter here.
+ * A Head Coach column rides along on the right, separated from the seat
+ * grid by a real gap column (see COACH_GAP below) -- unlike a seat, it has
+ * no succession-with-hand-offs model (Liquipedia's Organization section
+ * just gives each coach a plain join/leave date range, `headCoaches`,
+ * sourced from `liquipedia_rosters.json` rather than player_buckets), so
+ * `computeCoachSpans` below is a simpler per-row identity run rather than
+ * reusing `computeSpans`'s full seat logic.
  *
  * Consecutive events where one column's PRIMARY occupant didn't change
  * are merged into a single spanning cell (via a plain HTML `rowSpan`,
@@ -182,25 +185,53 @@ const ROW_HEIGHT = 36
 // and every column in a row lines up to the pixel.
 const CELL_BORDER = 1
 
-// EVERY rule in this table is this exact class -- one colour, FULLY OPAQUE, no
-// `/60` or `/30` opacity suffix. Both halves of that matter:
+// MAIN GRID borders (event-to-event rows, seat-to-seat columns, the label
+// column) use `border-surface` -- `surface` (#191c22) is exactly this
+// table's own wrapping card colour -- WITH an opacity suffix, per direct
+// feedback against a reference image showing coloured blocks separated by
+// thin gaps that visibly pick up a bit of the adjacent block's own colour,
+// not a flat, neutral line. `/60` was chosen specifically to "match the
+// reference as closely as possible" (a lighter option was also offered and
+// declined) -- a translucent card-coloured line over a saturated seat
+// colour reads as "a soft gap that's warmed by what's on either side of
+// it", which is the reference image's exact effect.
 //
-//   * One colour, because mixing opacities made identical 1px lines render at
-//     visibly different strengths depending on which edge they were, and the
-//     eye read the lighter-outlined cells as a different SIZE rather than a
-//     different shade -- that (not any real height difference) is what
-//     "stellar and jakee look taller" turned out to be.
-//   * Fully opaque, because a seat cell's background is its span primary's
-//     player colour, and it paints underneath its own border box. Any
-//     translucent border therefore lets that primary colour bleed through the
-//     1px strip -- which, next to a notch of a DIFFERENT player, shows up as a
-//     sliver of the wrong colour along the notch's edge (reported as green
-//     leaking down the left of FURIA's Loss notch, the green being Palla's
-//     colour showing through the `border-l border-hairline/30`). An opaque
-//     border covers the background completely, so there is nothing to bleed.
-//
-// Do not reintroduce an opacity suffix on any border in this component.
-const CELL_RULE = 'border-hairline'
+// This DELIBERATELY reintroduces the opacity suffix an earlier pass in
+// this file banned outright ("Do not reintroduce an opacity suffix on any
+// border in this component") -- worth being explicit that this isn't an
+// oversight. That earlier bug was specifically about a NOTCH (a split
+// seat's smaller, second occupant, whose own background is a DIFFERENT
+// player's colour from the seat's primary occupant one pixel away)
+// bleeding its neighbour's colour through a translucent border into a
+// visually WRONG place -- confirmed, and still true, for that one
+// scenario. The main grid doesn't have that failure mode: every regular
+// cell's border sits directly against the page/card background or another
+// cell's OWN correct colour, so a bit of bleed there only ever tints a
+// cell with a hint of ITS OWN neighbour, not a foreign one. NOTCH_RULE
+// below keeps the old fully-opaque behaviour exactly where the original
+// bug actually lived, per direct instruction to scope the bleed to the
+// main grid only.
+const CELL_RULE = 'border-surface/60'
+
+// Split-seat notch seams (BlockSeatCell's region seams, SeatCell's
+// two-occupant stack) stay on the ORIGINAL fully-opaque rule from before
+// the bleed above -- see CELL_RULE's comment for exactly why this one
+// case is exempted. Do not give this an opacity suffix.
+const NOTCH_RULE = 'border-surface'
+
+// Head coach's block uses one fixed, deliberately desaturated fill --
+// NOT a slot in the golden-angle player palette -- so it reads as "support
+// staff, a different kind of thing from a starting seat" at a glance,
+// reinforcing the physical gap column (see COACH_GAP below) rather than
+// competing with the vivid per-player hues for attention.
+const COACH_FILL = '#4a5164'
+
+// Width of the blank spacer column between the last seat and the coach
+// column -- a real `<col>`/`<td>` with no border and no fill (so the
+// table's own background shows through), giving the coach section a
+// visible gap of its own on top of the softened grid lines everywhere
+// else, per direct request ("slightly separated ... on the right").
+const COACH_GAP = 16
 
 // A row's rendered height needs to grow to fit whichever of its seats has
 // the most occupants that event (a row can be split in more than one
@@ -212,6 +243,59 @@ function computeRowHeights(rows) {
     const maxOccupants = row.seats.reduce((m, s) => Math.max(m, s ? s.occupants.length : 1), 1)
     return maxOccupants * ROW_HEIGHT
   })
+}
+
+/**
+ * Run-length-encodes "which head coach (if any) was in charge for this
+ * event" into rowSpan blocks, the same shape `computeSpans` produces for a
+ * seat column (`{ span, skip }`) but simpler -- a coach's own tenure has no
+ * in-event splitting/overflow concept the way a player seat does, so this
+ * is a plain per-row identity run, not a full succession-with-hand-offs
+ * model. `coaches` is every Head-Coach-role entry from Liquipedia's
+ * Organization section, BOTH active and former (see
+ * `build_liquipedia_data.py`'s own comment on why former coaches used to
+ * be discarded at the build step even though the scraper already captured
+ * their join/leave dates) -- each `{id, joinDate, leaveDate}`, `leaveDate`
+ * absent/null meaning "still in the role".
+ *
+ * An event's own date comes from `eventDate` (site-wide earliest match
+ * date per event id, the same lookup `buildRosterEventTable` uses
+ * internally for row ORDER -- reused here for row CONTENT instead); an
+ * event with no resolvable date, or one that falls in a real gap between
+ * two coaches (or before the earliest one Liquipedia records), has no
+ * covering coach and renders blank, same as an empty player seat.
+ *
+ * Liquipedia dates can legitimately overlap by a day or two around a
+ * handover (the outgoing coach's leaveDate and the incoming one's
+ * joinDate aren't always perfectly adjacent) -- `coachAt` breaks that tie
+ * by preferring whichever coach's tenure STARTED more recently, i.e. the
+ * incoming one, which is the intuitively "current" answer for any date
+ * inside the overlap.
+ */
+function coachAt(date, coaches) {
+  if (!date) return null
+  let match = null
+  for (const c of coaches) {
+    if (!c.joinDate || c.joinDate > date) continue
+    if (c.leaveDate && date >= c.leaveDate) continue
+    if (!match || c.joinDate > match.joinDate) match = c
+  }
+  return match
+}
+
+function computeCoachSpans(rows, eventDate, coaches) {
+  const at = (i) => coachAt(eventDate.get(rows[i].eventId), coaches)
+  const grid = []
+  let i = 0
+  while (i < rows.length) {
+    const coach = at(i)
+    let span = 1
+    while (i + span < rows.length && (at(i + span)?.id ?? null) === (coach?.id ?? null)) span += 1
+    grid.push({ span, skip: false, coach })
+    for (let k = 1; k < span; k += 1) grid.push({ span: 0, skip: true, coach })
+    i += span
+  }
+  return grid
 }
 
 function SeatCell({ seat, colors, height }) {
@@ -270,7 +354,7 @@ function SeatCell({ seat, colors, height }) {
           <Link
             key={o.player}
             to={`/players/${encodeURIComponent(o.player)}`}
-            className={`flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 hover:brightness-110 transition-[filter] shrink-0${last ? '' : ` border-b ${CELL_RULE}`}`}
+            className={`flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 hover:brightness-110 transition-[filter] shrink-0${last ? '' : ` border-b ${NOTCH_RULE}`}`}
             // The last slot gives up CELL_BORDER so the stack matches the
             // cell's own inner height (see CELL_BORDER) -- and, incidentally,
             // so every occupant shows the same amount of COLOUR: each of the
@@ -386,7 +470,7 @@ function BlockSeatCell({ blockSeats, primary, colors, rowHeights, startIndex }) 
             // Only a non-primary notch needs its own background -- the
             // primary's regions sit on the <td>'s own background (see the
             // caller) and are separated from each other by those notches.
-            className={`flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 hover:brightness-110 transition-[filter] shrink-0${seam ? ` border-b ${CELL_RULE}` : ''}`}
+            className={`flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 hover:brightness-110 transition-[filter] shrink-0${seam ? ` border-b ${NOTCH_RULE}` : ''}`}
             style={{ height: r.height, background: r.split ? colors.get(r.player) : undefined }}
             title={`${r.player} — ${r.maps} map${r.maps === 1 ? '' : 's'}`}
           >
@@ -398,7 +482,7 @@ function BlockSeatCell({ blockSeats, primary, colors, rowHeights, startIndex }) 
   )
 }
 
-export default function RosterTimeline({ playerBuckets, team, matchResultsRows, matchPlayersRows }) {
+export default function RosterTimeline({ playerBuckets, team, matchResultsRows, matchPlayersRows, headCoaches }) {
   const rows = buildRosterEventTable(playerBuckets, team, matchResultsRows, matchPlayersRows)
 
   if (rows.length === 0) {
@@ -409,6 +493,14 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows, 
   const spans = computeSpans(rows, numSeats)
   const colors = buildPlayerColors(rows)
   const rowHeights = computeRowHeights(rows)
+  // Reuses the exact site-wide event-date lookup `buildRosterEventTable`
+  // already computes internally for row ORDER -- see computeCoachSpans'
+  // own comment for the real (not single-cutoff) succession model this
+  // drives.
+  const eventDate = buildEventDateOrder(matchResultsRows || [])
+  const coachSpans = headCoaches && headCoaches.length
+    ? computeCoachSpans(rows, eventDate, headCoaches)
+    : null
 
   return (
     <div className="bg-surface border border-hairline rounded-2xl overflow-auto">
@@ -420,12 +512,21 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows, 
             direct instruction: push the table flush against the right edge and give the
             leftover room to the event-name column, rather than leaving it as blank space to
             the table's right (which is what a fixed-total-width table narrower than its
-            container would otherwise do, sitting flush left by default). */}
+            container would otherwise do, sitting flush left by default). The coach section
+            (a blank COACH_GAP spacer + its own 131px column) rides along after that, so it
+            still ends up flush against the right edge rather than the label column eating
+            its width too. */}
         <colgroup>
           <col />
           {Array.from({ length: numSeats }).map((_, idx) => (
             <col key={idx} style={{ width: 131 }} />
           ))}
+          {coachSpans && (
+            <>
+              <col style={{ width: COACH_GAP }} />
+              <col style={{ width: 131 }} />
+            </>
+          )}
         </colgroup>
         <tbody>
           {rows.map((row, i) => (
@@ -503,6 +604,33 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows, 
                   </td>
                 )
               })}
+              {coachSpans && (() => {
+                const cell = coachSpans[i]
+                if (cell.skip) return null
+                return (
+                  <>
+                    {/* Blank on purpose -- no border, no fill, just the
+                        table's own bg-surface showing through, which is
+                        what actually reads as "separate section" rather
+                        than one more column in the seat grid. */}
+                    <td className="p-0" />
+                    <td
+                      rowSpan={cell.span}
+                      className={`p-0 align-middle border-b ${CELL_RULE} ${!cell.coach ? 'bg-surface2/40' : ''}`}
+                      style={cell.coach ? { background: COACH_FILL } : undefined}
+                    >
+                      {cell.coach && (
+                        <span
+                          className="flex items-center justify-center text-ink text-[11px] font-semibold truncate px-1.5 py-1.5"
+                          title={`${cell.coach.id} — Head Coach`}
+                        >
+                          {cell.coach.id}
+                        </span>
+                      )}
+                    </td>
+                  </>
+                )
+              })()}
             </tr>
           ))}
         </tbody>

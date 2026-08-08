@@ -37,11 +37,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Visible keyboard focus everywhere */
+/* Visible keyboard focus everywhere. No border-radius here on purpose --
+   modern browsers already clip the outline to whatever border-radius the
+   focused element itself declares, so a hardcoded value here doesn't
+   round the outline, it OVERRIDES the element's real radius outright. That
+   silently squared off every rounded-full pill on the site the moment it
+   was focused/clicked (search bar, EventPicker's "Add an event…" input --
+   reported as "the box becomes square when selecting") since 6px (this
+   rule) beat 9999px (rounded-full) in the cascade regardless of which one
+   the element actually wanted. */
 :focus-visible {
   outline: 2px solid #FF4655;
   outline-offset: 2px;
-  border-radius: 6px;
 }
 
 @media (prefers-reduced-motion: reduce) {

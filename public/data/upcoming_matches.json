@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-09T10:07:54Z"
+    "fetchedAt": "2026-08-09T13:33:48Z"
   },
   "matches": [
     {
@@ -327,7 +327,7 @@
       "bestOf": 3,
       "team1": "EDward Gaming",
       "team2": "Wolves Esports",
-      "score1": 1,
+      "score1": 2,
       "score2": 1,
       "started": true
     },
@@ -345,30 +345,30 @@
       "started": true
     },
     {
-      "key": "1786273200|nongshim-redforce|rex-regum-qeon",
+      "key": "1786270800|nongshim-redforce|rex-regum-qeon",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2/Group Stage",
       "phase": "Group Stage",
-      "timestamp": 1786273200,
+      "timestamp": 1786270800,
       "bestOf": 3,
       "team1": "Nongshim RedForce",
       "team2": "Rex Regum Qeon",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 2,
+      "started": true
     },
     {
-      "key": "1786273200|trace-esports|funplus-phoenix",
+      "key": "1786274400|trace-esports|funplus-phoenix",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
-      "timestamp": 1786273200,
+      "timestamp": 1786274400,
       "bestOf": 3,
       "team1": "Trace Esports",
       "team2": "FunPlus Phoenix",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1786287600|team-heretics|fire-flux-esports",
@@ -449,27 +449,27 @@
       "started": false
     },
     {
-      "key": "1786435200|tbd|tbd",
+      "key": "1786435200|tbd|edward-gaming",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1786435200,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "EDward Gaming",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1786442400|tbd|tbd",
+      "key": "1786442400|tbd|trace-esports",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1786442400,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "Trace Esports",
       "score1": null,
       "score2": null,
       "started": false
@@ -540,13 +540,13 @@
       "started": false
     },
     {
-      "key": "1786618800|tbd|sharper-esports",
+      "key": "1786618800|rex-regum-qeon|sharper-esports",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1786618800,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Rex Regum Qeon",
       "team2": "Sharper Esports",
       "score1": null,
       "score2": null,
@@ -677,6 +677,45 @@
       "timestamp": 1786730400,
       "bestOf": 3,
       "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1786741200|furia|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1786741200,
+      "bestOf": 3,
+      "team1": "FURIA",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1786752000|cloud9|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1786752000,
+      "bestOf": 3,
+      "team1": "Cloud9",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1786780800|xi-lai-gaming|tbd",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1786780800,
+      "bestOf": 3,
+      "team1": "Xi Lai Gaming",
       "team2": null,
       "score1": null,
       "score2": null,

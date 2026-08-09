@@ -1,9 +1,9 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-08-09T02:01:17Z",
+    "generatedAt": "2026-08-09T04:27:12Z",
     "qualificationRounds": 36,
-    "playersConsidered": 237
+    "playersConsidered": 242
   },
   "month": "2026-08",
   "player": "Chronicle",

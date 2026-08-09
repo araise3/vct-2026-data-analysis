@@ -56867,26 +56867,26 @@
       "stage": "Stage 2",
       "phase": "Group Stage",
       "week": "Group Stage: Week 4",
-      "playerRows": 110,
+      "playerRows": 130,
       "agentCounts": {
-        "Neon": 15,
-        "Sova": 13,
-        "Omen": 13,
-        "Viper": 12,
-        "Chamber": 9,
-        "Phoenix": 7,
+        "Neon": 18,
+        "Omen": 17,
+        "Viper": 14,
+        "Sova": 14,
+        "Phoenix": 10,
+        "Chamber": 10,
+        "Fade": 8,
         "Kayo": 6,
         "Harbor": 6,
-        "Fade": 6,
-        "Cypher": 5,
+        "Cypher": 6,
+        "Jett": 4,
+        "Skye": 4,
         "Astra": 3,
-        "Jett": 3,
         "Waylay": 3,
-        "Skye": 3,
         "Sage": 2,
         "Vyse": 2,
-        "Yoru": 1,
-        "Raze": 1
+        "Raze": 2,
+        "Yoru": 1
       },
       "mapStats": {
         "Breeze": {
@@ -56905,9 +56905,9 @@
           "defWinRounds": 3
         },
         "Split": {
-          "rounds": 28,
-          "atkWinRounds": 8,
-          "defWinRounds": 16
+          "rounds": 51,
+          "atkWinRounds": 18,
+          "defWinRounds": 29
         },
         "Summit": {
           "rounds": 43,
@@ -56915,9 +56915,9 @@
           "defWinRounds": 20
         },
         "Sunset": {
-          "rounds": 47,
-          "atkWinRounds": 26,
-          "defWinRounds": 17
+          "rounds": 68,
+          "atkWinRounds": 35,
+          "defWinRounds": 29
         }
       },
       "mapAgentCounts": {
@@ -56954,13 +56954,15 @@
           "Chamber": 1
         },
         "Split": {
-          "Viper": 2,
-          "Neon": 2,
-          "Omen": 2,
-          "Phoenix": 1,
-          "Fade": 1,
-          "Skye": 1,
-          "Cypher": 1
+          "Viper": 4,
+          "Omen": 4,
+          "Neon": 3,
+          "Phoenix": 2,
+          "Fade": 2,
+          "Skye": 2,
+          "Cypher": 1,
+          "Jett": 1,
+          "Raze": 1
         },
         "Summit": {
           "Omen": 3,
@@ -56977,16 +56979,16 @@
           "Harbor": 1
         },
         "Sunset": {
-          "Omen": 4,
-          "Chamber": 3,
-          "Neon": 3,
+          "Omen": 6,
+          "Neon": 5,
+          "Chamber": 4,
+          "Fade": 3,
+          "Phoenix": 3,
           "Sage": 2,
-          "Fade": 2,
+          "Sova": 2,
+          "Cypher": 2,
           "Skye": 1,
-          "Sova": 1,
           "Kayo": 1,
-          "Phoenix": 1,
-          "Cypher": 1,
           "Waylay": 1
         }
       }

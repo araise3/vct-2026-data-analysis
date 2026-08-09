@@ -9860,7 +9860,7 @@
           "name": "Ahn Byeong-wook",
           "joinDate": "2026-01-08",
           "leaveDate": "2026-06-17",
-          "newTeam": null,
+          "newTeam": "ONSIDE GAMING",
           "flag": "kr",
           "playerStatus": "STARTER"
         },
@@ -9884,7 +9884,7 @@
         },
         {
           "id": "Goo Sang-min",
-          "name": "TEN Valorant Global Invitational [ 50 ] Red Bull Home Ground #4",
+          "name": "TEN Valorant Global Invitational [ 51 ] Red Bull Home Ground #4",
           "joinDate": null,
           "leaveDate": null,
           "newTeam": null,
@@ -14304,6 +14304,42 @@
           "leaveDate": null,
           "flag": "my",
           "status": "active"
+        },
+        {
+          "id": "Vyminal",
+          "name": "Paco Santos",
+          "role": "Inactive Coach",
+          "joinDate": "2022-04-22",
+          "leaveDate": "2022-07-23",
+          "flag": "ph",
+          "status": "former"
+        },
+        {
+          "id": "Vyminal",
+          "name": "Paco Santos",
+          "role": "Head Coach",
+          "joinDate": "2022-03-01",
+          "leaveDate": "2022-04-22",
+          "flag": "ph",
+          "status": "former"
+        },
+        {
+          "id": "Rbtx",
+          "name": "Jose Carlo Jamir",
+          "role": "Tactical Coach",
+          "joinDate": "2022-03-01",
+          "leaveDate": "2023-01-06",
+          "flag": "ph",
+          "status": "former"
+        },
+        {
+          "id": "Ewok",
+          "name": "Marthinus Jacobus van der Walt",
+          "role": "Head Coach",
+          "joinDate": "2022-09-30",
+          "leaveDate": "2025-10-16",
+          "flag": "za",
+          "status": "former"
         }
       ]
     },

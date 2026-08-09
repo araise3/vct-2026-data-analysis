@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-09T07:37:49Z"
+    "fetchedAt": "2026-08-09T10:07:54Z"
   },
   "matches": [
     {
@@ -327,9 +327,9 @@
       "bestOf": 3,
       "team1": "EDward Gaming",
       "team2": "Wolves Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1786262400|varrel|paper-rex",
@@ -340,22 +340,9 @@
       "bestOf": 3,
       "team1": "VARREL",
       "team2": "Paper Rex",
-      "score1": null,
-      "score2": null,
-      "started": false
-    },
-    {
-      "key": "1786269600|trace-esports|funplus-phoenix",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786269600,
-      "bestOf": 3,
-      "team1": "Trace Esports",
-      "team2": "FunPlus Phoenix",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1786273200|nongshim-redforce|rex-regum-qeon",
@@ -366,6 +353,19 @@
       "bestOf": 3,
       "team1": "Nongshim RedForce",
       "team2": "Rex Regum Qeon",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1786273200|trace-esports|funplus-phoenix",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1786273200,
+      "bestOf": 3,
+      "team1": "Trace Esports",
+      "team2": "FunPlus Phoenix",
       "score1": null,
       "score2": null,
       "started": false

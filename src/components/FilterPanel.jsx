@@ -181,7 +181,7 @@ export default function FilterPanel({
           <Chevron open={open} />
           <span className="font-display text-sm font-semibold">Filters</span>
           {activeCount > 0 && (
-            <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent-bright">
+            <span className="text-[11px] px-1.5 py-0.5 rounded-2xl bg-accent/20 text-accent-bright">
               {activeCount}
             </span>
           )}

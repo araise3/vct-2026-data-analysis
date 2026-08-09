@@ -51,7 +51,7 @@ export default function FacetGroup({ label, options, selected, onChange, renderL
             <button
               key={value}
               onClick={() => toggle(value)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+              className={`px-3 py-1.5 rounded-2xl text-xs font-medium border transition-colors ${
                 active
                   ? 'bg-accent/20 text-accent-bright border-accent/50'
                   : 'bg-surface text-muted border-hairline hover:text-ink hover:border-muted'

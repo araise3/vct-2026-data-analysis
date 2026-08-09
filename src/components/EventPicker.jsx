@@ -5,8 +5,8 @@ import { eventLabel } from '../lib/format'
 /**
  * Multi-select event search. A plain text input backed by a fully custom
  * dropdown -- not the browser's native <input list>/<datalist> combo the
- * first version of this control used, which forces the input to lose its
- * rounded-full corners the moment the popup opens on Chromium, and gives
+ * first version of this control used, which forced the input to lose its
+ * own corner rounding the moment the popup opened on Chromium, and gave
  * no way to render a logo next to each suggestion. Selecting an option
  * adds it as its own removable pill rather than replacing a single value,
  * so more than one event can be in scope at once -- the caller ORs them
@@ -67,7 +67,7 @@ export default function EventPicker({ options, selected, onAdd, onRemove, disabl
       {selected.map((evt) => (
         <span
           key={evt}
-          className="inline-flex items-center gap-1.5 pl-1.5 pr-2 py-1 rounded-full bg-accent/15 text-accent-bright border border-accent/40 text-xs font-medium"
+          className="inline-flex items-center gap-1.5 pl-1.5 pr-2 py-1 rounded-2xl bg-accent/15 text-accent-bright border border-accent/40 text-xs font-medium"
         >
           <EventLogo event={evt} size={14} />
           {eventLabel(evt)}
@@ -93,7 +93,7 @@ export default function EventPicker({ options, selected, onAdd, onRemove, disabl
           }}
           placeholder="Add an event…"
           disabled={disabled}
-          className="w-full px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors border bg-surface text-muted border-hairline hover:text-ink hover:border-muted placeholder:text-muted focus:outline-none disabled:opacity-40 disabled:pointer-events-none"
+          className="w-full px-3.5 py-1.5 rounded-2xl text-xs font-medium transition-colors border bg-surface text-muted border-hairline hover:text-ink hover:border-muted placeholder:text-muted focus:outline-none disabled:opacity-40 disabled:pointer-events-none"
         />
         {open && filtered.length > 0 && (
           <div className="absolute top-full left-0 w-full mt-1 z-20 bg-surface border border-hairline rounded-lg shadow-lg overflow-hidden max-h-64 overflow-y-auto">

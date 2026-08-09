@@ -36,7 +36,7 @@ export default function StageTabs({ tabs, defaultTabId }) {
               <button
                 key={t.id}
                 onClick={() => setActiveId(t.id)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors border ${
+                className={`px-3.5 py-1.5 rounded-2xl text-xs font-medium transition-colors border ${
                   isActive
                     ? 'bg-accent/15 text-accent-bright border-accent/40'
                     : 'bg-surface text-muted border-hairline hover:text-ink hover:border-muted'

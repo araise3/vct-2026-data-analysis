@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-09T19:18:16Z"
+    "fetchedAt": "2026-08-09T22:01:45Z"
   },
   "matches": [
     {
@@ -393,7 +393,7 @@
       "team1": "Gentle Mates",
       "team2": "Enterprise Esports",
       "score1": 0,
-      "score2": 0,
+      "score2": 2,
       "started": true
     },
     {
@@ -405,9 +405,9 @@
       "bestOf": 3,
       "team1": "Evil Geniuses",
       "team2": "NRG",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1786320000|loud|100-thieves",
@@ -501,13 +501,13 @@
       "started": false
     },
     {
-      "key": "1786546800|tbd|eintracht-frankfurt",
+      "key": "1786546800|gentle-mates|eintracht-frankfurt",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1786546800,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Gentle Mates",
       "team2": "Eintracht Frankfurt",
       "score1": null,
       "score2": null,
@@ -756,6 +756,19 @@
       "bestOf": 3,
       "team1": "DetonatioN FocusMe",
       "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1786806000|fut-esports|eternal-fire",
+      "event": "Vct 2026 Emea Stage 2",
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
+      "phase": null,
+      "timestamp": 1786806000,
+      "bestOf": 3,
+      "team1": "FUT Esports",
+      "team2": "Eternal Fire",
       "score1": null,
       "score2": null,
       "started": false

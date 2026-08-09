@@ -75,103 +75,84 @@ export default function Tournaments() {
   if (loading) return <div className="text-muted text-sm">Loading…</div>
 
   return (
-    // rft.gg's content wrapper is NOT a single fixed number -- it's
-    // responsive: 1152px usable-1104 below Tailwind's `2xl` breakpoint
-    // (1536px), jumping to 1250px usable-1202 at/above it. Confirmed by
-    // binary-searching their live site: 1535px viewport -> 616px centre
-    // column, 1536px -> 714px, holds through 2560px (no further tier). A
-    // single static max-width (what this page shipped with initially)
-    // matches rft.gg correctly below 1536px but is visibly narrower on any
-    // normal desktop monitor at or above it -- exactly the gap a side-by-
-    // side screenshot at ~1920px caught.
+    // No page-local width override needed any more: `<main>`'s own
+    // `max-w-content` (tailwind.config.js) now matches rft.gg's real
+    // responsive wrapper directly -- 1104px usable below the `2xl`
+    // breakpoint, 1202px usable at/above it (see that token's own comment
+    // for how those numbers were measured) -- so this grid just fills
+    // `<main>`'s available width at every tier without needing to know
+    // either number itself. This page is what those two numbers were
+    // originally measured FOR, before the fix moved to the shared token;
+    // history in the project-history skill if the site width ever drifts
+    // from rft.gg's again and this page needs re-checking against it.
     //
-    // `<main>`'s own `max-w-content` (1160px, shared by every other page) is
-    // NOT itself responsive, so simply widening THIS page's own max-width at
-    // 2xl doesn't work on its own -- <main> would still clamp it to 1112px
-    // usable regardless (confirmed: adding `2xl:max-w-[1202px]` to the grid
-    // alone measured 624px centre, not 714px, since the parent's static cap
-    // wins first). Fixed with a NEGATIVE MARGIN active only at 2xl, sized to
-    // exactly the gap between the two: main's own usable width at 2xl is
-    // 1160 - 48 (its own px-4 md:px-6) = 1112px; the target is 1202px; the
-    // difference (90px) split evenly is 45px per side. A block element's
-    // rendered width with `width: auto` is containing-block-width minus its
-    // own margins, so `-45px` margin on each side makes this wrapper render
-    // at exactly 1112 + 90 = 1202px -- deliberately NOT the more common
-    // `w-screen` + `left-1/2 -translate-x-1/2` full-bleed trick, which was
-    // tried first and measured a real 5px horizontal-scroll bug (100vw
-    // includes the scrollbar's own width in this engine, so `w-screen` is
-    // reliably a few px wider than the actual visible viewport once a page
-    // is tall enough to show one). This margin technique never references
-    // the viewport at all, so it can't have that failure mode.
-    <div className="2xl:-mx-[45px]">
-      {/* rft.gg's own events-page grid, verbatim: one column on mobile, the
-          circuit rail from lg, the match rail from xl. Both rails are direct
-          grid children (not nested in the centre column) so bringing them
-          back on mobile later is a CSS `order` swap rather than a second
-          instance -- rendering either aside twice would fork the day-strip
-          and compare-box state. */}
-      <div className="mx-auto grid max-w-[1104px] grid-cols-1 gap-6 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)_220px] 2xl:max-w-[1202px]">
-        <aside className="hidden lg:flex lg:flex-col lg:gap-4">
-          <CircuitList circuits={circuits} />
-          <PlayerOfMonthCard data={playerMonthData} />
-          <ComparePlayersCard />
-        </aside>
+    // rft.gg's own events-page grid, verbatim: one column on mobile, the
+    // circuit rail from lg, the match rail from xl. Both rails are direct
+    // grid children (not nested in the centre column) so bringing them back
+    // on mobile later is a CSS `order` swap rather than a second instance --
+    // rendering either aside twice would fork the day-strip and compare-box
+    // state.
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)_220px]">
+      <aside className="hidden lg:flex lg:flex-col lg:gap-4">
+        <CircuitList circuits={circuits} />
+        <PlayerOfMonthCard data={playerMonthData} />
+        <ComparePlayersCard />
+      </aside>
 
-        <div className="flex min-w-0 flex-col gap-4">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h1 className="font-display text-2xl font-semibold text-ink">Events</h1>
-              <p className="mt-1 text-sm text-muted">
-                {events.length} events · {num(records.length)} matches
-              </p>
-            </div>
-            <FilterChips options={TABS} value={activeTab} onChange={setTab} />
-          </div>
-
-          <div className="overflow-hidden rounded-2xl border border-hairline bg-surface">
-            {shown.length === 0 ? (
-              <p className="px-5 py-8 text-center text-sm text-muted">
-                No {activeTab.toLowerCase()} events.
-              </p>
-            ) : (
-              months.map((g) => (
-                <div key={g.key}>
-                  <div className="border-b border-hairline bg-surface2/40 px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted">
-                    {g.anchorDate ? monthLabel(g.anchorDate) : 'Dates TBD'}
-                  </div>
-                  <div className="divide-y divide-hairline/60 px-2 py-1">
-                    {g.events.map((e) => (
-                      <EventRow key={e.name} event={e} />
-                    ))}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          {/* CC-BY-SA 3.0 requires attribution wherever Liquipedia content is
-              displayed -- every scraper here asserts this in its docstring,
-              but until now nothing in src/ actually rendered it. The dates,
-              prize pools, locations and fixture list on this page are all
-              Liquipedia's, so this is where the obligation lands. Reads the
-              strings from the data itself rather than hardcoding them, so a
-              licence change in the pipeline surfaces here automatically. */}
-          {attribution.length > 0 && (
-            <p className="px-1 text-[11px] leading-relaxed text-muted/60">
-              {attribution.join(' ')}
+      <div className="flex min-w-0 flex-col gap-4">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h1 className="font-display text-2xl font-semibold text-ink">Events</h1>
+            <p className="mt-1 text-sm text-muted">
+              {events.length} events · {num(records.length)} matches
             </p>
+          </div>
+          <FilterChips options={TABS} value={activeTab} onChange={setTab} />
+        </div>
+
+        <div className="overflow-hidden rounded-2xl border border-hairline bg-surface">
+          {shown.length === 0 ? (
+            <p className="px-5 py-8 text-center text-sm text-muted">
+              No {activeTab.toLowerCase()} events.
+            </p>
+          ) : (
+            months.map((g) => (
+              <div key={g.key}>
+                <div className="border-b border-hairline bg-surface2/40 px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted">
+                  {g.anchorDate ? monthLabel(g.anchorDate) : 'Dates TBD'}
+                </div>
+                <div className="divide-y divide-hairline/60 px-2 py-1">
+                  {g.events.map((e) => (
+                    <EventRow key={e.name} event={e} />
+                  ))}
+                </div>
+              </div>
+            ))
           )}
         </div>
 
-        <aside className="hidden xl:flex xl:flex-col xl:gap-4">
-          <UpcomingRail
-            days={schedule.days}
-            defaultDayKey={defaultDayKey()}
-            fetchedAt={schedule.fetchedAt}
-          />
-          <ResultsRail matches={recent} />
-        </aside>
+        {/* CC-BY-SA 3.0 requires attribution wherever Liquipedia content is
+            displayed -- every scraper here asserts this in its docstring, but
+            until now nothing in src/ actually rendered it. The dates, prize
+            pools, locations and fixture list on this page are all Liquipedia's,
+            so this is where the obligation lands. Reads the strings from the
+            data itself rather than hardcoding them, so a licence change in the
+            pipeline surfaces here automatically. */}
+        {attribution.length > 0 && (
+          <p className="px-1 text-[11px] leading-relaxed text-muted/60">
+            {attribution.join(' ')}
+          </p>
+        )}
       </div>
+
+      <aside className="hidden xl:flex xl:flex-col xl:gap-4">
+        <UpcomingRail
+          days={schedule.days}
+          defaultDayKey={defaultDayKey()}
+          fetchedAt={schedule.fetchedAt}
+        />
+        <ResultsRail matches={recent} />
+      </aside>
     </div>
   )
 }

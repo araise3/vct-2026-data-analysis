@@ -38,19 +38,28 @@ export default {
         '2xl': '0.875rem',
       },
       maxWidth: {
-        // Was rft.gg's own `max-w-content` token (1152px / 72rem). Now set
-        // to vlr.gg's own `#wrapper` max-width instead (1160px, read off
-        // their live stylesheet at /stats) -- barely different in absolute
-        // terms, but this is the actual site the tables' own density
-        // (column widths, abbreviations) is modeled on, so its width is the
-        // more consistent reference now that content is the thing driving
-        // the number rather than rft.gg's chrome. Paired everywhere with
-        // `mx-auto px-4 md:px-6`, matching both sites' navbar-inner-row +
-        // content-wrapper pattern.
+        // rft.gg's own `max-w-content` token (72rem / 1152px) -- restored to
+        // their exact value after a period set to vlr.gg's own `#wrapper`
+        // width (1160px) instead. Reverted per direct request to match
+        // rft.gg's real width sitewide, not just on the Events page it was
+        // first fixed on.
         //
-        // Single source of truth for the site width: <main>, the footer, and
-        // TopNav's inner row all reference it, so this one value widens or
-        // narrows the whole site.
+        // NOT a single number on rft.gg's own site, either -- their real
+        // wrapper is responsive: this 1152px value only holds below
+        // Tailwind's `2xl` breakpoint (1536px); at/above it their own content
+        // wrapper measures 1250px, confirmed by binary-searching their live
+        // site (1535px viewport -> 616px centre column on a 3-col page,
+        // 1536px -> 714px, holds unchanged through 2560px -- no third tier).
+        // Tailwind's `maxWidth` theme values can't themselves be responsive,
+        // so every place this token is used pairs it with an explicit
+        // `2xl:max-w-[1250px]` override rather than encoding the jump here --
+        // see <main>/the footer in App.jsx and TopNav's inner row.
+        //
+        // Single source of truth for the site's BASE width (every page below
+        // 2xl): <main>, the footer, and TopNav's inner row all reference it,
+        // so this one value widens or narrows the whole site below 2xl; the
+        // 2xl override at each of those three sites is the second half of
+        // the pair and must move with it if this number ever changes again.
         //
         // This was bumped to 1800px for a while to stop the widest tables
         // (the Agents matrix) needing a horizontal scrollbar, but that grew
@@ -62,7 +71,7 @@ export default {
         // fit falls back to DataTable's own overflow-auto horizontal
         // scrollbar, same as it always has for a many-column table on a
         // narrow viewport.
-        content: '1160px',
+        content: '1152px',
       },
     },
   },

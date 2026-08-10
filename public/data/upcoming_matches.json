@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-10T08:15:44Z"
+    "fetchedAt": "2026-08-10T10:46:25Z"
   },
   "matches": [
     {
@@ -431,9 +431,9 @@
       "bestOf": 3,
       "team1": "All Gamers",
       "team2": "JDG Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1786356000|titan-esports-club|dragon-ranger-gaming",

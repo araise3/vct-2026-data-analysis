@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-10T16:27:01Z"
+    "fetchedAt": "2026-08-10T19:36:38Z"
   },
   "matches": [
     {
@@ -807,6 +807,19 @@
       "timestamp": 1786838400,
       "bestOf": 3,
       "team1": "Sentinels",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1786867200|t1|tbd",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1786867200,
+      "bestOf": 3,
+      "team1": "T1",
       "team2": null,
       "score1": null,
       "score2": null,

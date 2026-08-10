@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-09T22:01:45Z"
+    "fetchedAt": "2026-08-10T02:55:09Z"
   },
   "matches": [
     {
@@ -406,21 +406,21 @@
       "team1": "Evil Geniuses",
       "team2": "NRG",
       "score1": 0,
-      "score2": 0,
+      "score2": 2,
       "started": true
     },
     {
-      "key": "1786320000|loud|100-thieves",
+      "key": "1786316100|loud|100-thieves",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2/Group Stage",
       "phase": "Group Stage",
-      "timestamp": 1786320000,
+      "timestamp": 1786316100,
       "bestOf": 3,
       "team1": "LOUD",
       "team2": "100 Thieves",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 2,
+      "started": true
     },
     {
       "key": "1786348800|all-gamers|jdg-esports",
@@ -579,27 +579,27 @@
       "started": false
     },
     {
-      "key": "1786654800|kr-esports|tbd",
+      "key": "1786654800|kr-esports|bestia",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1786654800,
       "bestOf": 3,
       "team1": "KRÜ Esports",
-      "team2": null,
+      "team2": "BESTIA",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1786665600|envy|tbd",
+      "key": "1786665600|envy|m80",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1786665600,
       "bestOf": 3,
       "team1": "ENVY",
-      "team2": null,
+      "team2": "M80",
       "score1": null,
       "score2": null,
       "started": false
@@ -683,27 +683,27 @@
       "started": false
     },
     {
-      "key": "1786741200|furia|tbd",
+      "key": "1786741200|furia|2game-esports",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1786741200,
       "bestOf": 3,
       "team1": "FURIA",
-      "team2": null,
+      "team2": "2GAME Esports",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1786752000|cloud9|tbd",
+      "key": "1786752000|cloud9|fluxo-w7m",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1786752000,
       "bestOf": 3,
       "team1": "Cloud9",
-      "team2": null,
+      "team2": "Fluxo W7M",
       "score1": null,
       "score2": null,
       "started": false
@@ -769,6 +769,32 @@
       "bestOf": 3,
       "team1": "FUT Esports",
       "team2": "Eternal Fire",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1786816800|fire-flux-esports|enterprise-esports",
+      "event": "Vct 2026 Emea Stage 2",
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
+      "phase": null,
+      "timestamp": 1786816800,
+      "bestOf": 3,
+      "team1": "Fire Flux Esports",
+      "team2": "Enterprise Esports",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1786827600|mibr|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1786827600,
+      "bestOf": 3,
+      "team1": "MIBR",
+      "team2": null,
       "score1": null,
       "score2": null,
       "started": false

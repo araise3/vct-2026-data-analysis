@@ -56871,8 +56871,8 @@
       "agentCounts": {
         "Omen": 23,
         "Neon": 22,
-        "Viper": 18,
         "Sova": 18,
+        "Viper": 18,
         "Phoenix": 14,
         "Chamber": 12,
         "Fade": 12,
@@ -56882,8 +56882,8 @@
         "Jett": 6,
         "Skye": 4,
         "Raze": 4,
-        "Astra": 3,
         "Waylay": 3,
+        "Astra": 3,
         "Sage": 3,
         "Vyse": 3,
         "Yoru": 1
@@ -56925,24 +56925,24 @@
           "Sova": 10,
           "Viper": 9,
           "Harbor": 6,
-          "Neon": 5,
           "Jett": 5,
-          "Kayo": 4,
+          "Neon": 5,
           "Phoenix": 4,
+          "Kayo": 4,
           "Omen": 2,
           "Cypher": 2,
+          "Chamber": 1,
           "Astra": 1,
-          "Yoru": 1,
-          "Chamber": 1
+          "Yoru": 1
         },
         "Haven": {
+          "Neon": 4,
           "Sova": 4,
           "Phoenix": 4,
-          "Neon": 4,
           "Chamber": 3,
           "Omen": 3,
-          "Astra": 1,
-          "Cypher": 1
+          "Cypher": 1,
+          "Astra": 1
         },
         "Lotus": {
           "Omen": 4,
@@ -63796,8 +63796,8 @@
         "Raze": 8,
         "Vyse": 5,
         "Waylay": 5,
-        "Astra": 3,
         "Harbor": 3,
+        "Astra": 3,
         "Deadlock": 2,
         "Skye": 2,
         "Kayo": 1,
@@ -63842,8 +63842,8 @@
       },
       "mapAgentCounts": {
         "Ascent": {
-          "Sova": 12,
           "Omen": 12,
+          "Sova": 12,
           "Phoenix": 9,
           "Cypher": 9,
           "Jett": 5,
@@ -63904,19 +63904,19 @@
           "Omen": 6,
           "Viper": 6,
           "Fade": 5,
-          "Yoru": 3,
-          "Neon": 3,
-          "Sova": 3,
           "Chamber": 3,
-          "Vyse": 2,
+          "Sova": 3,
+          "Neon": 3,
+          "Yoru": 3,
           "Phoenix": 2,
-          "Astra": 1,
-          "Cypher": 1,
+          "Vyse": 2,
           "Kayo": 1,
           "Harbor": 1,
           "Waylay": 1,
           "Sage": 1,
-          "Jett": 1
+          "Jett": 1,
+          "Astra": 1,
+          "Cypher": 1
         },
         "Sunset": {
           "Omen": 4,

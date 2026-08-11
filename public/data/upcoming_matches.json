@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-11T10:28:34Z"
+    "fetchedAt": "2026-08-11T14:02:22Z"
   },
   "matches": [
-    {
-      "key": "1786014000|wolves-esports|dragon-ranger-gaming",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786014000,
-      "bestOf": 3,
-      "team1": "Wolves Esports",
-      "team2": "Dragon Ranger Gaming",
-      "score1": 1,
-      "score2": 2,
-      "started": true
-    },
     {
       "key": "1786028400|giantx|eintracht-frankfurt",
       "event": "Vct 2026 Emea Stage 2",
@@ -418,22 +405,22 @@
       "bestOf": 3,
       "team1": "JDG Esports",
       "team2": "EDward Gaming",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 0,
+      "started": true
     },
     {
-      "key": "1786442400|dragon-ranger-gaming|trace-esports",
+      "key": "1786443000|dragon-ranger-gaming|trace-esports",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
-      "timestamp": 1786442400,
+      "timestamp": 1786443000,
       "bestOf": 3,
       "team1": "Dragon Ranger Gaming",
       "team2": "Trace Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 2,
+      "started": true
     },
     {
       "key": "1786521600|all-gamers|titan-esports-club",
@@ -449,14 +436,14 @@
       "started": false
     },
     {
-      "key": "1786528800|tbd|tbd",
+      "key": "1786528800|jdg-esports|trace-esports",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1786528800,
       "bestOf": 3,
-      "team1": null,
-      "team2": null,
+      "team1": "JDG Esports",
+      "team2": "Trace Esports",
       "score1": null,
       "score2": null,
       "started": false
@@ -846,32 +833,6 @@
       "timestamp": 1786903200,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
-      "score1": null,
-      "score2": null,
-      "started": false
-    },
-    {
-      "key": "1786914000|g2-esports|tbd",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
-      "phase": null,
-      "timestamp": 1786914000,
-      "bestOf": 3,
-      "team1": "G2 Esports",
-      "team2": null,
-      "score1": null,
-      "score2": null,
-      "started": false
-    },
-    {
-      "key": "1786924800|evil-geniuses|tbd",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
-      "phase": null,
-      "timestamp": 1786924800,
-      "bestOf": 3,
-      "team1": "Evil Geniuses",
       "team2": null,
       "score1": null,
       "score2": null,

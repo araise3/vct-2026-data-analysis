@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-11T02:37:31Z"
+    "fetchedAt": "2026-08-11T07:49:52Z"
   },
   "matches": [
-    {
-      "key": "1786005000|funplus-phoenix|jdg-esports",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786005000,
-      "bestOf": 3,
-      "team1": "FunPlus Phoenix",
-      "team2": "JDG Esports",
-      "score1": 1,
-      "score2": 2,
-      "started": true
-    },
     {
       "key": "1786014000|wolves-esports|dragon-ranger-gaming",
       "event": "Vct 2026 China Stage 2",

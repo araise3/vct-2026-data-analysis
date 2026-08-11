@@ -64125,20 +64125,20 @@
         "Cypher": 10,
         "Fade": 9,
         "Sova": 8,
-        "Viper": 5,
         "Raze": 5,
+        "Viper": 5,
         "Phoenix": 5,
         "Waylay": 4,
         "Vyse": 4,
-        "Jett": 3,
         "Yoru": 3,
-        "Astra": 2,
-        "Kayo": 2,
+        "Jett": 3,
         "Skye": 2,
+        "Astra": 2,
         "Chamber": 2,
-        "Brimstone": 1,
+        "Kayo": 2,
         "Sage": 1,
-        "Deadlock": 1
+        "Deadlock": 1,
+        "Brimstone": 1
       },
       "mapStats": {
         "Ascent": {
@@ -64169,16 +64169,16 @@
       },
       "mapAgentCounts": {
         "Ascent": {
-          "Omen": 4,
           "Sova": 4,
-          "Jett": 3,
+          "Omen": 4,
           "Cypher": 3,
-          "Waylay": 1,
-          "Vyse": 1,
-          "Kayo": 1,
+          "Jett": 3,
           "Phoenix": 1,
           "Deadlock": 1,
-          "Yoru": 1
+          "Yoru": 1,
+          "Waylay": 1,
+          "Vyse": 1,
+          "Kayo": 1
         },
         "Lotus": {
           "Neon": 4,
@@ -64193,27 +64193,27 @@
         },
         "Split": {
           "Neon": 4,
-          "Fade": 3,
           "Viper": 3,
           "Omen": 3,
-          "Phoenix": 2,
+          "Fade": 3,
           "Raze": 2,
+          "Phoenix": 2,
+          "Skye": 1,
           "Astra": 1,
-          "Vyse": 1,
-          "Skye": 1
+          "Vyse": 1
         },
         "Summit": {
           "Neon": 4,
           "Cypher": 3,
-          "Fade": 2,
-          "Omen": 2,
           "Yoru": 2,
           "Sova": 2,
-          "Phoenix": 1,
-          "Brimstone": 1,
+          "Fade": 2,
+          "Omen": 2,
           "Astra": 1,
           "Viper": 1,
-          "Chamber": 1
+          "Chamber": 1,
+          "Phoenix": 1,
+          "Brimstone": 1
         },
         "Sunset": {
           "Neon": 4,
@@ -64242,21 +64242,21 @@
         "Omen": 19,
         "Neon": 14,
         "Viper": 11,
-        "Phoenix": 10,
         "Cypher": 10,
+        "Phoenix": 10,
         "Sova": 10,
         "Fade": 9,
         "Jett": 5,
         "Raze": 4,
-        "Chamber": 3,
-        "Skye": 3,
         "Waylay": 3,
-        "Harbor": 2,
+        "Skye": 3,
+        "Chamber": 3,
         "Vyse": 2,
         "Kayo": 2,
-        "Astra": 1,
+        "Harbor": 2,
         "Brimstone": 1,
-        "Yoru": 1
+        "Yoru": 1,
+        "Astra": 1
       },
       "mapStats": {
         "Ascent": {
@@ -64330,28 +64330,28 @@
         },
         "Split": {
           "Omen": 6,
-          "Neon": 5,
           "Viper": 5,
+          "Neon": 5,
           "Fade": 4,
           "Phoenix": 4,
-          "Skye": 2,
           "Waylay": 2,
-          "Astra": 1,
-          "Jett": 1
+          "Skye": 2,
+          "Jett": 1,
+          "Astra": 1
         },
         "Summit": {
           "Neon": 3,
+          "Sova": 2,
+          "Cypher": 2,
+          "Omen": 2,
           "Viper": 2,
           "Fade": 2,
           "Chamber": 2,
-          "Omen": 2,
-          "Sova": 2,
-          "Cypher": 2,
-          "Harbor": 1,
           "Brimstone": 1,
           "Kayo": 1,
           "Waylay": 1,
-          "Yoru": 1
+          "Yoru": 1,
+          "Harbor": 1
         }
       }
     },

@@ -60770,11 +60770,11 @@
         "Waylay": 3,
         "Jett": 3,
         "Raze": 2,
-        "Viper": 1,
-        "Kayo": 1,
         "Astra": 1,
         "Harbor": 1,
-        "Skye": 1
+        "Skye": 1,
+        "Viper": 1,
+        "Kayo": 1
       },
       "mapStats": {
         "Ascent": {
@@ -60820,20 +60820,20 @@
         "Summit": {
           "Fade": 4,
           "Cypher": 3,
-          "Omen": 2,
-          "Neon": 2,
           "Raze": 2,
           "Waylay": 2,
-          "Viper": 1,
-          "Phoenix": 1,
+          "Omen": 2,
+          "Neon": 2,
           "Astra": 1,
           "Harbor": 1,
-          "Jett": 1
+          "Jett": 1,
+          "Viper": 1,
+          "Phoenix": 1
         },
         "Sunset": {
           "Neon": 2,
-          "Omen": 2,
           "Cypher": 2,
+          "Omen": 2,
           "Sova": 1,
           "Kayo": 1,
           "Phoenix": 1,

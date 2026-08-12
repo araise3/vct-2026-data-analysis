@@ -60566,6 +60566,76 @@
       "event": "Vct 2026 China Stage 2",
       "stage": "Stage 2",
       "phase": "Play-Ins",
+      "week": "Play-Ins: Upper Final",
+      "playerRows": 30,
+      "agentCounts": {
+        "Cypher": 5,
+        "Omen": 5,
+        "Neon": 4,
+        "Sova": 4,
+        "Phoenix": 4,
+        "Fade": 2,
+        "Kayo": 1,
+        "Jett": 1,
+        "Viper": 1,
+        "Astra": 1,
+        "Waylay": 1,
+        "Raze": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 26,
+          "atkWinRounds": 14,
+          "defWinRounds": 10
+        },
+        "Summit": {
+          "rounds": 22,
+          "atkWinRounds": 9,
+          "defWinRounds": 13
+        },
+        "Sunset": {
+          "rounds": 23,
+          "atkWinRounds": 11,
+          "defWinRounds": 12
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Phoenix": 2,
+          "Sova": 2,
+          "Omen": 2,
+          "Cypher": 2,
+          "Jett": 1,
+          "Neon": 1
+        },
+        "Summit": {
+          "Fade": 2,
+          "Omen": 1,
+          "Phoenix": 1,
+          "Viper": 1,
+          "Neon": 1,
+          "Astra": 1,
+          "Cypher": 1,
+          "Waylay": 1,
+          "Raze": 1
+        },
+        "Sunset": {
+          "Neon": 2,
+          "Cypher": 2,
+          "Sova": 2,
+          "Omen": 2,
+          "Kayo": 1,
+          "Phoenix": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2026,
+      "region": "China",
+      "event": "Vct 2026 China Stage 2",
+      "stage": "Stage 2",
+      "phase": "Play-Ins",
       "week": "Play-Ins: Upper Quarterfinals",
       "playerRows": 120,
       "agentCounts": {
@@ -60803,11 +60873,11 @@
         "Waylay": 3,
         "Jett": 3,
         "Raze": 2,
-        "Viper": 1,
-        "Kayo": 1,
         "Astra": 1,
         "Harbor": 1,
-        "Skye": 1
+        "Skye": 1,
+        "Viper": 1,
+        "Kayo": 1
       },
       "mapStats": {
         "Ascent": {
@@ -60853,15 +60923,15 @@
         "Summit": {
           "Fade": 4,
           "Cypher": 3,
-          "Omen": 2,
-          "Neon": 2,
           "Raze": 2,
           "Waylay": 2,
-          "Viper": 1,
-          "Phoenix": 1,
+          "Omen": 2,
+          "Neon": 2,
           "Astra": 1,
           "Harbor": 1,
-          "Jett": 1
+          "Jett": 1,
+          "Viper": 1,
+          "Phoenix": 1
         },
         "Sunset": {
           "Neon": 2,

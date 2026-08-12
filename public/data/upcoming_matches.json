@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-12T08:02:22Z"
+    "fetchedAt": "2026-08-12T14:02:26Z"
   },
   "matches": [
-    {
-      "key": "1786050000|evil-geniuses|furia",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2/Group Stage",
-      "phase": "Group Stage",
-      "timestamp": 1786050000,
-      "bestOf": 3,
-      "team1": "Evil Geniuses",
-      "team2": "FURIA",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
     {
       "key": "1786057800|envy|nrg",
       "event": "Vct 2026 Americas Stage 2",
@@ -405,22 +392,22 @@
       "bestOf": 3,
       "team1": "All Gamers",
       "team2": "Titan Esports Club",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 2,
+      "started": true
     },
     {
-      "key": "1786528800|jdg-esports|trace-esports",
+      "key": "1786535400|jdg-esports|trace-esports",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
-      "timestamp": 1786528800,
+      "timestamp": 1786535400,
       "bestOf": 3,
       "team1": "JDG Esports",
       "team2": "Trace Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1786546800|gentle-mates|eintracht-frankfurt",
@@ -540,27 +527,27 @@
       "started": false
     },
     {
-      "key": "1786694400|tyloo|tbd",
+      "key": "1786694400|nova-esports|tbd",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1786694400,
       "bestOf": 3,
-      "team1": "TYLOO",
+      "team1": "Nova Esports",
       "team2": null,
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1786701600|nova-esports|tbd",
+      "key": "1786701600|tyloo|titan-esports-club",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1786701600,
       "bestOf": 3,
-      "team1": "Nova Esports",
-      "team2": null,
+      "team1": "TYLOO",
+      "team2": "Titan Esports Club",
       "score1": null,
       "score2": null,
       "started": false
@@ -631,13 +618,13 @@
       "started": false
     },
     {
-      "key": "1786780800|xi-lai-gaming|tbd",
+      "key": "1786780800|bilibili-gaming|tbd",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1786780800,
       "bestOf": 3,
-      "team1": "Xi Lai Gaming",
+      "team1": "Bilibili Gaming",
       "team2": null,
       "score1": null,
       "score2": null,
@@ -657,14 +644,14 @@
       "started": false
     },
     {
-      "key": "1786788000|bilibili-gaming|tbd",
+      "key": "1786788000|xi-lai-gaming|all-gamers",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1786788000,
       "bestOf": 3,
-      "team1": "Bilibili Gaming",
-      "team2": null,
+      "team1": "Xi Lai Gaming",
+      "team2": "All Gamers",
       "score1": null,
       "score2": null,
       "started": false

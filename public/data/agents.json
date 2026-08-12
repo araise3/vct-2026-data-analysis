@@ -64240,45 +64240,59 @@
       "stage": "Stage 2",
       "phase": "Play-Ins",
       "week": "Play-Ins: Lower Round 1",
-      "playerRows": 20,
+      "playerRows": 50,
       "agentCounts": {
-        "Omen": 2,
-        "Fade": 2,
+        "Neon": 8,
+        "Sova": 7,
+        "Omen": 5,
+        "Astra": 5,
+        "Phoenix": 4,
+        "Chamber": 4,
+        "Fade": 3,
+        "Vyse": 3,
+        "Cypher": 3,
+        "Yoru": 2,
         "Jett": 2,
-        "Neon": 2,
-        "Astra": 2,
-        "Vyse": 2,
-        "Sova": 2,
-        "Yoru": 1,
         "Viper": 1,
         "Raze": 1,
-        "Phoenix": 1,
-        "Cypher": 1,
-        "Breach": 1
+        "Breach": 1,
+        "Sage": 1
       },
       "mapStats": {
         "Haven": {
-          "rounds": 22,
-          "atkWinRounds": 13,
-          "defWinRounds": 9
+          "rounds": 46,
+          "atkWinRounds": 28,
+          "defWinRounds": 18
         },
         "Split": {
           "rounds": 24,
           "atkWinRounds": 15,
           "defWinRounds": 9
+        },
+        "Summit": {
+          "rounds": 20,
+          "atkWinRounds": 7,
+          "defWinRounds": 13
+        },
+        "Sunset": {
+          "rounds": 28,
+          "atkWinRounds": 16,
+          "defWinRounds": 8
         }
       },
       "mapAgentCounts": {
         "Haven": {
-          "Sova": 2,
-          "Omen": 1,
-          "Phoenix": 1,
+          "Sova": 3,
+          "Neon": 3,
+          "Omen": 2,
+          "Phoenix": 2,
+          "Astra": 2,
+          "Vyse": 2,
+          "Chamber": 2,
           "Jett": 1,
           "Cypher": 1,
-          "Astra": 1,
-          "Vyse": 1,
           "Breach": 1,
-          "Neon": 1
+          "Fade": 1
         },
         "Split": {
           "Fade": 2,
@@ -64290,6 +64304,24 @@
           "Raze": 1,
           "Astra": 1,
           "Vyse": 1
+        },
+        "Summit": {
+          "Astra": 2,
+          "Sova": 2,
+          "Neon": 2,
+          "Cypher": 1,
+          "Yoru": 1,
+          "Phoenix": 1,
+          "Chamber": 1
+        },
+        "Sunset": {
+          "Neon": 2,
+          "Sova": 2,
+          "Omen": 2,
+          "Chamber": 1,
+          "Sage": 1,
+          "Cypher": 1,
+          "Phoenix": 1
         }
       }
     },

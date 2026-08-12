@@ -60292,6 +60292,58 @@
       "event": "Vct 2026 China Stage 2",
       "stage": "Stage 2",
       "phase": "Play-Ins",
+      "week": "Play-Ins: Lower Final",
+      "playerRows": 20,
+      "agentCounts": {
+        "Omen": 4,
+        "Neon": 4,
+        "Viper": 2,
+        "Waylay": 2,
+        "Sova": 2,
+        "Cypher": 2,
+        "Skye": 1,
+        "Fade": 1,
+        "Phoenix": 1,
+        "Sage": 1
+      },
+      "mapStats": {
+        "Split": {
+          "rounds": 23,
+          "atkWinRounds": 12,
+          "defWinRounds": 11
+        },
+        "Sunset": {
+          "rounds": 21,
+          "atkWinRounds": 9,
+          "defWinRounds": 12
+        }
+      },
+      "mapAgentCounts": {
+        "Split": {
+          "Omen": 2,
+          "Viper": 2,
+          "Waylay": 2,
+          "Neon": 2,
+          "Skye": 1,
+          "Fade": 1
+        },
+        "Sunset": {
+          "Neon": 2,
+          "Sova": 2,
+          "Cypher": 2,
+          "Omen": 2,
+          "Phoenix": 1,
+          "Sage": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2026,
+      "region": "China",
+      "event": "Vct 2026 China Stage 2",
+      "stage": "Stage 2",
+      "phase": "Play-Ins",
       "week": "Play-Ins: Lower Round 1",
       "playerRows": 50,
       "agentCounts": {

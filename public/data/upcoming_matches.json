@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-12T19:45:13Z"
+    "fetchedAt": "2026-08-12T22:22:19Z"
   },
   "matches": [
-    {
-      "key": "1786146000|g2-esports|loud",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2/Group Stage",
-      "phase": "Group Stage",
-      "timestamp": 1786146000,
-      "bestOf": 3,
-      "team1": "G2 Esports",
-      "team2": "LOUD",
-      "score1": 0,
-      "score2": 2,
-      "started": true
-    },
     {
       "key": "1786176000|a-team|wolves-esports",
       "event": "Vct 2026 China Stage 2",
@@ -29,19 +16,6 @@
       "team1": "A Team",
       "team2": "Wolves Esports",
       "score1": 1,
-      "score2": 2,
-      "started": true
-    },
-    {
-      "key": "1786176000|kiwoom-drx|t1",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2/Group Stage",
-      "phase": "Group Stage",
-      "timestamp": 1786176000,
-      "bestOf": 3,
-      "team1": "KIWOOM DRX",
-      "team2": "T1",
-      "score1": 0,
       "score2": 2,
       "started": true
     },
@@ -327,7 +301,7 @@
       "bestOf": 3,
       "team1": "Team Heretics",
       "team2": "Natus Vincere",
-      "score1": 1,
+      "score1": 2,
       "score2": 1,
       "started": true
     },
@@ -462,14 +436,14 @@
       "started": false
     },
     {
-      "key": "1786719600|eintracht-frankfurt|tbd",
+      "key": "1786719600|eintracht-frankfurt|team-heretics",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1786719600,
       "bestOf": 3,
       "team1": "Eintracht Frankfurt",
-      "team2": null,
+      "team2": "Team Heretics",
       "score1": null,
       "score2": null,
       "started": false

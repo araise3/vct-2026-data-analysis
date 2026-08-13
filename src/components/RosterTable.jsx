@@ -1,16 +1,60 @@
 import { Link } from 'react-router-dom'
 import Flag from './Flag'
+import DataTable from './DataTable'
 import { rating, pct, num, shortDate } from '../lib/format'
 import { coachStintRecord } from '../lib/coaches'
+
+// Same stat-column set (keys, formatting, color scales) as Players.jsx's
+// own table -- minus its Team column, redundant here since the whole
+// table is already scoped to one team. `roster` rows come from the same
+// aggregatePlayerBuckets() call Players.jsx uses, via TeamProfile.jsx's
+// `roster` memo, so every field these columns read (kpr/apr/fkpr/fdpr/
+// avgEcon/utilMaps included) is already present with no extra plumbing.
+// Shared by both the current-season and historical branches below; only
+// the Player/Status columns differ between them (Status needs Liquipedia
+// lookups that only make sense for the current-season branch), so those
+// are built inside the component instead of living here.
+const STAT_COLUMNS = [
+  { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
+  { key: 'roundsPlayed', label: 'RND', align: 'right', format: (v) => num(v) },
+  // width pinned: "R"'s single-character header otherwise makes table-
+  // layout:auto size this column noticeably narrower than every sibling
+  // (measured 46px unpinned vs. a 55-69px cluster for the rest of the
+  // stat block, even though its own data -- "1.26" -- is the same length
+  // as neighbors like K/D's "1.31") -- a quirk of auto-layout, not a real
+  // content need. 60 sits inside that natural cluster rather than
+  // reintroducing Players.jsx's own 73px (tuned for a wider table with
+  // more columns, including a Team logo one this table doesn't have).
+  { key: 'avgRating', label: 'R', align: 'right', colorScale: true, width: 60, format: (v) => rating(v) },
+  { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
+  { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },
+  { key: 'avgKast', label: 'KAST', align: 'right', colorScale: true, format: (v) => pct(v) },
+  { key: 'avgAdr', label: 'ADR', align: 'right', colorScale: true, format: (v) => num(v, 1) },
+  { key: 'kpr', label: 'KPR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+  { key: 'apr', label: 'APR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+  { key: 'fkpr', label: 'FKPR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+  { key: 'fdpr', label: 'FDPR', align: 'right', colorScale: true, colorInvert: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+  { key: 'avgHsPct', label: 'HS%', align: 'right', colorScale: true, format: (v) => pct(v) },
+  { key: 'avgEcon', label: 'Econ', align: 'right', colorScale: true, format: (v, r) => (r.utilMaps ? Math.round(v) : '—') },
+]
 
 /**
  * The roster block on a team profile -- the page's headline component.
  *
- * Deliberately NOT built on DataTable: this needs a two-line identity
- * cell, a date-range column, and per-row emphasis that DataTable's
- * uniform single-line cells don't accommodate. Sorting is fixed (rating
- * desc) rather than clickable for the same reason -- a five-to-seven
- * row roster doesn't need it.
+ * Built on the same DataTable component/column layout Players.jsx uses
+ * (STAT_COLUMNS above, plus a Player/Status/Active column built below),
+ * for both branches -- current-season and historical alike, so a team's
+ * roster always reads like the Players page filtered to this team. Only
+ * the columns differ: the current-season branch adds a Status column (and
+ * a captain star in the Player cell) sourced from Liquipedia, since that
+ * data is only meaningful "as of today" -- see `resolveStatus`/`findStintAt`
+ * below for how a historical scope still gets a real as-of-that-point
+ * answer when it needs one (the Coaching Staff record, Active column).
+ * The current-season branch deliberately does NOT pass DataTable a
+ * `defaultSortKey`, so it opens on `sortedRows`' own STARTER-first order
+ * (see the ROLE_RANK sort below) rather than a plain rating sort -- a
+ * click on any column header still re-sorts normally from there, same as
+ * every other DataTable on the site.
  *
  * The player table previously had a derived "Role" badge (CORE/
  * ROTATION/STAND-IN, guessed from each player's share of team maps
@@ -73,9 +117,6 @@ function statusBadge(status) {
   if (status === 'BENCHED') return { label: 'BENCHED', cls: 'bg-bad/15 text-bad border-bad/30' }
   return { label: status, cls: 'bg-mid/15 text-mid border-mid/30' }
 }
-
-const th = 'px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted whitespace-nowrap'
-const td = 'px-4 py-3 text-sm whitespace-nowrap align-middle'
 
 export default function RosterTable({ team, rows, liquipedia, matches, coaches = [], asOfDate = null, rosterIsCurrent = true }) {
   // `coaches` is computed once by TeamProfile.jsx (coachesInScope) --
@@ -235,6 +276,53 @@ export default function RosterTable({ team, rows, liquipedia, matches, coaches =
     ? [...currentRows].sort((a, b) => roleRank(resolveStatus(a)) - roleRank(resolveStatus(b)))
     : currentRows
 
+  // Player/Status columns are built here rather than living in the
+  // module-level STAT_COLUMNS array because they need lqPlayersById/
+  // resolveStatus/statusBadge above, all of which close over this
+  // render's own `liquipedia`/`asOfDate` props. Status (and the captain
+  // star inside Player) is Liquipedia's own real-time record, so it's
+  // only meaningful -- and only included -- on the current-season branch;
+  // a historical scope has no such column at all, matching how it never
+  // did on this table before it moved to DataTable either.
+  const playerColumn = {
+    key: 'player', label: 'Player', align: 'left',
+    format: (v, row) => (
+      <div className="flex items-center gap-2">
+        <Flag countryCode={row.countryCode} countryName={row.countryName} size={16} />
+        <Link
+          to={`/players/${encodeURIComponent(v)}`}
+          className="font-body font-medium hover:text-accent-bright transition-colors"
+        >
+          {v}
+        </Link>
+        {rosterIsCurrent && lqPlayersById.get(v.toLowerCase())?.captain && (
+          <span className="text-accent text-xs shrink-0" title="Team captain / IGL">★</span>
+        )}
+      </div>
+    ),
+  }
+  const statusColumn = {
+    key: 'status', label: 'Status', align: 'left',
+    // No `status` field on the row itself -- resolved per-row from
+    // Liquipedia via resolveStatus, same as the Active column resolves
+    // its own value from firstDate/lastDate rather than a stored field.
+    format: (v, row) => {
+      const badge = statusBadge(resolveStatus(row))
+      return badge && (
+        <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide border ${badge.cls}`}>
+          {badge.label}
+        </span>
+      )
+    },
+  }
+  const activeColumn = {
+    key: 'active', label: 'Active', align: 'right',
+    format: (v, row) => activeRange(row.firstDate, row.lastDate),
+  }
+  const columns = rosterIsCurrent
+    ? [playerColumn, statusColumn, activeColumn, ...STAT_COLUMNS]
+    : [playerColumn, activeColumn, ...STAT_COLUMNS]
+
   return (
     <div className="flex flex-col gap-4">
       {coaches.length > 0 && (
@@ -280,96 +368,33 @@ export default function RosterTable({ team, rows, liquipedia, matches, coaches =
           <p className="text-muted text-xs">Reflects the filters above.</p>
         </div>
 
-        <div className="bg-surface border border-hairline rounded-2xl overflow-auto">
-          <table className="w-full border-separate border-spacing-0">
-            <thead>
-              <tr className="bg-surface2">
-                <th className={`${th} text-left border-b border-hairline`}>Player</th>
-                {rosterIsCurrent && <th className={`${th} text-left border-b border-hairline`}>Status</th>}
-                <th className={`${th} text-right border-b border-hairline`}>Active</th>
-                <th className={`${th} text-right border-b border-hairline`}>Maps</th>
-                <th className={`${th} text-right border-b border-hairline`}>Rounds</th>
-                <th className={`${th} text-right border-b border-hairline`}>Rating</th>
-                <th className={`${th} text-right border-b border-hairline`}>ACS</th>
-                <th className={`${th} text-right border-b border-hairline`}>K/D</th>
-                <th className={`${th} text-right border-b border-hairline`}>KAST</th>
-                <th className={`${th} text-right border-b border-hairline`}>ADR</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedRows.map((p, i) => {
-                const lq = lqPlayersById.get(p.player.toLowerCase())
-                const last = i === sortedRows.length - 1
-                const bd = last ? '' : 'border-b border-hairline'
-                return (
-                  <tr key={p.player} className="hover:bg-surface2/40 transition-colors">
-                    <td className={`${td} ${bd}`}>
-                      <Link
-                        to={`/players/${encodeURIComponent(p.player)}`}
-                        className="flex items-center gap-2.5 min-w-0 group"
-                      >
-                        <Flag countryCode={p.countryCode} countryName={p.countryName} size={18} />
-                        <span className="font-medium text-ink truncate group-hover:text-accent-bright transition-colors">
-                          {p.player}
-                        </span>
-                        {rosterIsCurrent && lq?.captain && (
-                          <span className="text-accent text-xs shrink-0" title="Team captain / IGL">★</span>
-                        )}
-                      </Link>
-                    </td>
-                    {rosterIsCurrent && (
-                      <td className={`${td} ${bd}`}>
-                        {(() => {
-                          const badge = statusBadge(resolveStatus(p))
-                          return badge && (
-                            <span
-                              className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide border ${badge.cls}`}
-                            >
-                              {badge.label}
-                            </span>
-                          )
-                        })()}
-                      </td>
-                    )}
-                    <td className={`${td} ${bd} text-right text-muted text-xs`}>
-                      {activeRange(p.firstDate, p.lastDate)}
-                    </td>
-                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{num(p.mapsPlayed)}</td>
-                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{num(p.roundsPlayed)}</td>
-                    <td className={`${td} ${bd} text-right font-semibold tabular-nums ${
-                      p.avgRating == null ? 'text-muted'
-                        : p.avgRating >= 1 ? 'text-good' : 'text-bad'
-                    }`}>
-                      {rating(p.avgRating)}
-                    </td>
-                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{num(p.avgAcs, 0)}</td>
-                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>
-                      {p.kd == null ? '—' : p.kd.toFixed(2)}
-                    </td>
-                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{pct(p.avgKast)}</td>
-                    <td className={`${td} ${bd} text-right text-ink/90 tabular-nums`}>{num(p.avgAdr, 1)}</td>
-                  </tr>
-                )
-              })}
-              {sortedRows.length === 0 && (
-                <tr>
-                  <td className="px-4 py-4 text-muted text-xs" colSpan={rosterIsCurrent ? 10 : 9}>
-                    No players in this scope.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        {sortedRows.length === 0 ? (
+          <div className="bg-surface border border-hairline rounded-2xl px-4 py-4 text-muted text-xs">
+            No players in this scope.
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={sortedRows}
+            // Historical: no role concept to preserve, so it opens sorted
+            // by rating like every other DataTable on the site. Current
+            // season: omitting this leaves `sorted` on its incoming order
+            // (see DataTable's own `if (!sortKey) return rows`), which is
+            // `sortedRows`' STARTER-first, rating-desc-within-tier order --
+            // that's the "keep the Liquipedia active/inactive logic" part
+            // of this table, still fully clickable/sortable from there.
+            defaultSortKey={rosterIsCurrent ? undefined : 'avgRating'}
+          />
+        )}
 
         <p className="text-muted text-xs leading-relaxed">
-          Active is the first and last match week the player appeared in for this team, resolved to
-          that week's actual play dates.{' '}
           {rosterIsCurrent ? (
             <>
-              Roster and status reflect Liquipedia's own record as of the most recent event in the
-              selected scope -- a player benched (or gone) by that point shows that way even if they
-              started earlier in the scope. Roster/captain/status data from{' '}
+              Active is the first and last match week the player appeared in for this team, resolved
+              to that week's actual play dates. Roster and status reflect Liquipedia's own record as
+              of the most recent event in the selected scope -- a player benched (or gone) by that
+              point shows that way even if they started earlier in the scope. Roster/captain/status
+              data from{' '}
               <a
                 href="https://liquipedia.net/valorant"
                 target="_blank"

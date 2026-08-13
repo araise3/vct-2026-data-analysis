@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-13T14:03:56Z"
+    "fetchedAt": "2026-08-13T16:29:41Z"
   },
   "matches": [
     {
@@ -262,9 +262,9 @@
       "bestOf": 3,
       "team1": "Joblife",
       "team2": "PCIFIC Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1786644000|giantx|fnatic",

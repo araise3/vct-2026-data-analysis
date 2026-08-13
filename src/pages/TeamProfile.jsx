@@ -172,8 +172,18 @@ export default function TeamProfile() {
   // STARTER/BENCHED/captain) for that case -- direct request, since
   // per-bucket team tagging (see `roster`'s own comment) already handles
   // mid-season transfers correctly with no Liquipedia data needed at all.
+  // `latestYear` is null for a team with literally zero completed matches
+  // (real case: Play-Ins participants who have a team_buckets `meta` entry
+  // -- this site already knows their name/region from the schedule -- but
+  // haven't played their first VCT-scoped match yet, e.g. Sharper Esports,
+  // BESTIA). That's not a "purely historical scope" in the sense this
+  // variable exists to detect -- there IS no history, past or present, to
+  // fall back to -- so it should read as "current" (there's only one
+  // possible roster to show: whatever Liquipedia says right now) rather
+  // than "historical" (which would show the plain stats-only branch, i.e.
+  // nothing at all, since `roster` below is also necessarily empty).
   const rosterIsCurrent = useMemo(
-    () => filtered.some((r) => r.year === latestYear),
+    () => latestYear === null || filtered.some((r) => r.year === latestYear),
     [filtered, latestYear]
   )
 

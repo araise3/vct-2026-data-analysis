@@ -233,22 +233,51 @@ export default function RosterTable({ team, rows, liquipedia, matches, coaches =
   // show up anyway. Fewer rows, but every one of them is a real,
   // Liquipedia-confirmed fact rather than "we have a stat for them
   // somewhere in this scope, who knows when."
-  const currentRows = rosterIsCurrent && liquipedia
-    ? rows.filter((p) => (
-      lqPlayersById.has(p.player.toLowerCase()) || findStintAt(p.player, asOfDate)
-    ))
-    : rows
+  // A team can have real Liquipedia data but literally zero rows here --
+  // `rows` only ever contains a player once they have at least one played
+  // map's worth of stats (TeamProfile.jsx's `roster` memo filters out
+  // anyone with `!mapsPlayed`), so a team that hasn't played its first
+  // match yet always has `rows = []` regardless of what Liquipedia says.
+  // Real case: Sharper Esports, BESTIA, and several other current Play-Ins
+  // participants -- team_buckets.json's `meta` table already knows their
+  // name/region from the schedule, but `buckets` has nothing for them yet.
+  // Without this, such a team's page was just a header and "No players in
+  // this scope" even once Liquipedia coverage existed for it. Built
+  // straight from `liquipedia.players` (no stat fields -- there are none
+  // yet), so `playerColumn`/`statusColumn` below still work unmodified
+  // (they only ever read `row.player`/`row.countryCode`/`row.countryName`),
+  // but the STAT_COLUMNS/Active columns are skipped for this branch (see
+  // `columns` below) rather than rendering a full row of "—".
+  const liquipediaOnlyRows = rosterIsCurrent && liquipedia && rows.length === 0 && liquipedia.players?.length
+    ? liquipedia.players.map((p) => ({ player: p.id, countryCode: p.flag, countryName: p.name }))
+    : null
+
+  const currentRows = liquipediaOnlyRows
+    ? liquipediaOnlyRows
+    : rosterIsCurrent && liquipedia
+      ? rows.filter((p) => (
+        lqPlayersById.has(p.player.toLowerCase()) || findStintAt(p.player, asOfDate)
+      ))
+      : rows
 
   // Every row that survives the whitelist above already has a stint
   // covering asOfDate or a current-roster entry (that's exactly what the
   // whitelist just checked), so this always resolves to real Liquipedia
-  // data -- there is nothing left to fall back to. The final `'BENCHED'`
-  // is defensive only (mirrors this function never being asked about a
-  // player the whitelist wouldn't already have admitted), not a guess:
-  // it deliberately does NOT get the caller-only sub-heuristic (map count,
-  // top-5-by-volume, etc.) an earlier version of this function used to
-  // fall back on for an unresolvable player.
+  // data when `liquipedia` exists for the team at all -- there is nothing
+  // left to fall back to. BUT the whitelist itself only runs when
+  // `liquipedia` is truthy (see `currentRows` above); for a team
+  // Liquipedia was never scraped for in the first place (confirmed real
+  // case: challenger/Play-In teams outside DEFAULT_TEAMS in
+  // liquipedia_roster_scraper.py, which only covers the ~48 VCT partner
+  // orgs), `currentRows` falls back to unfiltered `rows` and every lookup
+  // here misses -- returning 'BENCHED' in that case would assert a false
+  // status for players Liquipedia actually lists as active, which is
+  // exactly the bug this function used to have. `null` (no data at all)
+  // is therefore a real, distinct answer from `'BENCHED'` (confirmed
+  // data, just inactive) -- callers must check `hasLiquipediaData` rather
+  // than treat every non-STARTER answer as "benched".
   function resolveStatus(p) {
+    if (!liquipedia) return null
     const stint = findStintAt(p.player, asOfDate)
     if (stint) return stint.playerStatus
     const current = lqPlayersById.get(p.player.toLowerCase())?.playerStatus
@@ -270,9 +299,14 @@ export default function RosterTable({ team, rows, liquipedia, matches, coaches =
   // Liquipedia-derived status to rank by -- `currentRows` above is just
   // `rows` unfiltered in that case, already rating-desc from
   // TeamProfile.jsx's `roster` memo, so there's nothing to re-sort here.
+  // No Liquipedia data at all for this team (see resolveStatus's own
+  // comment) means no real STARTER/BENCHED signal to rank by -- sorting
+  // would just be `roleRank(null)` ties, i.e. currentRows' incoming order
+  // anyway, so skip it outright rather than call resolveStatus for no
+  // reason.
   const ROLE_RANK = { STARTER: 0, BENCHED: 2 }
   const roleRank = (status) => ROLE_RANK[status] ?? 1
-  const sortedRows = rosterIsCurrent
+  const sortedRows = rosterIsCurrent && liquipedia
     ? [...currentRows].sort((a, b) => roleRank(resolveStatus(a)) - roleRank(resolveStatus(b)))
     : currentRows
 
@@ -319,9 +353,18 @@ export default function RosterTable({ team, rows, liquipedia, matches, coaches =
     key: 'active', label: 'Active', align: 'right',
     format: (v, row) => activeRange(row.firstDate, row.lastDate),
   }
-  const columns = rosterIsCurrent
-    ? [playerColumn, statusColumn, activeColumn, ...STAT_COLUMNS]
-    : [playerColumn, activeColumn, ...STAT_COLUMNS]
+  // Status column only when there's real Liquipedia data to back it --
+  // omitted entirely (not just blank) for a team Liquipedia was never
+  // scraped for, rather than rendering a "Status" header over empty
+  // cells with no explanation. `liquipediaOnlyRows` additionally drops
+  // Active/STAT_COLUMNS -- every one of those fields is genuinely absent
+  // (not just zero) for a player with no match stats yet, so showing them
+  // would just be a full row of "—" per player rather than useful signal.
+  const columns = liquipediaOnlyRows
+    ? [playerColumn, statusColumn]
+    : rosterIsCurrent && liquipedia
+      ? [playerColumn, statusColumn, activeColumn, ...STAT_COLUMNS]
+      : [playerColumn, activeColumn, ...STAT_COLUMNS]
 
   return (
     <div className="flex flex-col gap-4">
@@ -388,7 +431,22 @@ export default function RosterTable({ team, rows, liquipedia, matches, coaches =
         )}
 
         <p className="text-muted text-xs leading-relaxed">
-          {rosterIsCurrent ? (
+          {liquipediaOnlyRows ? (
+            <>
+              This team has no completed matches in our data yet, so there are no stats to show --
+              roster and status below are Liquipedia's current record on their own. Roster/status
+              data from{' '}
+              <a
+                href="https://liquipedia.net/valorant"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-accent-bright transition-colors underline"
+              >
+                Liquipedia
+              </a>
+              , licensed CC-BY-SA 3.0.
+            </>
+          ) : rosterIsCurrent && liquipedia ? (
             <>
               Active is the first and last match week the player appeared in for this team, resolved
               to that week's actual play dates. Roster and status reflect Liquipedia's own record as
@@ -404,6 +462,12 @@ export default function RosterTable({ team, rows, liquipedia, matches, coaches =
                 Liquipedia
               </a>
               , licensed CC-BY-SA 3.0.
+            </>
+          ) : rosterIsCurrent ? (
+            <>
+              This team isn't covered by our Liquipedia roster data (currently limited to VCT partner
+              orgs), so there's no Starter/Benched record or captain marker to show -- the roster below
+              is simply every player with real stats for this team in the selected scope.
             </>
           ) : (
             <>

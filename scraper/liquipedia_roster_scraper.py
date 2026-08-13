@@ -83,13 +83,13 @@ ATTRIBUTION = (
 )
 
 # ---------------------------------------------------------------------------
-# The 48 VCT 2026 tier-1 teams, embedded directly rather than read from a
-# sibling file in the main repo (src/lib/teamLogos.json) -- that file only
-# exists inside the full repo checkout. Running this scraper from a
-# standalone folder (just this .py file, as intended) shouldn't depend on
+# The 48 VCT 2026 tier-1 (partner-org) teams, embedded directly rather than
+# read from a sibling file in the main repo (src/lib/teamLogos.json) -- that
+# file only exists inside the full repo checkout. Running this scraper from
+# a standalone folder (just this .py file, as intended) shouldn't depend on
 # a relative path into a completely different project.
 # ---------------------------------------------------------------------------
-DEFAULT_TEAMS = [
+TIER1_TEAMS = [
     "100 Thieves", "All Gamers", "BBL Esports", "Bilibili Gaming", "Cloud9",
     "DetonatioN FocusMe", "Dragon Ranger Gaming", "EDward Gaming", "ENVY",
     "Eternal Fire", "Evil Geniuses", "FNATIC", "FULL SENSE", "FURIA",
@@ -102,6 +102,55 @@ DEFAULT_TEAMS = [
     "Titan Esports Club", "Trace Esports", "ULF Esports", "VARREL",
     "Wolves Esports", "Xi Lai Gaming", "ZETA DIVISION",
 ]
+
+# ---------------------------------------------------------------------------
+# Tier-2/Challengers teams that show up in our own match data (team_buckets)
+# because they played a partner org in Play-Ins, Kickoff, or an EWC
+# qualifier -- confirmed by diffing team_buckets.json's team names against
+# liquipedia_rosters.json's, then confirming each one actually has a
+# standalone Liquipedia team page (a handful of names in that diff, mostly
+# defunct 2023 China Qualifier orgs -- Douyu Gaming, Gank Gaming, Invincible
+# Gaming, Kingzone, Monarch Effect, Night Wings Gaming, Number One Player --
+# plus the current 2026 China Play-Ins team "A Team", have NO Liquipedia
+# page at all and were deliberately left out; RosterTable.jsx already
+# handles "no Liquipedia data for this team" by hiding the Status column
+# rather than guessing). Added here (not just fetched ad hoc) so a future
+# full --fetch run keeps including them automatically.
+#
+# Deliberately NOT including "JD Gaming" even though team_buckets has it
+# and it resolves on Liquipedia: that page IS JDG Esports (TEAM_PAGES already
+# maps "JDG Esports" -> "JD Gaming" below) -- team_buckets' "JD Gaming" rows
+# are JDG Esports under an uncanonicalized name from one event's scrape, not
+# a second real team. Adding it here would fetch JDG Esports' own current
+# roster a second time under a "JD Gaming" key, which would be actively
+# wrong (today's JDG Esports lineup mislabeled as a different team's roster)
+# rather than just missing -- worse than the gap this list is meant to fix.
+# That canonicalization gap belongs in export_from_db.py, not here.
+# ---------------------------------------------------------------------------
+TIER2_TEAMS = [
+    "2Game Esports", "Apeks", "Attacking Soul Esports", "BLEED",
+    "BOOM Esports", "Eintracht Frankfurt", "Enterprise Esports",
+    "Fire Flux Esports", "Four Angry Men", "Giants Gaming", "Joblife",
+    "KOI", "KeepBest Gaming", "Rare Atom", "Royal Never Give Up",
+    "Shenzhen NTER", "Totoro Gaming", "Weibo Gaming",
+    # These 7 have zero completed VCT-scoped matches yet (team_buckets.json
+    # has a `meta` entry for each, i.e. this site already knows about them
+    # from the schedule/bracket data, but zero rows in `buckets`, i.e.
+    # nothing played) -- confirmed real, current Play-Ins participants (not
+    # the defunct 2023 orgs above), just not fetched before because the
+    # original diff this list came from only compared against team_buckets'
+    # BUCKETS, not its broader `meta` table. Real bug this exposed on
+    # TeamProfile.jsx: a team with a `meta` entry but zero buckets rendered
+    # completely empty (no roster at all, Liquipedia or otherwise) because
+    # RosterTable's rows come from player match stats, which these teams
+    # don't have any of yet -- see RosterTable.jsx's own comment on
+    # `liquipediaOnlyRows` for the fallback that fixes it once this data
+    # exists to fall back to.
+    "BESTIA", "Fluxo W7M", "M80", "ONSIDE GAMING", "QT DIG∞",
+    "Sharper Esports", "Xipto Esports",
+]
+
+DEFAULT_TEAMS = TIER1_TEAMS + TIER2_TEAMS
 
 # ---------------------------------------------------------------------------
 # Our team names come from VLR and don't always match Liquipedia page
@@ -130,6 +179,18 @@ TEAM_PAGES = {
     "ZETA DIVISION": "ZETA DIVISION",
     "Gen.G": "Gen.G",
     "PCIFIC Esports": "PCIFIC Esports",
+    # Tier-2 mismatches, confirmed via the search API (our name has no
+    # direct page, but the search turns up an exact-enough match): our
+    # "2Game Esports" is capitalized "2GAME Esports" on Liquipedia; "BLEED"
+    # is disambiguated as "Bleed Esports"; "Shenzhen NTER" is filed under
+    # "NTER (Chinese team)" (bare "NTER" redirects to a different org).
+    "2Game Esports": "2GAME Esports",
+    "BLEED": "Bleed Esports",
+    "Shenzhen NTER": "NTER (Chinese team)",
+    # Our canonical name carries the org's real stylized "∞" (matches
+    # team_buckets.json's `t` field, needed for RosterTable's lookups to
+    # join at all) -- Liquipedia's own page title drops it.
+    "QT DIG∞": "QT DIG",
 }
 
 

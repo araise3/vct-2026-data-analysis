@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-13T08:03:04Z"
+    "fetchedAt": "2026-08-13T10:40:35Z"
   },
   "matches": [
-    {
-      "key": "1786208400|eternal-fire|joblife",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1786208400,
-      "bestOf": 3,
-      "team1": "Eternal Fire",
-      "team2": "Joblife",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1786222800|kr-esports|sentinels",
       "event": "Vct 2026 Americas Stage 2",
@@ -262,16 +249,16 @@
       "bestOf": 3,
       "team1": "KIWOOM DRX",
       "team2": "ONSIDE GAMING",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 0,
+      "started": true
     },
     {
-      "key": "1786618800|rex-regum-qeon|sharper-esports",
+      "key": "1786616400|rex-regum-qeon|sharper-esports",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
-      "timestamp": 1786618800,
+      "timestamp": 1786616400,
       "bestOf": 3,
       "team1": "Rex Regum Qeon",
       "team2": "Sharper Esports",
@@ -449,14 +436,14 @@
       "started": false
     },
     {
-      "key": "1786780800|zeta-division|tbd",
+      "key": "1786780800|zeta-division|kiwoom-drx",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1786780800,
       "bestOf": 3,
       "team1": "ZETA DIVISION",
-      "team2": null,
+      "team2": "KIWOOM DRX",
       "score1": null,
       "score2": null,
       "started": false
@@ -638,6 +625,19 @@
       "timestamp": 1786924800,
       "bestOf": 3,
       "team1": "Evil Geniuses",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787126400|tbd|tbd",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1787126400,
+      "bestOf": 3,
+      "team1": null,
       "team2": null,
       "score1": null,
       "score2": null,

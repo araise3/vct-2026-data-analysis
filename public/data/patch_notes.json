@@ -1,0 +1,593 @@
+{
+  "_meta": {
+    "source": "wiki.playvalorant.com",
+    "attribution": "Patch versions, dates and balance changes from Riot Games' official VALORANT wiki (wiki.playvalorant.com).",
+    "generatedAt": "2026-08-13T00:00:00Z",
+    "coverageStart": "2025-11-11",
+    "coverageEnd": "2026-07-28",
+    "note": "Hand-curated from Riot's per-patch pages, v11.10 onward only -- every real patch in that window ships here, including ones with no agent balance changes (bug-fix-only or map-pool-only patches), since a tournament can genuinely have been played on one of those (see event_meta.json's patchStart/patchEnd). Voice-line-only, VFX/audio bugfix and console-only entries WITHIN a kept patch are still deliberately excluded from its agentChanges. Agent names use this site's spelling (KAY/O is stored as Kayo)."
+  },
+  "patches": [
+    {
+      "version": "11.10",
+      "date": "2025-11-11",
+      "notable": true,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/11.10",
+      "agentChanges": [
+        {
+          "agent": "Harbor",
+          "ability": "Cove",
+          "type": "rework",
+          "summary": "Moved to the free signature slot (was 350 creds); now forms a water smoke that can be shielded to block bullets."
+        },
+        {
+          "agent": "Harbor",
+          "ability": "High Tide",
+          "type": "rework",
+          "summary": "Moved out of the signature slot; now costs 300 creds."
+        },
+        {
+          "agent": "Harbor",
+          "ability": "Storm Surge",
+          "type": "rework",
+          "summary": "New ability: throws an explosive whirlpool that nearsights and slows."
+        },
+        {
+          "agent": "Harbor",
+          "ability": "Reckoning",
+          "type": "rework",
+          "summary": "Redesigned into a water surge that nearsights and slows enemies it hits."
+        },
+        {
+          "agent": "Clove",
+          "ability": "Ruse",
+          "type": "nerf",
+          "summary": "Charges capped at 1 while Clove is dead."
+        },
+        {
+          "agent": "Clove",
+          "ability": "Pick-me-up",
+          "type": "nerf",
+          "summary": "Overheal reduced 100 HP to 50 HP."
+        },
+        {
+          "agent": "Omen",
+          "ability": "Dark Cover",
+          "type": "adjust",
+          "summary": "Spectators can now watch Omen's own view while he places smokes."
+        }
+      ],
+      "mapChanges": []
+    },
+    {
+      "version": "11.11",
+      "date": "2025-12-02",
+      "notable": false,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/11.11",
+      "agentChanges": [],
+      "mapChanges": []
+    },
+    {
+      "version": "12.00",
+      "date": "2026-01-06",
+      "notable": true,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.00",
+      "agentChanges": [
+        {
+          "agent": "Breach",
+          "ability": "Flashpoint",
+          "type": "buff",
+          "summary": "Projectile speed increased 20% (2000 to 2400)."
+        },
+        {
+          "agent": "Breach",
+          "ability": "Fault Line",
+          "type": "buff",
+          "summary": "Width increased 7.5m to 8m."
+        },
+        {
+          "agent": "Brimstone",
+          "ability": "Sky Smoke",
+          "type": "adjust",
+          "summary": "Tactical map readability updated for Sky Smoke and Orbital Strike."
+        },
+        {
+          "agent": "Harbor",
+          "ability": "Storm Surge",
+          "type": "buff",
+          "summary": "No longer requires line of sight to nearsight and slow; explosion windup 0.8s to 0.6s; slow duration 0.6s to 2s."
+        },
+        {
+          "agent": "Harbor",
+          "ability": "Reckoning",
+          "type": "buff",
+          "summary": "Slow duration increased 0.6s to 2s."
+        },
+        {
+          "agent": "Sage",
+          "ability": "Healing Orb",
+          "type": "buff",
+          "summary": "Targeting updated so a blocked ally's mid and lower model can be healed."
+        },
+        {
+          "agent": "Tejo",
+          "ability": "Special Delivery",
+          "type": "nerf",
+          "summary": "Concuss duration 4s to 2.5s; now deals 20-35 damage."
+        },
+        {
+          "agent": "Tejo",
+          "ability": "Stealth Drone",
+          "type": "adjust",
+          "summary": "Snapshot reveal changed to full reveal, but pulse radius cut 30m to 16m."
+        },
+        {
+          "agent": "Vyse",
+          "ability": "Steel Garden",
+          "type": "buff",
+          "summary": "Radius 26m to 28m; width 7.5m to 8m."
+        }
+      ],
+      "mapChanges": [
+        {
+          "map": "Breeze",
+          "type": "reworked",
+          "summary": "Reworked to reduce angle complexity and tighten spaces."
+        },
+        {
+          "map": "Breeze",
+          "type": "added",
+          "summary": "Added to the Competitive map pool."
+        },
+        {
+          "map": "Sunset",
+          "type": "removed",
+          "summary": "Removed from the Competitive map pool."
+        }
+      ]
+    },
+    {
+      "version": "12.01",
+      "date": "2026-01-21",
+      "notable": false,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.01",
+      "agentChanges": [],
+      "mapChanges": []
+    },
+    {
+      "version": "12.02",
+      "date": "2026-02-03",
+      "notable": true,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.02",
+      "agentChanges": [
+        {
+          "agent": "Gekko",
+          "ability": "Wingman",
+          "type": "nerf",
+          "summary": "Can now be concussed."
+        },
+        {
+          "agent": "Skye",
+          "ability": "Seekers",
+          "type": "nerf",
+          "summary": "Can now be concussed."
+        },
+        {
+          "agent": "Raze",
+          "ability": "Boom Bot",
+          "type": "nerf",
+          "summary": "Can now be concussed."
+        },
+        {
+          "agent": "Harbor",
+          "ability": "Cove",
+          "type": "buff",
+          "summary": "Cooldown 40s to 30s; smoke duration 15s to 19.25s; health 500 to 680; faster gun re-equip."
+        },
+        {
+          "agent": "Harbor",
+          "ability": "High Tide",
+          "type": "buff",
+          "summary": "Wall height 6m to 8m; max length 50m to 60m."
+        },
+        {
+          "agent": "Harbor",
+          "ability": "Reckoning",
+          "type": "buff",
+          "summary": "Wave speed increased 25%; can be re-used to hold the wave in place for 7s."
+        },
+        {
+          "agent": "Harbor",
+          "ability": "Storm Surge",
+          "type": "adjust",
+          "summary": "Now plays world audio when enemies are hit."
+        },
+        {
+          "agent": "Reyna",
+          "ability": "Soul Orbs",
+          "type": "nerf",
+          "summary": "Orb duration 4s to 3s."
+        },
+        {
+          "agent": "Reyna",
+          "ability": "Devour",
+          "type": "nerf",
+          "summary": "Overheal now temporary, lasting 10s; permanent only during Empress."
+        },
+        {
+          "agent": "Reyna",
+          "ability": "Empress",
+          "type": "nerf",
+          "summary": "Ultimate cost 6 to 7 points."
+        }
+      ],
+      "mapChanges": []
+    },
+    {
+      "version": "12.03",
+      "date": "2026-02-18",
+      "notable": false,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.03",
+      "agentChanges": [
+        {
+          "agent": "Gekko",
+          "ability": "Globules",
+          "type": "nerf",
+          "summary": "Reclaim timer 15s to 20s."
+        },
+        {
+          "agent": "Gekko",
+          "ability": "Mosh Pit",
+          "type": "buff",
+          "summary": "Now reclaimable."
+        }
+      ],
+      "mapChanges": []
+    },
+    {
+      "version": "12.04",
+      "date": "2026-03-03",
+      "notable": false,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.04",
+      "agentChanges": [
+        {
+          "agent": "Killjoy",
+          "ability": "Turret",
+          "type": "adjust",
+          "summary": "Can be rotated with ALT-FIRE while placing; ACTIVATE swaps direction, matching Sage's Barrier Orb placement."
+        }
+      ],
+      "mapChanges": []
+    },
+    {
+      "version": "12.05",
+      "date": "2026-03-17",
+      "notable": true,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.05",
+      "agentChanges": [
+        {
+          "agent": "Miks",
+          "ability": null,
+          "type": "new",
+          "summary": "New Controller agent from Croatia, with Harmonize, M-pulse, Waveform and Bassquake."
+        },
+        {
+          "agent": "Skye",
+          "ability": "Guiding Light",
+          "type": "nerf",
+          "summary": "Added a 60s cooldown."
+        },
+        {
+          "agent": "Yoru",
+          "ability": "Gatecrash",
+          "type": "nerf",
+          "summary": "Beacon active duration 30s to 15s."
+        },
+        {
+          "agent": "Yoru",
+          "ability": "Blindside",
+          "type": "nerf",
+          "summary": "Charges 2 to 1."
+        },
+        {
+          "agent": "Clove",
+          "ability": "Ruse",
+          "type": "nerf",
+          "summary": "Smoke duration when cast while dead 14s to 6s."
+        },
+        {
+          "agent": "Clove",
+          "ability": "Meddle",
+          "type": "nerf",
+          "summary": "Area of effect 6m to 4m."
+        },
+        {
+          "agent": "Sage",
+          "ability": "Healing Orb",
+          "type": "adjust",
+          "summary": "New ally-targeting widget and model highlight."
+        }
+      ],
+      "mapChanges": [
+        {
+          "map": "Lotus",
+          "type": "added",
+          "summary": "Added to the Competitive map pool."
+        },
+        {
+          "map": "Lotus",
+          "type": "reworked",
+          "summary": "A-site reworked: thickened attacker lobby wall, repositioned vine jump, reinforced tree room wall, new room outside stairs, modified plant zone."
+        },
+        {
+          "map": "Fracture",
+          "type": "added",
+          "summary": "Added to the Competitive map pool."
+        },
+        {
+          "map": "Abyss",
+          "type": "removed",
+          "summary": "Removed from the Competitive map pool."
+        },
+        {
+          "map": "Corrode",
+          "type": "removed",
+          "summary": "Removed from the Competitive map pool."
+        }
+      ]
+    },
+    {
+      "version": "12.06",
+      "date": "2026-03-31",
+      "notable": false,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.06",
+      "agentChanges": [
+        {
+          "agent": "Waylay",
+          "ability": "Saturate",
+          "type": "nerf",
+          "summary": "Changed from INSTANT to EQUIP, to cut low-risk combo potential with teammates."
+        },
+        {
+          "agent": "Viper",
+          "ability": "Viper's Pit",
+          "type": "adjust",
+          "summary": "Chemical cloud now spreads more consistently around map geometry."
+        }
+      ],
+      "mapChanges": []
+    },
+    {
+      "version": "12.07",
+      "date": "2026-04-14",
+      "notable": false,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.07",
+      "agentChanges": [],
+      "mapChanges": []
+    },
+    {
+      "version": "12.08",
+      "date": "2026-04-28",
+      "notable": true,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.08",
+      "agentChanges": [],
+      "mapChanges": [
+        {
+          "map": "Ascent",
+          "type": "added",
+          "summary": "Returned to the Competitive map pool."
+        },
+        {
+          "map": "Bind",
+          "type": "removed",
+          "summary": "Removed from the Competitive map pool."
+        }
+      ]
+    },
+    {
+      "version": "12.09",
+      "date": "2026-05-12",
+      "notable": true,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.09",
+      "agentChanges": [
+        {
+          "agent": "Neon",
+          "ability": "High Gear",
+          "type": "nerf",
+          "summary": "Jumping no longer grants an airborne speed bonus; air sprint speed now matches melee speed."
+        },
+        {
+          "agent": "Neon",
+          "ability": "Energy",
+          "type": "nerf",
+          "summary": "Fuel regeneration on kill now only applies while her ultimate is active."
+        }
+      ],
+      "mapChanges": []
+    },
+    {
+      "version": "12.10",
+      "date": "2026-05-27",
+      "notable": false,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.10",
+      "agentChanges": [],
+      "mapChanges": []
+    },
+    {
+      "version": "12.11",
+      "date": "2026-06-09",
+      "notable": false,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/12.11",
+      "agentChanges": [],
+      "mapChanges": []
+    },
+    {
+      "version": "13.00",
+      "date": "2026-06-23",
+      "notable": true,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/13.00",
+      "agentChanges": [
+        {
+          "agent": "Killjoy",
+          "ability": "Turret",
+          "type": "buff",
+          "summary": "Rate of fire increased 8 to 12."
+        },
+        {
+          "agent": "Killjoy",
+          "ability": "Nanoswarm",
+          "type": "buff",
+          "summary": "Duration increased 4s to 5s."
+        },
+        {
+          "agent": "Killjoy",
+          "ability": "Alarmbot",
+          "type": "buff",
+          "summary": "Movement speed increased 15m/s to 22.5m/s."
+        },
+        {
+          "agent": "Veto",
+          "ability": "Crosscut",
+          "type": "buff",
+          "summary": "Vortex radius 24m to 30m; deployment time 1.5s to 0.75s."
+        },
+        {
+          "agent": "Veto",
+          "ability": "Interceptor",
+          "type": "buff",
+          "summary": "Reclaim cooldown 30s to 20s."
+        },
+        {
+          "agent": "Sage",
+          "ability": "Healing Orb",
+          "type": "buff",
+          "summary": "Self heal-over-time increased 50 to 100."
+        },
+        {
+          "agent": "Cypher",
+          "ability": "Trapwire",
+          "type": "buff",
+          "summary": "Windup decreased 0.9s to 0.7s."
+        },
+        {
+          "agent": "Deadlock",
+          "ability": "GravNet",
+          "type": "buff",
+          "summary": "Cooldown decreased 60s to 50s."
+        },
+        {
+          "agent": "Breach",
+          "ability": "Fault Line",
+          "type": "buff",
+          "summary": "Cooldown decreased 60s to 50s."
+        },
+        {
+          "agent": "Fade",
+          "ability": "Haunt",
+          "type": "buff",
+          "summary": "Cooldown decreased 60s to 50s."
+        },
+        {
+          "agent": "Kayo",
+          "ability": "ZERO/point",
+          "type": "buff",
+          "summary": "Cooldown decreased 60s to 50s."
+        },
+        {
+          "agent": "Skye",
+          "ability": "Guiding Light",
+          "type": "buff",
+          "summary": "Cooldown decreased 60s to 50s."
+        },
+        {
+          "agent": "Sova",
+          "ability": "Recon Bolt",
+          "type": "buff",
+          "summary": "Cooldown decreased 60s to 50s."
+        },
+        {
+          "agent": "Gekko",
+          "ability": "Globules",
+          "type": "buff",
+          "summary": "Cooldown decreased 20s to 15s."
+        },
+        {
+          "agent": "Omen",
+          "ability": "Shrouded Step",
+          "type": "adjust",
+          "summary": "SFX clarity improved for enemies."
+        }
+      ],
+      "mapChanges": [
+        {
+          "map": "Summit",
+          "type": "added",
+          "summary": "New map, added to the Competitive map pool."
+        },
+        {
+          "map": "Sunset",
+          "type": "added",
+          "summary": "Returned to the Competitive map pool."
+        },
+        {
+          "map": "Fracture",
+          "type": "removed",
+          "summary": "Removed from the Competitive map pool."
+        },
+        {
+          "map": "Pearl",
+          "type": "removed",
+          "summary": "Removed from the Competitive map pool."
+        }
+      ]
+    },
+    {
+      "version": "13.01",
+      "date": "2026-07-14",
+      "notable": false,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/13.01",
+      "agentChanges": [
+        {
+          "agent": "Iso",
+          "ability": "Double Tap",
+          "type": "buff",
+          "summary": "Weapon re-equip speed changed from Fast to Instant."
+        },
+        {
+          "agent": "Yoru",
+          "ability": "Gatecrash",
+          "type": "buff",
+          "summary": "Tether duration increased 15s to 20s."
+        },
+        {
+          "agent": "Yoru",
+          "ability": "Fakeout",
+          "type": "adjust",
+          "summary": "Mirror image now equips the last equipped weapon instead of the strongest."
+        }
+      ],
+      "mapChanges": []
+    },
+    {
+      "version": "13.02",
+      "date": "2026-07-28",
+      "notable": false,
+      "url": "https://wiki.playvalorant.com/en-us/Patch_Notes/13.02",
+      "agentChanges": [
+        {
+          "agent": "Phoenix",
+          "ability": "Run it Back",
+          "type": "nerf",
+          "summary": "Ultimate cost increased 6 to 7 points."
+        },
+        {
+          "agent": "Waylay",
+          "ability": null,
+          "type": "adjust",
+          "summary": "Agent temporarily disabled while ability bugs were fixed."
+        }
+      ],
+      "mapChanges": []
+    }
+  ]
+}

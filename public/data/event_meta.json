@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Event dates, prize pools and locations from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "generatedAt": "2026-08-08T22:43:06Z"
+    "generatedAt": "2026-08-13T14:17:20Z"
   },
   "events": {
     "Vct 2026 Americas Kickoff": {
@@ -16,7 +16,9 @@
       "countryCode": "us",
       "city": "Los Angeles",
       "venue": "Riot Games Arena",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "12.00",
+      "patchEnd": "12.00"
     },
     "Vct 2026 Emea Kickoff": {
       "liquipediaPage": "VCT/2026/EMEA League/Kickoff",
@@ -28,7 +30,9 @@
       "countryCode": "de",
       "city": "Berlin",
       "venue": "Riot Games Arena",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "12.00",
+      "patchEnd": "12.00"
     },
     "Vct 2026 Pacific Kickoff": {
       "liquipediaPage": "VCT/2026/Pacific League/Kickoff",
@@ -40,7 +44,9 @@
       "countryCode": "kr",
       "city": "Seoul",
       "venue": "Sangam Colosseum",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "12.00",
+      "patchEnd": "12.00"
     },
     "Vct 2026 China Kickoff": {
       "liquipediaPage": "VCT/2026/China League/Kickoff",
@@ -52,7 +58,9 @@
       "countryCode": "cn",
       "city": "Guangzhou",
       "venue": "Poly World Trade Center Expo",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "12.00",
+      "patchEnd": "12.00"
     },
     "Vct 2026 Americas Stage 1": {
       "liquipediaPage": "VCT/2026/Americas League/Stage 1",
@@ -64,7 +72,9 @@
       "countryCode": "us",
       "city": "Los Angeles",
       "venue": "Riot Games Arena",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "12.06",
+      "patchEnd": "12.08"
     },
     "Vct 2026 Emea Stage 1": {
       "liquipediaPage": "VCT/2026/EMEA League/Stage 1",
@@ -76,7 +86,9 @@
       "countryCode": "de",
       "city": "Berlin",
       "venue": "Riot Games Arena",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "12.05",
+      "patchEnd": "12.08"
     },
     "Vct 2026 Pacific Stage 1": {
       "liquipediaPage": "VCT/2026/Pacific League/Stage 1",
@@ -88,7 +100,9 @@
       "countryCode": "kr",
       "city": "Seoul",
       "venue": null,
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "12.05",
+      "patchEnd": "12.08"
     },
     "Vct 2026 China Stage 1": {
       "liquipediaPage": "VCT/2026/China League/Stage 1",
@@ -100,7 +114,9 @@
       "countryCode": "cn",
       "city": "Hangzhou",
       "venue": "West Lake Gymnasium",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "12.05",
+      "patchEnd": "12.08"
     },
     "Vct 2026 Americas Stage 2": {
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
@@ -112,7 +128,9 @@
       "countryCode": "us",
       "city": "Los Angeles",
       "venue": "Riot Games Arena",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "13.01",
+      "patchEnd": "13.01"
     },
     "Vct 2026 Emea Stage 2": {
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
@@ -124,7 +142,9 @@
       "countryCode": "de",
       "city": "Berlin",
       "venue": "Riot Games Arena",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "13.01",
+      "patchEnd": "13.02"
     },
     "Vct 2026 Pacific Stage 2": {
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
@@ -136,7 +156,9 @@
       "countryCode": "kr",
       "city": "Seoul",
       "venue": null,
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "13.01",
+      "patchEnd": "13.02"
     },
     "Vct 2026 China Stage 2": {
       "liquipediaPage": "VCT/2026/China League/Stage 2",
@@ -148,7 +170,9 @@
       "countryCode": "cn",
       "city": "Changsha",
       "venue": "Helong Gymnasium",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": null,
+      "patchEnd": null
     },
     "Valorant Masters Santiago 2026": {
       "liquipediaPage": "VCT/2026/Stage 1/Masters",
@@ -160,7 +184,9 @@
       "countryCode": "cl",
       "city": "Santiago",
       "venue": "Espacio Riesco",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "12.03",
+      "patchEnd": "12.03"
     },
     "Valorant Masters London 2026": {
       "liquipediaPage": "VCT/2026/Stage 2/Masters",
@@ -172,7 +198,9 @@
       "countryCode": "gb",
       "city": "London",
       "venue": "Copper Box Arena",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "12.10",
+      "patchEnd": "12.10"
     },
     "Valorant Champions 2026": {
       "liquipediaPage": "VCT/2026/Champions",
@@ -184,7 +212,9 @@
       "countryCode": "cn",
       "city": "Shanghai",
       "venue": null,
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": null,
+      "patchEnd": null
     },
     "Esports World Cup 2026": {
       "liquipediaPage": "Esports World Cup/2026",
@@ -196,7 +226,9 @@
       "countryCode": "fr",
       "city": "Paris",
       "venue": "Paris Expo Porte de Versailles",
-      "tier": "S-Tier"
+      "tier": "S-Tier",
+      "patchStart": "13.00",
+      "patchEnd": "13.00"
     }
   }
 }

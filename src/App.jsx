@@ -25,6 +25,7 @@ const MatchRedirect = lazy(() => import('./pages/MatchRedirect'))
 const Economy = lazy(() => import('./pages/Economy'))
 const Graphics = lazy(() => import('./pages/Graphics'))
 const Records = lazy(() => import('./pages/Records'))
+const Patches = lazy(() => import('./pages/Patches'))
 
 export default function App() {
   return (
@@ -77,6 +78,7 @@ export default function App() {
                 MatchRedirect. */}
             <Route path="/matches/:id" element={<MatchRedirect />} />
             <Route path="/economy" element={<Economy />} />
+            <Route path="/patches" element={<Patches />} />
             <Route path="/records" element={<Records />} />
             <Route path="/graphics" element={<Graphics />} />
           </Routes>

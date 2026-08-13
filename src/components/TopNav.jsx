@@ -18,6 +18,10 @@ const items = [
   // 6.7MB fetch until a name box is focused, and prefetching it on nav hover
   // would defeat the point.
   { to: '/tournaments', label: 'Tournaments', data: ['match_results', 'event_meta', 'upcoming_matches', 'player_month'] },
+  // Not player_agents: that 9.57MB file is idle-deferred inside the page
+  // itself (AgentPatchTrend, same pattern as Players.jsx) -- prefetching it
+  // on nav hover would defeat the point of deferring it in the first place.
+  { to: '/patches', label: 'Patches', data: ['patch_notes', 'event_meta'] },
   { to: '/economy', label: 'Economy', data: ['team_buckets'] },
   { to: '/records', label: 'Records', data: ['match_results', 'series_length', 'map_length', 'player_buckets'] },
   { to: '/graphics', label: 'Graphics', data: ['player_buckets', 'team_buckets', 'series_length', 'map_length'] },

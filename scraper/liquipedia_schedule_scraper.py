@@ -4,7 +4,10 @@ Scrape from Liquipedia the two things the Events page needs that this site's
 own VLR-derived data does not carry:
 
   1. EVENT METADATA -- start/end dates, prize pool, host city/country/venue,
-     Liquipedia tier. `public/data/events.json` HAS `dates`/`prize`/`location`
+     Liquipedia tier, and which patch(es) the event was actually played on
+     (`patchStart`/`patchEnd`, from the infobox's own `|patch=`/`|epatch=`
+     fields -- ground truth, not inferred from date overlap with a patch's
+     release date). `public/data/events.json` HAS `dates`/`prize`/`location`
      columns but they are null on every one of its 55 rows (the VLR scraper
      never populated them), so today the Events page has nothing real to put
      in rft.gg's Teams/Prize/Location trio.
@@ -395,6 +398,23 @@ def parse_event_meta(wikitext, page_title):
         edate = None
 
     country = field("country")
+    # Ground truth for which patch(es) an event was actually played on,
+    # straight from the same Infobox league every other field here comes
+    # from -- `|patch=` is the version live when the event started,
+    # `|epatch=` (present only when it DIFFERS from `patch`, i.e. a patch
+    # shipped mid-event) is the version live when it ended. Defaulting
+    # patchEnd to patchStart when epatch is absent means every event that
+    # ran on a single patch still gets a complete (patchStart, patchEnd)
+    # pair instead of a null second half. Verified against real pages:
+    # Kickoff/Masters/EWC events had only `patch=`; Stage 1 (a 6-week
+    # group stage) had both `patch=12.06` and `epatch=12.08`. An
+    # unplayed future event (Champions 2026, as of this writing) has
+    # `patch=` present but empty -- `field()` already collapses that to
+    # None via clean()'s `v or None`, so patchStart/patchEnd both come out
+    # None rather than the literal empty string, and the frontend's
+    # "TBD" branch is what a null triggers, not a truthy empty value.
+    patch_start = field("patch")
+    patch_end = field("epatch") or patch_start
     return {
         "liquipediaPage": page_title,
         "displayName": field("name"),
@@ -406,6 +426,8 @@ def parse_event_meta(wikitext, page_title):
         "city": field("city"),
         "venue": field("venue"),
         "tier": field("liquipediatier"),
+        "patchStart": patch_start,
+        "patchEnd": patch_end,
     }
 
 
@@ -588,8 +610,12 @@ def scrape_event_meta(session, out_dir, use_cache=True):
             print(f"  [warn] {name}: no Infobox league found on {page}")
             continue
         events[name] = meta
+        patch_range = (
+            meta["patchStart"] if meta["patchStart"] == meta["patchEnd"]
+            else f"{meta['patchStart']}-{meta['patchEnd']}"
+        ) if meta["patchStart"] else "TBD"
         print(f"  {name}: {meta['startDate']}..{meta['endDate']} "
-              f"${meta['prizePoolUsd']} {meta['city']}")
+              f"${meta['prizePoolUsd']} {meta['city']} patch={patch_range}")
 
     write_json(path, {
         "_meta": {

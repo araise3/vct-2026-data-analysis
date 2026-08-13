@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-13T16:29:41Z"
+    "fetchedAt": "2026-08-13T19:38:48Z"
   },
   "matches": [
-    {
-      "key": "1786234200|leviat-n|mibr",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2/Group Stage",
-      "phase": "Group Stage",
-      "timestamp": 1786234200,
-      "bestOf": 3,
-      "team1": "LEVIATÁN",
-      "team2": "MIBR",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
     {
       "key": "1786262400|edward-gaming|wolves-esports",
       "event": "Vct 2026 China Stage 2",
@@ -30,19 +17,6 @@
       "team2": "Wolves Esports",
       "score1": 2,
       "score2": 1,
-      "started": true
-    },
-    {
-      "key": "1786262400|varrel|paper-rex",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2/Group Stage",
-      "phase": "Group Stage",
-      "timestamp": 1786262400,
-      "bestOf": 3,
-      "team1": "VARREL",
-      "team2": "Paper Rex",
-      "score1": 2,
-      "score2": 0,
       "started": true
     },
     {
@@ -262,8 +236,8 @@
       "bestOf": 3,
       "team1": "Joblife",
       "team2": "PCIFIC Esports",
-      "score1": 1,
-      "score2": 0,
+      "score1": 2,
+      "score2": 1,
       "started": true
     },
     {
@@ -275,9 +249,9 @@
       "bestOf": 3,
       "team1": "GIANTX",
       "team2": "FNATIC",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1786654800|kr-esports|bestia",
@@ -371,13 +345,13 @@
       "started": false
     },
     {
-      "key": "1786730400|tbd|tbd",
+      "key": "1786730400|joblife|tbd",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1786730400,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Joblife",
       "team2": null,
       "score1": null,
       "score2": null,
@@ -639,6 +613,32 @@
       "bestOf": 3,
       "team1": null,
       "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787133600|tbd|tbd",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1787133600,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787137200|tbd|rex-regum-qeon",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1787137200,
+      "bestOf": 3,
+      "team1": null,
+      "team2": "Rex Regum Qeon",
       "score1": null,
       "score2": null,
       "started": false

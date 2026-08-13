@@ -48,6 +48,20 @@ CHINA_TEAMS = ['All Gamers', 'Bilibili Gaming', 'Dragon Ranger Gaming', 'EDward 
 CANONICAL_OVERRIDES = {
     "Guangzhou Huadu Bilibili Gaming (Bilibili Gaming)": "Bilibili Gaming",
     "JD Mall JDG Esports (JDG Esports)": "JDG Esports",
+    # VLR scraped every match of VCT 2026 China Stage 2 (event 2978) under
+    # the plain org name "JD Gaming" instead of "JDG Esports" -- every
+    # other event, before and after, used "JDG Esports" consistently, and
+    # Liquipedia's own team page confirms it's the same org (its title
+    # literally is "JD Gaming"; see scraper/liquipedia_roster_scraper.py's
+    # TEAM_PAGES). Without this, the team fragmented into two site
+    # entities: 44 buckets under "JDG Esports" plus 10 more under "JD
+    # Gaming" that never joined against its Liquipedia roster, its
+    # earlier-event stats, or anything else tagged with the canonical
+    # name. Confirmed by diffing team_buckets.json's team names against
+    # match_results.json's own team1/team2 history for event 2978 --
+    # same opponents, same week cadence, immediately before/after matches
+    # under "JDG Esports" for the same roster.
+    "JD Gaming": "JDG Esports",
     "Wuxi Titan Esports Club (Titan Esports Club)": "Titan Esports Club",
     "AG.AL (All Gamers)": "All Gamers",
     "MIBR.LOS (MIBR)": "MIBR",

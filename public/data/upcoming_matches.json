@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-13T10:40:35Z"
+    "fetchedAt": "2026-08-13T14:03:56Z"
   },
   "matches": [
-    {
-      "key": "1786222800|kr-esports|sentinels",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2/Group Stage",
-      "phase": "Group Stage",
-      "timestamp": 1786222800,
-      "bestOf": 3,
-      "team1": "KRÜ Esports",
-      "team2": "Sentinels",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1786234200|leviat-n|mibr",
       "event": "Vct 2026 Americas Stage 2",
@@ -262,9 +249,9 @@
       "bestOf": 3,
       "team1": "Rex Regum Qeon",
       "team2": "Sharper Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 2,
+      "started": true
     },
     {
       "key": "1786633200|joblife|pcific-esports",
@@ -462,14 +449,14 @@
       "started": false
     },
     {
-      "key": "1786791600|detonation-focusme|tbd",
+      "key": "1786791600|detonation-focusme|sharper-esports",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1786791600,
       "bestOf": 3,
       "team1": "DetonatioN FocusMe",
-      "team2": null,
+      "team2": "Sharper Esports",
       "score1": null,
       "score2": null,
       "started": false
@@ -626,6 +613,19 @@
       "bestOf": 3,
       "team1": "Evil Geniuses",
       "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787126400|tbd|onside-gaming",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1787126400,
+      "bestOf": 3,
+      "team1": null,
+      "team2": "ONSIDE GAMING",
       "score1": null,
       "score2": null,
       "started": false

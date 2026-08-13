@@ -798,11 +798,52 @@ def main():
     # this handful of stats is meaningful to split by side -- clutches,
     # utility, and consistency don't have a side breakdown in the source
     # data at all.
+    #
+    # Per-team, per-map rounds actually PLAYED on each side -- used just
+    # below so a side bucket's own round count (and therefore the Players
+    # page's RND column, and every per-round rate derived from it -- KPR/
+    # APR/FKPR/FDPR) reflects rounds actually played on THAT side, not the
+    # map's whole round total duplicated onto both the 't' and 'ct' rows
+    # (which is what both used to carry, byte-identical, before this fix --
+    # that's why toggling Attack/Defend never visibly changed RND).
+    #
+    # Same derivation team_buckets.json's own atk/def split already uses
+    # and has verified against real data further down this file (atkP+defP
+    # sums exactly to team1_score+team2_score on every regulation map, 0
+    # mismatches): a team's *_atk_score is rounds WON while attacking, so
+    # rounds PLAYED on attack is that plus the opponent's defense wins --
+    # every attack round is someone's defense round. Regulation-only by
+    # construction (VLR's per-map header breakdown this comes from never
+    # covers overtime), so a map that goes to OT reports fewer atk+def
+    # rounds than its real total for both teams equally -- the same,
+    # already-documented gap the team-level split carries, not a new one.
+    _side_round_rows = []
+    for team_col, atk_col, opp_def_col, def_col, opp_atk_col in (
+        ('c1', 'team1_atk_score', 'team2_def_score', 'team1_def_score', 'team2_atk_score'),
+        ('c2', 'team2_atk_score', 'team1_def_score', 'team2_def_score', 'team1_atk_score'),
+    ):
+        sub = am[['match_id', 'map_index', team_col]].rename(columns={team_col: 'canonical_team'}).copy()
+        sub['atkP'] = am[atk_col] + am[opp_def_col]
+        sub['defP'] = am[def_col] + am[opp_atk_col]
+        _side_round_rows.append(sub)
+    map_side_rounds = pd.concat(_side_round_rows, ignore_index=True)
+
     mps_sides = all_mps_unfiltered[all_mps_unfiltered['side'].isin(['t', 'ct'])].merge(
         all_matches[['match_id', 'event_id', 'stage', 'match_date']], on='match_id', how='left'
-    ).merge(
-        am[['match_id', 'map_index', 'rounds_total']], on=['match_id', 'map_index'], how='left'
     )
+    mps_sides['canonical_team'] = mps_sides['team'].map(name_to_canon).fillna(mps_sides['team'])
+    mps_sides = mps_sides.merge(
+        map_side_rounds, on=['match_id', 'map_index', 'canonical_team'], how='left'
+    )
+    # Overwrites 'rounds_total' with the real side-specific count rather
+    # than introducing a new column name: everything below this point --
+    # the side_buckets loop's own "rnd" field, and wsum()'s weighting of
+    # the rating/KAST/ADR/HS% averages -- already reads a column named
+    # 'rounds_total', so this one assignment fixes both at once.
+    mps_sides['rounds_total'] = np.where(
+        mps_sides['side'] == 't', mps_sides['atkP'], mps_sides['defP']
+    )
+    mps_sides = mps_sides.drop(columns=['atkP', 'defP'])
     mps_sides['date'] = day_col(mps_sides['match_date'])
     for col in ['kast', 'hs_pct']:
         mps_sides[col] = pct_to_float(mps_sides[col])
@@ -1463,12 +1504,11 @@ def main():
         return out
 
     # Attack/defense split, mirroring VLR's own All/Attack/Defend toggle on
-    # a match page. Same caveat as player_sides.json: `rounds_total` is the
-    # whole map's round count for both the 't' and 'ct' rows, so a
-    # multi-map series weights each map equally across sides rather than by
-    # rounds actually played on that side. Within a single match that only
-    # affects how maps are weighted against each other, not the numbers
-    # themselves, which is why the simpler shared denominator is kept here.
+    # a match page. `mps_sides['rounds_total']` is already the real
+    # per-side round count by this point (overwritten above, near
+    # player_sides.json's own build), so this inherits the same fix for
+    # free -- each map is weighted by rounds actually played on that side,
+    # not the map's whole round total.
     side_scoreboards = {}
     for (match_id, player, side), g in mps_sides.groupby(
             ['match_id', 'player', 'side'], dropna=True):

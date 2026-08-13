@@ -463,6 +463,12 @@ export function summarizeTeamMapStats(mapRows) {
  * than reusing aggregatePlayerBuckets, which sums a few fields (m2/m3/m4/
  * m5/cl) with no `|| 0` fallback -- fine for the main buckets where those
  * always exist, but would silently produce NaN here where they don't.
+ *
+ * `roundsPlayed` here is genuinely side-specific -- export_from_db.py's
+ * `rnd` field on each side bucket is rounds actually played on THAT side
+ * (derived from the map's real atk/def round split), not the map's whole
+ * round total. Safe to swap into a row's headline `roundsPlayed` when a
+ * side is selected, unlike relying on the 'both' aggregate's own value.
  */
 export function aggregateSideBuckets(buckets) {
   if (!buckets.length) return null

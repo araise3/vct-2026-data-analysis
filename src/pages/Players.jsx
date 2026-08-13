@@ -139,11 +139,14 @@ export default function Players() {
       const s = aggregatePlayerBuckets(buckets, { ratedOnly })
       if (!s || !s.mapsPlayed) continue
 
-      // Side toggle only swaps the headline stats (Rating/ACS/K:D/KAST/
-      // ADR/HS%/Kills/Deaths/Assists/FK/FD) -- Maps/Rounds/Clutches/
-      // utility stay from the 'both' aggregate, since those either don't
-      // have a meaningful side split (maps played is side-invariant) or
-      // simply aren't captured per side in the source data at all.
+      // Side toggle swaps the headline stats (Rating/ACS/K:D/KAST/ADR/HS%/
+      // Kills/Deaths/Assists/FK/FD) AND Rounds -- roundsPlayed now reflects
+      // rounds actually played on that side (export_from_db.py derives it
+      // from each map's real atk/def round split, not the map's whole
+      // round total duplicated onto both sides). Maps/Clutches/utility
+      // still stay from the 'both' aggregate: maps played is genuinely
+      // side-invariant, and clutches/utility simply aren't captured per
+      // side in the source data at all.
       const sideStats = side !== 'both' ? sideStatsByPlayer?.get(player) : null
 
       const row = {
@@ -156,6 +159,7 @@ export default function Players() {
         ...s,
         ...(sideStats
           ? {
+              roundsPlayed: sideStats.roundsPlayed,
               avgRating: sideStats.avgRating,
               avgAcs: sideStats.avgAcs,
               kd: sideStats.kd,
@@ -179,6 +183,7 @@ export default function Players() {
               // players' kills under this toggle). Null out rather than
               // show stale 'both' numbers under an Attack/Defend heading.
               {
+                roundsPlayed: null,
                 avgRating: null, avgAcs: null, kd: null, avgKast: null, avgAdr: null,
                 avgHsPct: null, totalKills: null, totalDeaths: null, totalAssists: null,
                 totalFirstKills: null, totalFirstDeaths: null,
@@ -186,12 +191,14 @@ export default function Players() {
             : {}),
       }
 
-      // Per-round rates, computed after the side-toggle swap above so they
-      // track whichever kill/death/assist counts are actually showing.
-      // roundsPlayed itself is side-invariant (maps played doesn't change
-      // with the toggle -- see the comment above), so it's always a valid
-      // denominator; the numerator is null'd out along with the rest when
-      // there's no side data at all for this player, and null propagates.
+      // Per-round rates, computed after the side-toggle swap above so both
+      // the numerator (kills/FK/FD/assists) and the denominator
+      // (roundsPlayed) track whichever side is actually showing -- a real
+      // "kills per round played on attack" once the toggle is active, not
+      // side-specific kills divided by the full both-sides round count.
+      // The numerator (and now the denominator too) is null'd out along
+      // with the rest when there's no side data for this player, and null
+      // propagates.
       const rp = row.roundsPlayed
       row.kpr = rp && row.totalKills != null ? row.totalKills / rp : null
       row.fkpr = rp && row.totalFirstKills != null ? row.totalFirstKills / rp : null

@@ -3,61 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-12T22:22:19Z"
+    "fetchedAt": "2026-08-13T03:11:55Z"
   },
   "matches": [
-    {
-      "key": "1786176000|a-team|wolves-esports",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786176000,
-      "bestOf": 3,
-      "team1": "A Team",
-      "team2": "Wolves Esports",
-      "score1": 1,
-      "score2": 2,
-      "started": true
-    },
-    {
-      "key": "1786183800|global-esports|zeta-division",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2/Group Stage",
-      "phase": "Group Stage",
-      "timestamp": 1786183800,
-      "bestOf": 3,
-      "team1": "Global Esports",
-      "team2": "ZETA DIVISION",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
-    {
-      "key": "1786189200|keepbest-gaming|funplus-phoenix",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786189200,
-      "bestOf": 3,
-      "team1": "KeepBest Gaming",
-      "team2": "FunPlus Phoenix",
-      "score1": 0,
-      "score2": 2,
-      "started": true
-    },
-    {
-      "key": "1786201200|fut-esports|giantx",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1786201200,
-      "bestOf": 3,
-      "team1": "FUT Esports",
-      "team2": "GIANTX",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
     {
       "key": "1786208400|eternal-fire|joblife",
       "event": "Vct 2026 Emea Stage 2",
@@ -690,6 +638,19 @@
       "timestamp": 1786924800,
       "bestOf": 3,
       "team1": "Evil Geniuses",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787126400|tbd|tbd",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1787126400,
+      "bestOf": 3,
+      "team1": null,
       "team2": null,
       "score1": null,
       "score2": null,

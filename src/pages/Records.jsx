@@ -7,7 +7,7 @@ import {
   expandBuckets, aggregatePlayerBuckets, groupByEntity, teamInScope,
 } from '../lib/entityBuckets'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
-import LeaderCard, { CardShell, topBy, dynamicQualify } from '../components/LeaderCard'
+import LeaderCard, { CardShell, topBy, dynamicQualify, dynamicQualifyThreshold } from '../components/LeaderCard'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import Select from '../components/ui/Select'
@@ -34,16 +34,17 @@ const heading = 'font-display text-sm font-semibold text-ink mb-4'
  */
 const PLAYER_LEADERS = [
   {
-    key: 'ratingSd', title: 'Most consistent',
+    key: 'consistencyScore', title: 'Most consistent',
     invert: true,
     // Gates on ratedMaps, NOT mapsPlayed: China maps often have no
     // Rating 2.0, so a player can have 33 maps but only 14 that feed the
     // SD. Using mapsPlayed here let a 14-rated-map player onto the card
-    // with an artificially tiny spread.
+    // with an artificially tiny spread. Same threshold also drives the
+    // shrinkage strength in `consistencyRows` below -- see its own comment.
     sampleKey: 'ratedMaps', sampleMin: 15,
     meta: (r) => `${num(r.ratedMaps)} rated`,
-    value: (r) => r.ratingSd.toFixed(3),
-    note: 'Standard deviation of Rating 2.0 across individual maps — lower is steadier. Min. 15 rated maps (scaled down for a smaller filter scope).',
+    value: (r) => r.consistencyScore.toFixed(3),
+    note: "Rating 2.0 spread across individual maps, shrunk toward the qualified pool's own average spread by sample size (same round-weighted method Player of the Month uses) — a player just over the rated-map minimum is pulled toward the field's typical spread instead of a lucky small sample winning outright on raw standard deviation. Lower is steadier. Min. 15 rated maps (scaled down for a smaller filter scope).",
   },
   {
     key: 'avgEcon', title: 'Highest econ rating',
@@ -172,6 +173,31 @@ export default function Records() {
     }
     return out
   }, [playerData, playerRecords, selections, dateRange, includeHiddenEvents])
+
+  // "Most consistent" card: shrinks each qualified player's raw rating
+  // standard deviation toward the qualified pool's own (maps-weighted)
+  // mean spread, by the same IMDB-style formula Player of the Month uses
+  // for its rating ranking (see data_prep/build_player_month.py) --
+  // weighted = v/(v+m)*R + m/(v+m)*C, where R is the player's own SD, v is
+  // their rated maps, m is the same dynamic qualification threshold used
+  // to gate the card, and C is the pool's mean SD. A player who barely
+  // cleared the rated-maps floor is pulled hard toward the field's typical
+  // spread instead of letting a lucky small sample's low variance win
+  // outright; a player with many rated maps is barely shrunk at all.
+  const consistencyRows = useMemo(() => {
+    if (!leaderRows.length) return leaderRows
+    const threshold = dynamicQualifyThreshold(leaderRows, 'ratedMaps', { fixed: 15 })
+    const qualified = leaderRows.filter((r) => r.ratedMaps >= threshold && r.ratingSd != null)
+    if (!qualified.length) return leaderRows
+    const totalMaps = qualified.reduce((s, r) => s + r.ratedMaps, 0)
+    const poolMeanSd = qualified.reduce((s, r) => s + r.ratingSd * r.ratedMaps, 0) / totalMaps
+    return leaderRows.map((r) => {
+      if (r.ratingSd == null) return r
+      const v = r.ratedMaps
+      const consistencyScore = (v / (v + threshold)) * r.ratingSd + (threshold / (v + threshold)) * poolMeanSd
+      return { ...r, consistencyScore }
+    })
+  }, [leaderRows])
 
   // Kill records: the single highest individual kill total across an
   // entire series (summed across every map of that match for one
@@ -497,7 +523,7 @@ export default function Records() {
                 key={c.key}
                 title={c.title}
                 note={c.note}
-                rows={topBy(leaderRows, c.key, {
+                rows={topBy(c.key === 'consistencyScore' ? consistencyRows : leaderRows, c.key, {
                   qualify: c.sampleKey
                     ? dynamicQualify(leaderRows, c.sampleKey, { fixed: c.sampleMin })
                     : c.qualify,

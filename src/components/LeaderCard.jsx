@@ -102,8 +102,18 @@ export function topBy(rows, key, { qualify, invert = false, limit = 5 } = {}) {
  * without it, a single team with 1 attack round would qualify as soon
  * as everyone else has 0, which defeats the point of gating at all.
  */
-export function dynamicQualify(rows, key, { fixed, fraction = 0.5, floor = 1 } = {}) {
-  const maxVal = rows.reduce((m, r) => (r[key] > m ? r[key] : m), 0)
-  const threshold = Math.max(floor, Math.min(fixed, Math.round(maxVal * fraction)))
+export function dynamicQualify(rows, key, opts = {}) {
+  const threshold = dynamicQualifyThreshold(rows, key, opts)
   return (r) => r[key] >= threshold
+}
+
+/**
+ * The threshold `dynamicQualify` computes internally, exposed on its own --
+ * needed by any caller that wants to reuse the exact same bar as a
+ * shrinkage-weighting strength (see Records.jsx's "Most consistent" card),
+ * not just as a pass/fail predicate.
+ */
+export function dynamicQualifyThreshold(rows, key, { fixed, fraction = 0.5, floor = 1 } = {}) {
+  const maxVal = rows.reduce((m, r) => (r[key] > m ? r[key] : m), 0)
+  return Math.max(floor, Math.min(fixed, Math.round(maxVal * fraction)))
 }

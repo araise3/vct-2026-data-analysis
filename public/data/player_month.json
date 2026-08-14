@@ -1,9 +1,11 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-08-14T19:07:08Z",
+    "generatedAt": "2026-08-14T21:01:05Z",
     "qualificationRounds": 54,
-    "playersConsidered": 247
+    "playersConsidered": 247,
+    "poolMeanRating": 0.999,
+    "selection": "round-weighted (shrunk toward pool mean; see build_player_month.py)"
   },
   "month": "2026-08",
   "player": "Chronicle",

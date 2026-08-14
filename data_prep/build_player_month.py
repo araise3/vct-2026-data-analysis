@@ -31,6 +31,25 @@ across every bucket in scope and divide ONCE at the end -- never average
 per-bucket averages, which would weight a 12-round map the same as a
 30-round one.
 
+WINNER SELECTION IS ROUND-WEIGHTED, NOT A RAW MAX
+--------------------------------------------------
+The qualification bar (MIN_ROUNDS_FLOOR / median-rounds gate below) only
+controls who's ELIGIBLE -- once a candidate clears it, a plain
+`max(..., key=avg rating)` treats a player who barely cleared the bar
+(few rounds, so a noisier average) exactly the same as one who played all
+month. That let a hot small sample beat a real sustained performance.
+Selection instead uses an IMDB-style weighted rating that shrinks each
+candidate's average toward the qualified pool's own round-weighted mean,
+by an amount inversely proportional to their own rounds relative to the
+bar: `weighted = v/(v+m) * R + m/(v+m) * C`, where R is the player's own
+average rating, v is their rounds played, m is the qualification bar
+(reused as the shrinkage strength, not just the entry threshold), and C
+is the pool's round-weighted mean rating. A player right at the bar is
+pulled roughly halfway to the mean; a player with several times the bar's
+rounds is barely shrunk at all. The displayed `rating` field is still the
+player's own real (unshrunk) average -- only the ranking used to pick the
+winner is adjusted, not the number shown for them.
+
 USAGE
 -----
   python3 build_player_month.py            # writes public/data/player_month.json
@@ -96,7 +115,18 @@ def build(data):
     if not qualified:
         return None
 
-    name, t = max(qualified, key=lambda kv: div(kv[1]["ratS"], kv[1]["ratR"]) or 0)
+    # Round-weighted mean rating across the qualified pool (sum-first, same
+    # rule as every other bucket aggregate) -- the shrinkage target `C`.
+    pool_rat_s = sum(t["ratS"] for _, t in qualified)
+    pool_rat_r = sum(t["ratR"] for _, t in qualified)
+    pool_mean = pool_rat_s / pool_rat_r
+
+    def weighted_rating(t):
+        v = t["ratR"]
+        r = t["ratS"] / v
+        return (v / (v + bar)) * r + (bar / (v + bar)) * pool_mean
+
+    name, t = max(qualified, key=lambda kv: weighted_rating(kv[1]))
     meta = (data.get("meta") or {}).get(name, {})
 
     return {
@@ -105,6 +135,8 @@ def build(data):
             "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "qualificationRounds": round(bar),
             "playersConsidered": len(qualified),
+            "poolMeanRating": round(pool_mean, 3),
+            "selection": "round-weighted (shrunk toward pool mean; see build_player_month.py)",
         },
         "month": month,
         "player": name,

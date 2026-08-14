@@ -223,15 +223,17 @@ function ComparisonTable({ axes, a, b }) {
   const subHeader = 'py-1.5 text-right font-bold text-[9px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap'
   return (
     <div className="mt-6 overflow-auto rounded-2xl border border-hairline shadow-depth-sm">
-      <table className="w-full border-separate border-spacing-0 text-sm">
+      <table className="w-full table-fixed border-separate border-spacing-0 text-sm">
+        <colgroup>
+          <col />
+          <col className="w-[88px]" />
+          <col className="w-[88px]" />
+          {b && <col className="w-[88px]" />}
+          {b && <col className="w-[88px]" />}
+        </colgroup>
         <thead>
           <tr className="bg-surface2">
-            <th
-              rowSpan={2}
-              className="pl-[15px] pr-[10px] py-2 text-left font-bold text-[10px] uppercase text-muted border-r border-b border-hairline align-bottom"
-            >
-              Stat
-            </th>
+            <th className="border-r border-b border-hairline" />
             <th
               colSpan={2}
               className="px-[10px] py-1.5 text-center font-bold text-[11px] uppercase border-r border-b border-hairline whitespace-nowrap"
@@ -250,11 +252,14 @@ function ComparisonTable({ axes, a, b }) {
             )}
           </tr>
           <tr className="bg-surface2">
-            <th className={`pl-[10px] pr-1 border-r ${subHeader}`}>Value</th>
+            <th className="pl-[15px] pr-[10px] py-1.5 text-left font-bold text-[10px] uppercase text-muted border-r border-b border-hairline whitespace-nowrap">
+              Stat
+            </th>
+            <th className={`pl-[10px] pr-[10px] border-r ${subHeader}`}>Value</th>
             <th className={`px-[10px] border-r ${subHeader}`}>Rank</th>
             {b && (
               <>
-                <th className={`pl-[10px] pr-1 border-r ${subHeader}`}>Value</th>
+                <th className={`pl-[10px] pr-[10px] border-r ${subHeader}`}>Value</th>
                 <th className={`px-[10px] ${subHeader}`}>Rank</th>
               </>
             )}
@@ -271,13 +276,13 @@ function ComparisonTable({ axes, a, b }) {
                   {ax.label}
                 </td>
                 <StatCell value={ax.formatted} higher={aHigher} />
-                <td className={`px-[10px] py-1.5 text-right border-r border-b border-hairline whitespace-nowrap ${aHigher ? 'bg-good/10' : ''}`}>
+                <td className="px-[10px] py-1.5 text-right border-r border-b border-hairline whitespace-nowrap">
                   <RankBadge rank={ax.rank} n={ax.n} />
                 </td>
                 {b && (
                   <>
                     <StatCell value={ax.compareFormatted ?? '—'} higher={bHigher} />
-                    <td className={`px-[10px] py-1.5 text-right border-b border-hairline whitespace-nowrap ${bHigher ? 'bg-good/10' : ''}`}>
+                    <td className="px-[10px] py-1.5 text-right border-b border-hairline whitespace-nowrap">
                       <RankBadge rank={ax.compareRank} n={ax.n} />
                     </td>
                   </>
@@ -298,7 +303,7 @@ function ComparisonTable({ axes, a, b }) {
 function StatCell({ value, higher }) {
   return (
     <td
-      className={`pl-[10px] pr-1 py-1.5 text-right text-[12px] tabular-nums border-r border-b border-hairline whitespace-nowrap ${
+      className={`pl-[10px] pr-[10px] py-1.5 text-right text-[12px] tabular-nums border-r border-b border-hairline whitespace-nowrap ${
         higher ? 'bg-good/10 text-good font-bold' : 'text-ink/70'
       }`}
     >

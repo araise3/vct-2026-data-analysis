@@ -7,7 +7,7 @@ import {
   expandBuckets, aggregatePlayerBuckets, groupByEntity, teamInScope,
 } from '../lib/entityBuckets'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
-import LeaderCard, { CardShell, topBy } from '../components/LeaderCard'
+import LeaderCard, { CardShell, topBy, dynamicQualify } from '../components/LeaderCard'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import Select from '../components/ui/Select'
@@ -23,6 +23,61 @@ import { pct, duration, num } from '../lib/format'
 
 const card = 'bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5'
 const heading = 'font-display text-sm font-semibold text-ink mb-4'
+
+/**
+ * Moved here from the Tournaments page's "Season stats" section, which was
+ * pared down to just its headline KPI tiles -- these per-player leaderboards
+ * fit better alongside Records' other player leaderboard ("Most aces",
+ * already here) than under a KPI strip. None of these have a side breakdown
+ * in the source data (see entityBuckets' aggregatePlayerBuckets), so there's
+ * no Attack/Defend toggle to worry about here either.
+ */
+const PLAYER_LEADERS = [
+  {
+    key: 'ratingSd', title: 'Most consistent',
+    invert: true,
+    // Gates on ratedMaps, NOT mapsPlayed: China maps often have no
+    // Rating 2.0, so a player can have 33 maps but only 14 that feed the
+    // SD. Using mapsPlayed here let a 14-rated-map player onto the card
+    // with an artificially tiny spread.
+    sampleKey: 'ratedMaps', sampleMin: 15,
+    meta: (r) => `${num(r.ratedMaps)} rated`,
+    value: (r) => r.ratingSd.toFixed(3),
+    note: 'Standard deviation of Rating 2.0 across individual maps — lower is steadier. Min. 15 rated maps (scaled down for a smaller filter scope).',
+  },
+  {
+    key: 'avgEcon', title: 'Highest econ rating',
+    sampleKey: 'utilMaps', sampleMin: 15,
+    meta: (r) => `${num(r.utilMaps)} maps`,
+    value: (r) => num(r.avgEcon),
+    note: 'Min. 15 maps with economy data (scaled down for a smaller filter scope).',
+  },
+  {
+    key: 'totalClutches', title: 'Most clutches',
+    qualify: (r) => r.totalClutches > 0,
+    meta: (r) => `${num(r.roundsPlayed)} rds`,
+    value: (r) => num(r.totalClutches),
+  },
+  {
+    key: 'totalPlants', title: 'Most spike plants',
+    qualify: (r) => r.utilMaps > 0,
+    meta: (r) => `${num(r.utilMaps)} maps`,
+    value: (r) => num(r.totalPlants),
+  },
+  {
+    key: 'totalDefuses', title: 'Most defuses',
+    qualify: (r) => r.utilMaps > 0,
+    meta: (r) => `${num(r.utilMaps)} maps`,
+    value: (r) => num(r.totalDefuses),
+  },
+  {
+    key: 'totalAce', title: 'Most aces',
+    qualify: (r) => r.totalAce > 0,
+    meta: (r) => `${num(r.mapsPlayed)} maps`,
+    value: (r) => num(r.totalAce),
+    note: 'Total 5-kill rounds across every map in scope.',
+  },
+]
 
 export default function Records() {
   const { data, loading } = useData('match_results')
@@ -89,11 +144,11 @@ export default function Records() {
     [activeDurationRows]
   )
 
-  // Ace leaderboard: total aces (5-kill rounds) across every player in
-  // scope, filtered by the same active facet selections as everything
-  // else on this page. A season-long aggregate, unlike the kill-record
-  // cards below (which are single-match records) -- there's no season-
-  // long entity page it fits better on than here.
+  // Player leaderboards: every season-long aggregate stat, filtered by the
+  // same active facet selections as everything else on this page. A
+  // season-long aggregate, unlike the kill-record cards below (which are
+  // single-match records) -- there's no season-long entity page it fits
+  // better on than here.
   // Expanded once per dataset, not once per filter change -- this memo
   // depends on `selections`, so leaving expandBuckets inside it re-walked
   // all 10,894 player buckets (~8ms) on every chip click, rebuilding an
@@ -103,7 +158,7 @@ export default function Records() {
     [playerData]
   )
 
-  const aceLeaders = useMemo(() => {
+  const leaderRows = useMemo(() => {
     if (!playerData) return []
     const filteredPlayers = playerRecords.filter(matchesSelections)
     const out = []
@@ -111,9 +166,9 @@ export default function Records() {
       const meta = playerData.meta[player]
       if (!meta) continue
       const s = aggregatePlayerBuckets(buckets)
-      if (!s || !s.totalAce) continue
+      if (!s || !s.mapsPlayed) continue
       out.push({ player, team: teamInScope(buckets, meta.team), countryCode: meta.countryCode,
-                 countryName: meta.countryName, totalAce: s.totalAce, mapsPlayed: s.mapsPlayed })
+                 countryName: meta.countryName, ...s })
     }
     return out
   }, [playerData, playerRecords, selections, dateRange, includeHiddenEvents])
@@ -430,28 +485,42 @@ export default function Records() {
         </div>
       )}
 
-      {aceLeaders.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <LeaderCard
-            title="Most aces"
-            note="Total 5-kill rounds across every map in scope."
-            rows={topBy(aceLeaders, 'totalAce', { qualify: (r) => r.totalAce > 0 })}
-            renderEntity={(r) => (
-              <>
-                <Flag countryCode={r.countryCode} countryName={r.countryName} size={14} />
-                <Link
-                  to={`/players/${encodeURIComponent(r.player)}`}
-                  className="font-medium text-ink truncate hover:text-accent-bright transition-colors"
-                >
-                  {r.player}
-                </Link>
-                <TeamLogo team={r.team} size={20} />
-              </>
-            )}
-            meta={(r) => `${num(r.mapsPlayed)} maps`}
-            value={(r) => num(r.totalAce)}
-            showRank
-          />
+      {leaderRows.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display text-sm font-semibold text-ink">Player leaders</h2>
+            <p className="text-muted text-xs">Follows the filters above.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {PLAYER_LEADERS.map((c) => (
+              <LeaderCard
+                key={c.key}
+                title={c.title}
+                note={c.note}
+                rows={topBy(leaderRows, c.key, {
+                  qualify: c.sampleKey
+                    ? dynamicQualify(leaderRows, c.sampleKey, { fixed: c.sampleMin })
+                    : c.qualify,
+                  invert: c.invert,
+                })}
+                renderEntity={(r) => (
+                  <>
+                    <Flag countryCode={r.countryCode} countryName={r.countryName} size={14} />
+                    <Link
+                      to={`/players/${encodeURIComponent(r.player)}`}
+                      className="font-medium text-ink truncate hover:text-accent-bright transition-colors"
+                    >
+                      {r.player}
+                    </Link>
+                    <TeamLogo team={r.team} size={20} />
+                  </>
+                )}
+                meta={c.meta}
+                value={c.value}
+                showRank
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

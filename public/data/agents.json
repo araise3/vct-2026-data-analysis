@@ -56874,14 +56874,14 @@
         "Viper": 18,
         "Sova": 18,
         "Phoenix": 14,
-        "Fade": 12,
         "Chamber": 12,
+        "Fade": 12,
         "Cypher": 9,
         "Harbor": 8,
         "Kayo": 7,
         "Jett": 6,
-        "Raze": 4,
         "Skye": 4,
+        "Raze": 4,
         "Astra": 3,
         "Waylay": 3,
         "Sage": 3,
@@ -56962,9 +56962,9 @@
           "Phoenix": 2,
           "Fade": 2,
           "Skye": 2,
+          "Cypher": 1,
           "Jett": 1,
-          "Raze": 1,
-          "Cypher": 1
+          "Raze": 1
         },
         "Summit": {
           "Omen": 4,
@@ -56986,11 +56986,11 @@
           "Omen": 6,
           "Neon": 5,
           "Chamber": 4,
-          "Phoenix": 3,
           "Fade": 3,
-          "Cypher": 2,
-          "Sova": 2,
+          "Phoenix": 3,
           "Sage": 2,
+          "Sova": 2,
+          "Cypher": 2,
           "Skye": 1,
           "Kayo": 1,
           "Waylay": 1
@@ -61095,6 +61095,62 @@
           "Kayo": 1,
           "Phoenix": 1,
           "Fade": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2026,
+      "region": "China",
+      "event": "Vct 2026 China Stage 2",
+      "stage": "Stage 2",
+      "phase": "Playoffs",
+      "week": "Playoffs: Upper Quarterfinals",
+      "playerRows": 20,
+      "agentCounts": {
+        "Raze": 3,
+        "Cypher": 2,
+        "Fade": 2,
+        "Astra": 2,
+        "Omen": 2,
+        "Neon": 2,
+        "Skye": 2,
+        "Viper": 2,
+        "Yoru": 1,
+        "Deadlock": 1,
+        "Waylay": 1
+      },
+      "mapStats": {
+        "Split": {
+          "rounds": 20,
+          "atkWinRounds": 9,
+          "defWinRounds": 11
+        },
+        "Summit": {
+          "rounds": 22,
+          "atkWinRounds": 15,
+          "defWinRounds": 7
+        }
+      },
+      "mapAgentCounts": {
+        "Split": {
+          "Skye": 2,
+          "Viper": 2,
+          "Astra": 1,
+          "Deadlock": 1,
+          "Raze": 1,
+          "Neon": 1,
+          "Omen": 1,
+          "Waylay": 1
+        },
+        "Summit": {
+          "Cypher": 2,
+          "Fade": 2,
+          "Raze": 2,
+          "Astra": 1,
+          "Yoru": 1,
+          "Omen": 1,
+          "Neon": 1
         }
       }
     },

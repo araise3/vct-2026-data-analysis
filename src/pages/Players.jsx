@@ -4,7 +4,7 @@ import { useData, useIdle } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandBuckets, aggregatePlayerBuckets, aggregateSideBuckets, groupByEntity, teamInScope,
-  buildPlayerDateSpans, attachDateSpans,
+  buildPlayerDayGroups, attachDateSpans,
 } from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
@@ -40,21 +40,24 @@ export default function Players() {
 
   const records = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
 
-  // player_buckets has no per-day date at all (see buildPlayerDateSpans'
+  // player_buckets has no per-day date at all (see buildPlayerDayGroups'
   // own comment in entityBuckets.js), so the DATE RANGE control below
   // looked live but silently filtered nothing. player_agents.json -- the
   // same file already idle-loaded above for the Agent dropdown -- shares
   // the same (player, event, week) key at a finer per-agent grain with a
-  // real date, so its min/max per key stands in as an approximate span.
-  // Before agentData has loaded (or for the small, documented set of
-  // player-maps with no agent recorded at all), this is a no-op --
-  // records fall back to their prior no-date-info pass-through, same as
-  // before this fix -- and starts working the moment the idle fetch lands.
-  const dateSpans = useMemo(
-    () => (agentData ? buildPlayerDateSpans(agentData.buckets) : new Map()),
+  // real date, so each row is matched to the exact day(s) its own maps
+  // were played on via a stat fingerprint (not just its key's overall
+  // date range -- see buildPlayerDayGroups for why that distinction is
+  // load-bearing). Before agentData has loaded (or for the small,
+  // documented set of player-maps with no agent recorded at all), this is
+  // a no-op -- records fall back to their prior no-date-info pass-through,
+  // same as before this fix -- and starts working the moment the idle
+  // fetch lands.
+  const dayGroups = useMemo(
+    () => (agentData ? buildPlayerDayGroups(agentData.buckets) : new Map()),
     [agentData]
   )
-  const datedRecords = useMemo(() => attachDateSpans(records, dateSpans), [records, dateSpans])
+  const datedRecords = useMemo(() => attachDateSpans(records, dayGroups), [records, dayGroups])
 
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds,

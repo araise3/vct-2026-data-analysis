@@ -118,45 +118,105 @@ export function expandBuckets(data, keyField, keep = null) {
  * key, split further by agent, with a genuine per-day date on each row --
  * and a player_buckets bucket's own totals are exactly the sum across
  * whichever player_agents rows share its key (verified against real data:
- * identical ratS/ratR/acsS/... for a single-agent bucket). So the min/max
- * date across those rows is the real span of days that bucket's maps were
- * actually played on -- the best available granularity without a genuine
- * per-day player_buckets export.
+ * identical ratS/ratR/acsS/... for a single-agent bucket).
  *
- * Takes RAW player_agents buckets (not expanded records), since only
- * `p`/`e`/`w`/`d` are needed. Returns a Map from "player|event|week" to
- * `{ min, max }` (both 'YYYY-MM-DD' strings) for `attachDateSpans` below.
+ * Groups RAW player_agents buckets (only `p`/`e`/`w`/`d`/`rnd`/`k`/`a`/
+ * `fk`/`fd` are needed) by that key, then further by real calendar day
+ * within it, summing each day's rnd/k/a/fk/fd into a fingerprint --
+ * `attachDateSpans` below uses this to match a specific player_buckets ROW
+ * to the exact day(s) its maps were played on, not just the key's overall
+ * date range.
+ *
+ * That distinction matters because player_buckets.json is NOT always
+ * exactly one row per (player, event, week) despite CLAUDE.md's own
+ * description of the bucket model -- a player who played two separate
+ * series in the same nominally-labelled week (a busy round-robin week)
+ * produces two rows sharing the identical key. Confirmed against real
+ * data: Chronicle has two distinct rows both labelled "Group Stage: Week
+ * 3" for VCT 2026 EMEA Stage 2, one from a match on 2026-07-29 (72 rounds,
+ * ratS 64.46) and one from 2026-08-01 (64 rounds, ratS 98.86). A single
+ * date span per KEY (an earlier version of this function) unioned both
+ * real days together and attached the SAME July29-to-Aug1 span to both
+ * rows -- so filtering for August wrongly pulled in the July 29 row too,
+ * combining 136 rounds at a diluted 1.20 rating instead of the true 64
+ * August rounds at 1.54 (matching what Player of the Month independently
+ * computes for August alone straight off this same file's per-day dates).
+ *
+ * Returns a Map from "player|event|week" to an array of
+ * `{ date, rnd, k, a, fk, fd }`, one entry per real day.
  */
-export function buildPlayerDateSpans(agentBuckets) {
-  const spans = new Map()
+export function buildPlayerDayGroups(agentBuckets) {
+  const byKey = new Map()
   for (const b of agentBuckets || []) {
     if (typeof b.d !== 'string') continue
     const key = `${b.p}|${b.e}|${b.w}`
-    const span = spans.get(key)
-    if (!span) spans.set(key, { min: b.d, max: b.d })
-    else {
-      if (b.d < span.min) span.min = b.d
-      if (b.d > span.max) span.max = b.d
-    }
+    let days = byKey.get(key)
+    if (!days) { days = new Map(); byKey.set(key, days) }
+    let day = days.get(b.d)
+    if (!day) { day = { date: b.d, rnd: 0, k: 0, a: 0, fk: 0, fd: 0 }; days.set(b.d, day) }
+    day.rnd += b.rnd || 0
+    day.k += b.k || 0
+    day.a += b.a || 0
+    day.fk += b.fk || 0
+    day.fd += b.fd || 0
   }
-  return spans
+  const out = new Map()
+  for (const [key, days] of byKey) out.set(key, [...days.values()])
+  return out
+}
+
+function fingerprintMatches(row, day) {
+  return row.rnd === day.rnd && row.k === day.k && row.a === day.a && row.fk === day.fk && row.fd === day.fd
 }
 
 /**
- * Attaches an approximate `dateMin`/`dateMax` span (see
- * buildPlayerDateSpans) to every record whose (p, e, w) key is present in
- * `spans` -- a no-op for any record the lookup doesn't cover, which is a
- * real, already-documented gap (some player-maps have no agent recorded at
- * all -- see project-history's note that agent-bucket wins run slightly
- * lower than player-bucket wins for exactly this reason) rather than a bug
+ * Attaches an approximate `dateMin`/`dateMax` span to every record whose
+ * (p, e, w) key is present in `dayGroups` (see buildPlayerDayGroups) --
+ * a no-op for any record the lookup doesn't cover, which is a real,
+ * already-documented gap (some player-maps have no agent recorded at all
+ * -- see project-history's note that agent-bucket wins run slightly lower
+ * than player-bucket wins for exactly this reason) rather than a bug
  * here; those rows correctly fall back to "no date info" via
  * `inDateRange`'s own pass-through rule instead of being wrongly excluded.
+ *
+ * When a key maps to a single real day, that's exact (`dateMin ===
+ * dateMax`). When several player_buckets ROWS share one key (see
+ * buildPlayerDayGroups' own note), each row is matched against whichever
+ * day's own rnd/k/a/fk/fd totals equal it exactly -- real per-day
+ * precision, not a week-wide guess. A row that can't be matched to one
+ * specific day (its own maps genuinely span more than one day, or a rare
+ * fingerprint collision) falls back to the union of every day sharing its
+ * key -- over-inclusive, but the same graceful degrade this always had.
  */
-export function attachDateSpans(records, spans) {
-  if (!spans.size) return records
+export function attachDateSpans(records, dayGroups) {
+  if (!dayGroups.size) return records
+  const rowsByKey = new Map()
+  for (const r of records) {
+    const key = `${r.p}|${r.e}|${r.w}`
+    if (!rowsByKey.has(key)) rowsByKey.set(key, [])
+    rowsByKey.get(key).push(r)
+  }
+  const spanByRow = new Map()
+  for (const [key, days] of dayGroups) {
+    const rows = rowsByKey.get(key)
+    if (!rows) continue
+    for (const row of rows) {
+      const match = days.find((d) => fingerprintMatches(row, d))
+      if (match) {
+        spanByRow.set(row, { dateMin: match.date, dateMax: match.date })
+      } else {
+        let min = days[0].date, max = days[0].date
+        for (const d of days) {
+          if (d.date < min) min = d.date
+          if (d.date > max) max = d.date
+        }
+        spanByRow.set(row, { dateMin: min, dateMax: max })
+      }
+    }
+  }
   return records.map((r) => {
-    const span = spans.get(`${r.p}|${r.e}|${r.w}`)
-    return span ? { ...r, dateMin: span.min, dateMax: span.max } : r
+    const span = spanByRow.get(r)
+    return span ? { ...r, ...span } : r
   })
 }
 

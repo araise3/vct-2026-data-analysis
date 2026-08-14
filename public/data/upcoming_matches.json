@@ -3,35 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-14T10:36:07Z"
+    "fetchedAt": "2026-08-14T13:58:33Z"
   },
   "matches": [
-    {
-      "key": "1786298400|gentle-mates|enterprise-esports",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1786298400,
-      "bestOf": 3,
-      "team1": "Gentle Mates",
-      "team2": "Enterprise Esports",
-      "score1": 0,
-      "score2": 2,
-      "started": true
-    },
-    {
-      "key": "1786309200|evil-geniuses|nrg",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2/Group Stage",
-      "phase": "Group Stage",
-      "timestamp": 1786309200,
-      "bestOf": 3,
-      "team1": "Evil Geniuses",
-      "team2": "NRG",
-      "score1": 0,
-      "score2": 2,
-      "started": true
-    },
     {
       "key": "1786316100|loud|100-thieves",
       "event": "Vct 2026 Americas Stage 2",
@@ -262,7 +236,7 @@
       "bestOf": 3,
       "team1": "TYLOO",
       "team2": "Titan Esports Club",
-      "score1": 0,
+      "score1": 2,
       "score2": 0,
       "started": true
     },
@@ -275,9 +249,9 @@
       "bestOf": 3,
       "team1": "Team Secret",
       "team2": "Xipto Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1786719600|eintracht-frankfurt|team-heretics",
@@ -436,14 +410,14 @@
       "started": false
     },
     {
-      "key": "1786867200|nova-esports|tbd",
+      "key": "1786867200|nova-esports|titan-esports-club",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1786867200,
       "bestOf": 3,
       "team1": "Nova Esports",
-      "team2": null,
+      "team2": "Titan Esports Club",
       "score1": null,
       "score2": null,
       "started": false
@@ -475,14 +449,14 @@
       "started": false
     },
     {
-      "key": "1786878000|nongshim-redforce|tbd",
+      "key": "1786878000|nongshim-redforce|team-secret",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1786878000,
       "bestOf": 3,
       "team1": "Nongshim RedForce",
-      "team2": null,
+      "team2": "Team Secret",
       "score1": null,
       "score2": null,
       "started": false
@@ -540,14 +514,14 @@
       "started": false
     },
     {
-      "key": "1787126400|jdg-esports|tbd",
+      "key": "1787126400|jdg-esports|tyloo",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1787126400,
       "bestOf": 3,
       "team1": "JDG Esports",
-      "team2": null,
+      "team2": "TYLOO",
       "score1": null,
       "score2": null,
       "started": false
@@ -651,6 +625,32 @@
       "timestamp": 1787220000,
       "bestOf": 3,
       "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787223600|tbd|xipto-esports",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1787223600,
+      "bestOf": 3,
+      "team1": null,
+      "team2": "Xipto Esports",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787238000|team-liquid|tbd",
+      "event": "Vct 2026 Emea Stage 2",
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
+      "phase": null,
+      "timestamp": 1787238000,
+      "bestOf": 3,
+      "team1": "Team Liquid",
       "team2": null,
       "score1": null,
       "score2": null,

@@ -3,48 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-14T16:27:41Z"
+    "fetchedAt": "2026-08-14T21:53:54Z"
   },
   "matches": [
-    {
-      "key": "1786316100|loud|100-thieves",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2/Group Stage",
-      "phase": "Group Stage",
-      "timestamp": 1786316100,
-      "bestOf": 3,
-      "team1": "LOUD",
-      "team2": "100 Thieves",
-      "score1": 0,
-      "score2": 2,
-      "started": true
-    },
-    {
-      "key": "1786348800|all-gamers|jdg-esports",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786348800,
-      "bestOf": 3,
-      "team1": "All Gamers",
-      "team2": "JDG Esports",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
-    {
-      "key": "1786359000|titan-esports-club|dragon-ranger-gaming",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786359000,
-      "bestOf": 3,
-      "team1": "Titan Esports Club",
-      "team2": "Dragon Ranger Gaming",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1786435200|jdg-esports|edward-gaming",
       "event": "Vct 2026 China Stage 2",
@@ -262,22 +223,22 @@
       "bestOf": 3,
       "team1": "Eintracht Frankfurt",
       "team2": "Team Heretics",
-      "score1": 0,
+      "score1": 2,
       "score2": 0,
       "started": true
     },
     {
-      "key": "1786730400|joblife|fnatic",
+      "key": "1786728600|joblife|fnatic",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
-      "timestamp": 1786730400,
+      "timestamp": 1786728600,
       "bestOf": 3,
       "team1": "Joblife",
       "team2": "FNATIC",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1786741200|furia|2game-esports",
@@ -288,9 +249,9 @@
       "bestOf": 3,
       "team1": "FURIA",
       "team2": "2GAME Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1786752000|cloud9|fluxo-w7m",
@@ -462,27 +423,27 @@
       "started": false
     },
     {
-      "key": "1786892400|tbd|tbd",
+      "key": "1786892400|tbd|eintracht-frankfurt",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1786892400,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "Eintracht Frankfurt",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1786903200|tbd|tbd",
+      "key": "1786903200|tbd|joblife",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1786903200,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "Joblife",
       "score1": null,
       "score2": null,
       "started": false
@@ -651,6 +612,58 @@
       "timestamp": 1787238000,
       "bestOf": 3,
       "team1": "Team Liquid",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787248800|team-vitality|tbd",
+      "event": "Vct 2026 Emea Stage 2",
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
+      "phase": null,
+      "timestamp": 1787248800,
+      "bestOf": 3,
+      "team1": "Team Vitality",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787259600|tbd|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1787259600,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787270400|tbd|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1787270400,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787299200|tbd|tbd",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1787299200,
+      "bestOf": 3,
+      "team1": null,
       "team2": null,
       "score1": null,
       "score2": null,

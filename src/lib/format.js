@@ -228,33 +228,6 @@ export function monthLabel(iso) {
   return `${MONTHS_FULL[m - 1]} ${y}`.toUpperCase()
 }
 
-/** A local Date -> `{ month: "AUG", day: "6" }`, for the right rail's date
- * strip -- rft.gg's own day tabs stack these as two separate lines rather
- * than one "AUG 6" string (confirmed against its live markup:
- * `<span class="text-[8px] font-bold">AUG</span><span class="text-xs
- * font-medium">6</span>`), so the two pieces are kept separate here rather
- * than pre-joined. Takes a Date (not an ISO string) because the strip's days
- * are derived from real timestamps in the viewer's own timezone. */
-export function dayStripParts(date) {
-  return { month: MONTHS[date.getMonth()].toUpperCase(), day: String(date.getDate()) }
-}
-
-/** Unix seconds -> the viewer's local "17:00". */
-export function matchTime(ts) {
-  if (ts === null || ts === undefined) return ''
-  const d = new Date(ts * 1000)
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-}
-
-/** Unix seconds -> local calendar day as "YYYY-MM-DD", the key the date strip
- * groups on. Deliberately built from local getters rather than
- * toISOString().slice(0,10), which would bucket by UTC day and put an evening
- * match in the Americas on tomorrow's tab. */
-export function localDateKey(ts) {
-  const d = new Date(ts * 1000)
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-
 /** "2026-07-16" + "2026-09-06" -> "Jul 16 – Sep 6"; collapses to one date
  * when both sides are the same day, and tolerates either side missing. */
 export function dateRangeLabel(start, end) {

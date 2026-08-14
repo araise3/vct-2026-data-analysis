@@ -31,9 +31,8 @@ export default function PlayerProfile() {
   // passed to buildRadarProfile() -- so a mid-typing "no data for 'as'"
   // caveat doesn't flash on every keystroke; the name only "commits" on
   // blur/Enter, same as picking a suggestion from the datalist.
-  // Seeded from ?compare=, which is how the Events page's Compare Players
-  // card hands off a pair -- it can only navigate to ONE player's profile, so
-  // the second name has to ride in the query string or it's silently lost.
+  // Seeded from ?compare= so a link to this profile can land with a second
+  // player already plotted, without needing its own UI to pass state.
   const [searchParams] = useSearchParams()
   const seededCompare = searchParams.get('compare') || ''
   const [compareInput, setCompareInput] = useState(seededCompare)

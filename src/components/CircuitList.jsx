@@ -18,14 +18,14 @@ export default function CircuitList({ circuits }) {
 
   return (
     <RailCard title="Events">
-      <div>
+      <div className="flex flex-col gap-1.5 p-2">
         {circuits.map((e) => {
           const cd = countdown(e.startDate, e.endDate)
           return (
             <Link
               key={e.name}
               to={`/tournaments/${encodeURIComponent(e.name)}`}
-              className="flex items-center gap-2 border-b border-hairline/40 px-3 py-1.5 transition-colors last:border-b-0 hover:bg-surface2/60"
+              className="flex items-center gap-2 rounded-2xl border border-hairline bg-surface2 px-3 py-1.5 shadow-depth-xs transition-all duration-150 hover:-translate-y-0.5 hover:border-muted hover:shadow-depth-sm"
             >
               <EventLogo event={e.name} size={18} />
               <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-ink">

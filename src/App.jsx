@@ -5,16 +5,16 @@ import TopNav from './components/TopNav'
 /*
   Every page is lazy so a visit only downloads the route it actually opened.
   Statically importing all eleven put them in one 322KB bundle, which meant
-  landing on the Overview page also paid for the Graphics page's html-to-image
+  landing on the home page also paid for the Graphics page's html-to-image
   dependency -- by far the heaviest thing in the tree, and used by exactly one
   route that most visits never reach.
 
   TopNav (and therefore SearchBar) stays static: it renders on every route, so
   splitting it would only add a round trip to the first paint of every page.
 */
-const Overview = lazy(() => import('./pages/Overview'))
 const Players = lazy(() => import('./pages/Players'))
 const PlayerProfile = lazy(() => import('./pages/PlayerProfile'))
+const ComparePlayers = lazy(() => import('./pages/ComparePlayers'))
 const Teams = lazy(() => import('./pages/Teams'))
 const TeamProfile = lazy(() => import('./pages/TeamProfile'))
 const CoachProfile = lazy(() => import('./pages/CoachProfile'))
@@ -65,9 +65,15 @@ export default function App() {
               fetch rather than introducing a second, different spinner. */}
           <Suspense fallback={<div className="text-muted text-sm">Loading…</div>}>
           <Routes>
-            <Route path="/" element={<Overview />} />
+            {/* Tournaments is the default/landing page -- also reachable at
+                its own path (still rendering the same component) for
+                existing links/bookmarks. See Tournaments.jsx's own comment
+                for why the season-stats section (formerly a standalone
+                Overview page at "/") now lives here too. */}
+            <Route path="/" element={<Tournaments />} />
             <Route path="/players" element={<Players />} />
             <Route path="/players/:name" element={<PlayerProfile />} />
+            <Route path="/compare" element={<ComparePlayers />} />
             <Route path="/teams" element={<Teams />} />
             <Route path="/teams/:name" element={<TeamProfile />} />
             <Route path="/coaches/:id" element={<CoachProfile />} />

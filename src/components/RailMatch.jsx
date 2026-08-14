@@ -3,11 +3,9 @@ import EventLogo from './EventLogo'
 import teamLogos from '../lib/teamLogos.json'
 
 /**
- * One match block in the right-hand rail: a header line (time · format ·
- * LIVE · event logo) over two team rows with scores. Presentational only --
- * callers normalise their own shape into these props, because the rail shows
- * two genuinely different sources (Liquipedia's fixture feed and this site's
- * own completed matches) that share no field names.
+ * One match block in the right-hand rail: a header line (time · event logo)
+ * over two team rows with scores. Presentational only -- the caller
+ * normalises its own shape into these props.
  *
  * Team labels come from `teamLogos.json`'s `tag` rather than TeamLogo's own
  * `showTag`: at 220px only a short tag fits, but TeamLogo renders NOTHING
@@ -19,7 +17,7 @@ import teamLogos from '../lib/teamLogos.json'
  * blank boxes.
  */
 export default function RailMatch({
-  href, external, time, format, live, eventName,
+  href, external, time, eventName,
   team1, team2, score1, score2,
 }) {
   const decided = score1 != null && score2 != null && score1 !== score2
@@ -31,21 +29,13 @@ export default function RailMatch({
   return (
     <Wrapper
       {...wrapperProps}
-      className={`block border-b border-hairline/40 px-2.5 py-1.5 last:border-b-0 ${
-        href ? 'transition-colors hover:bg-surface2/60' : ''
+      className={`block rounded-lg border border-hairline bg-surface2 px-2.5 py-1.5 shadow-depth-xs transition-all duration-150 ${
+        href ? 'hover:-translate-y-0.5 hover:border-muted hover:shadow-depth-sm' : ''
       }`}
     >
       <div className="mb-1 flex items-center justify-between gap-1">
-        <span className="flex items-center gap-1 text-[10px] font-semibold text-muted">
-          {time}
-          {format && <span className="font-normal opacity-70">{format}</span>}
-        </span>
+        <span className="text-[10px] font-semibold text-muted">{time}</span>
         <span className="flex shrink-0 items-center gap-1">
-          {live && (
-            <span className="rounded-[3px] bg-live px-1 py-px text-[9px] font-extrabold leading-none text-white">
-              LIVE
-            </span>
-          )}
           <EventLogo event={eventName} size={12} />
         </span>
       </div>

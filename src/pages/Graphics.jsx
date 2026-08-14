@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, useLayoutEffect, useCallback } from 'react'
 import { toPng } from 'html-to-image'
-import { useData } from '../lib/useData'
+import { useData, useIdle } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandBuckets,
@@ -9,6 +9,8 @@ import {
   aggregatePlayerBuckets,
   aggregateTeamBuckets,
   groupByEntity,
+  buildPlayerDayGroups,
+  attachDateSpans,
 } from '../lib/entityBuckets'
 import { PLAYER_STATS, TEAM_STATS, teamTierExtras } from '../lib/statDefs'
 import FilterPanel, { FACETS, FACET_LABELS, FACET_RENDERERS } from '../components/FilterPanel'
@@ -48,6 +50,15 @@ export default function Graphics() {
   const data = isPlayers ? playerData : teamData
   const loading = isPlayers ? pl : tl
 
+  // player_buckets has no per-day date (see buildPlayerDayGroups' own
+  // comment in entityBuckets.js), so the DATE RANGE control below silently
+  // filtered nothing while in Players mode. player_agents.json fills the
+  // same role it does on Players.jsx/Records.jsx -- idle-loaded (9.4MB)
+  // and only fetched at all while Players mode is active, since Teams mode
+  // never needs it (team_buckets already carries a real per-day date).
+  const idle = useIdle()
+  const { data: agentData } = useData(idle && isPlayers ? 'player_agents' : null)
+
   const statDefs = isPlayers ? PLAYER_STATS : TEAM_STATS
   const [statKey, setStatKey] = useState(PLAYER_STATS[0].key)
   const stat = statDefs.find((s) => s.key === statKey) || statDefs[0]
@@ -63,9 +74,17 @@ export default function Graphics() {
   const [exporting, setExporting] = useState(false)
   const [exportError, setExportError] = useState(null)
 
-  const records = useMemo(
+  const rawRecords = useMemo(
     () => (data ? expandBuckets(data, isPlayers ? 'p' : 't') : []),
     [data, isPlayers]
+  )
+  const dayGroups = useMemo(
+    () => (isPlayers && agentData ? buildPlayerDayGroups(agentData.buckets) : new Map()),
+    [isPlayers, agentData]
+  )
+  const records = useMemo(
+    () => (isPlayers ? attachDateSpans(rawRecords, dayGroups) : rawRecords),
+    [rawRecords, dayGroups, isPlayers]
   )
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds,

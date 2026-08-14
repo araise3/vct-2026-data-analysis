@@ -255,8 +255,8 @@ jobs:
       # public/data/player_agents.json (the only published file carrying a
       # real per-day date -- player_buckets.json's `d` is deaths) rather than
       # from the scraper DB, so it has no database dependency of its own.
-      - name: Rebuild player-of-the-month card data
-        run: python data_prep/build_player_month.py
+      - name: Rebuild player-of-the-week card data
+        run: python data_prep/build_player_week.py
 
       - name: Commit and push
         run: |

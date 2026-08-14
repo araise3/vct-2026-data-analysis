@@ -220,6 +220,62 @@ export function attachDateSpans(records, dayGroups) {
   })
 }
 
+/**
+ * agents.json has no date field at all -- not even a bogus deaths-shaped
+ * collision the way player_buckets does, its bucket dicts simply never
+ * carry one (see AgentOverview.jsx, which reads `data.buckets` straight
+ * off the file with no expand step). So the DATE RANGE control on the
+ * Agents page's Overview tab was the exact same class of silent no-op as
+ * player_buckets before attachDateSpans above, just with no day-grained
+ * sibling file to join against the way player_agents.json is for
+ * player_buckets.
+ *
+ * match_results.json fills that role here instead: its expanded rows
+ * (expandMatchRows) carry the same `event`/`week` vocabulary agents.json's
+ * own buckets already use verbatim (both ultimately derive an event's
+ * display NAME and raw week/round string the same way -- confirmed
+ * directly against real data, not assumed), with a genuine per-match date.
+ * Unlike buildPlayerDayGroups this stays span-only (min/max), not
+ * per-row fingerprint-matched -- agents.json's bucket shape (nested
+ * mapStats/agentCounts dicts, no simple summable scalars) has nothing to
+ * fingerprint against the way rnd/k/a/fk/fd worked for player buckets, so
+ * an (event, week) key with more than one real match day still gets the
+ * union of all of them. Over-inclusive in that rare case, but still a
+ * real improvement over passing every record through unconditionally.
+ *
+ * Takes EXPANDED match rows (expandMatchRows output), since only
+ * `.event`/`.week`/`.date` are needed. Returns a Map from "event|week" to
+ * `{ min, max }` (both 'YYYY-MM-DD' strings).
+ */
+export function buildEventWeekDateSpans(matchRows) {
+  const spans = new Map()
+  for (const r of matchRows || []) {
+    if (!r.date) continue
+    const key = `${r.event}|${r.week}`
+    const span = spans.get(key)
+    if (!span) spans.set(key, { min: r.date, max: r.date })
+    else {
+      if (r.date < span.min) span.min = r.date
+      if (r.date > span.max) span.max = r.date
+    }
+  }
+  return spans
+}
+
+/**
+ * Attaches an approximate `dateMin`/`dateMax` span (see
+ * buildEventWeekDateSpans) to every record whose "event|week" key is
+ * present -- a no-op otherwise, degrading to `inDateRange`'s existing
+ * no-date pass-through rather than excluding the row.
+ */
+export function attachEventWeekDateSpans(records, spans) {
+  if (!spans.size) return records
+  return records.map((r) => {
+    const span = spans.get(`${r.event}|${r.week}`)
+    return span ? { ...r, dateMin: span.min, dateMax: span.max } : r
+  })
+}
+
 function div(num, den) {
   return den ? num / den : null
 }

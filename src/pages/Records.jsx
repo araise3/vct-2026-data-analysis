@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useData } from '../lib/useData'
+import { useData, useIdle } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
   expandMatchRows, expandSeriesRows, expandMapLengthRows,
   expandBuckets, aggregatePlayerBuckets, groupByEntity, teamInScope,
+  buildPlayerDayGroups, attachDateSpans,
 } from '../lib/entityBuckets'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import LeaderCard, { CardShell, topBy, dynamicQualify, dynamicQualifyThreshold } from '../components/LeaderCard'
@@ -44,7 +45,7 @@ const PLAYER_LEADERS = [
     sampleKey: 'ratedMaps', sampleMin: 15,
     meta: (r) => `${num(r.ratedMaps)} rated`,
     value: (r) => r.consistencyScore.toFixed(3),
-    note: "Rating 2.0 spread across individual maps, shrunk toward the qualified pool's own average spread by sample size (same round-weighted method Player of the Month uses) — a player just over the rated-map minimum is pulled toward the field's typical spread instead of a lucky small sample winning outright on raw standard deviation. Lower is steadier. Min. 15 rated maps (scaled down for a smaller filter scope).",
+    note: "Rating 2.0 spread across individual maps, shrunk toward the qualified pool's own average spread by sample size (same round-weighted method Player of the Week uses) — a player just over the rated-map minimum is pulled toward the field's typical spread instead of a lucky small sample winning outright on raw standard deviation. Lower is steadier. Min. 15 rated maps (scaled down for a smaller filter scope).",
   },
   {
     key: 'avgEcon', title: 'Highest econ rating',
@@ -85,6 +86,14 @@ export default function Records() {
   const { data: seriesData } = useData('series_length')
   const { data: mapLengthData } = useData('map_length')
   const { data: playerData } = useData('player_buckets')
+  // player_buckets has no per-day date (see buildPlayerDayGroups' own
+  // comment in entityBuckets.js), so the page's DATE RANGE control looked
+  // live but silently filtered nothing out of the Player leaders section
+  // below. player_agents.json fills the same role it does on Players.jsx --
+  // idle-loaded (9.4MB, off the critical path) since this page's main
+  // content (head-to-head/upsets/blowouts) doesn't need it.
+  const idle = useIdle()
+  const { data: agentData } = useData(idle ? 'player_agents' : null)
   const [teamA, setTeamA] = useState('')
   const [teamB, setTeamB] = useState('')
   const [durationView, setDurationView] = useState('series') // 'series' | 'map'
@@ -154,9 +163,17 @@ export default function Records() {
   // depends on `selections`, so leaving expandBuckets inside it re-walked
   // all 10,894 player buckets (~8ms) on every chip click, rebuilding an
   // identical intermediate each time.
-  const playerRecords = useMemo(
+  const rawPlayerRecords = useMemo(
     () => (playerData ? expandBuckets(playerData, 'p') : []),
     [playerData]
+  )
+  const dayGroups = useMemo(
+    () => (agentData ? buildPlayerDayGroups(agentData.buckets) : new Map()),
+    [agentData]
+  )
+  const playerRecords = useMemo(
+    () => attachDateSpans(rawPlayerRecords, dayGroups),
+    [rawPlayerRecords, dayGroups]
   )
 
   const leaderRows = useMemo(() => {
@@ -176,8 +193,8 @@ export default function Records() {
 
   // "Most consistent" card: shrinks each qualified player's raw rating
   // standard deviation toward the qualified pool's own (maps-weighted)
-  // mean spread, by the same IMDB-style formula Player of the Month uses
-  // for its rating ranking (see data_prep/build_player_month.py) --
+  // mean spread, by the same IMDB-style formula Player of the Week uses
+  // for its rating ranking (see data_prep/build_player_week.py) --
   // weighted = v/(v+m)*R + m/(v+m)*C, where R is the player's own SD, v is
   // their rated maps, m is the same dynamic qualification threshold used
   // to gate the card, and C is the pool's mean SD. A player who barely

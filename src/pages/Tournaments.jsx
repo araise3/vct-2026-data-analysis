@@ -8,7 +8,7 @@ import EventRow from '../components/EventRow'
 import FilterChips from '../components/FilterChips'
 import { ResultsRail } from '../components/MatchRail'
 import CircuitList from '../components/CircuitList'
-import PlayerOfMonthCard from '../components/PlayerOfMonthCard'
+import PlayerOfWeekCard from '../components/PlayerOfWeekCard'
 import { FACETS } from '../components/FilterPanel'
 import Card from '../components/ui/Card'
 import { monthLabel, num } from '../lib/format'
@@ -54,7 +54,7 @@ export default function Tournaments() {
   const { data: matchData, loading } = useData('match_results')
   const { data: eventMetaData } = useData('event_meta')
   const { data: upcomingData } = useData('upcoming_matches')
-  const { data: playerMonthData } = useData('player_month')
+  const { data: playerWeekData } = useData('player_week')
   const { data: pData, loading: pLoading } = useData('player_buckets')
   const { data: tData, loading: tLoading } = useData('team_buckets')
 
@@ -140,7 +140,7 @@ export default function Tournaments() {
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)_220px]">
         <aside className="hidden lg:flex lg:flex-col lg:gap-4">
           <CircuitList circuits={circuits} />
-          <PlayerOfMonthCard data={playerMonthData} />
+          <PlayerOfWeekCard data={playerWeekData} />
         </aside>
 
         <div className="flex min-w-0 flex-col gap-4">

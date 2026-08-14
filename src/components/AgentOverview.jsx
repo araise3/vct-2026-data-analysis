@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
+import { expandMatchRows, buildEventWeekDateSpans, attachEventWeekDateSpans } from '../lib/entityBuckets'
 import DataTable from './DataTable'
 import FilterPanel, { FACETS } from './FilterPanel'
 import MapIcon from './MapIcon'
@@ -84,10 +85,24 @@ function aggregate(buckets) {
 export default function AgentOverview() {
   const { data, loading } = useData('agents')
   const buckets = data?.buckets ?? []
+
+  // agents.json carries no date field at all, so the DATE RANGE control
+  // below silently filtered nothing -- match_results.json (already cheap,
+  // 630KB, no idle-gating needed) shares the same event/week vocabulary
+  // with a real per-match date, joined here the same way
+  // buildPlayerDayGroups/attachDateSpans fixed the equivalent gap on
+  // player_buckets-driven pages. See buildEventWeekDateSpans' own comment
+  // in entityBuckets.js for why this stays span-only rather than the
+  // per-row fingerprint match that file uses.
+  const { data: matchData } = useData('match_results')
+  const matchRows = useMemo(() => (matchData ? expandMatchRows(matchData) : []), [matchData])
+  const eventWeekSpans = useMemo(() => buildEventWeekDateSpans(matchRows), [matchRows])
+  const datedBuckets = useMemo(() => attachEventWeekDateSpans(buckets, eventWeekSpans), [buckets, eventWeekSpans])
+
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds,
           includeHiddenEvents, setIncludeHiddenEvents } =
-    useFacetedFilter(buckets, FACETS, { competition: ['VCT'], year: [2026] })
+    useFacetedFilter(datedBuckets, FACETS, { competition: ['VCT'], year: [2026] })
 
   // Sorts the win-rate table's own map columns. Triggered by clicking the
   // ATK WIN / DEF WIN row label itself rather than a separate control --

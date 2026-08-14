@@ -37,7 +37,7 @@ const items = [
 // on the brand logo the same way the old dedicated nav item did -- see the
 // `items` comment above for why that item is gone.
 const HOME_DATA = [
-  'match_results', 'event_meta', 'upcoming_matches', 'player_month',
+  'match_results', 'event_meta', 'upcoming_matches', 'player_week',
   'player_buckets', 'team_buckets',
 ]
 

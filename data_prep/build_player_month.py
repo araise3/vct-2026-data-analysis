@@ -33,8 +33,8 @@ per-bucket averages, which would weight a 12-round map the same as a
 
 WINNER SELECTION IS ROUND-WEIGHTED, NOT A RAW MAX
 --------------------------------------------------
-The qualification bar (MIN_ROUNDS_FLOOR / median-rounds gate below) only
-controls who's ELIGIBLE -- once a candidate clears it, a plain
+The qualification bar (dynamic_rounds_bar below) only controls who's
+ELIGIBLE -- once a candidate clears it, a plain
 `max(..., key=avg rating)` treats a player who barely cleared the bar
 (few rounds, so a noisier average) exactly the same as one who played all
 month. That let a hot small sample beat a real sustained performance.
@@ -64,19 +64,37 @@ from datetime import datetime, timezone
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.environ.get("VLR_OUT", os.path.join(_REPO_ROOT, "public", "data"))
 
-# Same qualification bar the radar chart already uses
-# (src/lib/radarProfile.js): half the field's median rounds, floored. Reused
-# rather than invented so "qualified" means one thing across the site -- a
-# one-map cameo with a freak rating must not win Player of the Month.
-MIN_ROUNDS_FLOOR = 20
+# Dynamic qualification bar -- same shape as LeaderCard.jsx's
+# `dynamicQualify` (Records.jsx's leader cards, this repo's other
+# established "don't let a small sample win on a fluke" mechanism):
+# max(floor, min(target, round(fraction * whoever's played the most this
+# month))). ROUNDS_QUALIFY_TARGET (20) is the calibrated bar for a month
+# that's genuinely underway -- the ceiling this can never exceed, however
+# high round counts climb. It only ever loosens BELOW that on a thin
+# scope, scaled off the CURRENT LEADER's own rounds rather than the
+# field's median.
+#
+# This used to be median-based (`max(20, 0.5 * median(rounds))`, matching
+# the radar chart's own qualification bar in src/lib/radarProfile.js) --
+# switched because that shape has no ceiling at all: as a month runs on
+# and round counts climb, the bar climbs with no limit, so a legitimately
+# strong performance from a player with fewer total matches (e.g.
+# eliminated early, or in a region with a lighter schedule) could get
+# excluded purely because the bar grew, not because their sample was
+# actually too thin. Pegging to the current leader with a fixed ceiling
+# avoids that: the bar can shrink on a razor-thin early-month scope, but
+# never grows stricter than ROUNDS_QUALIFY_TARGET regardless of how lopsided
+# round counts get later in the month. ROUNDS_QUALIFY_FLOOR keeps it from
+# collapsing toward zero on literally the first day of a month, when even
+# the busiest player so far may have played only a fraction of one map.
+ROUNDS_QUALIFY_TARGET = 20
+ROUNDS_QUALIFY_FRACTION = 0.5
+ROUNDS_QUALIFY_FLOOR = 10
 
 
-def median(xs):
-    if not xs:
-        return 0
-    s = sorted(xs)
-    n = len(s)
-    return s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2
+def dynamic_rounds_bar(rounds):
+    max_rounds = max(rounds) if rounds else 0
+    return max(ROUNDS_QUALIFY_FLOOR, min(ROUNDS_QUALIFY_TARGET, round(max_rounds * ROUNDS_QUALIFY_FRACTION)))
 
 
 def div(a, b):
@@ -106,7 +124,7 @@ def build(data):
             t[key] += b.get(key, 0) or 0
 
     rounds = [t["rnd"] for t in totals.values() if t["rnd"] > 0]
-    bar = max(MIN_ROUNDS_FLOOR, 0.5 * median(rounds))
+    bar = dynamic_rounds_bar(rounds)
 
     qualified = [
         (name, t) for name, t in totals.items()

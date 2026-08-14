@@ -14,6 +14,7 @@ const items = [
   { to: '/players', label: 'Players', data: ['player_buckets'] },
   { to: '/teams', label: 'Teams', data: ['team_buckets'] },
   { to: '/agents', label: 'Agents', data: ['agents'] },
+  { to: '/compositions', label: 'Compositions', data: ['match_results', 'match_players'] },
   // Not player_buckets: the Events page's Compare Players card defers that
   // 6.7MB fetch until a name box is focused, and prefetching it on nav hover
   // would defeat the point.

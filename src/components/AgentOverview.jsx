@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
 import DataTable from './DataTable'
@@ -14,7 +15,7 @@ import { pct, num } from '../lib/format'
 //
 // Only mapStats/totalRows are used now -- agentCounts/mapAgentCounts (pick
 // rate by agent) used to feed a "Pick rate by map" table here too, removed
-// once the Compositions tab's Agent impact table (which already covers
+// once the Agents page's own Agent impact tab (which already covers
 // per-agent, per-map pick rate via its own Map selector, plus win rate,
 // ATK/DEF splits, and full performance stats) made it fully redundant.
 // agents.json's own agentCounts/mapAgentCounts fields are left in the
@@ -215,8 +216,10 @@ export default function AgentOverview() {
           <h3 className="font-display text-sm font-semibold text-ink">Map win rates (attack vs. defense)</h3>
           <p className="text-muted text-xs">
             Round-weighted, not a naive average across buckets. Reflects the filters above. Click
-            ATK WIN or DEF WIN to sort maps by that rate. For per-agent pick rate and performance
-            on each map, see the Compositions &amp; win rates tab.
+            ATK WIN or DEF WIN to sort maps by that rate. For per-agent pick rate and
+            performance on each map, see the Agent impact tab above; for most-played
+            compositions, see the{' '}
+            <Link to="/compositions" className="text-accent-bright hover:underline">Compositions</Link> page.
           </p>
           <DataTable columns={winRateColumns} rows={winRateRows} />
         </div>

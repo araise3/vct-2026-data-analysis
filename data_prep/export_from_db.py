@@ -1024,21 +1024,31 @@ def main():
     # deriving the same atk/def math a second time.
     #
     # Keyed by (m=match_id, mi=map_index, t=team) specifically so the
-    # client can join it against match_results.json's `maps[]` array
-    # (index-aligned -- mi lines up with array position, the same
-    # convention match_players.json's own `ag` array already relies on,
-    # see that field's comment) and match_players.json's per-player agent
-    # picks, at whatever cut a page wants (per-agent, per-composition,
-    # per-role-shape, per-facet-scope) -- entirely client-side, the exact
-    # pattern src/lib/compositions.js's buildTeamMapRows() already
-    # established for pick/win data by joining those same two files. This
-    # file exists so ATK/DEF splits AND per-agent performance stats can
-    # join into that same pattern instead of needing their own bucket-
-    # aggregation branch in this script (the mapAgentStats-in-agents.json
-    # approach this replaced -- see git history -- needed a script edit
-    # and a full DB re-run for every new cut of this data; a raw
-    # per-match-map row doesn't, since any new cut is just a different
-    # client-side aggregation over rows that are already shipped).
+    # client can join it against match_results.json's `maps[]` array and
+    # match_players.json's per-player agent picks, at whatever cut a page
+    # wants (per-agent, per-composition, per-role-shape, per-facet-scope)
+    # -- entirely client-side, the exact pattern src/lib/compositions.js's
+    # buildTeamMapRows() already established for pick/win data by joining
+    # those same two files. This file exists so ATK/DEF splits AND
+    # per-agent performance stats can join into that same pattern instead
+    # of needing their own bucket-aggregation branch in this script (the
+    # mapAgentStats-in-agents.json approach this replaced -- see git
+    # history -- needed a script edit and a full DB re-run for every new
+    # cut of this data; a raw per-match-map row doesn't, since any new cut
+    # is just a different client-side aggregation over rows that are
+    # already shipped).
+    #
+    # `mi` is 1-INDEXED (the scrape DB's raw map_index column -- verified
+    # against real data, no mi=0 row exists anywhere in this file), NOT
+    # index-aligned with match_results.json's 0-indexed `maps[]` array
+    # position the way match_players.json's `ag` array is (that one's
+    # genuinely 0-indexed, since it's built from a plain sorted `.tolist()`
+    # that drops the map_index value itself rather than reusing it -- see
+    # that field's own comment). A client joining straight on array
+    # position (`i`) rather than `i + 1` silently pulls the PREVIOUS map's
+    # row for every map after the first and never reads the last map's own
+    # row at all -- a real bug this cost buildTeamMapRows() once already
+    # (see that function's own comment on the fix).
     #
     # Deliberately its own file rather than folded into match_results.json
     # -- most match_results consumers (Tournaments, Records, match

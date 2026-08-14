@@ -19,6 +19,7 @@ const Teams = lazy(() => import('./pages/Teams'))
 const TeamProfile = lazy(() => import('./pages/TeamProfile'))
 const CoachProfile = lazy(() => import('./pages/CoachProfile'))
 const Agents = lazy(() => import('./pages/Agents'))
+const Compositions = lazy(() => import('./pages/Compositions'))
 const Tournaments = lazy(() => import('./pages/Tournaments'))
 const TournamentDetail = lazy(() => import('./pages/TournamentDetail'))
 const MatchRedirect = lazy(() => import('./pages/MatchRedirect'))
@@ -71,6 +72,7 @@ export default function App() {
             <Route path="/teams/:name" element={<TeamProfile />} />
             <Route path="/coaches/:id" element={<CoachProfile />} />
             <Route path="/agents" element={<Agents />} />
+            <Route path="/compositions" element={<Compositions />} />
             <Route path="/tournaments" element={<Tournaments />} />
             <Route path="/tournaments/:event" element={<TournamentDetail />} />
             {/* Legacy: this used to be the site's own match page. Kept as a

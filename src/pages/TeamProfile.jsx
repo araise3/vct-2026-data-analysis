@@ -14,6 +14,10 @@ import TeamLogo from '../components/TeamLogo'
 import RosterTable from '../components/RosterTable'
 import RosterTimeline from '../components/RosterTimeline'
 import DataTable from '../components/DataTable'
+import CompositionsTable from '../components/CompositionsTable'
+import AgentIcon from '../components/AgentIcon'
+import { buildTeamMapRows, aggregateCompositions, aggregateCompositionPlayers } from '../lib/compositions'
+import mapIcons from '../lib/mapIcons.json'
 import { rating, pct, num, eventLabel } from '../lib/format'
 import { buildEventDateOrder } from '../lib/rosterTimeline'
 import { coachAt } from '../lib/coaches'
@@ -65,15 +69,25 @@ export default function TeamProfile() {
   }, [liquipediaData, decodedName])
   const { data: matchData } = useData('match_results')
   const { data: teamMapData } = useData('team_map_buckets')
-  // match_players.json (3.9MB) feeds only the roster timeline's split-seat
-  // chronology (see rosterTimeline.js's buildPlayerEventDates) -- idle-
-  // loaded like Players.jsx's own player_agents fetch, so it doesn't
-  // compete with the page's primary data for bandwidth/parse time on
-  // first paint. The timeline itself already renders correctly without it
-  // (a split seat falls back to its old maps-descending order) until it
-  // lands a beat later.
+  // match_players.json feeds the roster timeline's split-seat chronology
+  // (see rosterTimeline.js's buildPlayerEventDates) and, below, the
+  // Compositions section's per-map agent join (lib/compositions.js) --
+  // idle-loaded like Players.jsx's own player_agents fetch, so it doesn't
+  // compete with the page's primary data for bandwidth/parse time on first
+  // paint. The timeline already renders correctly without it (a split seat
+  // falls back to its old maps-descending order) until it lands a beat
+  // later; Compositions simply doesn't render its section until it does.
   const idle = useIdle()
   const { data: matchPlayerData } = useData(idle ? 'match_players' : null)
+  // Raw per-(match, map, team) ATK/DEF round counts + each player's own
+  // per-map performance stats -- see its own comment in export_from_db.py.
+  // Only needed for the Compositions section's player-stats dropdown (which
+  // agent's own rating/ACS/etc sit behind one selected composition); the
+  // composition list itself (games/share/Win%/RD) doesn't touch it. Idle-
+  // loaded alongside match_players.json for the same reason -- optional in
+  // buildTeamMapRows (degrades to null playerStats if not yet loaded), so
+  // the dropdown just shows no numbers yet rather than blocking anything.
+  const { data: teamMapDetailData } = useData(idle ? 'team_map_detail' : null)
 
   // Every bucket belonging to this team, across every year -- the base the
   // page's Year/Event scope control (below) is built from. The one event
@@ -407,6 +421,93 @@ export default function TeamProfile() {
 
   const matchRows = useMemo(() => teamMatches.filter(inScope), [teamMatches, inScope])
 
+  // Compositions section: same match_results + match_players join
+  // AgentCompositions.jsx runs (see lib/compositions.js), narrowed to this
+  // one team's own composition rows. The join itself runs once per data
+  // load regardless of team (matches decodedName-independent memo below);
+  // only the flatMap-and-filter into this team's rows re-runs on a team or
+  // scope change. `matchRows` above is already both team-matched AND
+  // Year/Event-scoped, so reusing it here (rather than re-deriving from
+  // `records`) keeps this section on the same scope as the rest of the
+  // page for free.
+  const compByMatch = useMemo(
+    () => buildTeamMapRows(matchData, matchPlayerData, teamMapDetailData),
+    [matchData, matchPlayerData, teamMapDetailData]
+  )
+  const teamCompRows = useMemo(() => {
+    const out = []
+    for (const m of matchRows) {
+      const rows = compByMatch.get(m.id)
+      if (!rows) continue
+      for (const r of rows) if (r.team === decodedName) out.push(r)
+    }
+    return out
+  }, [compByMatch, matchRows, decodedName])
+
+  const compMapsInScope = useMemo(() => {
+    const counts = new Map()
+    for (const r of teamCompRows) counts.set(r.map, (counts.get(r.map) || 0) + 1)
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([map]) => map)
+  }, [teamCompRows])
+
+  // No "All maps" option, same reasoning as AgentCompositions.jsx: a
+  // composition is inherently a per-map thing. Resets to null (-> falls
+  // back to this team's most-played map) whenever the team changes, same
+  // as `year`/`eventOverrides` above.
+  const [selectedCompMap, setSelectedCompMap] = useState(null)
+  useEffect(() => {
+    setSelectedCompMap(null)
+  }, [decodedName])
+  const effectiveCompMap = compMapsInScope.includes(selectedCompMap) ? selectedCompMap : compMapsInScope[0]
+
+  const compRows = useMemo(
+    () => teamCompRows.filter((r) => r.map === effectiveCompMap),
+    [teamCompRows, effectiveCompMap]
+  )
+  const compositions = useMemo(() => aggregateCompositions(compRows), [compRows])
+  const cappedComps = compositions.comps.slice(0, 50)
+  const hiddenCompsCount = compositions.comps.length - cappedComps.length
+
+  const compPlayerColumns = useMemo(() => [
+    { key: 'player', label: 'Player', align: 'left', format: (v) => <span className="text-ink text-xs font-medium">{v}</span> },
+    {
+      key: 'agent', label: 'Agent', align: 'left', noPadding: true,
+      format: (v) => (
+        <span className="flex items-center gap-2 px-3 py-1">
+          <AgentIcon agent={v} size={22} />
+          <span className="text-ink text-xs font-medium">{v}</span>
+        </span>
+      ),
+    },
+    { key: 'games', label: 'Games', align: 'right', format: (v) => num(v) },
+    { key: 'rating', label: 'R', align: 'right', colorScale: true, format: (v) => rating(v) },
+    { key: 'acs', label: 'ACS', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : num(v, 0)) },
+    { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'kast', label: 'KAST', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : pct(v)) },
+    { key: 'adr', label: 'ADR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : num(v, 1)) },
+    { key: 'kpr', label: 'KPR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'apr', label: 'APR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'fkpr', label: 'FKPR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'fdpr', label: 'FDPR', align: 'right', colorScale: true, colorInvert: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+  ], [])
+
+  // Per-row expanded detail for the Compositions table below: an arrow on
+  // each composition row that opens a nested table of exactly the players
+  // who ran that composition and which agent each one played, rather than a
+  // separate dropdown+table elsewhere on the page driving a second,
+  // disconnected view. Only rows whose OWN comp matches the expanded one --
+  // not just anything on the selected map -- so this shows the performance
+  // of the players who actually ran THIS 5-agent set, not the map's agent
+  // pool at large (that's the Agent impact tab's job instead). Computed
+  // on demand per expanded row (DataTable only calls this for rows that are
+  // actually open), not memoized across all 50 compositions up front.
+  const renderCompositionPlayers = useCallback((compRow) => {
+    const players = aggregateCompositionPlayers(
+      compRows.filter((r) => r.comp.join('|') === compRow.comp.join('|'))
+    )
+    return <DataTable columns={compPlayerColumns} rows={players} defaultSortKey="games" />
+  }, [compRows, compPlayerColumns])
+
   // Paginated 30 at a time, same as PlayerProfile's Match history -- a
   // franchise slot's history can now run back to LOCK//IN 2023 (see the
   // roster-timeline entries in project-history), long enough that rendering
@@ -538,6 +639,31 @@ export default function TeamProfile() {
                 rows={mapStats}
                 summaryRow={mapStatsOverall}
                 defaultSortKey="winPct"
+              />
+            </div>
+          )}
+
+          {matchPlayerData && compMapsInScope.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <h3 className="font-display text-sm font-semibold text-ink">Compositions</h3>
+              <p className="text-muted text-xs">
+                {decodedName}'s most-played 5-agent compositions and win rates on the map
+                selected below, in scope.
+              </p>
+              <FilterChips
+                options={compMapsInScope}
+                value={effectiveCompMap}
+                onChange={setSelectedCompMap}
+                getBg={(opt) => mapIcons[opt]}
+              />
+              <p className="text-muted text-xs">
+                Click the arrow on a row to see which player ran each agent, and their own
+                numbers, within that specific composition.
+              </p>
+              <CompositionsTable
+                rows={cappedComps}
+                hiddenCount={hiddenCompsCount}
+                renderExpanded={renderCompositionPlayers}
               />
             </div>
           )}

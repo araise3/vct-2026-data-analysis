@@ -1,8 +1,18 @@
 /**
  * Team-map compositions: joins match_results.json (series/map scores) with
  * match_players.json (per-map agent picks) into one row per (team, map)
- * with that team's 5-agent composition, then aggregates that join three
- * different ways for the Agents page's "Compositions & win rates" tab.
+ * with that team's 5-agent composition, then aggregates that join several
+ * different ways across three different callers:
+ *   - AgentCompositions.jsx (pages/Compositions.jsx's body): most-played
+ *     compositions ONLY (aggregateCompositions) -- no agent-impact or
+ *     role-signature tables, those moved to Agents' own tab (below).
+ *   - AgentImpact.jsx (the Agents page's own "Agent impact" tab):
+ *     per-agent pick/win/performance (aggregateAgentImpact) and role-shape
+ *     trends (aggregateRoleSignatures).
+ *   - TeamProfile.jsx's own Compositions section: this one team's
+ *     aggregateCompositions rows, plus aggregateCompositionPlayers for each
+ *     row's own expandable detail (which player ran each agent, and their
+ *     own numbers, within that specific composition).
  *
  * Why a separate join rather than reusing the bucket model: player_agents/
  * team_buckets are pre-summed per (entity, event, week), which is exactly
@@ -10,10 +20,10 @@
  * have no notion of "the other four agents on this map" -- a composition is
  * a property of the whole team-map, not of one player-map row. match_players
  * carries a dense per-map agent array per player (`ag`), so the join has to
- * happen here, once, and get cached (see AgentCompositions.jsx) rather than
- * re-run per filter change.
+ * happen here, once, and get cached by each caller (see AgentCompositions.jsx
+ * / AgentImpact.jsx / TeamProfile.jsx) rather than re-run per filter change.
  *
- * All three aggregators here follow the same sum-first rule as
+ * Every aggregator here follows the same sum-first rule as
  * entityBuckets.js: accumulate raw counts (games/wins/roundsWon/roundsLost)
  * across rows, divide once at the end. Never average a per-row percentage.
  */
@@ -103,17 +113,36 @@ export function buildTeamMapRows(matchResultsData, matchPlayersData, teamMapDeta
       if (mm.s1 === mm.s2) continue // never happens in practice; defensive
       const c1 = t1.map((p) => p.ag[i]).sort()
       const c2 = t2.map((p) => p.ag[i]).sort()
+      // Unsorted, unlike comp/oppComp -- these pair each player with the
+      // one agent they played on THIS map, for TeamProfile.jsx's expanded
+      // composition-row view (which player, not just which agent). `comp`
+      // itself has to stay sorted (it's the composition's own identity
+      // key), so this is kept as a separate field rather than derived from
+      // it later, once the pairing with `p` is gone.
+      const players1 = t1.map((p) => ({ player: p.p, agent: p.ag[i] }))
+      const players2 = t2.map((p) => ({ player: p.p, agent: p.ag[i] }))
       const team1Won = mm.s1 > mm.s2
+      // team_map_detail.json's own `mi` is 1-indexed (straight from the
+      // scrape DB's map_index column, min observed value 1) while `i` here
+      // is a plain 0-indexed loop over res.maps -- despite export_from_db.py's
+      // own comment claiming these line up, they don't, and joining on `i`
+      // directly silently fetches the PREVIOUS map's detail row for every
+      // map after the first (and drops the last map's own row entirely,
+      // since no `i+1`-th ever gets looked up). Confirmed against real data:
+      // match 666497's mi=1/2/3 rows have round totals (atkP+defP) of
+      // 21/18/14, which match res.maps[0/1/2]'s own score totals exactly
+      // (13+8, 5+13, 13+1) -- i.e. `mi === i + 1`, not `mi === i`.
+      //
       // Missing (no team_map_detail row -- e.g. a status mismatch against
       // match_results, or the file wasn't fetched) degrades to null side
       // fields/playerStats rather than throwing; aggregateAgentImpact()
       // already treats missing data as "no data" the same way it treats a
       // below-floor sample, not a crash.
-      const detail1 = detailByKey.get(`${res.id}|${i}|${res.team1}`)
-      const detail2 = detailByKey.get(`${res.id}|${i}|${res.team2}`)
+      const detail1 = detailByKey.get(`${res.id}|${i + 1}|${res.team1}`)
+      const detail2 = detailByKey.get(`${res.id}|${i + 1}|${res.team2}`)
       rows.push({
         matchId: res.id, map: mm.map, date: res.date,
-        team: res.team1, opp: res.team2, comp: c1, oppComp: c2,
+        team: res.team1, opp: res.team2, comp: c1, oppComp: c2, players: players1,
         won: team1Won ? 1 : 0, roundsWon: mm.s1, roundsLost: mm.s2,
         atkWon: detail1?.atkW ?? null, atkPlayed: detail1?.atkP ?? null,
         defWon: detail1?.defW ?? null, defPlayed: detail1?.defP ?? null,
@@ -121,7 +150,7 @@ export function buildTeamMapRows(matchResultsData, matchPlayersData, teamMapDeta
       })
       rows.push({
         matchId: res.id, map: mm.map, date: res.date,
-        team: res.team2, opp: res.team1, comp: c2, oppComp: c1,
+        team: res.team2, opp: res.team1, comp: c2, oppComp: c1, players: players2,
         won: team1Won ? 0 : 1, roundsWon: mm.s2, roundsLost: mm.s1,
         atkWon: detail2?.atkW ?? null, atkPlayed: detail2?.atkP ?? null,
         defWon: detail2?.defW ?? null, defPlayed: detail2?.defP ?? null,
@@ -257,9 +286,9 @@ export function aggregateAgentImpact(rows) {
  * under "All maps", since a composition is inherently a map-specific
  * strategic choice.
  *
- * Returns everything sorted by games desc, unfloored -- the min-games floor
- * and top-50 cap are applied by the caller (AgentCompositions.jsx) so the
- * "Min games" chip control doesn't force re-running this aggregation.
+ * Returns everything sorted by games desc, unfloored -- the top-50 display
+ * cap is applied by the caller (AgentCompositions.jsx / TeamProfile.jsx)
+ * rather than here, so this stays a pure aggregation any caller can reuse.
  */
 export function aggregateCompositions(rows) {
   const acc = new Map()
@@ -294,6 +323,84 @@ export function aggregateCompositions(rows) {
     .sort((a, b) => b.games - a.games)
 
   return { comps, mapTotals, distinctByMap }
+}
+
+/**
+ * Per-(player, agent) performance breakdown for ONE specific composition (a
+ * fixed map + exact 5-agent set) -- "who's actually behind these numbers"
+ * for a single row of aggregateCompositions()'s own output. TeamProfile.jsx
+ * uses this for its Compositions table's expandable rows: open a
+ * composition, see which player ran each of its 5 agents and their own
+ * rating/ACS/etc, sourced from team_map_detail.json's per-player rows
+ * exactly like aggregateAgentImpact's performance columns are.
+ *
+ * Keyed by (player, agent) rather than agent alone -- a roster change mid-
+ * season can mean two different players both ran the same agent within the
+ * same nominal composition across its games in scope (e.g. a duelist swap
+ * that kept the rest of the comp identical), and collapsing those into one
+ * "agent" row would silently blend two different players' numbers together
+ * under one name. `r.players` (built alongside `r.comp` in
+ * buildTeamMapRows, see that field's own comment) is what makes the
+ * player/agent pairing possible per row.
+ *
+ * Caller pre-filters `rows` down to exactly the matching composition (same
+ * map, same sorted comp) -- this function doesn't re-derive that itself,
+ * since a caller already scoped to one map (e.g. TeamProfile's own
+ * `compRows`) only needs a single extra `comp` equality check to get there.
+ *
+ * Unlike aggregateAgentImpact, there's no contested/uncontested split here:
+ * every row passed in already belongs to this exact composition by
+ * construction (comp is a property of the row itself), so "did the
+ * opponent also pick this agent" isn't a meaningful question to ask of a
+ * single team's own 5-agent pick -- that's an Agent-impact-table concern.
+ * `games` summed across every (player, agent) row for one agent slot is
+ * expected to equal that composition's own overall `games` count (a free
+ * correctness check that a caller's own pre-filter actually matched a
+ * single comp) UNLESS a mid-run substitution split that slot across more
+ * than one player, in which case it's split proportionally instead.
+ */
+export function aggregateCompositionPlayers(rows) {
+  const acc = {}
+  for (const r of rows) {
+    for (const { player, agent } of r.players ?? []) {
+      const key = `${player}|${agent}`
+      const s = acc[key] || (acc[key] = {
+        player, agent, games: 0,
+        pRnd: 0, pK: 0, pD: 0, pA: 0, pFK: 0, pFD: 0,
+        ratS: 0, ratR: 0, acsS: 0, acsN: 0, kastS: 0, kastR: 0, adrS: 0, adrR: 0,
+      })
+      s.games++
+      const ps = r.playerStats?.[agent]
+      if (!ps) continue
+      const rnd = ps.rounds || 0
+      s.pRnd += rnd
+      s.pK += ps.kills || 0
+      s.pD += ps.deaths || 0
+      s.pA += ps.assists || 0
+      s.pFK += ps.fk || 0
+      s.pFD += ps.fd || 0
+      if (ps.rating != null) { s.ratS += ps.rating * rnd; s.ratR += rnd }
+      if (ps.acs != null) { s.acsS += ps.acs; s.acsN += 1 }
+      if (ps.kast != null) { s.kastS += ps.kast * rnd; s.kastR += rnd }
+      if (ps.adr != null) { s.adrS += ps.adr * rnd; s.adrR += rnd }
+    }
+  }
+  return Object.values(acc)
+    .map((s) => ({
+      player: s.player,
+      agent: s.agent,
+      games: s.games,
+      rating: s.ratR ? s.ratS / s.ratR : null,
+      acs: s.acsN ? s.acsS / s.acsN : null,
+      kd: s.pD ? s.pK / s.pD : null,
+      kast: s.kastR ? s.kastS / s.kastR : null,
+      adr: s.adrR ? s.adrS / s.adrR : null,
+      kpr: s.pRnd ? s.pK / s.pRnd : null,
+      apr: s.pRnd ? s.pA / s.pRnd : null,
+      fkpr: s.pRnd ? s.pFK / s.pRnd : null,
+      fdpr: s.pRnd ? s.pFD / s.pRnd : null,
+    }))
+    .sort((a, b) => b.games - a.games)
 }
 
 /** D/I/C/S role counts for one 5-agent composition. Shared so both the

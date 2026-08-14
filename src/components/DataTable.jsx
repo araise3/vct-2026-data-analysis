@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { scaleColor, scaleDivergingColor } from '../lib/format'
 
 // Browsers treat "/" as a soft line-break opportunity even with no
@@ -95,10 +95,35 @@ function noBreakSlash(label) {
  * border on the right/bottom (border-hairline provides left/top via the
  * previous cell's right/bottom edge, and the outer wrapper's border
  * covers the table's own left/top edge).
+ *
+ * renderExpanded (optional): when given, every row gets a trailing chevron
+ * toggle (after every column, not before); clicking it inserts a second
+ * <tr> right below that row, spanning every column, containing whatever
+ * renderExpanded(row) returns -- for showing a nested breakdown (e.g.
+ * TeamProfile's Compositions table, where
+ * each composition row expands into its own player-by-player table) without
+ * a separate control elsewhere on the page driving a second, disconnected
+ * table. expandKey(row) supplies the identity used to track which rows are
+ * open (defaults to the row's index, which is fine as long as `rows` isn't
+ * re-ordered out from under an open row -- pass a real stable key, e.g. the
+ * row's own `key` field, whenever the caller's rows can be re-sorted while
+ * a row is expanded, so the same LOGICAL row stays open across the sort).
  */
-export default function DataTable({ columns, rows, defaultSortKey, defaultSortDir = 'desc', summaryRow }) {
+export default function DataTable({
+  columns, rows, defaultSortKey, defaultSortDir = 'desc', summaryRow, renderExpanded, expandKey,
+}) {
   const [sortKey, setSortKey] = useState(defaultSortKey)
   const [sortDir, setSortDir] = useState(defaultSortDir)
+  const [expanded, setExpanded] = useState(() => new Set())
+
+  function toggleExpanded(key) {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
 
   const colorRanges = useMemo(() => {
     const ranges = {}
@@ -147,6 +172,8 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
       setSortDir('desc')
     }
   }
+
+  const colSpan = columns.length + (renderExpanded ? 1 : 0)
 
   return (
     <div className="overflow-auto rounded-2xl border border-hairline">
@@ -204,6 +231,12 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                 </span>
               </th>
             ))}
+            {renderExpanded && (
+              <th
+                aria-hidden="true"
+                className="w-8 px-1.5 py-2 border-r border-b border-hairline"
+              />
+            )}
           </tr>
         </thead>
         <tbody>
@@ -222,41 +255,72 @@ export default function DataTable({ columns, rows, defaultSortKey, defaultSortDi
                   {col.format ? col.format(summaryRow[col.key], summaryRow) : summaryRow[col.key] ?? '—'}
                 </td>
               ))}
+              {renderExpanded && <td className="border-r border-b-2 border-hairline" />}
             </tr>
           )}
-          {sorted.map((row, i) => (
-            <tr key={i} className="hover:bg-surface/60 transition-colors">
-              {columns.map((col) => {
-                const value = row[col.key]
-                const range = col.colorScale && colorRanges[col.key]
-                const bg = col.diverging
-                  ? scaleDivergingColor(value)
-                  : range
-                    ? scaleColor(
-                        value,
-                        col.colorInvert ? range[1] : range[0],
-                        col.colorInvert ? range[0] : range[1]
-                      )
-                    : undefined
-                const style = {}
-                if (bg) style.backgroundColor = bg
-                if (col.width) { style.width = col.width; style.minWidth = col.width }
-                return (
-                  <td
-                    key={col.key}
-                    style={Object.keys(style).length ? style : undefined}
-                    className={`${
-                      col.noPadding ? '' : col.align === 'right' ? 'pr-[10px]' : 'pl-[15px]'
-                    } py-1.5 font-body text-[12px] leading-[18px] whitespace-nowrap align-middle border-r border-b border-hairline ${
-                      col.align === 'right' ? 'text-right' : 'text-left'
-                    } ${col.key === columns[0].key ? 'text-ink' : 'text-ink/90'}`}
-                  >
-                    {col.format ? col.format(value, row) : value ?? '—'}
-                  </td>
-                )
-              })}
-            </tr>
-          ))}
+          {sorted.map((row, i) => {
+            const key = expandKey ? expandKey(row) : i
+            const isOpen = renderExpanded && expanded.has(key)
+            return (
+              <Fragment key={key}>
+                <tr className="hover:bg-surface/60 transition-colors">
+                  {columns.map((col) => {
+                    const value = row[col.key]
+                    const range = col.colorScale && colorRanges[col.key]
+                    const bg = col.diverging
+                      ? scaleDivergingColor(value)
+                      : range
+                        ? scaleColor(
+                            value,
+                            col.colorInvert ? range[1] : range[0],
+                            col.colorInvert ? range[0] : range[1]
+                          )
+                        : undefined
+                    const style = {}
+                    if (bg) style.backgroundColor = bg
+                    if (col.width) { style.width = col.width; style.minWidth = col.width }
+                    return (
+                      <td
+                        key={col.key}
+                        style={Object.keys(style).length ? style : undefined}
+                        className={`${
+                          col.noPadding ? '' : col.align === 'right' ? 'pr-[10px]' : 'pl-[15px]'
+                        } py-1.5 font-body text-[12px] leading-[18px] whitespace-nowrap align-middle border-r border-b border-hairline ${
+                          col.align === 'right' ? 'text-right' : 'text-left'
+                        } ${col.key === columns[0].key ? 'text-ink' : 'text-ink/90'}`}
+                      >
+                        {col.format ? col.format(value, row) : value ?? '—'}
+                      </td>
+                    )
+                  })}
+                  {renderExpanded && (
+                    <td className="p-0 align-middle border-r border-b border-hairline text-center">
+                      <button
+                        type="button"
+                        onClick={() => toggleExpanded(key)}
+                        aria-expanded={isOpen}
+                        aria-label={isOpen ? 'Collapse row' : 'Expand row'}
+                        className="w-8 h-full py-1.5 flex items-center justify-center text-muted hover:text-accent-bright transition-colors cursor-pointer"
+                      >
+                        <span
+                          className={`inline-block text-[9px] leading-none transition-transform ${isOpen ? 'rotate-90' : ''}`}
+                        >
+                          ▶
+                        </span>
+                      </button>
+                    </td>
+                  )}
+                </tr>
+                {isOpen && (
+                  <tr>
+                    <td colSpan={colSpan} className="p-3 bg-surface2/40 border-r border-b border-hairline">
+                      {renderExpanded(row)}
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            )
+          })}
         </tbody>
       </table>
     </div>

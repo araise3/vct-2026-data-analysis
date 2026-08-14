@@ -16,6 +16,7 @@ import PerformanceStrip from '../components/PerformanceStrip'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import AgentIcon from '../components/AgentIcon'
+import Button from '../components/ui/Button'
 import { rating, pct, num, ratingTier, vlrMatchUrl, eventLabel } from '../lib/format'
 
 export default function PlayerProfile() {
@@ -371,7 +372,7 @@ export default function PlayerProfile() {
       {stats && stats.mapsPlayed > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Headline rating + qualitative tier + map record. */}
-          <div className="bg-surface border border-hairline rounded-2xl px-6 py-5 flex flex-col gap-1">
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-6 py-5 flex flex-col gap-1">
             <span className="text-muted text-xs font-medium tracking-wide uppercase">
               Avg Rating 2.0
             </span>
@@ -393,7 +394,7 @@ export default function PlayerProfile() {
           </div>
 
           {/* Most-played agent. */}
-          <div className="bg-surface border border-hairline rounded-2xl px-6 py-5 flex flex-col gap-1">
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-6 py-5 flex flex-col gap-1">
             <span className="text-muted text-xs font-medium tracking-wide uppercase">
               Most Played
             </span>
@@ -417,7 +418,7 @@ export default function PlayerProfile() {
           </div>
 
           {/* Best series by kills -- career-wide, not scoped to recentYear. */}
-          <div className="bg-surface border border-hairline rounded-2xl px-6 py-5 flex flex-col gap-1">
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-6 py-5 flex flex-col gap-1">
             <span className="text-muted text-xs font-medium tracking-wide uppercase">
               Most Kills in a Match
             </span>
@@ -506,7 +507,7 @@ export default function PlayerProfile() {
               defaultSortKey="mapsPlayed"
             />
           ) : (
-            <div className="bg-surface border border-hairline rounded-2xl p-6 text-center">
+            <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-6 text-center">
               <p className="text-muted text-sm">No agent data for {agentScopeLabel}.</p>
             </div>
           )}
@@ -514,7 +515,7 @@ export default function PlayerProfile() {
       )}
 
       {radar && (
-        <div className="bg-surface border border-hairline rounded-2xl p-5">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5">
           <div className="flex items-start justify-between gap-4 flex-wrap mb-1">
             <h3 className="font-display text-sm font-semibold text-ink">Performance profile</h3>
 
@@ -569,12 +570,12 @@ export default function PlayerProfile() {
       )}
 
       {!stats ? (
-        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-8 text-center">
           <p className="text-muted text-sm">No maps in this scope.</p>
         </div>
       ) : (
         <>
-          <div className="bg-surface border border-hairline rounded-2xl p-5">
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5">
             <h3 className="font-display text-sm font-semibold text-ink mb-4">Totals</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Stat label="Kills" value={num(stats.totalKills)} />
@@ -603,13 +604,14 @@ export default function PlayerProfile() {
               perspective={{ type: 'player', name: decodedName }}
             />
             {matchLimit < sortedMatchRows.length && (
-              <button
-                type="button"
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setMatchLimit((l) => Math.min(l + 30, sortedMatchRows.length))}
-                className="self-center text-xs font-medium text-muted hover:text-accent-bright transition-colors px-4 py-2 rounded-lg border border-hairline hover:border-accent-bright/40"
+                className="self-center hover:border-accent-bright/40 hover:text-accent-bright"
               >
                 Load more ({sortedMatchRows.length - matchLimit} more)
-              </button>
+              </Button>
             )}
           </div>
 

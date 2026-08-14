@@ -11,6 +11,7 @@ import FilterPanel, { FACETS } from './FilterPanel'
 import FilterChips from './FilterChips'
 import AgentIcon from './AgentIcon'
 import TrendChart from './TrendChart'
+import Chip from './ui/Chip'
 import agentIcons from '../lib/agentIcons.json'
 import { pct, num, shortDate } from '../lib/format'
 
@@ -158,18 +159,10 @@ export default function AgentPatchTrend({ patches, eventMetaEvents, agent, onAge
         {AGENT_NAMES.map((a) => {
           const active = a === agent
           return (
-            <button
-              key={a}
-              onClick={() => onAgentChange(a)}
-              className={`flex items-center gap-1.5 pl-1.5 pr-3 py-1 rounded-2xl text-xs font-medium border transition-colors ${
-                active
-                  ? 'bg-accent/20 text-accent-bright border-accent/50'
-                  : 'bg-surface text-muted border-hairline hover:text-ink hover:border-muted'
-              }`}
-            >
+            <Chip key={a} active={active} className="flex items-center gap-1.5 pl-1.5 pr-3" onClick={() => onAgentChange(a)}>
               <AgentIcon agent={a} size={18} />
               {a}
-            </button>
+            </Chip>
           )
         })}
       </div>
@@ -185,7 +178,7 @@ export default function AgentPatchTrend({ patches, eventMetaEvents, agent, onAge
       />
 
       {loading || !data ? (
-        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-8 text-center">
           <p className="text-muted text-sm">Loading agent data…</p>
         </div>
       ) : (
@@ -198,7 +191,7 @@ export default function AgentPatchTrend({ patches, eventMetaEvents, agent, onAge
             <FilterChips options={METRICS} value={metric} onChange={setMetric} />
           </div>
 
-          <div className="bg-surface border border-hairline rounded-2xl p-4">
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-4">
             <TrendChart
               points={points}
               format={(v) => pct(v, 1)}

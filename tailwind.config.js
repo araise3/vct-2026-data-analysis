@@ -4,25 +4,41 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Exact tokens pulled from rft.gg's own stylesheet, with "primary"
-        // (their accent) overridden to Valorant's official brand red
-        // instead of their periwinkle (#a6b0f2).
-        base: '#131619',        // --background
-        navbar: '#0d0f10',      // --navbar-background
-        surface: '#191c22',     // --card
-        surface2: '#242832',    // --muted
-        hairline: '#303133',    // --border
-        ink: '#fafafa',         // --foreground
-        muted: '#9b9c9e',       // --muted-foreground
+        // Rebuilt as a real elevation ladder (v2 refresh) rather than
+        // rft.gg's original near-flat set, where base/surface/surface2 sat
+        // within ~4% lightness of each other -- too close for a shadow
+        // alone to read as "raised" against. Each step here is a genuine,
+        // visible lightness jump so a card is unmistakably above the page
+        // and a chip/button is unmistakably above its card, with shadows
+        // now reinforcing a real contrast step instead of doing all the
+        // work alone.
+        base: '#0d0f13',        // page background -- darkened from #131619
+        navbar: '#0a0b0e',
+        surface: '#1b1f28',     // card -- one clear step up from base
+        surface2: '#272d3a',    // nested/active surface -- another clear step up
+        surface3: '#333b4c',    // hover state on surface2 (e.g. inactive-chip hover)
+        hairline: '#3d4557',    // brightened from #303133 -- now a real visible edge
+        ink: '#fafafa',
+        muted: '#9ba1b0',
         accent: {
-          DEFAULT: '#FF4655',   // Valorant brand red (overridden from rft's #a6b0f2)
+          DEFAULT: '#FF4655',   // Valorant brand red -- reserved for primary CTAs/brand, not selection state
           dim: '#B23440',
           bright: '#FF6E79',
         },
-        good: '#4ac97e',        // --success
-        mid: '#ffd47d',         // --legendary
-        bad: '#f7665e',         // --destructive
-        live: '#ef4444',        // --live
+        // Muted slate-blue for "this is selected" (active chips/tabs/
+        // toggles) -- direct feedback that red read as too loud once it
+        // was on every active facet, and that selection state shouldn't
+        // compete with accent's own CTA/brand meaning. Callback to rft.gg's
+        // own original (pre-override) periwinkle accent, toned down further.
+        selected: {
+          DEFAULT: '#5B6EAE',
+          dim: '#42517F',
+          bright: '#7C8FD1',
+        },
+        good: '#4ac97e',
+        mid: '#ffd47d',
+        bad: '#f7665e',
+        live: '#ef4444',
       },
       fontFamily: {
         // rft.gg uses one font family throughout — Plus Jakarta Sans —
@@ -32,10 +48,45 @@ export default {
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       borderRadius: {
-        // rft.gg's --radius: .625rem — noticeably more subtle than the
-        // 14-20px this site used before.
-        xl: '0.625rem',
-        '2xl': '0.875rem',
+        // Bumped up a full notch from rft.gg's original --radius: .625rem
+        // -- direct request to move away from that site's fidelity match
+        // toward a rounder, more contemporary feel.
+        lg: '0.625rem',
+        xl: '0.9rem',
+        '2xl': '1.25rem',
+      },
+      backgroundImage: {
+        // Real gradients, not flat fills -- a flat `bg-accent` on a near-
+        // black page reads as a colored rectangle with no light source; a
+        // top-lit gradient plus the shadow pair below is what actually
+        // sells "raised, catching light from above." Used by Button/Chip's
+        // active states and Card's own surface.
+        'grad-accent': 'linear-gradient(180deg, #FF6E79 0%, #FF4655 55%, #E63A48 100%)',
+        'grad-accent-hover': 'linear-gradient(180deg, #FF8890 0%, #FF4655 55%, #E63A48 100%)',
+        'grad-selected': 'linear-gradient(180deg, #7C8FD1 0%, #5B6EAE 55%, #42517F 100%)',
+        'grad-surface': 'linear-gradient(180deg, #20242f 0%, #1b1f28 100%)',
+        'grad-surface2': 'linear-gradient(180deg, #2d3341 0%, #272d3a 100%)',
+      },
+      boxShadow: {
+        // Depth scale v2: noticeably stronger than a first pass that
+        // relied on shadow alone against a near-black page -- opacity and
+        // blur both raised, and the inset highlight brightened, so a card
+        // reads as raised even before the eye gets to the gradient/color
+        // step change above.
+        'depth-xs': '0 1px 3px 0 rgb(0 0 0 / 0.5), inset 0 1px 0 0 rgb(255 255 255 / 0.05)',
+        'depth-sm': '0 4px 10px -2px rgb(0 0 0 / 0.55), 0 2px 4px -2px rgb(0 0 0 / 0.4), inset 0 1px 0 0 rgb(255 255 255 / 0.07)',
+        'depth-md': '0 10px 24px -6px rgb(0 0 0 / 0.6), 0 4px 8px -4px rgb(0 0 0 / 0.45), inset 0 1px 0 0 rgb(255 255 255 / 0.08)',
+        'depth-lg': '0 22px 44px -10px rgb(0 0 0 / 0.65), 0 8px 16px -6px rgb(0 0 0 / 0.5), inset 0 1px 0 0 rgb(255 255 255 / 0.09)',
+        // Button-specific: a real accent-colored glow on hover (not just a
+        // darker cast shadow) and a deeper inset press on active.
+        button: '0 2px 4px 0 rgb(0 0 0 / 0.5), inset 0 1px 0 0 rgb(255 255 255 / 0.12)',
+        'button-hover': '0 8px 20px -4px rgb(255 70 85 / 0.45), 0 3px 8px -2px rgb(0 0 0 / 0.5), inset 0 1px 0 0 rgb(255 255 255 / 0.16)',
+        'button-active': 'inset 0 2px 6px 0 rgb(0 0 0 / 0.6)',
+        // Muted slate-blue, not accent red -- a focus ring means "you're
+        // interacting with this control," the same "selecting" meaning
+        // Chip's active state carries, so it uses the same subdued color
+        // rather than the loud brand red.
+        'focus-ring': '0 0 0 3px rgb(91 110 174 / 0.45)',
       },
       maxWidth: {
         // rft.gg's own `max-w-content` token (72rem / 1152px) -- restored to

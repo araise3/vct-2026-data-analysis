@@ -10,15 +10,17 @@
  * card chrome drifting out of sync.
  */
 
+import Card from './ui/Card'
+
 export function CardShell({ title, note, children }) {
   return (
-    <div className="bg-surface border border-hairline rounded-2xl p-5 flex flex-col">
+    <Card className="p-5 flex flex-col">
       <h3 className="font-display text-sm font-semibold text-ink mb-4">{title}</h3>
       {children}
       {note && (
         <p className="text-muted text-xs mt-4 leading-relaxed">{note}</p>
       )}
-    </div>
+    </Card>
   )
 }
 

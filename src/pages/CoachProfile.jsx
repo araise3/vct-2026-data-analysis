@@ -89,7 +89,7 @@ export default function CoachProfile() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div className="bg-surface border border-hairline rounded-2xl p-4">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-4">
           <p className="text-muted text-xs uppercase tracking-wide mb-1">Career Record</p>
           <p className={`text-xl font-display font-semibold ${
             career ? (career.winPct >= 0.5 ? 'text-good' : 'text-bad') : 'text-ink'
@@ -100,13 +100,13 @@ export default function CoachProfile() {
             {career ? pct(career.winPct) : 'No scored matches in scope'}
           </p>
         </div>
-        <div className="bg-surface border border-hairline rounded-2xl p-4">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-4">
           <p className="text-muted text-xs uppercase tracking-wide mb-1">Teams Coached</p>
           <p className="text-xl font-display font-semibold text-ink">
             {new Set(stints.map((s) => s.team)).size}
           </p>
         </div>
-        <div className="bg-surface border border-hairline rounded-2xl p-4">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-4">
           <p className="text-muted text-xs uppercase tracking-wide mb-1">Stints</p>
           <p className="text-xl font-display font-semibold text-ink">{stints.length}</p>
         </div>
@@ -114,7 +114,7 @@ export default function CoachProfile() {
 
       <div className="flex flex-col gap-2">
         <h2 className="font-display text-sm font-semibold text-ink">Coaching history</h2>
-        <div className="bg-surface border border-hairline rounded-2xl overflow-auto">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-auto">
           <table className="w-full border-separate border-spacing-0">
             <thead>
               <tr className="bg-surface2">

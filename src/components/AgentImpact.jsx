@@ -157,7 +157,7 @@ export default function AgentImpact() {
       </div>
 
       {scoped.length === 0 ? (
-        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-8 text-center">
           <p className="text-muted text-sm">No matches found for this filter combination.</p>
           <button onClick={clearAll} className="text-accent-bright text-sm hover:underline mt-2">
             Clear all filters

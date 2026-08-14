@@ -371,7 +371,7 @@ export default function RosterTable({ team, rows, liquipedia, matches, coaches =
       {coaches.length > 0 && (
         <div className="flex flex-col gap-2">
           <h2 className="font-display text-sm font-semibold text-ink">Coaching Staff</h2>
-          <div className="bg-surface border border-hairline rounded-2xl divide-y divide-hairline">
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm divide-y divide-hairline">
             {coaches.map((coach) => {
               const coachRecord = coachStintRecord(matches, team, coach.joinDate, coach.leaveDate)
               return (
@@ -412,7 +412,7 @@ export default function RosterTable({ team, rows, liquipedia, matches, coaches =
         </div>
 
         {sortedRows.length === 0 ? (
-          <div className="bg-surface border border-hairline rounded-2xl px-4 py-4 text-muted text-xs">
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-4 py-4 text-muted text-xs">
             No players in this scope.
           </div>
         ) : (

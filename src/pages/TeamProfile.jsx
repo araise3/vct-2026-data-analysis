@@ -16,6 +16,7 @@ import RosterTimeline from '../components/RosterTimeline'
 import DataTable from '../components/DataTable'
 import CompositionsTable from '../components/CompositionsTable'
 import AgentIcon from '../components/AgentIcon'
+import Button from '../components/ui/Button'
 import { buildTeamMapRows, aggregateCompositions, aggregateCompositionPlayers } from '../lib/compositions'
 import mapIcons from '../lib/mapIcons.json'
 import { rating, pct, num, eventLabel } from '../lib/format'
@@ -583,7 +584,7 @@ export default function TeamProfile() {
           with zero matches for this team hid the coach and roster too, even
           though neither one actually depends on this scope being non-empty. */}
       {!stats || !stats.mapsPlayed ? (
-        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-8 text-center">
           <p className="text-muted text-sm">No maps for {scopeLabel}.</p>
           <button onClick={resetScope} className="text-accent-bright text-sm hover:underline mt-2">
             Reset scope
@@ -696,7 +697,7 @@ export default function TeamProfile() {
       {stats && stats.mapsPlayed > 0 && (
         <>
           {Object.keys(stats.winConditions || {}).length > 0 && (
-            <div className="bg-surface border border-hairline rounded-2xl p-5">
+            <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5">
               <h3 className="font-display text-sm font-semibold text-ink mb-1">
                 How this team closes out rounds
               </h3>
@@ -731,13 +732,14 @@ export default function TeamProfile() {
               perspective={{ type: 'team', name: decodedName }}
             />
             {matchLimit < sortedMatchRows.length && (
-              <button
-                type="button"
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setMatchLimit((l) => Math.min(l + 30, sortedMatchRows.length))}
-                className="self-center text-xs font-medium text-muted hover:text-accent-bright transition-colors px-4 py-2 rounded-lg border border-hairline hover:border-accent-bright/40"
+                className="self-center hover:border-accent-bright/40 hover:text-accent-bright"
               >
                 Load more ({sortedMatchRows.length - matchLimit} more)
-              </button>
+              </Button>
             )}
           </div>
         </>

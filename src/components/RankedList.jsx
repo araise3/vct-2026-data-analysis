@@ -1,6 +1,6 @@
 export default function RankedList({ title, rows, renderRow }) {
   return (
-    <div className="bg-surface border border-hairline rounded-2xl p-5">
+    <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5">
       <h3 className="font-display text-sm font-semibold text-ink mb-4 tracking-wide">{title}</h3>
       <div className="flex flex-col gap-1">
         {rows.map((row, i) => (

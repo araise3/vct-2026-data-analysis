@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Chip from './ui/Chip'
 
 /**
  * Generic tab strip + active panel switcher -- purely mechanical, takes
@@ -33,18 +34,10 @@ export default function StageTabs({ tabs, defaultTabId }) {
           {tabs.map((t) => {
             const isActive = t.id === active.id
             return (
-              <button
-                key={t.id}
-                onClick={() => setActiveId(t.id)}
-                className={`px-3.5 py-1.5 rounded-2xl text-xs font-medium transition-colors border ${
-                  isActive
-                    ? 'bg-accent/15 text-accent-bright border-accent/40'
-                    : 'bg-surface text-muted border-hairline hover:text-ink hover:border-muted'
-                }`}
-              >
+              <Chip key={t.id} active={isActive} size="xs" className="px-3.5" onClick={() => setActiveId(t.id)}>
                 {t.label}
                 {t.badge != null && <span className="opacity-60 font-normal ml-1.5">{t.badge}</span>}
-              </button>
+              </Chip>
             )
           })}
         </div>

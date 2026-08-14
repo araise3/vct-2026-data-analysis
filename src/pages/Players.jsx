@@ -7,28 +7,12 @@ import DataTable from '../components/DataTable'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
+import AgentIcon from '../components/AgentIcon'
+import Select from '../components/ui/Select'
 import { rating, pct, num } from '../lib/format'
-
-// appearance-none replaces the native select chrome entirely -- on some
-// browsers/OSes that chrome ignores border-radius and keeps the value
-// left-aligned regardless of text-center, so it has to go for the rounded
-// box + centered value to actually render. The custom chevron background
-// (muted-color, matches the app's other dropdown arrows) replaces the one
-// appearance-none removes.
-const selectClass = 'appearance-none cursor-pointer bg-surface2 border border-hairline rounded-lg pl-3 pr-7 py-1.5 text-sm text-ink text-center focus:outline-none focus:border-muted bg-no-repeat'
-const selectChevronStyle = {
-  backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%239b9c9e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")",
-  backgroundPosition: 'right 0.55rem center',
-  backgroundSize: '12px',
-}
-// Chromium honors text-align on <option> itself (the popup list isn't
-// otherwise stylable), so the open dropdown's entries stay centered too.
-const optionCenterStyle = { textAlign: 'center' }
-
 
 export default function Players() {
   const [ratedOnly, setRatedOnly] = useState(false)
-  const [search, setSearch] = useState('')
   const [minRounds, setMinRounds] = useState(0)
   const [side, setSide] = useState('both') // 'both' | 't' (attack) | 'ct' (defend)
   const [agent, setAgent] = useState('')
@@ -80,16 +64,22 @@ export default function Players() {
 
   // Nationality, unlike agent, is static per player -- no separate bucket
   // dataset or scope-matching needed, just the same meta.countryName every
-  // other column already reads.
-  const countryNames = useMemo(() => {
-    if (!data) return []
-    const names = new Set()
+  // other column already reads. Keeps a name -> code map alongside the
+  // sorted name list so the Country Select can render each option's flag
+  // (Flag itself is keyed by ISO code, not the display name).
+  const countryCodeByName = useMemo(() => {
+    const map = new Map()
+    if (!data) return map
     for (const player in data.meta) {
-      const cn = data.meta[player]?.countryName
-      if (cn) names.add(cn)
+      const m = data.meta[player]
+      if (m?.countryName && !map.has(m.countryName)) map.set(m.countryName, m.countryCode)
     }
-    return [...names].sort()
+    return map
   }, [data])
+  const countryNames = useMemo(
+    () => [...countryCodeByName.keys()].sort(),
+    [countryCodeByName]
+  )
 
   // player_sides.json mirrors VLR's own All/Attack/Defend toggle -- a
   // separate, lighter file (just the headline stats) rather than tripling
@@ -122,13 +112,13 @@ export default function Players() {
   }, [sideRecords, selections, dateRange, side, includeHiddenEvents])
 
   // One row per player in scope, fully aggregated. Deliberately does NOT
-  // apply the search box / min-rounds / agent / country filters: those are
-  // per-row predicates over an already-built row (see `rows` below), and
-  // folding them in here meant every keystroke in the search box re-ran
-  // groupByEntity plus a full aggregatePlayerBuckets pass over every player
-  // in scope to produce rows it was about to discard anyway. This memo now
-  // only re-runs when something that genuinely changes a player's NUMBERS
-  // changes -- the facet scope, the rated-only toggle, or the side toggle.
+  // apply the min-rounds / agent / country filters: those are per-row
+  // predicates over an already-built row (see `rows` below), and folding
+  // them in here meant every change re-ran groupByEntity plus a full
+  // aggregatePlayerBuckets pass over every player in scope to produce rows
+  // it was about to discard anyway. This memo now only re-runs when
+  // something that genuinely changes a player's NUMBERS changes -- the
+  // facet scope, the rated-only toggle, or the side toggle.
   const allRows = useMemo(() => {
     if (!data) return []
     const grouped = groupByEntity(filtered)
@@ -216,15 +206,13 @@ export default function Players() {
   // re-aggregation. Sort order is inherited from allRows -- a filter only
   // ever removes rows, never reorders them.
   const rows = useMemo(() => {
-    const q = search.trim().toLowerCase()
     return allRows.filter((p) => {
       if (playersWithAgent && !playersWithAgent.has(p.player)) return false
       if (country && p.countryName !== country) return false
       if (p.roundsPlayed < minRounds) return false
-      if (q && !p.player.toLowerCase().includes(q) && !p.team?.toLowerCase().includes(q)) return false
       return true
     })
-  }, [allRows, playersWithAgent, country, minRounds, search])
+  }, [allRows, playersWithAgent, country, minRounds])
 
   if (loading || !data) return <div className="text-muted text-sm">Loading…</div>
 
@@ -293,13 +281,6 @@ export default function Players() {
         summary={`${rows.length} players`}
       >
         <div className="flex items-center gap-5 flex-wrap pt-1">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search player or team…"
-            className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:border-muted w-56"
-          />
           <label className="flex items-center gap-2 text-xs text-muted">
             <input
               type="checkbox"
@@ -321,7 +302,7 @@ export default function Players() {
           </label>
           <div className="flex items-center gap-2 text-xs text-muted">
             Side
-            <div className="flex rounded-lg overflow-hidden border border-hairline">
+            <div className="flex rounded-lg overflow-hidden border border-hairline shadow-depth-xs">
               {[
                 { key: 'both', label: 'All' },
                 { key: 't', label: 'Attack' },
@@ -330,8 +311,8 @@ export default function Players() {
                 <button
                   key={opt.key}
                   onClick={() => setSide(opt.key)}
-                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                    side === opt.key ? 'bg-accent text-white' : 'bg-surface2 text-muted hover:text-ink'
+                  className={`px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
+                    side === opt.key ? 'bg-grad-selected text-white shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.15)]' : 'bg-surface2 text-muted hover:text-ink hover:bg-surface3'
                   }`}
                 >
                   {opt.label}
@@ -341,27 +322,23 @@ export default function Players() {
           </div>
           <label className="flex items-center gap-2 text-xs text-muted">
             Agent
-            <select
+            <Select
               value={agent}
-              onChange={(e) => setAgent(e.target.value)}
-              className={selectClass}
-              style={selectChevronStyle}
-            >
-              <option value="" style={optionCenterStyle}>All agents</option>
-              {agentNames.map((a) => <option key={a} value={a} style={optionCenterStyle}>{a}</option>)}
-            </select>
+              onChange={setAgent}
+              placeholder="All agents"
+              options={agentNames}
+              renderIcon={(a) => <AgentIcon agent={a} size={16} />}
+            />
           </label>
           <label className="flex items-center gap-2 text-xs text-muted">
             Country
-            <select
+            <Select
               value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className={selectClass}
-              style={selectChevronStyle}
-            >
-              <option value="" style={optionCenterStyle}>All countries</option>
-              {countryNames.map((c) => <option key={c} value={c} style={optionCenterStyle}>{c}</option>)}
-            </select>
+              onChange={setCountry}
+              placeholder="All countries"
+              options={countryNames}
+              renderIcon={(c) => <Flag countryCode={countryCodeByName.get(c)} countryName={c} size={14} />}
+            />
           </label>
         </div>
       </FilterPanel>
@@ -374,11 +351,11 @@ export default function Players() {
       </div>
 
       {sideLoading ? (
-        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-8 text-center">
           <p className="text-muted text-sm">Loading attack/defend splits…</p>
         </div>
       ) : rows.length === 0 ? (
-        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-8 text-center">
           <p className="text-muted text-sm">No players match this filter combination.</p>
         </div>
       ) : (

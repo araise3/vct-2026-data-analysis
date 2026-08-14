@@ -88,7 +88,7 @@ export default function PerformanceStrip({ matches, playersByMatch, playerName }
   const baselineBottom = heightPct(BASELINE)
 
   return (
-    <div className="bg-surface border border-hairline rounded-2xl p-5">
+    <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5">
       <div className="overflow-x-auto">
         <div className="relative flex items-end gap-1.5 min-h-[132px] h-[132px]">
           {/* 1.00 baseline */}

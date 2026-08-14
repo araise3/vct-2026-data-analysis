@@ -135,7 +135,7 @@ export default function SearchBar() {
 
   return (
     <div ref={containerRef} className="relative w-full max-w-[240px]">
-      <div className="flex items-center gap-2 h-7 px-2.5 rounded-md bg-ink/[0.04] border border-hairline focus-within:border-muted transition-colors">
+      <div className="flex items-center gap-2 h-7 px-2.5 rounded-md bg-ink/[0.04] border border-hairline shadow-depth-xs focus-within:border-selected/50 focus-within:shadow-focus-ring transition-all duration-150">
         <svg
           viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"
           strokeLinecap="round" strokeLinejoin="round" className="text-muted shrink-0 opacity-70"
@@ -159,7 +159,7 @@ export default function SearchBar() {
       </div>
 
       {open && query.trim() !== '' && (
-        <div className="absolute right-0 mt-1.5 w-[280px] max-h-[360px] overflow-auto bg-surface border border-hairline rounded-xl shadow-lg py-1.5 z-50">
+        <div className="absolute right-0 mt-1.5 w-[280px] max-h-[360px] overflow-auto bg-surface border border-hairline rounded-xl shadow-depth-md py-1.5 z-50">
           {results.length === 0 ? (
             <div className="px-3 py-3 text-xs text-muted">No players, teams, or coaches found.</div>
           ) : (

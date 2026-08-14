@@ -513,7 +513,7 @@ export default function RosterTimeline({ playerBuckets, team, matchResultsRows, 
     : null
 
   return (
-    <div className="bg-surface border border-hairline rounded-2xl overflow-auto">
+    <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-auto">
       <table className="w-full border-separate border-spacing-0 text-xs" style={{ tableLayout: 'fixed' }}>
         {/* table-layout:fixed + an explicit per-seat <col> width is what makes every seat
             column a fixed 131px regardless of occupant name length. The label <col> is the

@@ -18,6 +18,9 @@
  * handed identically either way, it just receives a shorter list once an
  * ancestor facet is picked. See that file's own comment for the hierarchy.
  */
+import Chip from './ui/Chip'
+import Button from './ui/Button'
+
 export default function FacetGroup({ label, options, selected, onChange, renderLabel, hideLabel = false }) {
   function toggle(value) {
     if (selected.includes(value)) {
@@ -35,12 +38,9 @@ export default function FacetGroup({ label, options, selected, onChange, renderL
       <div className="flex items-center gap-2">
         <span className="text-[11px] uppercase tracking-wide text-muted font-medium">{label}</span>
         {!allActive && (
-          <button
-            onClick={() => onChange([])}
-            className="text-[11px] text-accent-bright hover:underline"
-          >
+          <Button variant="link" size="sm" className="text-[11px]" onClick={() => onChange([])}>
             clear
-          </button>
+          </Button>
         )}
       </div>
       )}
@@ -48,17 +48,9 @@ export default function FacetGroup({ label, options, selected, onChange, renderL
         {options.map(({ value }) => {
           const active = selected.includes(value)
           return (
-            <button
-              key={value}
-              onClick={() => toggle(value)}
-              className={`px-3 py-1.5 rounded-2xl text-xs font-medium border transition-colors ${
-                active
-                  ? 'bg-accent/20 text-accent-bright border-accent/50'
-                  : 'bg-surface text-muted border-hairline hover:text-ink hover:border-muted'
-              }`}
-            >
+            <Chip key={value} active={active} onClick={() => toggle(value)}>
               {renderLabel ? renderLabel(value) : value}
-            </button>
+            </Chip>
           )
         })}
       </div>

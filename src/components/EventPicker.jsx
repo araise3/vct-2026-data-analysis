@@ -93,10 +93,10 @@ export default function EventPicker({ options, selected, onAdd, onRemove, disabl
           }}
           placeholder="Add an event…"
           disabled={disabled}
-          className="w-full px-3.5 py-1.5 rounded-2xl text-xs font-medium transition-colors border bg-surface text-muted border-hairline hover:text-ink hover:border-muted placeholder:text-muted focus:outline-none disabled:opacity-40 disabled:pointer-events-none"
+          className="w-full px-3.5 py-1.5 rounded-2xl text-xs font-medium transition-all duration-150 border bg-surface text-muted border-hairline shadow-depth-xs hover:text-ink hover:border-muted focus:text-ink focus:border-selected/50 focus:shadow-focus-ring placeholder:text-muted focus:outline-none disabled:opacity-40 disabled:pointer-events-none"
         />
         {open && filtered.length > 0 && (
-          <div className="absolute top-full left-0 w-full mt-1 z-20 bg-surface border border-hairline rounded-lg shadow-lg overflow-hidden max-h-64 overflow-y-auto">
+          <div className="absolute top-full left-0 w-full mt-1 z-20 bg-surface border border-hairline rounded-lg shadow-depth-md overflow-hidden max-h-64 overflow-y-auto">
             {filtered.map((evt) => (
               <button
                 key={evt}

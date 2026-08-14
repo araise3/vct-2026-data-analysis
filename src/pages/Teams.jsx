@@ -176,7 +176,7 @@ export default function Teams() {
       />
 
       {rows.length === 0 ? (
-        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-8 text-center">
           <p className="text-muted text-sm">No teams match this filter combination.</p>
         </div>
       ) : (

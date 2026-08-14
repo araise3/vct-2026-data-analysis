@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { RailCard } from './MatchRail'
+import Button from './ui/Button'
 
 /**
  * rft.gg's "COMPARE PLAYERS" card: two name boxes that hand off to the radar
@@ -46,13 +47,9 @@ export default function ComparePlayersCard() {
         <div className="text-center text-[10px] font-semibold uppercase text-muted/50">vs</div>
         <NameInput value={b} onChange={setB} onFocus={() => setTouched(true)}
                    placeholder={loading ? 'Loading…' : 'Player'} listId="cmp-b" options={options} />
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className="mt-1 rounded-2xl border border-hairline bg-surface2 px-3 py-1.5 text-[11px] font-medium text-ink transition-colors hover:border-muted disabled:cursor-not-allowed disabled:opacity-40"
-        >
+        <Button type="submit" variant="secondary" size="sm" disabled={!canSubmit} className="mt-1 rounded-2xl text-[11px]">
           Compare
-        </button>
+        </Button>
       </form>
     </RailCard>
   )

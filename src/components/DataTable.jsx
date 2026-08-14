@@ -176,7 +176,7 @@ export default function DataTable({
   const colSpan = columns.length + (renderExpanded ? 1 : 0)
 
   return (
-    <div className="overflow-auto rounded-2xl border border-hairline">
+    <div className="overflow-auto rounded-2xl border border-hairline shadow-depth-sm">
       <table className="w-full border-separate border-spacing-0 text-sm">
         <thead>
           <tr className="bg-surface2 sticky top-0 z-10">

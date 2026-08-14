@@ -41,14 +41,14 @@ export default function Economy() {
       />
 
       {econ.totalRounds === 0 ? (
-        <div className="bg-surface border border-hairline rounded-2xl p-8 text-center">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-8 text-center">
           <p className="text-muted text-sm">
             No economy data for this filter combination.
           </p>
         </div>
       ) : (
         <>
-          <div className="bg-surface border border-hairline rounded-2xl p-5">
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5">
             <h3 className="font-display text-sm font-semibold text-ink mb-4">
               Round distribution by buy type
             </h3>

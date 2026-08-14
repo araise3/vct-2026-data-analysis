@@ -1,3 +1,5 @@
+import Chip from './ui/Chip'
+
 export default function MultiFilterChips({ options, selected, onChange, renderLabel }) {
   function toggle(opt) {
     if (selected.includes(opt)) {
@@ -9,30 +11,15 @@ export default function MultiFilterChips({ options, selected, onChange, renderLa
 
   return (
     <div className="flex flex-wrap gap-2">
-      <button
-        onClick={() => onChange([])}
-        className={`px-3.5 py-1.5 rounded-2xl text-xs font-medium transition-colors border ${
-          selected.length === 0
-            ? 'bg-accent/15 text-accent-bright border-accent/40'
-            : 'bg-surface text-muted border-hairline hover:text-ink hover:border-muted'
-        }`}
-      >
+      <Chip active={selected.length === 0} className="px-3.5" onClick={() => onChange([])}>
         All
-      </button>
+      </Chip>
       {options.map((opt) => {
         const active = selected.includes(opt)
         return (
-          <button
-            key={opt}
-            onClick={() => toggle(opt)}
-            className={`px-3.5 py-1.5 rounded-2xl text-xs font-medium transition-colors border ${
-              active
-                ? 'bg-accent/15 text-accent-bright border-accent/40'
-                : 'bg-surface text-muted border-hairline hover:text-ink hover:border-muted'
-            }`}
-          >
+          <Chip key={opt} active={active} className="px-3.5" onClick={() => toggle(opt)}>
             {renderLabel ? renderLabel(opt) : opt}
-          </button>
+          </Chip>
         )
       })}
     </div>

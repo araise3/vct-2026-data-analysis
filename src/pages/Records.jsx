@@ -10,6 +10,7 @@ import FilterPanel, { FACETS } from '../components/FilterPanel'
 import LeaderCard, { CardShell, topBy } from '../components/LeaderCard'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
+import Select from '../components/ui/Select'
 import { pct, duration, num } from '../lib/format'
 
 /**
@@ -20,7 +21,7 @@ import { pct, duration, num } from '../lib/format'
  * maps nested).
  */
 
-const card = 'bg-surface border border-hairline rounded-2xl p-5'
+const card = 'bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5'
 const heading = 'font-display text-sm font-semibold text-ink mb-4'
 
 export default function Records() {
@@ -224,9 +225,6 @@ export default function Records() {
 
   if (loading || !data) return <div className="text-muted text-sm">Loading…</div>
 
-  const selectCls =
-    'bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-muted'
-
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -248,15 +246,15 @@ export default function Records() {
       <div className={card}>
         <h3 className={heading}>Head-to-head</h3>
         <div className="flex items-center gap-3 flex-wrap">
-          <select value={teamA} onChange={(e) => setTeamA(e.target.value)} className={selectCls}>
-            <option value="">Select team…</option>
-            {teams.map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
+          <Select
+            value={teamA} onChange={setTeamA} placeholder="Select team…" options={teams}
+            renderIcon={(t) => <TeamLogo team={t} size={16} showName={false} />}
+          />
           <span className="text-muted text-xs">vs</span>
-          <select value={teamB} onChange={(e) => setTeamB(e.target.value)} className={selectCls}>
-            <option value="">Select team…</option>
-            {teams.map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
+          <Select
+            value={teamB} onChange={setTeamB} placeholder="Select team…" options={teams}
+            renderIcon={(t) => <TeamLogo team={t} size={16} showName={false} />}
+          />
         </div>
 
         {h2h && (
@@ -345,13 +343,13 @@ export default function Records() {
       {(seriesRows.length > 0 || mapRows.length > 0) && (
         <div className="flex flex-col gap-3">
           <div className="flex justify-end">
-            <div className="flex rounded-lg overflow-hidden border border-hairline w-fit">
+            <div className="flex rounded-lg overflow-hidden border border-hairline shadow-depth-xs w-fit">
               {['series', 'map'].map((v) => (
                 <button
                   key={v}
                   onClick={() => setDurationView(v)}
-                  className={`px-4 py-1.5 text-xs font-medium capitalize transition-colors ${
-                    durationView === v ? 'bg-accent text-white' : 'bg-surface2 text-muted hover:text-ink'
+                  className={`px-4 py-1.5 text-xs font-medium capitalize transition-all duration-150 ${
+                    durationView === v ? 'bg-grad-selected text-white shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.15)]' : 'bg-surface2 text-muted hover:text-ink hover:bg-surface3'
                   }`}
                 >
                   {v}

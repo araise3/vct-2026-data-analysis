@@ -94,7 +94,7 @@ export default function Patches() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <div className="bg-surface border border-hairline rounded-2xl p-4 overflow-x-auto">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-4 overflow-x-auto">
           <PatchTimeline
             rows={rows}
             patches={patches}
@@ -105,7 +105,7 @@ export default function Patches() {
         </div>
 
         {selectedPatch && (
-          <div className="bg-surface border border-hairline rounded-2xl p-5 flex flex-col gap-4">
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5 flex flex-col gap-4">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2">
                 <h3 className="font-display text-base font-semibold text-ink">

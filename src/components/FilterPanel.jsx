@@ -3,6 +3,9 @@ import FacetGroup from './FacetGroup'
 import { unscopeValue } from '../lib/entityBuckets'
 import { eventLabel } from '../lib/format'
 import { HIDDEN_BY_DEFAULT_EVENTS } from '../lib/useFacetedFilter'
+import Card from './ui/Card'
+import Button from './ui/Button'
+import Input from './ui/Input'
 
 /**
  * `eventPhase` / `eventWeek` hold event-scoped values ("Vct 2026 Americas
@@ -144,9 +147,11 @@ export default function FilterPanel({
     const isCollapsed = collapsed.has(f) && sel.length === 0
     return (
       <div key={f} className="flex flex-col gap-1.5">
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => toggleFacet(f)}
-          className="flex items-center gap-1.5 w-fit text-muted hover:text-ink transition-colors"
+          className="flex items-center gap-1.5 w-fit justify-start px-1.5"
           aria-expanded={!isCollapsed}
         >
           <Chevron open={!isCollapsed} />
@@ -156,7 +161,7 @@ export default function FilterPanel({
           <span className="text-[11px] text-muted/60">
             {sel.length > 0 ? `${sel.length} selected` : opts.length}
           </span>
-        </button>
+        </Button>
         {!isCollapsed && (
           <FacetGroup
             options={opts}
@@ -171,21 +176,18 @@ export default function FilterPanel({
   }
 
   return (
-    <div className="bg-surface border border-hairline rounded-2xl">
+    <Card>
       <div className="flex items-center justify-between gap-4 flex-wrap px-5 py-4">
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => setOpen((o) => !o)}
-          className="flex items-center gap-2 text-ink hover:text-accent-bright transition-colors"
+          className="flex items-center gap-2 px-1.5 text-ink hover:text-accent-bright"
           aria-expanded={open}
         >
           <Chevron open={open} />
           <span className="font-display text-sm font-semibold">Filters</span>
-          {activeCount > 0 && (
-            <span className="text-[11px] px-1.5 py-0.5 rounded-2xl bg-accent/20 text-accent-bright">
-              {activeCount}
-            </span>
-          )}
-        </button>
+        </Button>
 
         <div className="flex items-center gap-3 min-w-0">
           {!open && activeBits.length > 0 && (
@@ -193,12 +195,9 @@ export default function FilterPanel({
           )}
           {summary && <span className="text-xs text-muted whitespace-nowrap">{summary}</span>}
           {activeCount > 0 && (
-            <button
-              onClick={clearAll}
-              className="text-xs text-accent-bright hover:underline whitespace-nowrap"
-            >
+            <Button variant="link" size="sm" className="text-xs whitespace-nowrap" onClick={clearAll}>
               Clear all
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -213,30 +212,27 @@ export default function FilterPanel({
                 Date range
               </span>
               <div className="flex items-center gap-2 flex-wrap">
-                <input
+                <Input
                   type="date"
                   value={dateRange?.from || ''}
                   min={dateBounds?.min || undefined}
                   max={dateBounds?.max || undefined}
                   onChange={(e) => setDateRange({ from: e.target.value })}
-                  className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-muted w-[150px] shrink-0"
+                  className="w-[150px] shrink-0"
                 />
                 <span className="text-muted text-xs">to</span>
-                <input
+                <Input
                   type="date"
                   value={dateRange?.to || ''}
                   min={dateBounds?.min || undefined}
                   max={dateBounds?.max || undefined}
                   onChange={(e) => setDateRange({ to: e.target.value })}
-                  className="bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-xs text-ink focus:outline-none focus:border-muted w-[150px] shrink-0"
+                  className="w-[150px] shrink-0"
                 />
                 {(dateRange?.from || dateRange?.to) && (
-                  <button
-                    onClick={() => setDateRange({ from: '', to: '' })}
-                    className="text-[11px] text-accent-bright hover:underline"
-                  >
+                  <Button variant="link" size="sm" className="text-[11px]" onClick={() => setDateRange({ from: '', to: '' })}>
                     clear
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
@@ -306,6 +302,6 @@ export default function FilterPanel({
           {children}
         </div>
       )}
-    </div>
+    </Card>
   )
 }

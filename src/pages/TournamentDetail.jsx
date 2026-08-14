@@ -167,7 +167,7 @@ function GroupStandings({ title, stage, result }) {
   const columns = outcomeColumns(stage.seedOutcomes)
 
   return (
-    <div className="bg-surface border border-hairline rounded-2xl overflow-hidden">
+    <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-hidden">
       <div className="px-4 py-3 border-b border-hairline">
         <h3 className="font-display text-sm font-semibold text-ink">{title}</h3>
         <p className="text-muted text-xs mt-0.5">

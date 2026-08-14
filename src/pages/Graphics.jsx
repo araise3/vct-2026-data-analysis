@@ -13,6 +13,8 @@ import {
 import { PLAYER_STATS, TEAM_STATS, teamTierExtras } from '../lib/statDefs'
 import FilterPanel, { FACETS, FACET_LABELS, FACET_RENDERERS } from '../components/FilterPanel'
 import StatCard, { CARD_W } from '../components/StatCard'
+import Button from '../components/ui/Button'
+import Select from '../components/ui/Select'
 
 /**
  * Graphics -- an exportable-infographic builder.
@@ -33,7 +35,7 @@ import StatCard, { CARD_W } from '../components/StatCard'
 
 const labeled = 'text-[11px] uppercase tracking-wide font-medium text-muted'
 const inputCls =
-  'bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-muted'
+  'bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-sm text-ink shadow-depth-xs transition-shadow duration-150 focus:outline-none focus:border-selected/50 focus:shadow-focus-ring'
 
 export default function Graphics() {
   const [entity, setEntity] = useState('players')
@@ -222,10 +224,10 @@ export default function Graphics() {
 
       <div className="grid grid-cols-1 xl:grid-cols-[340px_1fr] gap-6 items-start">
         {/* controls */}
-        <div className="bg-surface border border-hairline rounded-2xl p-5 flex flex-col gap-5 xl:sticky xl:top-6">
+        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5 flex flex-col gap-5 xl:sticky xl:top-6">
           <div className="flex flex-col gap-1.5">
             <span className={labeled}>Entity</span>
-            <div className="flex rounded-lg overflow-hidden border border-hairline w-fit">
+            <div className="flex rounded-lg overflow-hidden border border-hairline shadow-depth-xs w-fit">
               {['players', 'teams'].map((e) => (
                 <button
                   key={e}
@@ -234,8 +236,8 @@ export default function Graphics() {
                     setStatKey((e === 'players' ? PLAYER_STATS : TEAM_STATS)[0].key)
                     setTopN(10)
                   }}
-                  className={`px-4 py-1.5 text-sm font-medium capitalize transition-colors ${
-                    entity === e ? 'bg-accent text-white' : 'bg-surface2 text-muted hover:text-ink'
+                  className={`px-4 py-1.5 text-sm font-medium capitalize transition-all duration-150 ${
+                    entity === e ? 'bg-grad-selected text-white shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.15)]' : 'bg-surface2 text-muted hover:text-ink hover:bg-surface3'
                   }`}
                 >
                   {e}
@@ -246,24 +248,19 @@ export default function Graphics() {
 
           <div className="flex flex-col gap-1.5">
             <span className={labeled}>Statistic</span>
-            <select
+            <Select
               value={stat.key}
-              onChange={(e) => {
-                const next = statDefs.find((s) => s.key === e.target.value) || statDefs[0]
+              onChange={(key) => {
+                const next = statDefs.find((s) => s.key === key) || statDefs[0]
                 setStatKey(next.key)
                 // Match-level stats (longest/shortest series or map) work
                 // best as a short top-5 list; regular per-team/per-player
                 // stats default back to 10.
                 setTopN(next.matchLevel ? 5 : 10)
               }}
-              className={inputCls}
-            >
-              {statDefs.map((s) => (
-                <option key={s.key} value={s.key}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
+              options={statDefs.map((s) => ({ value: s.key, label: s.label }))}
+              className="w-full"
+            />
           </div>
 
           {!isMatchLevel && (
@@ -348,13 +345,15 @@ export default function Graphics() {
             />
           </div>
 
-          <button
+          <Button
+            variant="primary"
+            size="md"
             onClick={exportPng}
             disabled={exporting || rows.length === 0}
-            className="mt-1 bg-accent hover:bg-accent-bright disabled:opacity-50 text-white font-semibold text-sm rounded-lg px-4 py-2.5 transition-colors"
+            className="mt-1 font-semibold w-full"
           >
             {exporting ? 'Rendering…' : 'Export PNG (2×)'}
-          </button>
+          </Button>
           {exportError && <div className="text-bad text-xs">{exportError}</div>}
           {rows.length === 0 && (
             <div className="text-muted text-xs">

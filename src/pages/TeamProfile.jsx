@@ -40,12 +40,29 @@ export default function TeamProfile() {
   // component's own comment) AND, further down, whichever of these
   // actually covered the page's currently selected scope (coachesInScope,
   // computed once `filtered` exists below) for the Coaching Staff card.
-  const headCoaches = useMemo(
-    () => (liquipediaData?.teams?.[decodedName]?.coaches ?? [])
-      .filter((c) => (c.role || '').toLowerCase().includes('head coach'))
-      .sort((a, b) => (a.joinDate || '').localeCompare(b.joinDate || '')),
-    [liquipediaData, decodedName]
-  )
+  const headCoaches = useMemo(() => {
+    const coaches = liquipediaData?.teams?.[decodedName]?.coaches ?? []
+    const named = coaches.filter((c) => (c.role || '').toLowerCase().includes('head coach'))
+    // Some orgs' Liquipedia pages never use the literal "Head Coach" label at
+    // all -- their lead coach is just listed as plain "Coach" (confirmed for
+    // 7 teams: Paper Rex's alecks since 2021, MIBR's fRoD, ENVY's Stunner,
+    // Trace Esports' destroyeR, Attacking Soul Esports/Totoro Gaming/BESTIA's
+    // sole coach -- all had zero rendered Coaching Staff/roster-timeline
+    // coach column before this fallback). Only applied when a team has NO
+    // "Head Coach"-labeled entry at all: for a team that DOES have one,
+    // plain "Coach" is a genuinely different, subordinate staff role and
+    // must not be folded in -- e.g. KIWOOM DRX's real Head Coach "termi" has
+    // run alongside two separate plain-"Coach" staff for the same period,
+    // and blindly matching "Coach" there would add two fake extra head
+    // coaches. Verified across the full dataset: a plain "Coach" entry never
+    // date-overlaps a "Head Coach" entry on any team that has both, so this
+    // fallback can't introduce that same ambiguity for the 7 teams it does
+    // apply to.
+    const pool = named.length
+      ? named
+      : coaches.filter((c) => (c.role || '').trim().toLowerCase() === 'coach')
+    return pool.sort((a, b) => (a.joinDate || '').localeCompare(b.joinDate || ''))
+  }, [liquipediaData, decodedName])
   const { data: matchData } = useData('match_results')
   const { data: teamMapData } = useData('team_map_buckets')
   // match_players.json (3.9MB) feeds only the roster timeline's split-seat

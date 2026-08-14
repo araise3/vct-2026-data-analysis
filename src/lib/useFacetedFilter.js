@@ -65,21 +65,41 @@ export const HIDDEN_BY_DEFAULT_EVENTS = new Set([
 /**
  * Is a record's date inside the selected range?
  *
- * Every record -- bucket or match-level row -- carries exactly one date,
- * since buckets are keyed per calendar day upstream. That makes this an
- * exact filter rather than a span-overlap approximation. Dates are
- * YYYY-MM-DD so lexicographic comparison is chronological.
+ * Most records -- bucket or match-level row -- carry exactly one date,
+ * since buckets are keyed per calendar day upstream, making this an exact
+ * filter. Dates are YYYY-MM-DD so lexicographic comparison is chronological.
  *
- * Records with no date pass through rather than being filtered out, so a
- * future export missing dates degrades to "no date filter" instead of
- * silently emptying every page.
+ * player_buckets.json is the one exception: it's keyed only by
+ * (player, event, week), with no day dimension at all (see expandBuckets'
+ * own comment -- its `d` field is deaths, not a date), so a player_buckets
+ * record never carries `date` and this used to silently pass every such
+ * record through regardless of the selected range -- the DATE RANGE control
+ * looked live but filtered nothing on any page whose rows are built from
+ * player_buckets (Players.jsx, most visibly). `attachDateSpans` in
+ * entityBuckets.js can attach an approximate `dateMin`/`dateMax` span
+ * instead (the real min/max day its maps were played on, joined from
+ * player_agents.json, which shares the same key at a finer per-agent grain
+ * with a genuine per-day date) -- when present, this checks SPAN OVERLAP
+ * against the selected range rather than an exact match, since a week-
+ * grained bucket may span several real days.
+ *
+ * Records with no date info at all (neither `date` nor a span) pass
+ * through rather than being filtered out, so a future export missing dates
+ * degrades to "no date filter" instead of silently emptying every page.
  */
 function inDateRange(record, { from, to }) {
   if (!from && !to) return true
-  const d = record.date
-  if (!d) return true
-  if (from && d < from) return false
-  if (to && d > to) return false
+  if (record.date) {
+    const d = record.date
+    if (from && d < from) return false
+    if (to && d > to) return false
+    return true
+  }
+  if (record.dateMin && record.dateMax) {
+    if (to && record.dateMin > to) return false
+    if (from && record.dateMax < from) return false
+    return true
+  }
   return true
 }
 
@@ -190,15 +210,19 @@ export function useFacetedFilter(records, facets, initial = {}) {
     facets.reduce((n, f) => n + (selections[f]?.length || 0), 0) +
     (dateRange.from || dateRange.to ? 1 : 0)
 
-  // Earliest/latest date present, to bound the date inputs.
+  // Earliest/latest date present, to bound the date inputs -- same
+  // date-or-span reasoning as inDateRange above, so a span-only dataset
+  // (player_buckets + attachDateSpans) still gets real bounds instead of
+  // an unrestricted picker.
   const dateBounds = useMemo(() => {
     let min = null
     let max = null
     for (const r of records) {
-      const d = r.date
-      if (!d) continue
-      if (min === null || d < min) min = d
-      if (max === null || d > max) max = d
+      const lo = r.date || r.dateMin
+      const hi = r.date || r.dateMax
+      if (!lo || !hi) continue
+      if (min === null || lo < min) min = lo
+      if (max === null || hi > max) max = hi
     }
     return { min, max }
   }, [records])

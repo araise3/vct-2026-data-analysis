@@ -2,7 +2,10 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useData, useIdle } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
-import { expandBuckets, aggregatePlayerBuckets, aggregateSideBuckets, groupByEntity, teamInScope } from '../lib/entityBuckets'
+import {
+  expandBuckets, aggregatePlayerBuckets, aggregateSideBuckets, groupByEntity, teamInScope,
+  buildPlayerDateSpans, attachDateSpans,
+} from '../lib/entityBuckets'
 import DataTable from '../components/DataTable'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
@@ -36,10 +39,27 @@ export default function Players() {
   const { data: agentData } = useData(idle ? 'player_agents' : null)
 
   const records = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
+
+  // player_buckets has no per-day date at all (see buildPlayerDateSpans'
+  // own comment in entityBuckets.js), so the DATE RANGE control below
+  // looked live but silently filtered nothing. player_agents.json -- the
+  // same file already idle-loaded above for the Agent dropdown -- shares
+  // the same (player, event, week) key at a finer per-agent grain with a
+  // real date, so its min/max per key stands in as an approximate span.
+  // Before agentData has loaded (or for the small, documented set of
+  // player-maps with no agent recorded at all), this is a no-op --
+  // records fall back to their prior no-date-info pass-through, same as
+  // before this fix -- and starts working the moment the idle fetch lands.
+  const dateSpans = useMemo(
+    () => (agentData ? buildPlayerDateSpans(agentData.buckets) : new Map()),
+    [agentData]
+  )
+  const datedRecords = useMemo(() => attachDateSpans(records, dateSpans), [records, dateSpans])
+
   const { selections, setFacet, clearAll, filtered, options, activeCount,
           dateRange, setDateRange, dateBounds,
           includeHiddenEvents, setIncludeHiddenEvents } =
-    useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] })
+    useFacetedFilter(datedRecords, FACETS, { competition: ['VCT'], year: [2026] })
 
   // player_agents.json is the same bucket shape as player_buckets but keyed
   // by player+agent, so it can't just join the FACETS list (a player's own

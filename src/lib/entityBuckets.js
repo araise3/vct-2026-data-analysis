@@ -110,6 +110,56 @@ export function expandBuckets(data, keyField, keep = null) {
   }))
 }
 
+/**
+ * player_buckets records have no real date (see expandBuckets' own comment
+ * above), which silently defeats the DATE RANGE filter on any page built
+ * from them -- every record passes through regardless of the selected
+ * range. player_agents.json shares the exact same (player, event, week)
+ * key, split further by agent, with a genuine per-day date on each row --
+ * and a player_buckets bucket's own totals are exactly the sum across
+ * whichever player_agents rows share its key (verified against real data:
+ * identical ratS/ratR/acsS/... for a single-agent bucket). So the min/max
+ * date across those rows is the real span of days that bucket's maps were
+ * actually played on -- the best available granularity without a genuine
+ * per-day player_buckets export.
+ *
+ * Takes RAW player_agents buckets (not expanded records), since only
+ * `p`/`e`/`w`/`d` are needed. Returns a Map from "player|event|week" to
+ * `{ min, max }` (both 'YYYY-MM-DD' strings) for `attachDateSpans` below.
+ */
+export function buildPlayerDateSpans(agentBuckets) {
+  const spans = new Map()
+  for (const b of agentBuckets || []) {
+    if (typeof b.d !== 'string') continue
+    const key = `${b.p}|${b.e}|${b.w}`
+    const span = spans.get(key)
+    if (!span) spans.set(key, { min: b.d, max: b.d })
+    else {
+      if (b.d < span.min) span.min = b.d
+      if (b.d > span.max) span.max = b.d
+    }
+  }
+  return spans
+}
+
+/**
+ * Attaches an approximate `dateMin`/`dateMax` span (see
+ * buildPlayerDateSpans) to every record whose (p, e, w) key is present in
+ * `spans` -- a no-op for any record the lookup doesn't cover, which is a
+ * real, already-documented gap (some player-maps have no agent recorded at
+ * all -- see project-history's note that agent-bucket wins run slightly
+ * lower than player-bucket wins for exactly this reason) rather than a bug
+ * here; those rows correctly fall back to "no date info" via
+ * `inDateRange`'s own pass-through rule instead of being wrongly excluded.
+ */
+export function attachDateSpans(records, spans) {
+  if (!spans.size) return records
+  return records.map((r) => {
+    const span = spans.get(`${r.p}|${r.e}|${r.w}`)
+    return span ? { ...r, dateMin: span.min, dateMax: span.max } : r
+  })
+}
+
 function div(num, den) {
   return den ? num / den : null
 }

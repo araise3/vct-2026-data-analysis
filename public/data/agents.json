@@ -57000,6 +57000,108 @@
     {
       "competition": "VCT",
       "year": 2026,
+      "region": "Americas",
+      "event": "Vct 2026 Americas Stage 2",
+      "stage": "Stage 2",
+      "phase": "Play-Ins",
+      "week": "Play-Ins: Upper Round 1",
+      "playerRows": 50,
+      "agentCounts": {
+        "Neon": 8,
+        "Omen": 8,
+        "Fade": 6,
+        "Chamber": 5,
+        "Viper": 4,
+        "Sova": 4,
+        "Kayo": 3,
+        "Cypher": 3,
+        "Waylay": 2,
+        "Phoenix": 2,
+        "Jett": 1,
+        "Harbor": 1,
+        "Sage": 1,
+        "Deadlock": 1,
+        "Raze": 1
+      },
+      "mapStats": {
+        "Ascent": {
+          "rounds": 18,
+          "atkWinRounds": 9,
+          "defWinRounds": 9
+        },
+        "Breeze": {
+          "rounds": 16,
+          "atkWinRounds": 7,
+          "defWinRounds": 9
+        },
+        "Split": {
+          "rounds": 24,
+          "atkWinRounds": 15,
+          "defWinRounds": 9
+        },
+        "Summit": {
+          "rounds": 19,
+          "atkWinRounds": 9,
+          "defWinRounds": 10
+        },
+        "Sunset": {
+          "rounds": 14,
+          "atkWinRounds": 11,
+          "defWinRounds": 3
+        }
+      },
+      "mapAgentCounts": {
+        "Ascent": {
+          "Omen": 2,
+          "Sova": 2,
+          "Chamber": 1,
+          "Phoenix": 1,
+          "Neon": 1,
+          "Waylay": 1,
+          "Deadlock": 1,
+          "Cypher": 1
+        },
+        "Breeze": {
+          "Neon": 2,
+          "Sova": 2,
+          "Chamber": 1,
+          "Kayo": 1,
+          "Viper": 1,
+          "Jett": 1,
+          "Cypher": 1,
+          "Harbor": 1
+        },
+        "Split": {
+          "Neon": 2,
+          "Omen": 2,
+          "Viper": 2,
+          "Fade": 2,
+          "Phoenix": 1,
+          "Raze": 1
+        },
+        "Summit": {
+          "Fade": 2,
+          "Omen": 2,
+          "Chamber": 1,
+          "Neon": 1,
+          "Kayo": 1,
+          "Viper": 1,
+          "Waylay": 1,
+          "Sage": 1
+        },
+        "Sunset": {
+          "Chamber": 2,
+          "Omen": 2,
+          "Fade": 2,
+          "Neon": 2,
+          "Kayo": 1,
+          "Cypher": 1
+        }
+      }
+    },
+    {
+      "competition": "VCT",
+      "year": 2026,
       "region": "China",
       "event": "Vct 2026 China Kickoff",
       "stage": "Kickoff",
@@ -64245,21 +64347,21 @@
         "Omen": 15,
         "Neon": 14,
         "Sova": 11,
-        "Cypher": 8,
         "Phoenix": 8,
+        "Cypher": 8,
         "Fade": 7,
-        "Chamber": 6,
         "Viper": 6,
+        "Chamber": 6,
         "Astra": 5,
         "Raze": 4,
-        "Vyse": 3,
         "Yoru": 3,
         "Jett": 3,
+        "Vyse": 3,
         "Skye": 2,
         "Waylay": 2,
-        "Sage": 1,
         "Breach": 1,
-        "Kayo": 1
+        "Kayo": 1,
+        "Sage": 1
       },
       "mapStats": {
         "Ascent": {
@@ -64304,17 +64406,17 @@
           "Phoenix": 1
         },
         "Haven": {
-          "Neon": 3,
           "Sova": 3,
-          "Chamber": 2,
+          "Neon": 3,
           "Omen": 2,
-          "Vyse": 2,
-          "Astra": 2,
           "Phoenix": 2,
-          "Fade": 1,
+          "Astra": 2,
+          "Vyse": 2,
+          "Chamber": 2,
           "Jett": 1,
           "Cypher": 1,
-          "Breach": 1
+          "Breach": 1,
+          "Fade": 1
         },
         "Lotus": {
           "Raze": 2,
@@ -64349,15 +64451,15 @@
           "Chamber": 1
         },
         "Sunset": {
-          "Sova": 4,
           "Omen": 4,
-          "Neon": 3,
+          "Sova": 4,
           "Cypher": 3,
+          "Neon": 3,
           "Phoenix": 2,
-          "Chamber": 1,
-          "Sage": 1,
           "Waylay": 1,
-          "Yoru": 1
+          "Yoru": 1,
+          "Chamber": 1,
+          "Sage": 1
         }
       }
     },

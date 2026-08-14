@@ -306,5 +306,33 @@
   "ULF Esports": {
     "logo": "/logos/ulf-esports.png",
     "tag": "ULF Esports"
+  },
+  "BESTIA": {
+    "logo": "/logos/bestia.png",
+    "tag": "BEST"
+  },
+  "Fluxo W7M": {
+    "logo": "/logos/fluxo-w7m.png",
+    "tag": "FLX"
+  },
+  "M80": {
+    "logo": "/logos/m80.png",
+    "tag": "M80"
+  },
+  "ONSIDE GAMING": {
+    "logo": "/logos/onside-gaming.png",
+    "tag": "ONS"
+  },
+  "QT DIG∞": {
+    "logo": "/logos/qt-dig.png",
+    "tag": "QT"
+  },
+  "Sharper Esports": {
+    "logo": "/logos/sharper-esports.png",
+    "tag": "SHR"
+  },
+  "Xipto Esports": {
+    "logo": "/logos/xipto-esports.png",
+    "tag": "XIP"
   }
 }

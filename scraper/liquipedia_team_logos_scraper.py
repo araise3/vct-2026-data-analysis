@@ -156,6 +156,17 @@ TEAM_NAME_MAP = {
     "Shenzhen NTER": "NTER (Chinese team)",
     "Totoro Gaming": "Totoro Gaming",
     "Weibo Gaming": "Weibo Gaming",
+    # Tier-2/challenger teams added when 2026 play-in/qualifier coverage
+    # expanded -- most match our canonical name exactly. "QT DIG∞" is the
+    # one exception: the trailing "∞" is this site's own stylized tag
+    # rendering, not part of Liquipedia's page title.
+    "BESTIA": "BESTIA",
+    "Fluxo W7M": "Fluxo W7M",
+    "M80": "M80",
+    "ONSIDE GAMING": "ONSIDE GAMING",
+    "QT DIG∞": "QT DIG",
+    "Sharper Esports": "Sharper Esports",
+    "Xipto Esports": "Xipto Esports",
 }
 
 # Tags already known (kept from the previous src/lib/teamLogos.json where
@@ -188,6 +199,9 @@ TAGS = {
     "Night Wings Gaming": "NWG", "Number One Player": "N1P",
     "REBORN": "RE", "Rare Atom": "RA", "Royal Never Give Up": "RNG",
     "Shenzhen NTER": "NTER", "Totoro Gaming": "TOTO", "Weibo Gaming": "WBG",
+    "BESTIA": "BEST", "Fluxo W7M": "FLX", "M80": "M80",
+    "ONSIDE GAMING": "ONS", "QT DIG∞": "QT", "Sharper Esports": "SHR",
+    "Xipto Esports": "XIP",
 }
 
 

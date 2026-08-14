@@ -48,12 +48,13 @@ export default {
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       borderRadius: {
-        // Bumped up a full notch from rft.gg's original --radius: .625rem
-        // -- direct request to move away from that site's fidelity match
-        // toward a rounder, more contemporary feel.
-        lg: '0.625rem',
-        xl: '0.9rem',
-        '2xl': '1.25rem',
+        // Bumped up from rft.gg's original --radius: .625rem for a rounder,
+        // more contemporary feel, then dialed back down partway -- the full
+        // bump (2xl at 1.25rem) made small elements like a table header
+        // cell's corner look oversized/awkward against its own grid lines.
+        lg: '0.5rem',
+        xl: '0.75rem',
+        '2xl': '1rem',
       },
       backgroundImage: {
         // Real gradients, not flat fills -- a flat `bg-accent` on a near-

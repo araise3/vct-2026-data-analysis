@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-14T08:00:01Z"
+    "fetchedAt": "2026-08-14T10:36:07Z"
   },
   "matches": [
-    {
-      "key": "1786287600|team-heretics|fire-flux-esports",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1786287600,
-      "bestOf": 3,
-      "team1": "Team Heretics",
-      "team2": "Fire Flux Esports",
-      "score1": 1,
-      "score2": 2,
-      "started": true
-    },
     {
       "key": "1786298400|gentle-mates|enterprise-esports",
       "event": "Vct 2026 Emea Stage 2",
@@ -249,9 +236,9 @@
       "bestOf": 3,
       "team1": "FULL SENSE",
       "team2": "QT DIG",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1786694400|nova-esports|jdg-esports",
@@ -262,29 +249,29 @@
       "bestOf": 3,
       "team1": "Nova Esports",
       "team2": "JDG Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 2,
+      "started": true
     },
     {
-      "key": "1786701600|tyloo|titan-esports-club",
+      "key": "1786703400|tyloo|titan-esports-club",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
-      "timestamp": 1786701600,
+      "timestamp": 1786703400,
       "bestOf": 3,
       "team1": "TYLOO",
       "team2": "Titan Esports Club",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 0,
+      "started": true
     },
     {
-      "key": "1786705200|team-secret|xipto-esports",
+      "key": "1786704000|team-secret|xipto-esports",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
-      "timestamp": 1786705200,
+      "timestamp": 1786704000,
       "bestOf": 3,
       "team1": "Team Secret",
       "team2": "Xipto Esports",
@@ -449,27 +436,27 @@
       "started": false
     },
     {
-      "key": "1786867200|t1|tbd",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "key": "1786867200|nova-esports|tbd",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1786867200,
       "bestOf": 3,
-      "team1": "T1",
+      "team1": "Nova Esports",
       "team2": null,
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1786867200|tbd|tbd",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "key": "1786867200|t1|full-sense",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1786867200,
       "bestOf": 3,
-      "team1": null,
-      "team2": null,
+      "team1": "T1",
+      "team2": "FULL SENSE",
       "score1": null,
       "score2": null,
       "started": false
@@ -553,6 +540,19 @@
       "started": false
     },
     {
+      "key": "1787126400|jdg-esports|tbd",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1787126400,
+      "bestOf": 3,
+      "team1": "JDG Esports",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
       "key": "1787126400|tbd|onside-gaming",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
@@ -561,19 +561,6 @@
       "bestOf": 3,
       "team1": null,
       "team2": "ONSIDE GAMING",
-      "score1": null,
-      "score2": null,
-      "started": false
-    },
-    {
-      "key": "1787126400|tbd|tbd",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1787126400,
-      "bestOf": 3,
-      "team1": null,
-      "team2": null,
       "score1": null,
       "score2": null,
       "started": false
@@ -631,11 +618,37 @@
       "started": false
     },
     {
+      "key": "1787212800|tbd|qt-dig",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1787212800,
+      "bestOf": 3,
+      "team1": null,
+      "team2": "QT DIG",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
       "key": "1787212800|tbd|tbd",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1787212800,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787220000|tbd|tbd",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1787220000,
       "bestOf": 3,
       "team1": null,
       "team2": null,

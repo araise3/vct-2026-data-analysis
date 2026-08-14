@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-14T05:18:35Z"
+    "fetchedAt": "2026-08-14T08:00:01Z"
   },
   "matches": [
     {
@@ -236,7 +236,7 @@
       "bestOf": 3,
       "team1": "ENVY",
       "team2": "M80",
-      "score1": 1,
+      "score1": 2,
       "score2": 0,
       "started": true
     },
@@ -436,14 +436,14 @@
       "started": false
     },
     {
-      "key": "1786838400|sentinels|tbd",
+      "key": "1786838400|sentinels|envy",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1786838400,
       "bestOf": 3,
       "team1": "Sentinels",
-      "team2": null,
+      "team2": "ENVY",
       "score1": null,
       "score2": null,
       "started": false
@@ -618,11 +618,24 @@
       "started": false
     },
     {
-      "key": "1787184000|tbd|tbd",
+      "key": "1787184000|tbd|m80",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787184000,
+      "bestOf": 3,
+      "team1": null,
+      "team2": "M80",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787212800|tbd|tbd",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1787212800,
       "bestOf": 3,
       "team1": null,
       "team2": null,

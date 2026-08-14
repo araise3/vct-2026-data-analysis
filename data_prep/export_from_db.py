@@ -1014,6 +1014,100 @@ def main():
         map_ctx[['team1_score', 'team2_score']].max(axis=1) >= 14
     ).astype(int)
 
+    # ------------------------------------------------------------------
+    # team_map_detail.json -- raw (NOT bucket-aggregated) per-(match, map,
+    # team) attack/defense round counts PLUS each of that team's 5 players'
+    # own per-map headline stats (rating/ACS/ADR/KAST/HS%/kills/deaths/
+    # assists/first-kills/first-deaths). One row per team per completed
+    # map. Reuses the c1_atkW/c1_atkP/... columns just computed above for
+    # team_buckets.json's own aggregated split, reshaped long instead of
+    # deriving the same atk/def math a second time.
+    #
+    # Keyed by (m=match_id, mi=map_index, t=team) specifically so the
+    # client can join it against match_results.json's `maps[]` array
+    # (index-aligned -- mi lines up with array position, the same
+    # convention match_players.json's own `ag` array already relies on,
+    # see that field's comment) and match_players.json's per-player agent
+    # picks, at whatever cut a page wants (per-agent, per-composition,
+    # per-role-shape, per-facet-scope) -- entirely client-side, the exact
+    # pattern src/lib/compositions.js's buildTeamMapRows() already
+    # established for pick/win data by joining those same two files. This
+    # file exists so ATK/DEF splits AND per-agent performance stats can
+    # join into that same pattern instead of needing their own bucket-
+    # aggregation branch in this script (the mapAgentStats-in-agents.json
+    # approach this replaced -- see git history -- needed a script edit
+    # and a full DB re-run for every new cut of this data; a raw
+    # per-match-map row doesn't, since any new cut is just a different
+    # client-side aggregation over rows that are already shipped).
+    #
+    # Deliberately its own file rather than folded into match_results.json
+    # -- most match_results consumers (Tournaments, Records, match
+    # history) never touch side/performance data, and match_results.json
+    # is already fetched on far more pages than would want the extra
+    # weight.
+    #
+    # `pl` is each of that team's players for this map, as a compact array
+    # (not named keys -- see agents.json's own comment on why: repeated
+    # key names across thousands of entries is real, measurable weight)
+    # of [agent, rounds, kills, deaths, assists, firstKills, firstDeaths,
+    # rating, acs, kast, adr, hsPct]. rating/acs/kast/adr/hsPct are the RAW
+    # per-map value (null if VLR never published it for this map, the same
+    # gap wsum() already tolerates elsewhere) -- NOT pre-multiplied by
+    # rounds, since a client aggregating across several of these rows
+    # weights by each row's own `rounds` at that point (the same wsum
+    # pattern used everywhere else, just done client-side here instead of
+    # server-side because these rows are meant to be joined/filtered
+    # first, not summed blindly).
+    # ------------------------------------------------------------------
+    _player_map_rows = mps_ctx.dropna(subset=['agent'])[[
+        'match_id', 'map_index', 'canonical_team', 'agent', 'rounds_total',
+        'kills', 'deaths', 'assists', 'first_kills', 'first_deaths',
+        'rating', 'acs', 'kast', 'adr', 'hs_pct',
+    ]]
+    players_by_team_map = {}
+    for (match_id, map_index, team), g in _player_map_rows.groupby(
+            ['match_id', 'map_index', 'canonical_team'], dropna=True):
+        entries = []
+        for r in g.itertuples():
+            entries.append([
+                r.agent,
+                int(r.rounds_total) if pd.notna(r.rounds_total) else 0,
+                int(r.kills) if pd.notna(r.kills) else 0,
+                int(r.deaths) if pd.notna(r.deaths) else 0,
+                int(r.assists) if pd.notna(r.assists) else 0,
+                int(r.first_kills) if pd.notna(r.first_kills) else 0,
+                int(r.first_deaths) if pd.notna(r.first_deaths) else 0,
+                round(float(r.rating), 3) if pd.notna(r.rating) else None,
+                round(float(r.acs), 2) if pd.notna(r.acs) else None,
+                round(float(r.kast), 4) if pd.notna(r.kast) else None,
+                round(float(r.adr), 3) if pd.notna(r.adr) else None,
+                round(float(r.hs_pct), 4) if pd.notna(r.hs_pct) else None,
+            ])
+        players_by_team_map[(int(match_id), int(map_index), team)] = entries
+
+    _tmd_rows = []
+    for team_col in ('c1', 'c2'):
+        sub = map_ctx.loc[map_ctx['status'] == 'completed', [
+            'match_id', 'map_index', team_col,
+            f'{team_col}_atkW', f'{team_col}_atkP', f'{team_col}_defW', f'{team_col}_defP',
+        ]].copy()
+        sub.columns = ['m', 'mi', 't', 'atkW', 'atkP', 'defW', 'defP']
+        for col in ['atkW', 'atkP', 'defW', 'defP']:
+            sub[col] = sub[col].fillna(0)
+        _tmd_rows.append(sub)
+    team_map_detail_df = pd.concat(_tmd_rows, ignore_index=True)
+    team_map_detail_rows = [
+        {
+            "m": int(r.m), "mi": int(r.mi), "t": r.t,
+            "atkW": int(r.atkW), "atkP": int(r.atkP), "defW": int(r.defW), "defP": int(r.defP),
+            "pl": players_by_team_map.get((int(r.m), int(r.mi), r.t), []),
+        }
+        for r in team_map_detail_df.itertuples()
+    ]
+    with open(f"{OUT}/team_map_detail.json", "w") as f:
+        json.dump({"rows": team_map_detail_rows}, f, separators=(',', ':'))
+    print(f"team_map_detail.json: {len(team_map_detail_rows)} team-map rows")
+
     team_rows = []
     for team_col, opp_col in (('c1', 'c2'), ('c2', 'c1')):
         sub = scored_matches[['event_id', 'stage', team_col, 'score1', 'score2', 'match_date']].copy()
@@ -1770,7 +1864,10 @@ def main():
     }
 
     with open(f"{OUT}/agents.json", "w") as f:
-        json.dump(agents_out, f, indent=2)
+        # Compact, not indent=2 -- every other large bucket file in this
+        # pipeline already writes compact; no reason for this one to be the
+        # exception now that it's grouped with the others below.
+        json.dump(agents_out, f, separators=(',', ':'))
     print(f"agents.json written: {len(buckets)} buckets, "
           f"{len(agents_out['mapNames'])} maps, "
           f"{len(set(b['event'] for b in buckets))} events")

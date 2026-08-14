@@ -3,7 +3,7 @@ import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
 import DataTable from './DataTable'
 import FilterPanel, { FACETS } from './FilterPanel'
-import AgentIcon from './AgentIcon'
+import MapIcon from './MapIcon'
 import { pct, num } from '../lib/format'
 
 
@@ -11,20 +11,23 @@ import { pct, num } from '../lib/format'
 // arbitrary filter combinations correct, rather than averaging
 // pre-computed percentages (which would weight a 10-round week the same as
 // a 200-round one).
+//
+// Only mapStats/totalRows are used now -- agentCounts/mapAgentCounts (pick
+// rate by agent) used to feed a "Pick rate by map" table here too, removed
+// once the Compositions tab's Agent impact table (which already covers
+// per-agent, per-map pick rate via its own Map selector, plus win rate,
+// ATK/DEF splits, and full performance stats) made it fully redundant.
+// agents.json's own agentCounts/mapAgentCounts fields are left in the
+// export unchanged -- this is a frontend trim only, not a data-pipeline
+// change, so nothing here forces a re-export.
 function aggregate(buckets) {
-  const agentCounts = {}
   const mapStats = {}
-  const mapAgentCounts = {}
-  const mapTotalRows = {}
   let totalRows = 0
   let totalAtkWinRounds = 0
   let totalDefWinRounds = 0
 
   for (const b of buckets) {
     totalRows += b.playerRows
-    for (const [agent, count] of Object.entries(b.agentCounts)) {
-      agentCounts[agent] = (agentCounts[agent] || 0) + count
-    }
     for (const [mapName, s] of Object.entries(b.mapStats)) {
       if (!mapStats[mapName]) mapStats[mapName] = { rounds: 0, atkWinRounds: 0, defWinRounds: 0 }
       mapStats[mapName].rounds += s.rounds
@@ -33,19 +36,7 @@ function aggregate(buckets) {
       totalAtkWinRounds += s.atkWinRounds
       totalDefWinRounds += s.defWinRounds
     }
-    for (const [mapName, counts] of Object.entries(b.mapAgentCounts || {})) {
-      if (!mapAgentCounts[mapName]) mapAgentCounts[mapName] = {}
-      for (const [agent, count] of Object.entries(counts)) {
-        mapAgentCounts[mapName][agent] = (mapAgentCounts[mapName][agent] || 0) + count
-        mapTotalRows[mapName] = (mapTotalRows[mapName] || 0) + count
-      }
-    }
   }
-
-  const teamSlots = totalRows / 5
-  const pickRates = Object.entries(agentCounts)
-    .map(([agent, count]) => ({ agent, pickRate: teamSlots ? count / teamSlots : 0 }))
-    .sort((a, b) => b.pickRate - a.pickRate)
 
   // atkWinPct/defWinPct deliberately do NOT divide by s.rounds (the map's
   // total round count, including overtime). atkWinRounds/defWinRounds come
@@ -81,7 +72,7 @@ function aggregate(buckets) {
 
   const totalSideRounds = totalAtkWinRounds + totalDefWinRounds
   return {
-    pickRates, mapWinRates, mapAgentCounts, mapTotalRows, totalRows,
+    mapWinRates, totalRows,
     overallAtkWinPct: totalSideRounds ? totalAtkWinRounds / totalSideRounds : null,
     overallDefWinPct: totalSideRounds ? totalDefWinRounds / totalSideRounds : null,
   }
@@ -97,13 +88,12 @@ export default function AgentOverview() {
           includeHiddenEvents, setIncludeHiddenEvents } =
     useFacetedFilter(buckets, FACETS, { competition: ['VCT'], year: [2026] })
 
-  // Reorders only the win-rate table's own map columns (see winRateColumns
-  // below) -- the pick-rate table keeps its own fixed column order
-  // (pickRateColumns) regardless. Triggered by clicking the ATK WIN / DEF
-  // WIN row label itself rather than a separate control -- sorting the two
-  // win-rate ROWS the normal DataTable way is barely useful with only two
-  // rows, but sorting the map COLUMNS by one of those rows' values (best
-  // attack map first, etc.) is the thing that's actually useful here.
+  // Sorts the win-rate table's own map columns. Triggered by clicking the
+  // ATK WIN / DEF WIN row label itself rather than a separate control --
+  // sorting the two win-rate ROWS the normal DataTable way is barely useful
+  // with only two rows, but sorting the map COLUMNS by one of those rows'
+  // values (best attack map first, etc.) is the thing that's actually
+  // useful here.
   const [mapSort, setMapSort] = useState({ key: null, dir: 'desc' })
 
   function toggleMapSort(key) {
@@ -112,23 +102,17 @@ export default function AgentOverview() {
 
   const scoped = useMemo(() => aggregate(filtered), [filtered])
 
-  // Both matrix tables used to always render every map in data.mapNames
-  // (the site's full-season map pool), so a filter scope narrow enough to
+  // The matrix table used to always render every map in data.mapNames (the
+  // site's full-season map pool), so a filter scope narrow enough to
   // exclude a map (one event, one week, etc.) still showed that map's
   // column full of "—" placeholders instead of just not showing it.
-  // Restricting to maps actually present in the scoped aggregation --
-  // separately per table, since win-rate data (mapStats) and pick-rate data
-  // (mapAgentCounts) aren't guaranteed to carry exactly the same map set --
-  // makes each table reflect only what's actually in scope.
+  // Restricting to maps actually present in the scoped aggregation makes
+  // the table reflect only what's actually in scope.
   const winRateMapNames = useMemo(() => {
     if (!data) return []
     const inScope = new Set(scoped.mapWinRates.map((r) => r.mapName))
     return data.mapNames.filter((m) => inScope.has(m))
   }, [data, scoped])
-  const pickRateMapNames = useMemo(
-    () => (data ? data.mapNames.filter((m) => scoped.mapTotalRows[m]) : []),
-    [data, scoped]
-  )
 
   const orderedMapNames = useMemo(() => {
     if (!data) return []
@@ -139,10 +123,8 @@ export default function AgentOverview() {
     return mapSort.dir === 'asc' ? sorted.reverse() : sorted
   }, [data, scoped, mapSort, winRateMapNames])
 
-  // Two small rows (ATK WIN, DEF WIN) shaped exactly like an agent row --
-  // an "Overall" value plus one value per map -- so they can render through
-  // the same matrixColumns/DataTable as the agent pick-rate table just
-  // below, as its own tiny table rather than mixed into that one.
+  // Two small rows (ATK WIN, DEF WIN) shaped exactly like a matrix row --
+  // an "Overall" value plus one value per map.
   const winRateRows = useMemo(() => {
     const { mapWinRates, overallAtkWinPct, overallDefWinPct } = scoped
     if (!data) return []
@@ -155,22 +137,6 @@ export default function AgentOverview() {
     }
 
     return [atkRow, defRow]
-  }, [scoped, data])
-
-  // Agent-major: one row per agent, pick rate per map.
-  const matrixRows = useMemo(() => {
-    const { pickRates, mapAgentCounts, mapTotalRows } = scoped
-    if (!data) return []
-
-    return pickRates.map(({ agent, pickRate }) => {
-      const row = { rowType: 'agent', label: agent, overall: pickRate }
-      for (const mapName of data.mapNames) {
-        const slots = (mapTotalRows[mapName] || 0) / 5
-        const count = mapAgentCounts[mapName]?.[agent]
-        row[mapName] = slots && count ? count / slots : null
-      }
-      return row
-    })
   }, [scoped, data])
 
   // Narrow enough that all 12 maps plus the label/Overall columns fit
@@ -186,17 +152,8 @@ export default function AgentOverview() {
   const labelColumn = {
     key: 'label', label: '', align: 'left', noPadding: true,
     format: (v, row) => {
-      if (row.rowType === 'agent') {
-        return (
-          <span className="flex items-center justify-center">
-            <AgentIcon agent={v} size={26} />
-          </span>
-        )
-      }
-      // ATK WIN / DEF WIN rows: the label itself is the sort trigger for
-      // the win-rate table's own map COLUMNS (see mapSort above) -- it does
-      // NOT affect the pick-rate table below, which always keeps maps in
-      // their default order (see pickRateColumns).
+      // The label itself is the sort trigger for the table's own map
+      // COLUMNS (see mapSort above).
       const active = mapSort.key === row.rowType
       return (
         <button
@@ -216,26 +173,19 @@ export default function AgentOverview() {
 
   // Win rates get the green/red diverging scale (a real, fixed 50% neutral
   // point -- "favored" vs. "unfavored" should mean the same shade on every
-  // view), not the pick-rate table's violet-red heatmap below (pick rate
-  // has no such neutral point to diverge around).
+  // view).
   const winRateColumns = [
     labelColumn,
     { key: 'overall', label: 'Overall', align: 'right', colorScale: true, diverging: true, format: (v) => (v == null ? '—' : pct(v, 1)) },
     ...orderedMapNames.map((m) => ({
-      key: m, label: m, align: 'right', colorScale: true, diverging: true, width: mapColumnWidth,
-      format: (v) => (v === null || v === undefined ? '—' : pct(v, 1)),
-    })),
-  ]
-
-  // Always in data.mapNames' own order -- NOT orderedMapNames, which only
-  // the win-rate table's ATK WIN/DEF WIN buttons above control. The two
-  // tables used to share one column order (clicking a button up there
-  // silently reordered this table too); this is what decouples them.
-  const pickRateColumns = [
-    labelColumn,
-    { key: 'overall', label: 'Overall', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : pct(v, 1)) },
-    ...pickRateMapNames.map((m) => ({
-      key: m, label: m, align: 'right', colorScale: true, width: mapColumnWidth,
+      key: m,
+      label: (
+        <span className="flex items-center gap-1.5">
+          <MapIcon map={m} width={28} />
+          {m}
+        </span>
+      ),
+      align: 'right', colorScale: true, diverging: true, width: mapColumnWidth,
       format: (v) => (v === null || v === undefined ? '—' : pct(v, 1)),
     })),
   ]
@@ -261,24 +211,15 @@ export default function AgentOverview() {
           </button>
         </div>
       ) : (
-        <>
-          <div className="flex flex-col gap-2">
-            <h3 className="font-display text-sm font-semibold text-ink">Map win rates (attack vs. defense)</h3>
-            <p className="text-muted text-xs">
-              Round-weighted, not a naive average across buckets. Reflects the filters above. Click
-              ATK WIN or DEF WIN to sort maps by that rate.
-            </p>
-            <DataTable columns={winRateColumns} rows={winRateRows} />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <h3 className="font-display text-sm font-semibold text-ink">Pick rate by map</h3>
-            <p className="text-muted text-xs">
-              Reflects the filters above — sorted by overall pick rate in scope.
-            </p>
-            <DataTable columns={pickRateColumns} rows={matrixRows} defaultSortKey="overall" />
-          </div>
-        </>
+        <div className="flex flex-col gap-2">
+          <h3 className="font-display text-sm font-semibold text-ink">Map win rates (attack vs. defense)</h3>
+          <p className="text-muted text-xs">
+            Round-weighted, not a naive average across buckets. Reflects the filters above. Click
+            ATK WIN or DEF WIN to sort maps by that rate. For per-agent pick rate and performance
+            on each map, see the Compositions &amp; win rates tab.
+          </p>
+          <DataTable columns={winRateColumns} rows={winRateRows} />
+        </div>
       )}
     </div>
   )

@@ -1,4 +1,8 @@
-export default function FilterChips({ options, value, onChange }) {
+// renderLabel is optional (mirrors MultiFilterChips.jsx's own prop of the
+// same name) -- lets a caller swap in an icon+text label for a chip (e.g.
+// AgentCompositions.jsx's Map selector) without every other caller (plain
+// string options) needing to change.
+export default function FilterChips({ options, value, onChange, renderLabel }) {
   return (
     <div className="flex flex-wrap gap-2">
       {options.map((opt) => {
@@ -13,7 +17,7 @@ export default function FilterChips({ options, value, onChange }) {
                 : 'bg-surface text-muted border-hairline hover:text-ink hover:border-muted'
             }`}
           >
-            {opt}
+            {renderLabel ? renderLabel(opt) : opt}
           </button>
         )
       })}

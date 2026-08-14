@@ -7,7 +7,8 @@ import FilterPanel, { FACETS } from './FilterPanel'
 import FilterChips from './FilterChips'
 import DataTable from './DataTable'
 import AgentIcon from './AgentIcon'
-import { pct, num } from '../lib/format'
+import MapIcon from './MapIcon'
+import { pct, num, rating } from '../lib/format'
 
 const MIN_GAMES_OPTIONS = ['3+', '5+', '10+']
 const ALL_MAPS = 'All maps'
@@ -30,8 +31,17 @@ const blurb = 'text-muted text-xs'
 export default function AgentCompositions() {
   const { data: matchData, loading: matchLoading } = useData('match_results')
   const { data: playerData, loading: playerLoading } = useData('match_players')
+  // Raw per-(match, map, team) ATK/DEF round counts + each player's own
+  // per-map performance stats -- see its own comment in export_from_db.py.
+  // Optional in buildTeamMapRows (degrades to null/missing fields if not
+  // yet loaded), so this doesn't block the two heavier fetches above from
+  // rendering first.
+  const { data: detailData } = useData('team_map_detail')
 
-  const byMatch = useMemo(() => buildTeamMapRows(matchData, playerData), [matchData, playerData])
+  const byMatch = useMemo(
+    () => buildTeamMapRows(matchData, playerData, detailData),
+    [matchData, playerData, detailData]
+  )
 
   const records = useMemo(() => expandMatchRows(matchData), [matchData])
   const { selections, setFacet, clearAll, options, activeCount,
@@ -113,6 +123,18 @@ export default function AgentCompositions() {
       key: 'rd', label: 'RD', align: 'right', colorScale: true,
       format: (v) => (v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(1)}`),
     },
+    { key: 'atkWinPct', label: 'ATK Win%', align: 'right', colorScale: true, diverging: true, format: (v) => (v == null ? '—' : pct(v, 1)) },
+    { key: 'defWinPct', label: 'DEF Win%', align: 'right', colorScale: true, diverging: true, format: (v) => (v == null ? '—' : pct(v, 1)) },
+    { key: 'rating', label: 'R', align: 'right', colorScale: true, format: (v) => rating(v) },
+    { key: 'acs', label: 'ACS', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : num(v, 0)) },
+    { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'kast', label: 'KAST', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : pct(v)) },
+    { key: 'adr', label: 'ADR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : num(v, 1)) },
+    { key: 'kpr', label: 'KPR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'apr', label: 'APR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'fkpr', label: 'FKPR', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'fdpr', label: 'FDPR', align: 'right', colorScale: true, colorInvert: true, format: (v) => (v == null ? '—' : v.toFixed(2)) },
+    { key: 'hsPct', label: 'HS%', align: 'right', colorScale: true, format: (v) => (v == null ? '—' : pct(v)) },
   ]
 
   const compColumns = [
@@ -124,7 +146,15 @@ export default function AgentCompositions() {
         </span>
       ),
     },
-    ...(effectiveMap === ALL_MAPS ? [{ key: 'map', label: 'Map', align: 'left' }] : []),
+    ...(effectiveMap === ALL_MAPS ? [{
+      key: 'map', label: 'Map', align: 'left', noPadding: true,
+      format: (v) => (
+        <span className="flex items-center gap-1.5 px-3 py-1">
+          <MapIcon map={v} width={28} />
+          {v}
+        </span>
+      ),
+    }] : []),
     { key: 'games', label: 'Games', align: 'right', format: (v) => num(v) },
     { key: 'share', label: 'Share', align: 'right', colorScale: true, format: (v) => pct(v, 1) },
     { key: 'winPct', label: 'Win%', align: 'right', colorScale: true, diverging: true, format: (v) => (v == null ? '—' : pct(v, 1)) },
@@ -161,7 +191,17 @@ export default function AgentCompositions() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-1.5">
           <span className="text-[11px] uppercase tracking-wide font-medium text-muted">Map</span>
-          <FilterChips options={[ALL_MAPS, ...mapsInScope]} value={effectiveMap} onChange={setSelectedMap} />
+          <FilterChips
+            options={[ALL_MAPS, ...mapsInScope]}
+            value={effectiveMap}
+            onChange={setSelectedMap}
+            renderLabel={(opt) => opt === ALL_MAPS ? opt : (
+              <span className="flex items-center gap-1.5">
+                <MapIcon map={opt} width={24} />
+                {opt}
+              </span>
+            )}
+          />
         </div>
         <div className="flex flex-col gap-1.5">
           <span className="text-[11px] uppercase tracking-wide font-medium text-muted">
@@ -183,9 +223,14 @@ export default function AgentCompositions() {
           <div className="flex flex-col gap-2">
             <h3 className={heading}>Agent impact</h3>
             <p className={blurb}>
-              Win% counts only maps where the opponent did not also pick this agent — a mirrored
-              pick contributes one win and one loss by construction and pulls every contested
-              agent toward 50%. Contested% is how often the other team ran it too.
+              Win%, ATK Win% and DEF Win% count only maps where the opponent did not also pick
+              this agent — a mirrored pick contributes one win and one loss by construction and
+              pulls every contested agent's win rate toward 50%. The performance columns (Rating
+              through HS%) use every pick instead, contested or not — a mirror doesn't bias an
+              individual player's own numbers, so restricting those to the uncontested subset
+              would only throw away real signal. Contested% is how often the other team ran this
+              agent too. Select a specific map above to see per-map numbers instead of the
+              all-maps average.
             </p>
             <DataTable columns={impactColumns} rows={impact.agents} defaultSortKey="picks" />
             {impact.omitted.length > 0 && (

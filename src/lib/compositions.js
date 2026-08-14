@@ -41,12 +41,45 @@ import { groupMatchPlayers } from './entityBuckets'
  * including the whole match if EITHER team fails, to keep the two team-map
  * rows per map symmetric. Measured cost: 9,595 -> 9,504 team-maps kept
  * (99.0%) across the full dataset.
+ *
+ * `teamMapDetailData` (public/data/team_map_detail.json, optional) is a raw,
+ * NOT bucket-aggregated per-(match, map, team) row carrying attack/defense
+ * round counts AND each of that team's 5 players' own per-map headline
+ * stats (rating/ACS/ADR/KAST/HS%/kills/deaths/assists/first-kills/first-
+ * deaths) -- see that file's own comment in export_from_db.py for why it's
+ * shaped this way. Joined in here (keyed by matchId + map index + team, the
+ * same index-alignment convention `ag` already relies on) so every row this
+ * function already produces carries atkWon/atkPlayed/defWon/defPlayed and a
+ * per-agent `playerStats` lookup for free. This is the general mechanism:
+ * adding a NEW raw per-match-map file and joining it in here (rather than
+ * pre-aggregating it into a bucket file server-side) is how a future stat
+ * should be added without an export_from_db.py edit + DB re-run, as long as
+ * it's a function of data at this same (match, map, team[, agent]) grain.
  */
-export function buildTeamMapRows(matchResultsData, matchPlayersData) {
+export function buildTeamMapRows(matchResultsData, matchPlayersData, teamMapDetailData) {
   const out = new Map()
   if (!matchResultsData || !matchPlayersData) return out
 
   const playersByMatch = groupMatchPlayers(matchPlayersData)
+
+  const detailByKey = new Map()
+  for (const d of teamMapDetailData?.rows ?? []) {
+    detailByKey.set(`${d.m}|${d.mi}|${d.t}`, d)
+  }
+
+  // detail.pl is a compact [agent, rounds, kills, deaths, assists,
+  // firstKills, firstDeaths, rating, acs, kast, adr, hsPct] array per
+  // player (see export_from_db.py's own comment on why) -- reshaped here
+  // into an {agent: {...}} lookup once per row, so aggregateAgentImpact()
+  // can pull one agent's numbers out by name without re-scanning the array.
+  function playerStatsByAgent(detail) {
+    if (!detail?.pl) return null
+    const m = {}
+    for (const [agent, rounds, kills, deaths, assists, fk, fd, rating, acs, kast, adr, hsPct] of detail.pl) {
+      m[agent] = { rounds, kills, deaths, assists, fk, fd, rating, acs, kast, adr, hsPct }
+    }
+    return m
+  }
 
   for (const res of matchResultsData.rows) {
     const prs = playersByMatch.get(res.id)
@@ -71,15 +104,28 @@ export function buildTeamMapRows(matchResultsData, matchPlayersData) {
       const c1 = t1.map((p) => p.ag[i]).sort()
       const c2 = t2.map((p) => p.ag[i]).sort()
       const team1Won = mm.s1 > mm.s2
+      // Missing (no team_map_detail row -- e.g. a status mismatch against
+      // match_results, or the file wasn't fetched) degrades to null side
+      // fields/playerStats rather than throwing; aggregateAgentImpact()
+      // already treats missing data as "no data" the same way it treats a
+      // below-floor sample, not a crash.
+      const detail1 = detailByKey.get(`${res.id}|${i}|${res.team1}`)
+      const detail2 = detailByKey.get(`${res.id}|${i}|${res.team2}`)
       rows.push({
         matchId: res.id, map: mm.map, date: res.date,
         team: res.team1, opp: res.team2, comp: c1, oppComp: c2,
         won: team1Won ? 1 : 0, roundsWon: mm.s1, roundsLost: mm.s2,
+        atkWon: detail1?.atkW ?? null, atkPlayed: detail1?.atkP ?? null,
+        defWon: detail1?.defW ?? null, defPlayed: detail1?.defP ?? null,
+        playerStats: playerStatsByAgent(detail1),
       })
       rows.push({
         matchId: res.id, map: mm.map, date: res.date,
         team: res.team2, opp: res.team1, comp: c2, oppComp: c1,
         won: team1Won ? 0 : 1, roundsWon: mm.s2, roundsLost: mm.s1,
+        atkWon: detail2?.atkW ?? null, atkPlayed: detail2?.atkP ?? null,
+        defWon: detail2?.defW ?? null, defPlayed: detail2?.defP ?? null,
+        playerStats: playerStatsByAgent(detail2),
       })
     }
     if (rows.length) out.set(res.id, rows)
@@ -97,6 +143,35 @@ const MIN_AGENT_PICKS = 10
  * 50% regardless of how strong the pick actually is. Measured mirror rates
  * are large enough that this matters a lot: Omen 84% of its picks
  * mirrored, Sova 80%, Viper 76%, Brimstone 82%.
+ *
+ * atkWinPct/defWinPct/rd apply the same uncontested-only correction,
+ * sourced from buildTeamMapRows()'s joined-in atk/def fields, gated behind
+ * the same uncPicks >= MIN_AGENT_PICKS floor as winPct.
+ *
+ * rating/acs/adr/kast/hsPct/kd/kpr/apr/fkpr/fdpr (sourced from
+ * `playerStats`, from team_map_detail.json) are DIFFERENT: computed over
+ * EVERY pick, contested or not, gated on the larger `picks >=
+ * MIN_AGENT_PICKS` instead. A mirrored opponent pick is what creates the
+ * win/loss bias (it contributes exactly one win and one loss by
+ * construction), but it does nothing to bias an individual player's OWN
+ * rating/ACS/etc -- those are that player's own performance regardless of
+ * what the opposing team picked, so restricting them to the uncontested
+ * subset would only throw away real signal (Omen's uncontested picks are
+ * a mere 16% of its total sample -- see the 84% figure above) for no
+ * statistical reason. A row can still show null on one stat even with
+ * real data on another -- some maps have no ATK/DEF header breakdown
+ * published at all (see team_map_detail.json's own export-time note), and
+ * VLR occasionally never publishes Rating 2.0 for a match (the same gap
+ * documented on player_buckets.json) -- both show up here as that
+ * specific stat's own weighted-sum denominator staying at 0, independent
+ * of whether other stats have data.
+ *
+ * Rating/KAST/ADR/HS% are rounds-weighted (wsum-style: value*rounds
+ * summed, divided by rounds summed) exactly like player_buckets.json/
+ * player_agents.json already are; ACS is weighted per-map (maps summed,
+ * not rounds) matching THEIR acsS/acsM convention too; K/D, KPR, APR,
+ * FKPR, FDPR are plain counts divided by total rounds/deaths, the same
+ * per-round-rate convention entityBuckets.js's aggregatePlayerBuckets uses.
  */
 export function aggregateAgentImpact(rows) {
   const acc = {}
@@ -104,6 +179,9 @@ export function aggregateAgentImpact(rows) {
     for (const a of r.comp) {
       const s = acc[a] || (acc[a] = {
         agent: a, picks: 0, contested: 0, uncPicks: 0, uncWins: 0, uncRW: 0, uncRL: 0,
+        uncAtkWon: 0, uncAtkPlayed: 0, uncDefWon: 0, uncDefPlayed: 0,
+        pRnd: 0, pK: 0, pD: 0, pA: 0, pFK: 0, pFD: 0,
+        ratS: 0, ratR: 0, acsS: 0, acsN: 0, kastS: 0, kastR: 0, adrS: 0, adrR: 0, hsS: 0, hsR: 0,
       })
       s.picks++
       if (r.oppComp.includes(a)) {
@@ -113,19 +191,56 @@ export function aggregateAgentImpact(rows) {
         s.uncWins += r.won
         s.uncRW += r.roundsWon
         s.uncRL += r.roundsLost
+        if (r.atkPlayed != null) { s.uncAtkWon += r.atkWon; s.uncAtkPlayed += r.atkPlayed }
+        if (r.defPlayed != null) { s.uncDefWon += r.defWon; s.uncDefPlayed += r.defPlayed }
+      }
+
+      // Unlike the block above, this runs for EVERY pick (contested or
+      // not) -- see this function's own doc comment on why performance
+      // stats don't need the uncontested-only restriction.
+      const ps = r.playerStats?.[a]
+      if (ps) {
+        const rnd = ps.rounds || 0
+        s.pRnd += rnd
+        s.pK += ps.kills || 0
+        s.pD += ps.deaths || 0
+        s.pA += ps.assists || 0
+        s.pFK += ps.fk || 0
+        s.pFD += ps.fd || 0
+        if (ps.rating != null) { s.ratS += ps.rating * rnd; s.ratR += rnd }
+        if (ps.acs != null) { s.acsS += ps.acs; s.acsN += 1 }
+        if (ps.kast != null) { s.kastS += ps.kast * rnd; s.kastR += rnd }
+        if (ps.adr != null) { s.adrS += ps.adr * rnd; s.adrR += rnd }
+        if (ps.hsPct != null) { s.hsS += ps.hsPct * rnd; s.hsR += rnd }
       }
     }
   }
 
-  const all = Object.values(acc).map((s) => ({
-    agent: s.agent,
-    picks: s.picks,
-    pickRate: rows.length ? s.picks / rows.length : 0,
-    contestedRate: s.picks ? s.contested / s.picks : 0,
-    uncontested: s.uncPicks,
-    winPct: s.uncPicks >= MIN_AGENT_PICKS ? s.uncWins / s.uncPicks : null,
-    rd: s.uncPicks >= MIN_AGENT_PICKS ? (s.uncRW - s.uncRL) / s.uncPicks : null,
-  }))
+  const all = Object.values(acc).map((s) => {
+    const qualifies = s.uncPicks >= MIN_AGENT_PICKS
+    const perfQualifies = s.picks >= MIN_AGENT_PICKS
+    return {
+      agent: s.agent,
+      picks: s.picks,
+      pickRate: rows.length ? s.picks / rows.length : 0,
+      contestedRate: s.picks ? s.contested / s.picks : 0,
+      uncontested: s.uncPicks,
+      winPct: qualifies ? s.uncWins / s.uncPicks : null,
+      atkWinPct: qualifies && s.uncAtkPlayed ? s.uncAtkWon / s.uncAtkPlayed : null,
+      defWinPct: qualifies && s.uncDefPlayed ? s.uncDefWon / s.uncDefPlayed : null,
+      rd: qualifies ? (s.uncRW - s.uncRL) / s.uncPicks : null,
+      rating: perfQualifies && s.ratR ? s.ratS / s.ratR : null,
+      acs: perfQualifies && s.acsN ? s.acsS / s.acsN : null,
+      kast: perfQualifies && s.kastR ? s.kastS / s.kastR : null,
+      adr: perfQualifies && s.adrR ? s.adrS / s.adrR : null,
+      hsPct: perfQualifies && s.hsR ? s.hsS / s.hsR : null,
+      kd: perfQualifies && s.pD ? s.pK / s.pD : null,
+      kpr: perfQualifies && s.pRnd ? s.pK / s.pRnd : null,
+      apr: perfQualifies && s.pRnd ? s.pA / s.pRnd : null,
+      fkpr: perfQualifies && s.pRnd ? s.pFK / s.pRnd : null,
+      fdpr: perfQualifies && s.pRnd ? s.pFD / s.pRnd : null,
+    }
+  })
 
   const agents = all.filter((s) => s.picks >= MIN_AGENT_PICKS).sort((a, b) => b.picks - a.picks)
   const omitted = all

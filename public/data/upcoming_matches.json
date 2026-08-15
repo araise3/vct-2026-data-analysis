@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-15T15:51:32Z"
+    "fetchedAt": "2026-08-15T18:59:59Z"
   },
   "matches": [
     {
@@ -327,22 +327,22 @@
       "bestOf": 3,
       "team1": "Fire Flux Esports",
       "team2": "Enterprise Esports",
-      "score1": null,
-      "score2": null,
+      "score1": 0,
+      "score2": 2,
       "started": true
     },
     {
-      "key": "1786816800|fut-esports|eternal-fire",
+      "key": "1786815000|fut-esports|eternal-fire",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
-      "timestamp": 1786816800,
+      "timestamp": 1786815000,
       "bestOf": 3,
       "team1": "FUT Esports",
       "team2": "Eternal Fire",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1786827600|mibr|kr-esports",
@@ -436,13 +436,13 @@
       "started": false
     },
     {
-      "key": "1786896000|tbd|joblife",
+      "key": "1786896000|fire-flux-esports|joblife",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1786896000,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Fire Flux Esports",
       "team2": "Joblife",
       "score1": null,
       "score2": null,
@@ -741,6 +741,32 @@
       "phase": null,
       "timestamp": 1787346000,
       "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787356800|tbd|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1787356800,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787385600|tbd|tbd",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1787385600,
+      "bestOf": 5,
       "team1": null,
       "team2": null,
       "score1": null,

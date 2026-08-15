@@ -372,12 +372,71 @@ def main():
     # on the site matched exactly against this source. Takes priority
     # over the sparser per-match table above.
     try:
-        with open(os.path.join(os.path.dirname(__file__), "player_countries.json")) as f:
+        # encoding="utf-8" is load-bearing, not decorative: this file is
+        # UTF-8 on disk, but a bare open() falls back to the platform's
+        # locale-preferred encoding when unspecified -- cp1252 on this
+        # project's Windows dev machines. cp1252 happily decodes UTF-8's
+        # 2-byte sequences for accented characters as two separate
+        # mojibake codepoints instead of raising an error -- e.g. the
+        # UTF-8 bytes for U+00FC ("u" with diaeresis) are U+00C3 U+00BC
+        # under cp1252, silently splicing one accented letter into two
+        # wrong ones -- so this was silent corruption, not a crash.
+        # Confirmed as the root cause of countryName fragmenting the same
+        # country across two spellings in player_buckets.json's meta
+        # (Turkiye's correct single-codepoint spelling vs. an 8-codepoint
+        # mojibake variant of the same string) -- reproduced live on a
+        # local Windows run (cp1252 default) and absent on CI's Linux
+        # runners (utf-8 default), which is why it never showed up in
+        # committed data.
+        with open(
+            os.path.join(os.path.dirname(__file__), "player_countries.json"),
+            encoding="utf-8",
+        ) as f:
             stats_page_nationality = json.load(f)
         for player, info in stats_page_nationality.items():
             nationality_map[player] = info
     except FileNotFoundError:
-        pass
+        stats_page_nationality = {}
+
+    # The two sources above spell the same country differently: VLR's
+    # per-match box score flag `title` attribute (the sparse
+    # player_nationality table) uses colloquial names ("South Korea",
+    # "Russia", "Taiwan", "Czech Republic", "Vietnam"), while
+    # player_countries.json uses formal ISO 3166 names ("Korea, Republic
+    # of", "Russian Federation", "Taiwan, Province of China", "Czechia",
+    # "Viet Nam") -- confirmed live: kr/cz/tw/ru/vn each carried two
+    # distinct countryName strings across different players' meta entries
+    # in the shipped player_buckets.json, silently fragmenting that
+    # country's players across two groups in any country-grouping feature
+    # (src/lib/countryKD.js). Not a UTF-8 decoding bug -- both spellings
+    # are valid, correctly-encoded text, just two different vocabularies
+    # merged without reconciling them.
+    #
+    # Canonicalize by country_code so every player sharing a code gets the
+    # exact same countryName, regardless of which source populated their
+    # row. player_countries.json's own spelling wins whenever a code
+    # appears there at all (it's already given priority above as the
+    # more complete/authoritative source); a code that ONLY ever appears
+    # in the sparser per-match table keeps that table's own spelling,
+    # picking the alphabetically-lowest of any variants for a
+    # deterministic result across runs.
+    canonical_name_by_code = {}
+    for info in stats_page_nationality.values():
+        code, name = info.get('country_code'), info.get('country_name')
+        if code and name:
+            canonical_name_by_code[code] = name
+    fallback_names_by_code = {}
+    for info in nationality_map.values():
+        code, name = info.get('country_code'), info.get('country_name')
+        if code and name and code not in canonical_name_by_code:
+            fallback_names_by_code.setdefault(code, set()).add(name)
+    for code, names in fallback_names_by_code.items():
+        canonical_name_by_code[code] = min(names)
+    for info in nationality_map.values():
+        code = info.get('country_code')
+        canon = canonical_name_by_code.get(code)
+        if canon:
+            info['country_name'] = canon
 
     # Raw scrape has kast/hs_pct as "73%" strings -- convert to fractions
     for col in ['kast', 'hs_pct']:

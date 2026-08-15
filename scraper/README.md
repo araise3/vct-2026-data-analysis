@@ -519,6 +519,8 @@ above -- no separate flag needed.
 | `map_player_stats` | 1 row/player/map | Rating 2.0, ACS, K/D/A, KAST, ADR, HS%, FK/FD, multi-kills (2K-5K), clutches (1v1-1v5), ECON/plants/defuses |
 | `map_team_economy` | 1 row/team/map | pistol wins, eco/semi-eco/semi-buy/full-buy round counts & wins |
 | `map_round_economy` | 1 row/round/map | bank, loadout value, buy type, round winner — for both teams |
+| `match_vetoes` | 1 row/veto clause/match | acting team (null on the decider), ban/pick/decider, map — parsed from the Overview tab's `.match-header-note`; Bo1s have none |
+| `map_player_duels` | 1 row/cross-team player pair/map | kills each way ("All Kills" duel matrix, Performance tab) — 25 rows on a 5v5 map |
 
 ## Fixed: `event_agent_stats` was scraping the wrong tables entirely
 

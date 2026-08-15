@@ -110,7 +110,19 @@ TABLE_COLUMNS = {
                           "team2_buy_type", "team2_round_win"],
     "map_round_results": ["match_id", "map_index", "round_num", "winner", "winner_side", "win_condition"],
     "events": ["event_id", "slug", "name", "region", "stage", "dates", "prize", "location"],
+    "match_vetoes": ["match_id", "order_num", "team", "action", "map_name"],
+    "map_player_duels": ["match_id", "map_index", "player1", "player2", "player1_kills", "player2_kills"],
 }
+
+# Tables that only vlr_vct_scraper.py (the current-season VCT scraper) knows
+# about so far -- the EWC scraper and every one-time 2023/2024/2025 backfill
+# scraper are separate copies of the same schema that predate match_vetoes/
+# map_player_duels, so their DBs genuinely lack these tables rather than just
+# having them empty. load_db() below checks sqlite_master before selecting
+# from one of these, falling back to an empty (but correctly-shaped) frame
+# the same way a missing DB file already does -- otherwise every non-VCT-2026
+# DB would throw "no such table" and take the whole export down with it.
+TABLES_NOT_IN_EVERY_DB = {"match_vetoes", "map_player_duels"}
 
 
 def load_db(path, competition, year):
@@ -123,10 +135,15 @@ def load_db(path, competition, year):
         return {name: pd.DataFrame(columns=cols + ["competition", "year"])
                 for name, cols in TABLE_COLUMNS.items()}
     conn = sqlite3.connect(path)
+    existing_tables = {r[0] for r in conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'")}
     tables = {}
     for name in ["matches", "maps", "map_player_stats", "map_team_economy", "events",
-                 "map_round_economy", "map_round_results"]:
-        df = pd.read_sql_query(f"SELECT * FROM {name}", conn)
+                 "map_round_economy", "map_round_results", "match_vetoes", "map_player_duels"]:
+        if name in TABLES_NOT_IN_EVERY_DB and name not in existing_tables:
+            df = pd.DataFrame(columns=TABLE_COLUMNS[name])
+        else:
+            df = pd.read_sql_query(f"SELECT * FROM {name}", conn)
         df["competition"] = competition
         # Which season this row belongs to -- tagged at load time from which
         # DB it came from (VLR's own event names already carry the year too,
@@ -621,6 +638,13 @@ def main():
     all_mte = pd.concat([vct["map_team_economy"], ewc["map_team_economy"]], ignore_index=True)
     all_mre = pd.concat([vct["map_round_economy"], ewc["map_round_economy"]], ignore_index=True)
     all_mrr = pd.concat([vct["map_round_results"], ewc["map_round_results"]], ignore_index=True)
+    # Both empty for every DB except the current-season VCT one for now --
+    # see TABLES_NOT_IN_EVERY_DB above -- but concatenated the same way as
+    # every other table here so match_results.json's veto array and
+    # match_duels.json need no special-casing once EWC/historical DBs pick
+    # up the same scraper support.
+    all_vetoes = pd.concat([vct["match_vetoes"], ewc["match_vetoes"]], ignore_index=True)
+    all_duels = pd.concat([vct["map_player_duels"], ewc["map_player_duels"]], ignore_index=True)
     for col in ['kast', 'hs_pct']:
         all_mps[col] = pct_to_float(all_mps[col])
 
@@ -628,6 +652,10 @@ def main():
     all_mte['canonical_team'] = all_mte['team'].map(name_to_canon).fillna(all_mte['team'])
     all_matches['c1'] = all_matches['team1'].map(name_to_canon).fillna(all_matches['team1'])
     all_matches['c2'] = all_matches['team2'].map(name_to_canon).fillna(all_matches['team2'])
+    # `team` is genuinely null on a decider ("<map> remains") row -- .map()
+    # leaves NaN as NaN, and fillna(all_vetoes['team']) is a no-op on those
+    # (NaN filling NaN), so a decider correctly stays teamless through here.
+    all_vetoes['canonical_team'] = all_vetoes['team'].map(name_to_canon).fillna(all_vetoes['team'])
 
     events_lookup = {}
     for r in all_events.to_dict(orient='records'):
@@ -1527,6 +1555,22 @@ def main():
             "ot": int(row.is_ot),
         })
 
+    # Map veto sequence per match ("t": acting team, null on the decider;
+    # "a": ban/pick/decider; "m": map name), in the order VLR's own note
+    # lists them -- array position doubles as the pick order, so no
+    # separate order field is stored. Only present for matches scraped
+    # since match_vetoes existed (see TABLES_NOT_IN_EVERY_DB above) and for
+    # Bo3/Bo5s in the first place (a Bo1 has nothing to veto); every other
+    # match simply gets an empty list, same as a match with no maps at all
+    # in maps_by_match above.
+    veto_by_match = {}
+    for row in all_vetoes.sort_values(['match_id', 'order_num']).itertuples():
+        veto_by_match.setdefault(int(row.match_id), []).append({
+            "t": row.canonical_team if pd.notna(row.canonical_team) else None,
+            "a": row.action,
+            "m": row.map_name,
+        })
+
     # Top individual scorer per series (total kills across every map of
     # that match for one player) -- powers the kill-record cards on the
     # Records page. all_mps is already side=='both'-filtered (see the
@@ -1557,6 +1601,11 @@ def main():
         if s1 is None or s2 is None:
             continue
         top = top_scorer_by_match.get(int(row.match_id))
+        # Sparse, like player_buckets.json's own `u` sub-object: most matches
+        # (every one predating match_vetoes, plus every real Bo1) have no
+        # veto data at all, so the key is left off entirely rather than
+        # shipping an empty array on every one of thousands of match rows.
+        veto = veto_by_match.get(int(row.match_id))
         match_rows.append({
             "id": int(row.match_id),
             "team1": row.c1, "team2": row.c2,
@@ -1564,17 +1613,68 @@ def main():
             "e": int(row.event_id) if pd.notna(row.event_id) else None,
             "w": row.stage if pd.notna(row.stage) else '',
             "date": (row.match_date[:10] if isinstance(row.match_date, str) else None),
+            # Full "YYYY-MM-DD HH:MM:SS" precision (straight off VLR's own
+            # data-utc-ts, unlike `date` above which truncates it) -- added
+            # specifically so same-day matches can be ordered by actual
+            # kickoff time. match_id can NOT stand in for this the way it
+            # does within one event's own sequential match list elsewhere in
+            # this file: VLR assigns ids at match-page-creation time, and
+            # concurrent events (e.g. Pacific Stage 2 and China Stage 2
+            # running the same week) create their pages in unrelated
+            # batches, so a later-id match from one event can easily have
+            # started BEFORE an earlier-id match from another -- confirmed
+            # live on the 2026-08-14 slate: China Stage 2's playoff matches
+            # (ids ~724638-724639) sort as "older" than Pacific Stage 2's
+            # Play-Ins matches (ids ~730537-730538) despite no guarantee
+            # either way about which actually tipped off first. This is
+            # exactly the bug a user reported on the home page's Recent
+            # Results rail (`recentResults()` in schedule.js), which used
+            # to fall back to id as its same-day tiebreak.
+            "ts": (row.match_date if isinstance(row.match_date, str) else None),
             "str1": round(strength[row.c1], 4) if row.c1 in strength else None,
             "str2": round(strength[row.c2], 4) if row.c2 in strength else None,
             "maps": maps_by_match.get(int(row.match_id), []),
             "topKiller": top[0] if top else None,
             "topKillerTeam": top[1] if top else None,
             "topKills": top[2] if top else None,
+            **({"veto": veto} if veto else {}),
         })
 
     with open(f"{OUT}/match_results.json", "w") as f:
         json.dump({"events": events_lookup, "rows": match_rows}, f, separators=(',', ':'))
     print(f"match_results.json: {len(match_rows)} matches")
+
+
+    # --- per-map player-vs-player kill duels (match_duels.json) ---
+    # One row per (match, map, cross-team player pair) -- the "All Kills"
+    # matrix from the Performance tab (see map_player_duels's own comment in
+    # the scraper for why only that matrix, not the sibling first-kill/
+    # op-kill ones, is captured). Its own file rather than folded into
+    # match_results.json the way the much smaller veto array was: at up to
+    # 25 rows per map this is comparable in size to match_players.json (the
+    # site's second-largest file), so pages that don't need it -- everything
+    # except the Compare Players head-to-head -- shouldn't pay to fetch it.
+    #
+    # Restricted to match_rows' own id set for the same reason
+    # match_players.json is (below): never contain a match match_results.json
+    # doesn't.
+    match_ids = {r["id"] for r in match_rows}
+    duel_rows = []
+    for row in all_duels.itertuples():
+        match_id = int(row.match_id)
+        if match_id not in match_ids:
+            continue
+        duel_rows.append({
+            "m": match_id,
+            "mi": int(row.map_index),
+            "p1": row.player1, "p2": row.player2,
+            "k1": int(row.player1_kills) if pd.notna(row.player1_kills) else None,
+            "k2": int(row.player2_kills) if pd.notna(row.player2_kills) else None,
+        })
+
+    with open(f"{OUT}/match_duels.json", "w") as f:
+        json.dump({"rows": duel_rows}, f, separators=(',', ':'))
+    print(f"match_duels.json: {len(duel_rows)} duel rows")
 
 
     # --- per-match player scoreboards (match_players.json) ---

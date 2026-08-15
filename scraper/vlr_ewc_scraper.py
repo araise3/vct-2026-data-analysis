@@ -454,6 +454,28 @@ def init_db(path: str = DB_PATH) -> sqlite3.Connection:
             defuses INTEGER,
             PRIMARY KEY (match_id, map_index, player, side)
         );
+
+        -- See vlr_vct_scraper.py's own copy of these two tables for the full
+        -- rationale -- ported here unchanged so EWC matches get the same map
+        -- veto / player-duel data as VCT ones.
+        CREATE TABLE IF NOT EXISTS match_vetoes (
+            match_id INTEGER,
+            order_num INTEGER,
+            team TEXT,
+            action TEXT,
+            map_name TEXT,
+            PRIMARY KEY (match_id, order_num)
+        );
+
+        CREATE TABLE IF NOT EXISTS map_player_duels (
+            match_id INTEGER,
+            map_index INTEGER,
+            player1 TEXT,
+            player2 TEXT,
+            player1_kills INTEGER,
+            player2_kills INTEGER,
+            PRIMARY KEY (match_id, map_index, player1, player2)
+        );
         """
     )
     try:
@@ -493,6 +515,26 @@ def to_int(text: str) -> Optional[int]:
         return int(text)
     except ValueError:
         return None
+
+
+# See vlr_vct_scraper.py's own copy for the full rationale -- ported
+# unchanged, same VLR page format for EWC matches as VCT ones.
+VETO_CLAUSE_RE = re.compile(r"^(?P<tag>\S+)\s+(?P<action>ban|pick)\s+(?P<map>.+)$", re.IGNORECASE)
+VETO_REMAINS_RE = re.compile(r"^(?P<map>.+?)\s+remains$", re.IGNORECASE)
+
+
+def parse_veto_note(note_text: str):
+    clauses = [c.strip() for c in (note_text or "").split(";") if c.strip()]
+    out = []
+    for clause in clauses:
+        m = VETO_REMAINS_RE.match(clause)
+        if m:
+            out.append((None, "decider", m.group("map").strip()))
+            continue
+        m = VETO_CLAUSE_RE.match(clause)
+        if m:
+            out.append((m.group("tag"), m.group("action").lower(), m.group("map").strip()))
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -736,6 +778,40 @@ def scrape_match_performance(session, conn, match_id: int, match_url: str,
                  match_id, map_index, player),
             )
             rows_updated += cur.rowcount if cur.rowcount > 0 else 0
+
+        # Player duel matrix -- see vlr_vct_scraper.py's own copy of this
+        # block for the full rationale, ported unchanged.
+        duel_table = game.select_one("table.wf-table-inset.mod-matrix.mod-normal")
+        if duel_table is not None:
+            duel_rows = duel_table.find_all("tr")
+
+            def matrix_player(td):
+                name_div = td.select_one(".team > div")
+                return clean("".join(name_div.find_all(string=True, recursive=False))) \
+                    if name_div else None
+
+            if duel_rows:
+                col_players = [matrix_player(td) for td in duel_rows[0].find_all("td")[1:]]
+                for row in duel_rows[1:]:
+                    tds = row.find_all("td")
+                    if not tds:
+                        continue
+                    row_player = matrix_player(tds[0])
+                    if not row_player:
+                        continue
+                    for col_idx, td in enumerate(tds[1:]):
+                        if col_idx >= len(col_players) or not col_players[col_idx]:
+                            continue
+                        sqs = td.select(".stats-sq")
+                        if len(sqs) < 2:
+                            continue
+                        cur.execute(
+                            """INSERT OR REPLACE INTO map_player_duels
+                            (match_id, map_index, player1, player2, player1_kills, player2_kills)
+                            VALUES (?,?,?,?,?,?)""",
+                            (match_id, map_index, row_player, col_players[col_idx],
+                             to_int(clean(sqs[0].get_text())), to_int(clean(sqs[1].get_text()))),
+                        )
     conn.commit()
     return rows_updated
 
@@ -1000,6 +1076,8 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
     maps_team2_wins = 0
     total_player_rows = 0
     game_id_to_map_index = {}
+    team_tag_map = {}  # short VLR org tag -> full team name, for the veto
+                        # note below -- see vlr_vct_scraper.py's own copy
 
     for game in game_divs:
         game_id = game.get("data-game-id", "")
@@ -1113,6 +1191,14 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
                 if agent_img:
                     agent = agent_img.get("title") or agent_img.get("alt")
 
+                # Short org tag, for the veto note below -- see
+                # vlr_vct_scraper.py's own copy for the rationale.
+                tag_el = row.select_one(".ovw-player-tag")
+                if tag_el:
+                    tag = clean(tag_el.get_text())
+                    if tag:
+                        team_tag_map[tag] = team_name
+
                 flag_el = row.select_one(".flag")
                 if flag_el:
                     country_name = flag_el.get("title")
@@ -1172,6 +1258,18 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
                     )
                     if side_label == "both":
                         total_player_rows += 1
+
+    # Map veto sequence -- see vlr_vct_scraper.py's own copy for the full
+    # rationale, ported unchanged.
+    note_el = soup.select_one(".match-header-note")
+    veto_clauses = parse_veto_note(clean(note_el.get_text())) if note_el else []
+    for order_num, (tag, action, veto_map_name) in enumerate(veto_clauses, start=1):
+        veto_team = (team_tag_map.get(tag, tag) if tag else None)
+        cur.execute(
+            """INSERT OR REPLACE INTO match_vetoes
+            (match_id, order_num, team, action, map_name) VALUES (?,?,?,?,?)""",
+            (match_id, order_num, veto_team, action, veto_map_name),
+        )
 
     if map_index > 0:
         score1, score2 = maps_team1_wins, maps_team2_wins

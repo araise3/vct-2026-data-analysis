@@ -475,6 +475,38 @@ def init_db(path: str = DB_PATH) -> sqlite3.Connection:
             defuses INTEGER,
             PRIMARY KEY (match_id, map_index, player, side)
         );
+
+        -- The map veto sequence ("NAVI ban Corrode; KC ban Pearl; NAVI pick
+        -- Split; ...; Bind remains"), scraped from the Overview tab's
+        -- ".match-header-note" and split into one ordered row per clause.
+        -- `team` is NULL for the trailing "<map> remains" clause (action
+        -- 'decider') -- that map wasn't picked by either side. Bo1s render
+        -- no note at all (nothing to veto), so a match with zero rows here
+        -- just has no veto data, not a scrape failure.
+        CREATE TABLE IF NOT EXISTS match_vetoes (
+            match_id INTEGER,
+            order_num INTEGER,
+            team TEXT,
+            action TEXT,
+            map_name TEXT,
+            PRIMARY KEY (match_id, order_num)
+        );
+
+        -- Per-map kill duels between every cross-team player pair, from the
+        -- Performance tab's "All Kills" matrix (the mod-matrix.mod-normal
+        -- table -- there are sibling mod-fkfd/mod-op matrices for first-kill
+        -- and op-kill duels specifically, not captured here). One row per
+        -- unordered pair per map; player1/player2 are just the matrix's row
+        -- player / column player, not a home/away distinction.
+        CREATE TABLE IF NOT EXISTS map_player_duels (
+            match_id INTEGER,
+            map_index INTEGER,
+            player1 TEXT,
+            player2 TEXT,
+            player1_kills INTEGER,
+            player2_kills INTEGER,
+            PRIMARY KEY (match_id, map_index, player1, player2)
+        );
         """
     )
     # Migrations for DBs created before these columns existed
@@ -520,6 +552,34 @@ def to_int(text: str) -> Optional[int]:
         return int(text)
     except ValueError:
         return None
+
+
+# Splits a match's veto note (".match-header-note", e.g. "NAVI ban Corrode;
+# KC ban Pearl; NAVI pick Split; KC pick Haven; NAVI ban Abyss; KC ban
+# Breeze; Bind remains") into ordered clauses. Each ban/pick clause comes
+# back as (tag, action, map) with `tag` the short org tag VLR uses here
+# ("NAVI"), NOT the full team name -- that's resolved separately against
+# each match's own team_tag_map (built from .ovw-player-tag while parsing
+# the box score) since the note has no other way to say which side acted.
+# The trailing "<map> remains" decider clause (present on Bo3/Bo5, absent on
+# Bo1 -- nothing to veto) comes back as (None, "decider", map); a Bo1's
+# empty note yields an empty list, not an error.
+VETO_CLAUSE_RE = re.compile(r"^(?P<tag>\S+)\s+(?P<action>ban|pick)\s+(?P<map>.+)$", re.IGNORECASE)
+VETO_REMAINS_RE = re.compile(r"^(?P<map>.+?)\s+remains$", re.IGNORECASE)
+
+
+def parse_veto_note(note_text: str):
+    clauses = [c.strip() for c in (note_text or "").split(";") if c.strip()]
+    out = []
+    for clause in clauses:
+        m = VETO_REMAINS_RE.match(clause)
+        if m:
+            out.append((None, "decider", m.group("map").strip()))
+            continue
+        m = VETO_CLAUSE_RE.match(clause)
+        if m:
+            out.append((m.group("tag"), m.group("action").lower(), m.group("map").strip()))
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -801,6 +861,48 @@ def scrape_match_performance(session, conn, match_id: int, match_url: str,
                  match_id, map_index, player),
             )
             rows_updated += cur.rowcount if cur.rowcount > 0 else 0
+
+        # Player duel matrix ("All Kills" -- kills each cross-team player
+        # got on each opponent), from the same per-map container as the
+        # adv-stats table just above. Confirmed against a real dumped page:
+        # the header row's cells (after an empty corner cell) name the
+        # column players; each body row starts with the row player, then
+        # one cell per column holding a flex row of .stats-sq divs -- [0]
+        # the row player's kills on that column player, [1] (mod-dark) the
+        # reverse, [2] a +/-diff square this doesn't need. Sibling
+        # mod-fkfd/mod-op matrices hold the same shape for first-kill/op-kill
+        # duels specifically -- not captured here, only the all-kills one.
+        duel_table = game.select_one("table.wf-table-inset.mod-matrix.mod-normal")
+        if duel_table is not None:
+            duel_rows = duel_table.find_all("tr")
+
+            def matrix_player(td):
+                name_div = td.select_one(".team > div")
+                return clean("".join(name_div.find_all(string=True, recursive=False))) \
+                    if name_div else None
+
+            if duel_rows:
+                col_players = [matrix_player(td) for td in duel_rows[0].find_all("td")[1:]]
+                for row in duel_rows[1:]:
+                    tds = row.find_all("td")
+                    if not tds:
+                        continue
+                    row_player = matrix_player(tds[0])
+                    if not row_player:
+                        continue
+                    for col_idx, td in enumerate(tds[1:]):
+                        if col_idx >= len(col_players) or not col_players[col_idx]:
+                            continue
+                        sqs = td.select(".stats-sq")
+                        if len(sqs) < 2:
+                            continue
+                        cur.execute(
+                            """INSERT OR REPLACE INTO map_player_duels
+                            (match_id, map_index, player1, player2, player1_kills, player2_kills)
+                            VALUES (?,?,?,?,?,?)""",
+                            (match_id, map_index, row_player, col_players[col_idx],
+                             to_int(clean(sqs[0].get_text())), to_int(clean(sqs[1].get_text()))),
+                        )
     conn.commit()
     return rows_updated
 
@@ -1123,6 +1225,9 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
     game_id_to_map_index = {}  # correlates this Overview-tab fetch with the
                                 # separate Performance-tab fetch below (both
                                 # pages use the same data-game-id per map)
+    team_tag_map = {}  # short VLR org tag ("NAVI") -> full team name, built
+                        # from .ovw-player-tag below, for resolving the veto
+                        # note's team-tag clauses after the per-map loop
 
     for game in game_divs:
         game_id = game.get("data-game-id", "")
@@ -1269,6 +1374,16 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
                 if agent_img:
                     agent = agent_img.get("title") or agent_img.get("alt")
 
+                # Short org tag ("NAVI"), next to the player's name -- the
+                # only place on this page that names a team any way other
+                # than its full name, which is what the veto note (parsed
+                # after this per-map loop) identifies its acting team by.
+                tag_el = row.select_one(".ovw-player-tag")
+                if tag_el:
+                    tag = clean(tag_el.get_text())
+                    if tag:
+                        team_tag_map[tag] = team_name
+
                 # Nationality: a flag icon sits right next to the player's
                 # name in the same box score row -- e.g.
                 # <i class="flag mod-th" title="Thailand"></i>. The
@@ -1346,6 +1461,24 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
                     )
                     if side_label == "both":
                         total_player_rows += 1
+
+    # Map veto sequence, from the same Overview-tab fetch -- team_tag_map is
+    # fully populated by now (built above from every player row's own
+    # .ovw-player-tag). Bo1s render no note at all, so note_el is often
+    # None; parse_veto_note's own empty-string handling covers that without
+    # a separate branch here.
+    note_el = soup.select_one(".match-header-note")
+    veto_clauses = parse_veto_note(clean(note_el.get_text())) if note_el else []
+    for order_num, (tag, action, veto_map_name) in enumerate(veto_clauses, start=1):
+        # Fall back to the raw tag itself when it doesn't resolve (e.g. a
+        # match whose box score failed to parse, leaving team_tag_map
+        # empty) -- still better than silently dropping which side acted.
+        veto_team = (team_tag_map.get(tag, tag) if tag else None)
+        cur.execute(
+            """INSERT OR REPLACE INTO match_vetoes
+            (match_id, order_num, team, action, map_name) VALUES (?,?,?,?,?)""",
+            (match_id, order_num, veto_team, action, veto_map_name),
+        )
 
     # Final score: prefer counting actual map wins (robust — depends only on
     # the map score parsing that we know works). Fall back to the header

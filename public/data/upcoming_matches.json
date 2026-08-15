@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-15T07:08:57Z"
+    "fetchedAt": "2026-08-15T13:10:29Z"
   },
   "matches": [
     {
@@ -275,9 +275,9 @@
       "bestOf": 3,
       "team1": "Bilibili Gaming",
       "team2": "Trace Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1786780800|zeta-division|kiwoom-drx",
@@ -288,58 +288,58 @@
       "bestOf": 3,
       "team1": "ZETA DIVISION",
       "team2": "KIWOOM DRX",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 2,
+      "started": true
     },
     {
-      "key": "1786788000|xi-lai-gaming|all-gamers",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786788000,
-      "bestOf": 3,
-      "team1": "Xi Lai Gaming",
-      "team2": "All Gamers",
-      "score1": null,
-      "score2": null,
-      "started": false
-    },
-    {
-      "key": "1786791600|detonation-focusme|sharper-esports",
+      "key": "1786792800|detonation-focusme|sharper-esports",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
-      "timestamp": 1786791600,
+      "timestamp": 1786792800,
       "bestOf": 3,
       "team1": "DetonatioN FocusMe",
       "team2": "Sharper Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 1,
+      "started": true
     },
     {
-      "key": "1786806000|fut-esports|eternal-fire",
+      "key": "1786794000|xi-lai-gaming|all-gamers",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1786794000,
+      "bestOf": 3,
+      "team1": "Xi Lai Gaming",
+      "team2": "All Gamers",
+      "score1": 0,
+      "score2": 1,
+      "started": true
+    },
+    {
+      "key": "1786806000|fire-flux-esports|enterprise-esports",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1786806000,
       "bestOf": 3,
-      "team1": "FUT Esports",
-      "team2": "Eternal Fire",
+      "team1": "Fire Flux Esports",
+      "team2": "Enterprise Esports",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1786816800|fire-flux-esports|enterprise-esports",
+      "key": "1786816800|fut-esports|eternal-fire",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1786816800,
       "bestOf": 3,
-      "team1": "Fire Flux Esports",
-      "team2": "Enterprise Esports",
+      "team1": "FUT Esports",
+      "team2": "Eternal Fire",
       "score1": null,
       "score2": null,
       "started": false
@@ -397,13 +397,13 @@
       "started": false
     },
     {
-      "key": "1786874400|tbd|tbd",
+      "key": "1786874400|trace-esports|tbd",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1786874400,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Trace Esports",
       "team2": null,
       "score1": null,
       "score2": null,
@@ -423,11 +423,11 @@
       "started": false
     },
     {
-      "key": "1786892400|tbd|eintracht-frankfurt",
+      "key": "1786885200|tbd|eintracht-frankfurt",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
-      "timestamp": 1786892400,
+      "timestamp": 1786885200,
       "bestOf": 3,
       "team1": null,
       "team2": "Eintracht Frankfurt",
@@ -436,11 +436,11 @@
       "started": false
     },
     {
-      "key": "1786903200|tbd|joblife",
+      "key": "1786896000|tbd|joblife",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
-      "timestamp": 1786903200,
+      "timestamp": 1786896000,
       "bestOf": 3,
       "team1": null,
       "team2": "Joblife",
@@ -501,13 +501,13 @@
       "started": false
     },
     {
-      "key": "1787133600|tbd|tbd",
+      "key": "1787133600|bilibili-gaming|tbd",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1787133600,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Bilibili Gaming",
       "team2": null,
       "score1": null,
       "score2": null,
@@ -592,13 +592,13 @@
       "started": false
     },
     {
-      "key": "1787223600|tbd|xipto-esports",
+      "key": "1787223600|zeta-division|xipto-esports",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787223600,
       "bestOf": 3,
-      "team1": null,
+      "team1": "ZETA DIVISION",
       "team2": "Xipto Esports",
       "score1": null,
       "score2": null,
@@ -657,13 +657,13 @@
       "started": false
     },
     {
-      "key": "1787299200|tbd|tbd",
+      "key": "1787299200|kiwoom-drx|tbd",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787299200,
       "bestOf": 3,
-      "team1": null,
+      "team1": "KIWOOM DRX",
       "team2": null,
       "score1": null,
       "score2": null,
@@ -690,6 +690,32 @@
       "timestamp": 1787306400,
       "bestOf": 3,
       "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787310000|tbd|tbd",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1787310000,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787324400|bbl-esports|tbd",
+      "event": "Vct 2026 Emea Stage 2",
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
+      "phase": null,
+      "timestamp": 1787324400,
+      "bestOf": 3,
+      "team1": "BBL Esports",
       "team2": null,
       "score1": null,
       "score2": null,

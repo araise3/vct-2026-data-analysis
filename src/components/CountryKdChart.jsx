@@ -1,19 +1,37 @@
 /**
  * Vertical bar strip, same layout mechanics as PerformanceStrip.jsx (flex
  * items-end + height percentage, overflow-x-auto, dashed 1.00 baseline) --
- * but one bar per COUNTRY: this player's own K/D specifically in duels
- * against opponents from that country (sum kills-for over sum kills-
- * against across every such opponent, see aggregateKdByCountry()), not a
- * country's general skill level. Each bar is filled with that country's
- * real flag (background-image, cover/center) rather than a tone color, so
- * e.g. a Türkiye bar is genuinely the Turkish flag art. No single bar is
- * highlighted here (unlike the earlier subject-vs-peer-field version this
- * replaced) -- every bar is already "about the subject", so there's no
- * separate entity left to call out.
+ * one bar per COUNTRY: this player's own K/D specifically in duels against
+ * opponents from that country (sum kills-for over sum kills-against across
+ * every such opponent, see aggregateKdByCountry()), not a country's general
+ * skill level.
+ *
+ * The bar itself is a solid win/even/loss color -- PerformanceStrip's own
+ * `bg-good`/`bg-mid`/`bg-bad` convention, reused verbatim (see toneFor())
+ * -- with that country's flag as a small badge floating at the bar's own
+ * vertical center. An earlier version filled the whole bar with the flag
+ * art directly (background-image, contain/center); that meant a short bar
+ * either cropped the flag (`cover`) or letterboxed around it (`contain`),
+ * since the flag's real aspect ratio rarely matches a narrow, data-driven
+ * box. Decoupling the two fixes both problems at once: the bar is a color,
+ * so it always fills the column trivially regardless of height, and the
+ * flag badge is sized to its own true aspect ratio (never stretched or
+ * cropped) rather than the bar's. No single bar is highlighted here (unlike
+ * the earlier subject-vs-peer-field version this replaced) -- every bar is
+ * already "about the subject", so there's no separate entity left to call
+ * out.
  *
  * `bars` is aggregateKdByCountry()'s return shape:
- * `{ code, name, kFor, kAgainst, kd, opponents }[]`, already sorted best
- * K/D first.
+ * `{ code, name, kFor, kAgainst, kd, opponents, sortScore }[]`. `kd` (bar
+ * height + label here) is always the real, unshrunk K/D -- by direct
+ * request, this chart never displays an adjusted number. The array order
+ * is NOT a plain sort on that `kd` though: countries below a dynamic
+ * minimum-duel-volume gate are dropped entirely, and what's left is
+ * ordered by `sortScore`, a hidden confidence-weighted score so a lucky
+ * 1-opponent matchup can't outrank a well-established many-opponent one
+ * just because its raw K/D happens to be higher -- see playerDuels.js for
+ * the full reasoning (and why a visible shrunk number couldn't fix this on
+ * its own).
  */
 const MAX_BARS = 24
 // Duel K/D against one specific country can run hotter/colder than an
@@ -23,6 +41,31 @@ const MAX_BARS = 24
 // against the top/bottom of the chart.
 const MIN_KD = 0.4
 const MAX_KD = 2.2
+
+// Same thresholds PerformanceStrip.jsx uses for Rating 2.0, reused as-is
+// for K/D against the same 1.00 baseline this chart already draws its
+// dashed line at -- one win/even/loss vocabulary across the whole site
+// rather than a second color scale someone has to learn.
+function toneFor(kd) {
+  if (kd >= 1.15) return 'bg-good'
+  if (kd >= 0.95) return 'bg-mid'
+  return 'bg-bad'
+}
+
+// A bar near MIN_KD (or, before shrinkage, a country with almost no duel
+// volume) would otherwise resolve to only a couple of px of the 132px
+// chart -- not enough room for the flag badge to sit inside it at all.
+// Every major charting library has the same fix for the same underlying
+// problem (a near-zero value that still needs to render as a visible
+// mark): Highcharts' `minPointLength`, ECharts' `barMinHeight`, MUI X
+// Charts' `minBarSize` -- all reserve a fixed pixel floor so the smallest
+// bar is never actually zero-ish, trading strict proportionality at the
+// very bottom of the scale for the mark staying legible. Applied here as
+// plain CSS min-height rather than a charting-library option since this is
+// a hand-rolled flex/percentage strip, not a chart component with that
+// knob built in. The real value is never hidden either way -- it's still
+// the number in the label underneath and in the hover tooltip.
+const MIN_BAR_PX = 28
 
 function flagUrl(code) {
   return `${import.meta.env.BASE_URL}flags/${code.toLowerCase()}.svg`
@@ -58,9 +101,16 @@ export default function CountryKdChart({ bars }) {
               title={`${b.name}: ${b.kd.toFixed(2)} K/D (${b.kFor}-${b.kAgainst}) across ${b.opponents} opponent${b.opponents === 1 ? '' : 's'}`}
             >
               <span
-                className="w-full rounded-sm bg-cover bg-center transition-opacity group-hover:opacity-80"
-                style={{ height: `${Math.max(2, heightPct(b.kd))}%`, backgroundImage: `url(${flagUrl(b.code)})` }}
-              />
+                className={`relative block w-full rounded-sm ${toneFor(b.kd)} transition-opacity group-hover:opacity-80`}
+                style={{ height: `${heightPct(b.kd)}%`, minHeight: `${MIN_BAR_PX}px` }}
+              >
+                <img
+                  src={flagUrl(b.code)}
+                  alt={b.name}
+                  className="absolute inset-0 m-auto max-w-[24px] max-h-[calc(100%-6px)] w-auto h-auto rounded-[2px] shadow ring-1 ring-black/30"
+                  onError={(e) => { e.currentTarget.style.display = 'none' }}
+                />
+              </span>
             </div>
           ))}
         </div>
@@ -75,8 +125,16 @@ export default function CountryKdChart({ bars }) {
       </div>
 
       <div className="flex items-center gap-4 mt-4 text-[11px] text-muted flex-wrap">
-        <span>Dashed line is 1.00 K/D</span>
-        <span className="ml-auto">Hover a bar for the full kills-for/against record</span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-sm bg-good inline-block" /> 1.15+
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-sm bg-mid inline-block" /> 0.95–1.15
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-sm bg-bad inline-block" /> under 0.95
+        </span>
+        <span className="ml-auto">Dashed line is 1.00 · hover a bar for the full kills-for/against record</span>
       </div>
     </div>
   )

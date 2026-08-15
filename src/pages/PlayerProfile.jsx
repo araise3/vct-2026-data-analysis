@@ -10,7 +10,6 @@ import { buildRadarProfile } from '../lib/radarProfile'
 import { aggregatePlayerDuelsByOpponent, aggregateKdByCountry } from '../lib/playerDuels'
 import RadarChart from '../components/RadarChart'
 import CountryKdChart from '../components/CountryKdChart'
-import PlayerDuelsChart from '../components/PlayerDuelsChart'
 import FilterChips from '../components/FilterChips'
 import EventPicker from '../components/EventPicker'
 import DataTable from '../components/DataTable'
@@ -258,6 +257,10 @@ export default function PlayerProfile() {
   // clear benefit (same reasoning ComparePlayers.jsx's own h2h duels
   // already settled on).
   const duelMatchIds = useMemo(() => new Set(allMatchRows.map((m) => m.id)), [allMatchRows])
+  // Per-opponent duel records, grouped by opponent country -- an
+  // intermediate step only. Nothing renders this shape directly any more
+  // (the "Duels by country" chart that once did was removed); it exists
+  // purely to feed aggregateKdByCountry() below.
   const duelGroups = useMemo(
     () => (duelData?.rows && data
       ? aggregatePlayerDuelsByOpponent(duelData.rows, duelMatchIds, decodedName, data.meta)
@@ -603,17 +606,6 @@ export default function PlayerProfile() {
             against players from there.
           </p>
           <CountryKdChart bars={countryKdBars} />
-        </div>
-      )}
-
-      {duelGroups.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <h3 className="font-display text-sm font-semibold text-ink">Duels by country</h3>
-          <p className="text-muted text-xs">
-            {decodedName}'s kill duels against every opponent they've faced, across every match —
-            kills for, kills against, and the difference — grouped by that opponent's country.
-          </p>
-          <PlayerDuelsChart groups={duelGroups} />
         </div>
       )}
 

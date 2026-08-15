@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-14T21:53:54Z"
+    "fetchedAt": "2026-08-15T02:01:43Z"
   },
   "matches": [
     {
@@ -249,22 +249,22 @@
       "bestOf": 3,
       "team1": "FURIA",
       "team2": "2GAME Esports",
-      "score1": 0,
-      "score2": 0,
+      "score1": 2,
+      "score2": 1,
       "started": true
     },
     {
-      "key": "1786752000|cloud9|fluxo-w7m",
+      "key": "1786753200|cloud9|fluxo-w7m",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
-      "timestamp": 1786752000,
+      "timestamp": 1786753200,
       "bestOf": 3,
       "team1": "Cloud9",
       "team2": "Fluxo W7M",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1786780800|bilibili-gaming|trace-esports",
@@ -449,14 +449,14 @@
       "started": false
     },
     {
-      "key": "1786914000|g2-esports|tbd",
+      "key": "1786914000|g2-esports|furia",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1786914000,
       "bestOf": 3,
       "team1": "G2 Esports",
-      "team2": null,
+      "team2": "FURIA",
       "score1": null,
       "score2": null,
       "started": false
@@ -631,14 +631,14 @@
       "started": false
     },
     {
-      "key": "1787259600|tbd|tbd",
+      "key": "1787259600|tbd|2game-esports",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787259600,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "2GAME Esports",
       "score1": null,
       "score2": null,
       "started": false
@@ -649,6 +649,19 @@
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787270400,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787299200|tbd|tbd",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1787299200,
       "bestOf": 3,
       "team1": null,
       "team2": null,

@@ -1,23 +1,23 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-08-14T21:57:04Z",
-    "playersConsidered": 246,
-    "poolMeanRating": 0.999,
+    "generatedAt": "2026-08-15T01:34:55Z",
+    "playersConsidered": 256,
+    "poolMeanRating": 1.0,
     "selection": "round-weighted (shrunk toward pool mean, m=20 rounds, no eligibility gate; see build_player_week.py)"
   },
   "weekStart": "2026-08-08",
   "weekEnd": "2026-08-14",
-  "player": "azury",
-  "team": "Eintracht Frankfurt",
-  "countryCode": "de",
-  "countryName": "Germany",
-  "rating": 1.45,
-  "acs": 254.0,
-  "kd": 1.62,
-  "kast": 0.8918,
-  "adr": 159.0,
-  "hs": 0.272,
-  "maps": 4,
-  "rounds": 90
+  "player": "basic",
+  "team": "FURIA",
+  "countryCode": "br",
+  "countryName": "Brazil",
+  "rating": 1.53,
+  "acs": 262.0,
+  "kd": 1.81,
+  "kast": 0.8067,
+  "adr": 174.0,
+  "hs": 0.2757,
+  "maps": 3,
+  "rounds": 67
 }

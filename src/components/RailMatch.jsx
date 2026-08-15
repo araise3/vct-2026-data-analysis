@@ -39,8 +39,10 @@ export default function RailMatch({
           <EventLogo event={eventName} size={12} />
         </span>
       </div>
-      <TeamLine team={team1} score={score1} loser={decided && score1 < score2} />
-      <TeamLine team={team2} score={score2} loser={decided && score2 < score1} />
+      <div className="space-y-0.5">
+        <TeamLine team={team1} score={score1} loser={decided && score1 < score2} />
+        <TeamLine team={team2} score={score2} loser={decided && score2 < score1} />
+      </div>
     </Wrapper>
   )
 }

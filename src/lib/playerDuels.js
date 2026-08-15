@@ -188,7 +188,7 @@ export function aggregateKdByCountry(groups) {
       const kd = c.kFor / c.kAgainst
       const phat = c.kFor / (c.kFor + c.kAgainst)
       const sortScore = wilsonLowerBound(phat, c.maps, SORT_Z)
-      return { code: c.code, name: c.name, kFor: c.kFor, kAgainst: c.kAgainst, opponents: c.opponents, kd, sortScore }
+      return { code: c.code, name: c.name, kFor: c.kFor, kAgainst: c.kAgainst, opponents: c.opponents, maps: c.maps, kd, sortScore }
     })
     .sort((a, b) => b.sortScore - a.sortScore)
 }

@@ -39,6 +39,23 @@ export default {
         mid: '#ffd47d',
         bad: '#f7665e',
         live: '#ef4444',
+        // rft.gg's own 6-step performance-badge scale (their site's real
+        // CSS custom properties: --score-1..--score-6, blue -> teal ->
+        // green -> gold -> orange -> red), reused verbatim for
+        // PerformanceStrip.jsx's per-map rating badges/bars -- a direct
+        // clone of that component's reference design, distinct from the
+        // 3-tone good/mid/bad scale used everywhere else on the site
+        // (DataTable heatmaps, KpiCard trends) since 6 buckets read as
+        // "which one of rft.gg's own badge colours" at a glance in a way
+        // 3 wouldn't.
+        score: {
+          1: '#0033ff',
+          2: '#14b8a6',
+          3: '#1dd25e',
+          4: '#eab308',
+          5: '#ff6800',
+          6: '#ff0033',
+        },
       },
       fontFamily: {
         // rft.gg uses one font family throughout — Plus Jakarta Sans —

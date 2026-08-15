@@ -10,6 +10,7 @@ scraper/.liquipedia_logo_cache/
 scraper/.liquipedia_event_logo_cache/
 scraper/.liquipedia_tournament_cache/
 scraper/.liquipedia_schedule_cache/
+scraper/.liquipedia_player_names_cache/
 
 # Scraper SQLite databases. Kept out of git deliberately: ~8MB of binary that
 # deltas badly, committed on every automated run, would balloon history. CI

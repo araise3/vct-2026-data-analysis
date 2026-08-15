@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams, useSearchParams, Link } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useData, useIdle } from '../lib/useData'
 import {
   expandBuckets, aggregatePlayerBuckets, aggregateAgentBuckets, teamInScope,
   expandMatchRows, groupMatchPlayers,
 } from '../lib/entityBuckets'
 import { rolesInScope } from '../lib/peerComparison'
-import { buildRadarProfile } from '../lib/radarProfile'
 import { aggregatePlayerDuelsByOpponent, aggregateKdByCountry } from '../lib/playerDuels'
-import RadarChart from '../components/RadarChart'
+import { buildPlayerMapPerformance } from '../lib/playerMapPerformance'
 import CountryKdChart from '../components/CountryKdChart'
 import FilterChips from '../components/FilterChips'
 import EventPicker from '../components/EventPicker'
@@ -28,17 +27,13 @@ export default function PlayerProfile() {
   const { data: agentData } = useData('player_agents')
   const { data: matchData } = useData('match_results')
   const { data: matchPlayerData } = useData('match_players')
-  // Radar comparison target. Kept as two pieces of state -- `compareInput`
-  // is the live text of the field, `compareName` is what actually gets
-  // passed to buildRadarProfile() -- so a mid-typing "no data for 'as'"
-  // caveat doesn't flash on every keystroke; the name only "commits" on
-  // blur/Enter, same as picking a suggestion from the datalist.
-  // Seeded from ?compare= so a link to this profile can land with a second
-  // player already plotted, without needing its own UI to pass state.
-  const [searchParams] = useSearchParams()
-  const seededCompare = searchParams.get('compare') || ''
-  const [compareInput, setCompareInput] = useState(seededCompare)
-  const [compareName, setCompareName] = useState(seededCompare)
+  // Real name, from each player's own Liquipedia page (see
+  // scraper/liquipedia_player_names_scraper.py) -- a small file, so it
+  // loads unconditionally rather than idle-deferred. Keyed lowercase there
+  // since Liquipedia's own page-title casing ("Basic") doesn't reliably
+  // match this site's own player-name casing ("basic", sourced from VLR).
+  const { data: realNamesData } = useData('player_real_names')
+  const realName = realNamesData?.[decodedName.toLowerCase()]
 
   // Every one of this player's own buckets, across every year/competition --
   // the page-wide multi-facet FilterPanel (region/event/phase/week/split/
@@ -68,47 +63,16 @@ export default function PlayerProfile() {
     [filtered]
   )
 
-  // Peer-relative radar profile. Needs EVERY player's buckets, not just
-  // this player's, so it re-expands the full file once (memoized on `data`
-  // alone -- the expensive part, ~10.9ms over 10,894 buckets) and then
-  // narrows that flat array to the subject's own most recent season (cheap,
-  // a plain predicate), rather than re-running expandBuckets per render.
-  const allPlayerRecords = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
-  const radarScope = useMemo(
-    () => allPlayerRecords.filter((r) => r.year === recentYear),
-    [allPlayerRecords, recentYear]
-  )
-  const radar = useMemo(
-    () => buildRadarProfile(radarScope, decodedName, { compareName: compareName || null }),
-    [radarScope, decodedName, compareName]
-  )
-
   // Player duels, by opponent's country -- match_duels.json is comparable
   // in size to match_players.json (already loaded unconditionally above),
   // so it's idle-loaded rather than competing with first-paint bandwidth.
   const idle = useIdle()
   const { data: duelData } = useData(idle ? 'match_duels' : null)
-
-  // Names available to compare against -- every player who has at least
-  // one bucket in the subject's most recent season, so the suggestion list
-  // always matches who could actually plot a second polygon. Not restricted
-  // to qualified peers (see buildRadarProfile's bar) -- a thin comparison is
-  // still meaningful, same as the subject themself being shown unqualified.
-  const compareOptions = useMemo(() => {
-    const ids = new Set()
-    for (const r of radarScope) {
-      if (r.id !== decodedName) ids.add(r.id)
-    }
-    return [...ids].sort((a, b) => a.localeCompare(b))
-  }, [radarScope, decodedName])
-
-  function commitCompare() {
-    setCompareName(compareInput.trim())
-  }
-  function clearCompare() {
-    setCompareInput('')
-    setCompareName('')
-  }
+  // Per-map (not per-series) rating for the Performances strip -- see
+  // playerMapPerformance.js's own comment for why this needs a third file
+  // (team_map_detail.json) joined in alongside match_results/match_players.
+  // Comparable in size to match_duels.json, so idle-loaded the same way.
+  const { data: teamMapDetailData } = useData(idle ? 'team_map_detail' : null)
 
   // Every one of this player's per-agent buckets, across every year --
   // player_agents.json is a deliberately lean schema (see export_from_db.py)
@@ -251,6 +215,15 @@ export default function PlayerProfile() {
     return expandMatchRows(matchData).filter((m) => mine.has(m.id))
   }, [matchData, matchPlayerData, decodedName])
 
+  // One row per MAP (not per series) for the Performances strip -- see
+  // playerMapPerformance.js. Empty until team_map_detail.json lands
+  // (idle-loaded), same graceful-until-ready pattern every idle-loaded
+  // section on this page already follows.
+  const mapPerformanceRows = useMemo(
+    () => buildPlayerMapPerformance(allMatchRows, matchPlayerData, teamMapDetailData, decodedName),
+    [allMatchRows, matchPlayerData, teamMapDetailData, decodedName]
+  )
+
   // Career-wide, same as allMatchRows/Performances/Match history above --
   // not scoped to recentYear, since narrowing to one season would hide
   // real duel history against opponents faced in earlier years for no
@@ -388,6 +361,7 @@ export default function PlayerProfile() {
               </span>
             )}
           </div>
+          {realName && <span className="text-muted text-sm">{realName}</span>}
           <Link
             to={`/teams/${encodeURIComponent(displayTeam)}`}
             className="text-muted text-sm hover:text-accent-bright w-fit"
@@ -398,57 +372,57 @@ export default function PlayerProfile() {
       </div>
 
       {stats && stats.mapsPlayed > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-3">
           {/* Headline rating + qualitative tier + map record. */}
-          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-6 py-5 flex flex-col gap-1">
-            <span className="text-muted text-xs font-medium tracking-wide uppercase">
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-3 py-3 flex flex-col gap-1 min-w-0">
+            <span className="text-muted text-[10px] font-medium tracking-wide uppercase truncate">
               Avg Rating 2.0
             </span>
-            <div className="flex items-baseline gap-2.5 flex-wrap">
-              <span className="font-display text-3xl font-semibold text-ink">
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="font-display text-xl font-semibold text-ink">
                 {rating(stats.avgRating)}
               </span>
               {ratingTier(stats.avgRating) && (
                 <span
-                  className={`text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded ${ratingTier(stats.avgRating).tone}`}
+                  className={`text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded ${ratingTier(stats.avgRating).tone}`}
                 >
                   {ratingTier(stats.avgRating).label}
                 </span>
               )}
             </div>
-            <span className="text-muted text-xs">
-              {stats.mapsWon}W – {stats.mapsLost}L · {pct(stats.winPct, 0)} map win rate
+            <span className="text-muted text-[10px] truncate">
+              {stats.mapsWon}W – {stats.mapsLost}L · {pct(stats.winPct, 0)} win
             </span>
           </div>
 
           {/* Most-played agent. */}
-          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-6 py-5 flex flex-col gap-1">
-            <span className="text-muted text-xs font-medium tracking-wide uppercase">
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-3 py-3 flex flex-col gap-1 min-w-0">
+            <span className="text-muted text-[10px] font-medium tracking-wide uppercase truncate">
               Most Played
             </span>
             {mostPlayedAgent ? (
               <>
-                <div className="flex items-center gap-2.5">
-                  <AgentIcon agent={mostPlayedAgent.agent} size={30} />
-                  <span className="font-display text-2xl font-semibold text-ink">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <AgentIcon agent={mostPlayedAgent.agent} size={20} />
+                  <span className="font-display text-lg font-semibold text-ink truncate">
                     {mostPlayedAgent.agent}
                   </span>
                 </div>
-                <span className="text-muted text-xs">
+                <span className="text-muted text-[10px] truncate">
                   {num(mostPlayedAgent.mapsPlayed)}{' '}
                   {mostPlayedAgent.mapsPlayed === 1 ? 'map' : 'maps'} ·{' '}
-                  {pct(mostPlayedAgent.winPct, 0)} win rate · {rating(mostPlayedAgent.avgRating)} rating
+                  {pct(mostPlayedAgent.winPct, 0)} win
                 </span>
               </>
             ) : (
-              <span className="font-display text-2xl font-semibold text-muted">—</span>
+              <span className="font-display text-lg font-semibold text-muted">—</span>
             )}
           </div>
 
           {/* Best series by kills -- career-wide, not scoped to recentYear. */}
-          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-6 py-5 flex flex-col gap-1">
-            <span className="text-muted text-xs font-medium tracking-wide uppercase">
-              Most Kills in a Match
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-3 py-3 flex flex-col gap-1 min-w-0">
+            <span className="text-muted text-[10px] font-medium tracking-wide uppercase truncate">
+              Most Kills
             </span>
             {bestKillMatch ? (
               <>
@@ -457,50 +431,28 @@ export default function PlayerProfile() {
                   target="_blank"
                   rel="noopener noreferrer"
                   title="View this match on vlr.gg"
-                  className="flex items-baseline gap-2.5 hover:text-accent-bright transition-colors w-fit"
+                  className="flex items-baseline gap-1.5 hover:text-accent-bright transition-colors w-fit"
                 >
-                  <span className="font-display text-3xl font-semibold text-ink">
+                  <span className="font-display text-xl font-semibold text-ink">
                     {num(bestKillMatch.kills)}
                   </span>
-                  <span className="text-muted text-xs">
+                  <span className="text-muted text-[10px] truncate">
                     over {bestKillMatch.maps} {bestKillMatch.maps === 1 ? 'map' : 'maps'}
                   </span>
                 </a>
-                <span className="text-muted text-xs flex items-center gap-1.5 flex-wrap">
-                  vs <TeamLogo team={bestKillMatch.opponent} size={16} />
-                  {bestKillMatch.agents.length > 0 && (
-                    <span className="flex items-center gap-1">
-                      {/* Keyed by index, not agent name: `ag` is one entry
-                          per MAP of the series, so a player who ran the
-                          same agent on both maps of a 2-0 legitimately
-                          has it twice. */}
-                      · {bestKillMatch.agents.map((a, i) => (
-                        <AgentIcon key={`${a}-${i}`} agent={a} size={16} />
-                      ))}
-                    </span>
-                  )}
+                <span className="text-muted text-[10px] flex items-center gap-1 truncate">
+                  vs <TeamLogo team={bestKillMatch.opponent} size={14} />
                 </span>
               </>
             ) : (
-              <span className="font-display text-3xl font-semibold text-muted">—</span>
+              <span className="font-display text-xl font-semibold text-muted">—</span>
             )}
           </div>
         </div>
       )}
 
       {allMatchRows.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <h3 className="font-display text-sm font-semibold text-ink">Performances</h3>
-          <p className="text-muted text-xs">
-            One bar per match, oldest to newest — bar height and colour are that series'
-            Rating 2.0. Most recent 30 matches, across every season.
-          </p>
-          <PerformanceStrip
-            matches={allMatchRows}
-            playersByMatch={playersByMatch}
-            playerName={decodedName}
-          />
-        </div>
+        <PerformanceStrip rows={mapPerformanceRows} />
       )}
 
       {agentRecords.length > 0 && (
@@ -539,61 +491,6 @@ export default function PlayerProfile() {
               <p className="text-muted text-sm">No agent data for {agentScopeLabel}.</p>
             </div>
           )}
-        </div>
-      )}
-
-      {radar && (
-        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5">
-          <div className="flex items-start justify-between gap-4 flex-wrap mb-1">
-            <h3 className="font-display text-sm font-semibold text-ink">Performance profile</h3>
-
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: '#FF4655' }} />
-              <span className="text-xs text-ink font-medium">{decodedName}</span>
-              <span className="text-muted text-xs">vs</span>
-              <input
-                list="radar-compare-options"
-                value={compareInput}
-                onChange={(e) => setCompareInput(e.target.value)}
-                onBlur={commitCompare}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') { e.preventDefault(); commitCompare(); e.currentTarget.blur() }
-                }}
-                placeholder="Compare a player…"
-                className="w-40 bg-surface2 border border-hairline rounded-md px-2.5 py-1 text-xs text-ink placeholder:text-muted focus:outline-none focus:border-muted"
-              />
-              <datalist id="radar-compare-options">
-                {compareOptions.map((n) => <option key={n} value={n} />)}
-              </datalist>
-              {radar.compareName && (
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: '#FFD47D' }} />
-                  <button
-                    type="button"
-                    onClick={clearCompare}
-                    className="text-muted hover:text-ink text-xs leading-none"
-                    title="Clear comparison"
-                  >
-                    ✕
-                  </button>
-                </span>
-              )}
-            </div>
-          </div>
-
-          <p className="text-muted text-xs mb-4">
-            Each spoke is its own scale — position is percentile within qualified players (rounds
-            played ≥ half the scope's median, min 20) in the {recentYear} season, not an absolute
-            value. Hover a point for rank.
-            {!radar.subjectQualified && ` Small sample for ${decodedName} — below the qualification bar in this scope.`}
-            {radar.compareName && radar.compareQualified === false && ` Small sample for ${radar.compareName} — below the qualification bar in this scope.`}
-            {compareName && compareName === decodedName && ' Pick a different player to compare against.'}
-            {radar.compareMissing && ` No data for "${compareName}" in this scope.`}
-          </p>
-
-          <div className="max-w-xl mx-auto">
-            <RadarChart axes={radar.axes} />
-          </div>
         </div>
       )}
 

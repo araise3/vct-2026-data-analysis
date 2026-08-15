@@ -1,7 +1,7 @@
 /**
  * Vertical bar strip, same layout mechanics as PerformanceStrip.jsx (flex
- * items-end + height percentage, overflow-x-auto, dashed 1.00 baseline) --
- * one bar per COUNTRY: this player's own K/D specifically in duels against
+ * items-end + height percentage, overflow-x-auto) -- one bar per COUNTRY:
+ * this player's own K/D specifically in duels against
  * opponents from that country (sum kills-for over sum kills-against across
  * every such opponent, see aggregateKdByCountry()), not a country's general
  * skill level.
@@ -22,7 +22,12 @@
  * out.
  *
  * `bars` is aggregateKdByCountry()'s return shape:
- * `{ code, name, kFor, kAgainst, kd, opponents, sortScore }[]`. `kd` (bar
+ * `{ code, name, kFor, kAgainst, kd, opponents, maps, sortScore }[]`. `maps`
+ * (distinct maps played against that country) is shown as a plain count
+ * absolutely positioned right above that column's own bar top (see
+ * effectivePct() -- it has to track the bar's actual rendered height,
+ * MIN_BAR_PX floor included, or the label floats above the bar instead of
+ * sitting on it). `kd` (bar
  * height + label here) is always the real, unshrunk K/D -- by direct
  * request, this chart never displays an adjusted number. The array order
  * is NOT a plain sort on that `kd` though: countries below a dynamic
@@ -43,9 +48,9 @@ const MIN_KD = 0.4
 const MAX_KD = 2.2
 
 // Same thresholds PerformanceStrip.jsx uses for Rating 2.0, reused as-is
-// for K/D against the same 1.00 baseline this chart already draws its
-// dashed line at -- one win/even/loss vocabulary across the whole site
-// rather than a second color scale someone has to learn.
+// for K/D against the same 1.00 baseline -- one win/even/loss vocabulary
+// across the whole site rather than a second color scale someone has to
+// learn.
 function toneFor(kd) {
   if (kd >= 1.15) return 'bg-good'
   if (kd >= 0.95) return 'bg-mid'
@@ -77,6 +82,17 @@ function heightPct(v) {
   return ((clamped - MIN_KD) / (MAX_KD - MIN_KD)) * 100
 }
 
+// The maps-played label is anchored to the bar's own rendered top edge (see
+// below), so it needs the bar's true on-screen height as a percentage --
+// including the MIN_BAR_PX floor -- rather than the raw, pre-clamp
+// heightPct(). Without this a bar sitting at the floor would report its
+// (smaller) unclamped percentage and the label would float above the
+// bar's actual top instead of sitting right on it.
+const CHART_PX = 132
+function effectivePct(v) {
+  return Math.max(heightPct(v), (MIN_BAR_PX / CHART_PX) * 100)
+}
+
 export default function CountryKdChart({ bars }) {
   const shown = bars.length > MAX_BARS ? bars.slice(0, MAX_BARS) : bars
 
@@ -84,16 +100,10 @@ export default function CountryKdChart({ bars }) {
     return <p className="text-muted text-sm px-1">Not enough duel data to compare by country.</p>
   }
 
-  const baselineBottom = heightPct(1.0)
-
   return (
     <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5">
       <div className="overflow-x-auto">
-        <div className="relative flex items-end gap-1.5 min-h-[132px] h-[132px]">
-          <div
-            className="absolute left-0 right-0 border-t border-dashed border-hairline pointer-events-none"
-            style={{ bottom: `${baselineBottom}%` }}
-          />
+        <div className="relative flex items-end gap-1.5 min-h-[132px] h-[132px] mt-4">
           {shown.map((b) => (
             <div
               key={b.code}
@@ -101,8 +111,14 @@ export default function CountryKdChart({ bars }) {
               title={`${b.name}: ${b.kd.toFixed(2)} K/D (${b.kFor}-${b.kAgainst}) across ${b.opponents} opponent${b.opponents === 1 ? '' : 's'}`}
             >
               <span
+                className="absolute inset-x-0 text-center text-[10px] tabular-nums text-muted"
+                style={{ bottom: `calc(${effectivePct(b.kd)}% + 4px)` }}
+              >
+                {b.maps}
+              </span>
+              <span
                 className={`relative block w-full rounded-sm ${toneFor(b.kd)} transition-opacity group-hover:opacity-80`}
-                style={{ height: `${heightPct(b.kd)}%`, minHeight: `${MIN_BAR_PX}px` }}
+                style={{ height: `${effectivePct(b.kd)}%` }}
               >
                 <img
                   src={flagUrl(b.code)}
@@ -134,7 +150,7 @@ export default function CountryKdChart({ bars }) {
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-sm bg-bad inline-block" /> under 0.95
         </span>
-        <span className="ml-auto">Dashed line is 1.00 · hover a bar for the full kills-for/against record</span>
+        <span className="ml-auto">Number above each bar is maps played · hover a bar for the full kills-for/against record</span>
       </div>
     </div>
   )

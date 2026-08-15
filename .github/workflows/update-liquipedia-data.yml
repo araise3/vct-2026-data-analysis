@@ -134,16 +134,48 @@ jobs:
           path: scraper/.liquipedia_tournament_cache
           key: liquipedia-tournament-cache-${{ github.run_id }}
 
+      # Each player's own real (legal) name, from their Liquipedia page's
+      # Infobox player (`|romanized_name=`/`|name=`) -- see
+      # liquipedia_player_names_scraper.py's own docstring for why this
+      # replaced the earlier Google-Sheet-sourced version (that sheet only
+      # ever covered ~42% of this site's known players, current-contract
+      # ones only; Liquipedia has a page for ~90% of them regardless of
+      # contract status). Reads its player list from the ALREADY-checked-out
+      # public/data/player_buckets.json (whatever export_from_db.py's own
+      # workflow last committed to main), so no extra fetch is needed to
+      # know who to look up. Batched action=query (2.5s/request, ~14
+      # requests for this site's ~660 known players), not the 32s
+      # action=parse the roster fetch above needs -- cheap enough to
+      # piggyback on this same daily job, own cache dir/key so a restore/
+      # save failure here can't touch either fetch above.
+      - name: Restore player-names API response cache
+        if: inputs.no_cache != true
+        uses: actions/cache/restore@v4
+        with:
+          path: scraper/.liquipedia_player_names_cache
+          key: liquipedia-player-names-cache-${{ github.run_id }}
+          restore-keys: liquipedia-player-names-cache-
+
+      - name: Fetch player real names and build public/data/player_real_names.json
+        run: python scraper/liquipedia_player_names_scraper.py
+
+      - name: Save player-names API response cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: scraper/.liquipedia_player_names_cache
+          key: liquipedia-player-names-cache-${{ github.run_id }}
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data/liquipedia_rosters.json public/data/tournament_structure.json
+          git add public/data/liquipedia_rosters.json public/data/tournament_structure.json public/data/player_real_names.json
           if git diff --staged --quiet; then
-            echo "No roster or tournament-structure changes -- nothing to publish."
+            echo "No roster, tournament-structure, or player-name changes -- nothing to publish."
             exit 0
           fi
-          git commit -m "Update Liquipedia roster/tournament data $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git commit -m "Update Liquipedia roster/tournament/player-name data $(date -u '+%Y-%m-%d %H:%M UTC')"
           # Rebase before pushing: this can overlap with the VLR data
           # workflow's own commit to main (different file, but same branch),
           # and losing this run's data to a rejected push would mean the

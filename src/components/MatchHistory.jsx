@@ -67,12 +67,17 @@ export default function MatchHistory({
 }) {
   const isPlayer = perspective?.type === 'player'
 
-  // Newest first. `date` is YYYY-MM-DD so lexicographic ordering is
-  // chronological; match id breaks ties within a single day, since several
-  // matches of the same round routinely share a date.
+  // Newest first. Sorts by `ts` (full "YYYY-MM-DD HH:MM:SS" kickoff time)
+  // when present -- match id is NOT a safe same-day tiebreak across
+  // different concurrent events (VLR assigns ids at match-page-creation
+  // time, not kickoff time, so two regions' matches from the same day can
+  // come back in an order that doesn't match when either was actually
+  // played; see recentResults() in schedule.js, which had the identical
+  // bug on the home page's Recent Results rail). Falls back to `date` +
+  // match id for matches that predate the `ts` field.
   const ordered = useMemo(
     () => [...matches].sort((a, b) =>
-      (b.date || '').localeCompare(a.date || '') || b.id - a.id
+      (b.ts || b.date || '').localeCompare(a.ts || a.date || '') || b.id - a.id
     ),
     [matches]
   )

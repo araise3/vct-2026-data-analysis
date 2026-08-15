@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { useData } from '../lib/useData'
+import { useData, useIdle } from '../lib/useData'
 import {
   expandBuckets, aggregatePlayerBuckets, aggregateAgentBuckets, teamInScope,
   expandMatchRows, groupMatchPlayers,
 } from '../lib/entityBuckets'
 import { rolesInScope } from '../lib/peerComparison'
 import { buildRadarProfile } from '../lib/radarProfile'
+import { aggregatePlayerDuelsByOpponent, aggregateKdByCountry } from '../lib/playerDuels'
 import RadarChart from '../components/RadarChart'
+import CountryKdChart from '../components/CountryKdChart'
+import PlayerDuelsChart from '../components/PlayerDuelsChart'
 import FilterChips from '../components/FilterChips'
 import EventPicker from '../components/EventPicker'
 import DataTable from '../components/DataTable'
@@ -80,6 +83,12 @@ export default function PlayerProfile() {
     () => buildRadarProfile(radarScope, decodedName, { compareName: compareName || null }),
     [radarScope, decodedName, compareName]
   )
+
+  // Player duels, by opponent's country -- match_duels.json is comparable
+  // in size to match_players.json (already loaded unconditionally above),
+  // so it's idle-loaded rather than competing with first-paint bandwidth.
+  const idle = useIdle()
+  const { data: duelData } = useData(idle ? 'match_duels' : null)
 
   // Names available to compare against -- every player who has at least
   // one bucket in the subject's most recent season, so the suggestion list
@@ -243,13 +252,30 @@ export default function PlayerProfile() {
     return expandMatchRows(matchData).filter((m) => mine.has(m.id))
   }, [matchData, matchPlayerData, decodedName])
 
+  // Career-wide, same as allMatchRows/Performances/Match history above --
+  // not scoped to recentYear, since narrowing to one season would hide
+  // real duel history against opponents faced in earlier years for no
+  // clear benefit (same reasoning ComparePlayers.jsx's own h2h duels
+  // already settled on).
+  const duelMatchIds = useMemo(() => new Set(allMatchRows.map((m) => m.id)), [allMatchRows])
+  const duelGroups = useMemo(
+    () => (duelData?.rows && data
+      ? aggregatePlayerDuelsByOpponent(duelData.rows, duelMatchIds, decodedName, data.meta)
+      : []),
+    [duelData, duelMatchIds, decodedName, data]
+  )
+  // Same underlying duel data as duelGroups above, collapsed to one K/D
+  // per country -- this player's own K/D specifically against opponents
+  // from that country, not that country's general skill level.
+  const countryKdBars = useMemo(() => aggregateKdByCountry(duelGroups), [duelGroups])
+
   // Match history newest-first, across every year -- no longer pinned to
   // recentYear like the rest of the page. Paginated 30 at a time rather
   // than rendered in full, since a long career can run to hundreds of
   // matches; `matchLimit` resets whenever the profile switches players.
   const sortedMatchRows = useMemo(
     () => [...allMatchRows].sort(
-      (a, b) => (b.date || '').localeCompare(a.date || '') || b.id - a.id
+      (a, b) => (b.ts || b.date || '').localeCompare(a.ts || a.date || '') || b.id - a.id
     ),
     [allMatchRows]
   )
@@ -565,6 +591,29 @@ export default function PlayerProfile() {
           <div className="max-w-xl mx-auto">
             <RadarChart axes={radar.axes} />
           </div>
+        </div>
+      )}
+
+      {countryKdBars.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <h3 className="font-display text-sm font-semibold text-ink">K/D by country</h3>
+          <p className="text-muted text-xs">
+            {decodedName}'s own K/D in kill duels against opponents from each country, across every
+            match — not that country's own skill level, just how {decodedName} personally does
+            against players from there.
+          </p>
+          <CountryKdChart bars={countryKdBars} />
+        </div>
+      )}
+
+      {duelGroups.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <h3 className="font-display text-sm font-semibold text-ink">Duels by country</h3>
+          <p className="text-muted text-xs">
+            {decodedName}'s kill duels against every opponent they've faced, across every match —
+            kills for, kills against, and the difference — grouped by that opponent's country.
+          </p>
+          <PlayerDuelsChart groups={duelGroups} />
         </div>
       )}
 

@@ -102,7 +102,7 @@ export default function TournamentDetail() {
     }
 
     const byPhase = new Map()
-    for (const m of [...matches].sort((a, b) => (a.date || '').localeCompare(b.date || '') || a.id - b.id)) {
+    for (const m of [...matches].sort((a, b) => (a.ts || a.date || '').localeCompare(b.ts || b.date || '') || a.id - b.id)) {
       const p = phaseLabel(m.w) || 'Matches'
       if (!byPhase.has(p)) byPhase.set(p, [])
       byPhase.get(p).push(m)

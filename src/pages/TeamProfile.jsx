@@ -18,6 +18,7 @@ import CompositionsTable from '../components/CompositionsTable'
 import AgentIcon from '../components/AgentIcon'
 import Button from '../components/ui/Button'
 import { buildTeamMapRows, aggregateCompositions, aggregateCompositionPlayers } from '../lib/compositions'
+import { aggregateTeamVetoStats } from '../lib/vetoStats'
 import mapIcons from '../lib/mapIcons.json'
 import { rating, pct, num, eventLabel } from '../lib/format'
 import { buildEventDateOrder } from '../lib/rosterTimeline'
@@ -422,6 +423,25 @@ export default function TeamProfile() {
 
   const matchRows = useMemo(() => teamMatches.filter(inScope), [teamMatches, inScope])
 
+  // Pick/ban record, from match_results.json's own `veto` array on each
+  // match in `matchRows` -- no separate fetch, `matchData` already carries
+  // it. Only matches VLR rendered a veto note for contribute (see
+  // aggregateTeamVetoStats's own comment); `matchesWithVeto` lets the
+  // caption below say how much of the current scope that actually covers,
+  // same pattern as the Pistol Win% KPI's "No economy data" fallback above.
+  const vetoStats = useMemo(() => aggregateTeamVetoStats(matchRows, decodedName), [matchRows, decodedName])
+
+  const vetoColumns = useMemo(() => [
+    { key: 'map', label: 'Map', align: 'left' },
+    { key: 'banned', label: 'Banned', align: 'right', format: (v) => num(v) },
+    { key: 'picked', label: 'Picked', align: 'right', format: (v) => num(v) },
+    { key: 'decider', label: 'Decider', align: 'right', format: (v) => num(v) },
+    {
+      key: 'pickWinPct', label: 'Win% (own pick)', align: 'right', colorScale: true,
+      format: (v, row) => (row.picked ? pct(v) : '—'),
+    },
+  ], [])
+
   // Compositions section: same match_results + match_players join
   // AgentCompositions.jsx runs (see lib/compositions.js), narrowed to this
   // one team's own composition rows. The join itself runs once per data
@@ -516,7 +536,7 @@ export default function TeamProfile() {
   // `matchLimit` resets whenever the profile switches teams.
   const sortedMatchRows = useMemo(
     () => [...matchRows].sort(
-      (a, b) => (b.date || '').localeCompare(a.date || '') || b.id - a.id
+      (a, b) => (b.ts || b.date || '').localeCompare(a.ts || a.date || '') || b.id - a.id
     ),
     [matchRows]
   )
@@ -640,6 +660,38 @@ export default function TeamProfile() {
                 rows={mapStats}
                 summaryRow={mapStatsOverall}
                 defaultSortKey="winPct"
+              />
+            </div>
+          )}
+
+          {vetoStats.matchesWithVeto > 0 && (
+            <div className="flex flex-col gap-2">
+              <h3 className="font-display text-sm font-semibold text-ink">Map Picks & Bans</h3>
+              <p className="text-muted text-xs">
+                {decodedName}'s veto record across {vetoStats.matchesWithVeto} of {matchRows.length} match
+                {matchRows.length === 1 ? '' : 'es'} in scope with pick/ban data.
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <KpiCard
+                  label="Own Picks Win%"
+                  value={vetoStats.ownPick.maps ? pct(vetoStats.ownPick.winPct) : '—'}
+                  sub={vetoStats.ownPick.maps ? `${vetoStats.ownPick.wins}–${vetoStats.ownPick.maps - vetoStats.ownPick.wins} maps` : 'No own picks played'}
+                />
+                <KpiCard
+                  label="Opponent Picks Win%"
+                  value={vetoStats.oppPick.maps ? pct(vetoStats.oppPick.winPct) : '—'}
+                  sub={vetoStats.oppPick.maps ? `${vetoStats.oppPick.wins}–${vetoStats.oppPick.maps - vetoStats.oppPick.wins} maps` : 'No opponent picks played'}
+                />
+                <KpiCard
+                  label="Decider Win%"
+                  value={vetoStats.decider.maps ? pct(vetoStats.decider.winPct) : '—'}
+                  sub={vetoStats.decider.maps ? `${vetoStats.decider.wins}–${vetoStats.decider.maps - vetoStats.decider.wins} maps` : 'No deciders played'}
+                />
+              </div>
+              <DataTable
+                columns={vetoColumns}
+                rows={vetoStats.byMap}
+                defaultSortKey="picked"
               />
             </div>
           )}

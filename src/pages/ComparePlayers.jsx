@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { useData } from '../lib/useData'
-import { expandBuckets } from '../lib/entityBuckets'
+import { expandBuckets, expandMatchRows, groupMatchPlayers } from '../lib/entityBuckets'
 import { buildRadarProfile } from '../lib/radarProfile'
 import RadarChart from '../components/RadarChart'
 import FilterChips from '../components/FilterChips'
 import Select from '../components/ui/Select'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
-import { scaleColor } from '../lib/format'
+import { scaleColor, rating, num, eventLabel, roundLabel, vlrMatchUrl } from '../lib/format'
 
 // Matches RadarChart.jsx's own (unexported) constants -- kept in sync here
 // the same way PlayerProfile.jsx already does for its legend dots, rather
@@ -64,6 +64,17 @@ export default function ComparePlayers() {
   const [yearA, setYearA] = useState(YEAR_ALL)
   const [yearB, setYearB] = useState(YEAR_ALL)
 
+  // Only pulled once both names are picked -- head-to-head is meaningless
+  // with just one player, and match_results.json + match_players.json
+  // (the latter alone 3.9MB/10,974 rows, see MatchHistory.jsx) would
+  // otherwise load on every visit to this page for a feature most visits
+  // never reach. match_duels.json is comparable in size to match_players.json
+  // (up to 25 rows per map) for a stat this is the ONLY page that reads, so
+  // it gets the same treatment.
+  const { data: matchData } = useData(b ? 'match_results' : null)
+  const { data: matchPlayerData } = useData(b ? 'match_players' : null)
+  const { data: duelData } = useData(b ? 'match_duels' : null)
+
   const allPlayerRecords = useMemo(() => (data ? expandBuckets(data, 'p') : []), [data])
 
   const options = useMemo(() => (data?.meta ? Object.keys(data.meta).sort((x, y) => x.localeCompare(y)) : []), [data])
@@ -94,6 +105,71 @@ export default function ComparePlayers() {
     () => (a ? buildRadarProfile(radarScope, a, { compareName: b || null }) : null),
     [radarScope, a, b]
   )
+
+  // Real head-to-head: matches where A and B both actually played, on
+  // opposing teams -- not just "both were active the same season." Each
+  // match_players.json row carries its own team (`t`), so a player who
+  // transferred mid-career is still matched against whichever team they
+  // were actually on for that specific match.
+  // Career-wide regardless of either side's own year picker (same reason
+  // the radar's peer pool ignores it, see the docstring above): a filter
+  // meant to isolate one player's OWN season has no obvious meaning applied
+  // to a fact about two players jointly, and narrowing it would just hide
+  // real meetings for no benefit.
+  const playersByMatch = useMemo(() => groupMatchPlayers(matchPlayerData), [matchPlayerData])
+  const h2h = useMemo(() => {
+    if (!a || !b || a === b || !matchData) return null
+    const meetings = []
+    for (const m of expandMatchRows(matchData)) {
+      const scoreboard = playersByMatch.get(m.id)
+      if (!scoreboard) continue
+      const rowA = scoreboard.find((r) => r.p === a)
+      const rowB = scoreboard.find((r) => r.p === b)
+      if (!rowA || !rowB || rowA.t === rowB.t) continue
+      const aIsTeam1 = m.team1 === rowA.t
+      meetings.push({ match: m, rowA, rowB, aScore: aIsTeam1 ? m.s1 : m.s2, bScore: aIsTeam1 ? m.s2 : m.s1 })
+    }
+    meetings.sort((x, y) =>
+      (y.match.ts || y.match.date || '').localeCompare(x.match.ts || x.match.date || '') || y.match.id - x.match.id
+    )
+    let aWins = 0, bWins = 0
+    for (const meet of meetings) {
+      if (meet.aScore > meet.bScore) aWins++
+      else if (meet.bScore > meet.aScore) bWins++
+    }
+    return { meetings, aWins, bWins }
+  }, [matchData, playersByMatch, a, b])
+
+  // Kill duels between A and B specifically, from match_duels.json's "All
+  // Kills" matrix rows -- summed across every map of every meeting (the
+  // matrix is per-map; a meeting's overall duel score is just the sum).
+  // Each row's player1/player2 are the matrix's row/column player, not a
+  // fixed "A is always player1" convention, so both orderings are checked.
+  // Restricted to h2h's own meeting ids: match_duels.json isn't restricted
+  // to matches where A and B opposed each other (it can't be -- it's built
+  // from the whole site's duel data), so without this a shared teammate
+  // stint or an unrelated match one of them played would leak in.
+  const duels = useMemo(() => {
+    if (!h2h?.meetings.length || !duelData?.rows) return null
+    const meetingIds = new Set(h2h.meetings.map((meet) => meet.match.id))
+    const byMatch = new Map()
+    let aKills = 0, bKills = 0, found = false
+    for (const r of duelData.rows) {
+      if (!meetingIds.has(r.m)) continue
+      let ak, bk
+      if (r.p1 === a && r.p2 === b) { ak = r.k1 ?? 0; bk = r.k2 ?? 0 }
+      else if (r.p1 === b && r.p2 === a) { ak = r.k2 ?? 0; bk = r.k1 ?? 0 }
+      else continue
+      found = true
+      aKills += ak
+      bKills += bk
+      const cur = byMatch.get(r.m) || { aKills: 0, bKills: 0 }
+      cur.aKills += ak
+      cur.bKills += bk
+      byMatch.set(r.m, cur)
+    }
+    return found ? { aKills, bKills, byMatch } : null
+  }, [h2h, duelData, a, b])
 
   function syncParams(na, nb) {
     const params = {}
@@ -195,6 +271,8 @@ export default function ComparePlayers() {
           </div>
 
           <ComparisonTable axes={radar.axes} a={a} b={radar.compareName} />
+
+          {b && b !== a && <HeadToHead a={a} b={b} h2h={h2h} duels={duels} />}
         </div>
       )}
     </div>
@@ -333,6 +411,150 @@ function RankBadge({ rank, n }) {
       #{rank}
     </span>
   )
+}
+
+/**
+ * Matches where A and B lined up on opposing teams -- distinct from the
+ * peer-relative ComparisonTable above it (both players' stats scored
+ * against the whole field), this is the two of them directly, in the same
+ * games. `h2h` is null while match_results/match_players haven't loaded
+ * yet (only fetched once `b` is picked, see the page's own useData calls).
+ */
+function HeadToHead({ a, b, h2h, duels }) {
+  if (!h2h) return <p className="text-muted text-xs mt-6">Loading head-to-head…</p>
+  if (h2h.meetings.length === 0) {
+    return (
+      <div className="mt-6">
+        <h3 className="text-xs font-bold uppercase tracking-wide text-muted mb-2">Head-to-head</h3>
+        <p className="text-muted text-sm">{a} and {b} haven't played against each other.</p>
+      </div>
+    )
+  }
+  const subHeader = 'py-1.5 text-right font-bold text-[9px] uppercase tracking-wide text-muted border-b border-hairline whitespace-nowrap'
+  return (
+    <div className="mt-6">
+      <div className="flex items-center gap-3 mb-1 flex-wrap">
+        <h3 className="text-xs font-bold uppercase tracking-wide text-muted">Head-to-head</h3>
+        <span className="text-sm font-semibold">
+          <span style={{ color: SUBJECT_COLOR }}>{h2h.aWins}</span>
+          <span className="text-muted mx-1">–</span>
+          <span style={{ color: COMPARE_COLOR }}>{h2h.bWins}</span>
+        </span>
+        <span className="text-muted text-xs">
+          in {h2h.meetings.length} match{h2h.meetings.length === 1 ? '' : 'es'} on opposing teams
+        </span>
+      </div>
+      {/* Kill duels: how many times each one personally killed the other,
+          summed across every map they've shared a server on -- distinct
+          from the series win/loss record above it, which is about their
+          TEAMS' results, not the two of them individually. Only rendered
+          once match_duels.json actually has data for these meetings (older
+          matches predate that scrape and simply have none, same as a
+          missing `veto` below -- not an error, just nothing to show). */}
+      {duels && (
+        <div className="mb-3 text-xs text-muted">
+          Duels:{' '}
+          <span style={{ color: SUBJECT_COLOR }} className="font-semibold">{duels.aKills}</span>
+          {' kills on '}{b}{', '}
+          <span style={{ color: COMPARE_COLOR }} className="font-semibold">{duels.bKills}</span>
+          {' back on '}{a}
+        </div>
+      )}
+      <div className="overflow-auto rounded-2xl border border-hairline shadow-depth-sm">
+        <table className="w-full border-separate border-spacing-0 text-sm">
+          <thead>
+            <tr className="bg-surface2">
+              <th className="pl-[15px] pr-[10px] py-1.5 text-left font-bold text-[10px] uppercase text-muted border-r border-b border-hairline whitespace-nowrap">
+                Match
+              </th>
+              <th className={`pl-[10px] pr-[10px] border-r ${subHeader}`}>Score</th>
+              <th className={`pl-[10px] pr-[10px] border-r ${subHeader}`} style={{ color: SUBJECT_COLOR }}>
+                {a} Rtg
+              </th>
+              <th className={`px-[10px] border-r ${subHeader}`} style={{ color: SUBJECT_COLOR }}>
+                ACS
+              </th>
+              <th className={`pl-[10px] pr-[10px] border-r ${subHeader}`} style={{ color: COMPARE_COLOR }}>
+                {b} Rtg
+              </th>
+              <th className={`px-[10px] ${duels ? 'border-r' : ''} ${subHeader}`} style={{ color: COMPARE_COLOR }}>
+                ACS
+              </th>
+              {duels && <th className={`px-[10px] ${subHeader}`}>Duel K</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {h2h.meetings.map(({ match: m, rowA, rowB, aScore, bScore }) => {
+              const veto = vetoSummary(m.veto)
+              const meetDuels = duels?.byMatch.get(m.id)
+              return (
+                <tr
+                  key={m.id}
+                  onClick={() => window.open(vlrMatchUrl(m.id), '_blank', 'noopener,noreferrer')}
+                  className="cursor-pointer hover:bg-surface/60 transition-colors"
+                >
+                  <td className="pl-[15px] pr-[10px] py-1.5 border-r border-b border-hairline">
+                    <div className="text-[12px] text-ink/80 truncate max-w-[260px]">{eventLabel(m.event)}</div>
+                    <div className="text-muted text-[11px] whitespace-nowrap">
+                      {m.date} · {roundLabel(m.w)}
+                    </div>
+                    {veto && (
+                      <div className="text-muted/70 text-[10px] mt-0.5 max-w-[260px]">{veto}</div>
+                    )}
+                  </td>
+                  <td className="px-[10px] py-1.5 text-right border-r border-b border-hairline whitespace-nowrap">
+                    <span className={aScore > bScore ? 'font-bold text-ink' : 'text-ink/70'}>{aScore}</span>
+                    <span className="text-muted/50 mx-0.5">–</span>
+                    <span className={bScore > aScore ? 'font-bold text-ink' : 'text-ink/70'}>{bScore}</span>
+                  </td>
+                  <td className="px-[10px] py-1.5 text-right text-[12px] tabular-nums border-r border-b border-hairline whitespace-nowrap">
+                    {rating(rowA.r)}
+                  </td>
+                  <td className="px-[10px] py-1.5 text-right text-[12px] tabular-nums border-r border-b border-hairline whitespace-nowrap">
+                    {num(rowA.acs)}
+                  </td>
+                  <td className="px-[10px] py-1.5 text-right text-[12px] tabular-nums border-r border-b border-hairline whitespace-nowrap">
+                    {rating(rowB.r)}
+                  </td>
+                  <td className={`px-[10px] py-1.5 text-right text-[12px] tabular-nums ${duels ? 'border-r' : ''} border-b border-hairline whitespace-nowrap`}>
+                    {num(rowB.acs)}
+                  </td>
+                  {duels && (
+                    <td className="px-[10px] py-1.5 text-right text-[12px] tabular-nums border-b border-hairline whitespace-nowrap">
+                      {meetDuels ? `${meetDuels.aKills}–${meetDuels.bKills}` : '—'}
+                    </td>
+                  )}
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Condenses a match's veto array (see match_results.json's own `veto`
+ * field -- absent on matches scraped before this existed, and on real Bo1s
+ * which have nothing to veto) into one line: which maps got banned, which
+ * got picked, and which was left as the decider. Doesn't attribute a ban/
+ * pick to WHICH of the two teams made it -- the full team name on every one
+ * of up to 6-7 clauses reads as more clutter than signal in a table cell
+ * already carrying the event/date/round; the order in `veto` (alternating,
+ * banning side first) is preserved for anyone who opens the match on vlr.gg
+ * via the row's own click-through, which shows the same note attributed.
+ */
+function vetoSummary(veto) {
+  if (!veto || !veto.length) return null
+  const bans = veto.filter((v) => v.a === 'ban').map((v) => v.m)
+  const picks = veto.filter((v) => v.a === 'pick').map((v) => v.m)
+  const decider = veto.find((v) => v.a === 'decider')
+  const parts = []
+  if (bans.length) parts.push(`Banned ${bans.join(', ')}`)
+  if (picks.length) parts.push(`Picked ${picks.join(', ')}`)
+  if (decider) parts.push(`${decider.m} decider`)
+  return parts.join(' · ')
 }
 
 function PlayerField({ color, value, onChange, options, placeholder, renderIcon, year, onYearChange, yearOptions }) {

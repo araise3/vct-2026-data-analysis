@@ -51,7 +51,7 @@ export default function PerformanceStrip({ matches, playersByMatch, playerName }
   const { bars, totalCount } = useMemo(() => {
     const out = []
     const ordered = [...matches].sort(
-      (a, b) => (a.date || '').localeCompare(b.date || '') || a.id - b.id
+      (a, b) => (a.ts || a.date || '').localeCompare(b.ts || b.date || '') || a.id - b.id
     )
     for (const m of ordered) {
       const scoreboard = playersByMatch?.get(m.id) || []

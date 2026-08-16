@@ -3,35 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-16T07:11:09Z"
+    "fetchedAt": "2026-08-16T09:54:55Z"
   },
   "matches": [
-    {
-      "key": "1786435200|jdg-esports|edward-gaming",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786435200,
-      "bestOf": 3,
-      "team1": "JDG Esports",
-      "team2": "EDward Gaming",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
-    {
-      "key": "1786443000|dragon-ranger-gaming|trace-esports",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786443000,
-      "bestOf": 3,
-      "team1": "Dragon Ranger Gaming",
-      "team2": "Trace Esports",
-      "score1": 1,
-      "score2": 2,
-      "started": true
-    },
     {
       "key": "1786521600|all-gamers|titan-esports-club",
       "event": "Vct 2026 China Stage 2",
@@ -367,7 +341,7 @@
       "team1": "Sentinels",
       "team2": "ENVY",
       "score1": 0,
-      "score2": 1,
+      "score2": 2,
       "started": true
     },
     {
@@ -379,9 +353,9 @@
       "bestOf": 3,
       "team1": "Nova Esports",
       "team2": "Titan Esports Club",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1786867200|t1|full-sense",
@@ -392,6 +366,19 @@
       "bestOf": 3,
       "team1": "T1",
       "team2": "FULL SENSE",
+      "score1": 2,
+      "score2": 0,
+      "started": true
+    },
+    {
+      "key": "1786873800|nongshim-redforce|team-secret",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1786873800,
+      "bestOf": 3,
+      "team1": "Nongshim RedForce",
+      "team2": "Team Secret",
       "score1": null,
       "score2": null,
       "started": false
@@ -405,19 +392,6 @@
       "bestOf": 3,
       "team1": "Trace Esports",
       "team2": "All Gamers",
-      "score1": null,
-      "score2": null,
-      "started": false
-    },
-    {
-      "key": "1786878000|nongshim-redforce|team-secret",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
-      "phase": null,
-      "timestamp": 1786878000,
-      "bestOf": 3,
-      "team1": "Nongshim RedForce",
-      "team2": "Team Secret",
       "score1": null,
       "score2": null,
       "started": false
@@ -514,13 +488,13 @@
       "started": false
     },
     {
-      "key": "1787137200|tbd|rex-regum-qeon",
+      "key": "1787137200|full-sense|rex-regum-qeon",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787137200,
       "bestOf": 3,
-      "team1": null,
+      "team1": "FULL SENSE",
       "team2": "Rex Regum Qeon",
       "score1": null,
       "score2": null,
@@ -631,13 +605,13 @@
       "started": false
     },
     {
-      "key": "1787259600|tbd|2game-esports",
+      "key": "1787259600|sentinels|2game-esports",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787259600,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Sentinels",
       "team2": "2GAME Esports",
       "score1": null,
       "score2": null,
@@ -696,13 +670,13 @@
       "started": false
     },
     {
-      "key": "1787310000|tbd|tbd",
+      "key": "1787310000|t1|tbd",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787310000,
       "bestOf": 3,
-      "team1": null,
+      "team1": "T1",
       "team2": null,
       "score1": null,
       "score2": null,
@@ -735,14 +709,14 @@
       "started": false
     },
     {
-      "key": "1787346000|mibr|tbd",
+      "key": "1787346000|mibr|envy",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787346000,
       "bestOf": 3,
       "team1": "MIBR",
-      "team2": null,
+      "team2": "ENVY",
       "score1": null,
       "score2": null,
       "started": false
@@ -805,6 +779,32 @@
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1787410800,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787421600|tbd|tbd",
+      "event": "Vct 2026 Emea Stage 2",
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
+      "phase": null,
+      "timestamp": 1787421600,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787432400|tbd|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1787432400,
       "bestOf": 3,
       "team1": null,
       "team2": null,

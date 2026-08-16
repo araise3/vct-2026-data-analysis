@@ -28,6 +28,10 @@ on:
         description: 'Discard any restored database and scrape everything from scratch, even if the cache/snapshot had a copy. SLOW (roughly an hour of requests to vlr.gg). For recovering from suspected data corruption -- NOT needed just to seed the first run or recover from ordinary cache loss, both of which already happen automatically.'
         type: boolean
         default: false
+      backfill_game_ids:
+        description: 'One-time backfill of maps.vlr_game_id (VLR''s own opaque per-map id, added after most matches were already scraped -- powers the Performances chart''s per-map links) for every 2026 VCT/EWC match already in the database. Runs ONE extra Overview-tab fetch per match instead of the normal incremental scrape for this run only (~1,950 matches, ~55min) -- not a full re-scrape, and does not discover new matches/events itself, so the very next scheduled run still catches up on anything new. Only needs running once; re-run only if matches scraped after this lands should also get backfilled later.'
+        type: boolean
+        default: false
 
 # One run at a time. Two concurrent runs would race on both the database cache
 # and the push, and queuing is always preferable to either losing a scrape or
@@ -181,7 +185,12 @@ jobs:
         id: scrape_vct
         run: |
           set +e
-          python scraper/vlr_vct_scraper.py --resume
+          if [ "${{ inputs.backfill_game_ids }}" = "true" ]; then
+            echo "backfill_game_ids requested -- running the one-time id backfill instead of the normal incremental scrape."
+            python scraper/vlr_vct_scraper.py --backfill-game-ids
+          else
+            python scraper/vlr_vct_scraper.py --resume
+          fi
           code=$?
           set -e
           echo "code=$code" >> "$GITHUB_OUTPUT"
@@ -197,7 +206,12 @@ jobs:
         id: scrape_ewc
         run: |
           set +e
-          python scraper/vlr_ewc_scraper.py --resume
+          if [ "${{ inputs.backfill_game_ids }}" = "true" ]; then
+            echo "backfill_game_ids requested -- running the one-time id backfill instead of the normal incremental scrape."
+            python scraper/vlr_ewc_scraper.py --backfill-game-ids
+          else
+            python scraper/vlr_ewc_scraper.py --resume
+          fi
           code=$?
           set -e
           echo "code=$code" >> "$GITHUB_OUTPUT"

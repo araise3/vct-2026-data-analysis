@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import TeamLogo from './TeamLogo'
 import Select from './ui/Select'
 import teamLogos from '../lib/teamLogos.json'
-import { shortDate, vlrMatchUrl } from '../lib/format'
+import { shortDate, vlrMapUrl } from '../lib/format'
 
 /**
  * Per-MAP performance bars -- a direct 1:1 clone of rft.gg's own
@@ -70,6 +70,16 @@ const CHART_PX = 256
 // only has to be tall enough to read as a bar, not tall enough to contain
 // a label.
 const MIN_BAR_PX = 6
+
+// The badge is centred on the bar's own top edge (see the `-translate-y-1/2`
+// below) and so overlaps upward by roughly half its own rendered height
+// (30px badge + 3px border each side = 36px, half = 18px). A maxed-out bar
+// (100% of CHART_PX) would push the badge that far above the h-64 box's own
+// top edge -- straight into the date header sitting a mere 8px (`mb-2`)
+// above it. Capping the tallest a bar can ever get keeps the badge's
+// overlap inside the box itself instead of into the header text.
+const BADGE_CLEARANCE_PX = 20
+const BAR_MAX_PCT = ((CHART_PX - BADGE_CLEARANCE_PX) / CHART_PX) * 100
 
 // A long career can run to hundreds of maps. Capped rather than rendering
 // all of them -- the RTL scroll trick (see the component below) already
@@ -140,7 +150,7 @@ const STATS = [
 function heightPct(v, [min, max]) {
   if (v == null) return 0
   const clamped = Math.min(max, Math.max(min, v))
-  return ((clamped - min) / (max - min)) * 100
+  return ((clamped - min) / (max - min)) * BAR_MAX_PCT
 }
 
 /** Groups consecutive rows sharing the same calendar `date` into one
@@ -200,14 +210,14 @@ export default function PerformanceStrip({ rows }) {
                   <div className="mb-2 px-1 text-center text-[10px] font-medium text-muted whitespace-nowrap">
                     {(shortDate(g.date) || '').toUpperCase()}
                   </div>
-                  <div className="flex">
+                  <div className="flex gap-x-0.5">
                     {g.rows.map((b) => {
                       const value = stat.get(b)
                       const tierStyle = value != null ? TIER_STYLES[stat.tier(value)] : NO_TIER
                       return (
-                        <div key={b.id} className="flex w-8 shrink-0 flex-col items-center">
+                        <div key={b.id} className="flex w-10 shrink-0 flex-col items-center">
                           <a
-                            href={vlrMatchUrl(b.matchId)}
+                            href={vlrMapUrl(b.matchId, b.gameId)}
                             target="_blank"
                             rel="noopener noreferrer"
                             title={`${b.date} — Map ${b.mapIndex + 1} (${b.map}) vs ${b.opponent} ${b.score} — ${stat.label} ${value != null ? stat.format(value) : '—'} — open on vlr.gg`}
@@ -224,7 +234,14 @@ export default function PerformanceStrip({ rows }) {
                             >
                               {value != null && (
                                 <div
-                                  className={`absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 flex h-[30px] min-w-[30px] items-center justify-center rounded-lg px-[3px] text-[12px] font-bold whitespace-nowrap transition-transform group-hover:scale-105 border-[3px] border-surface ${tierStyle.bg} ${tierStyle.text}`}
+                                  // min-w-[30px] alone (rft.gg's own transcribed value, sized for
+                                  // ITS single 0-100 integer metric) isn't wide enough for this
+                                  // site's own repurposed badge text -- a 2-decimal value like
+                                  // "0.62" or a percentage like "91%" already renders ~36-40px wide,
+                                  // wider than the then-w-8 (32px) column that used to hold it,
+                                  // which let adjacent maps' badges overlap. The column itself grew
+                                  // to w-10 (40px) + a small inter-column gap below to match.
+                                  className={`absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 flex h-[30px] min-w-[34px] items-center justify-center rounded-lg px-[3px] text-[12px] font-bold whitespace-nowrap transition-transform group-hover:scale-105 border-[3px] border-surface ${tierStyle.bg} ${tierStyle.text}`}
                                 >
                                   {stat.format(value)}
                                 </div>
@@ -245,7 +262,7 @@ export default function PerformanceStrip({ rows }) {
                                 </span>
                               )}
                             </div>
-                            <span className="text-[11px] font-semibold text-muted truncate max-w-8">
+                            <span className="text-[11px] font-semibold text-muted truncate max-w-10">
                               {tagFor(b.opponent)}
                             </span>
                           </Link>

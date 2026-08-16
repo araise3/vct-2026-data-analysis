@@ -305,6 +305,18 @@ def init_db(path: str = DB_PATH) -> sqlite3.Connection:
         cur.execute("ALTER TABLE matches ADD COLUMN first_partial_at TEXT")
     except sqlite3.OperationalError:
         pass  # column already exists -- DB was created after this migration
+    try:
+        # VLR's own opaque per-map id (its ".vm-stats-game[data-game-id]"),
+        # already parsed off this same Overview-tab fetch to correlate maps
+        # across tab fetches (see game_id_to_map_index below) but previously
+        # discarded once that correlation was done. Kept now so a map can
+        # link straight to vlr.gg's own per-map scoreboard view
+        # (?game=<id>&tab=overview) instead of just the match overall --
+        # confirmed live that a *position*-based `?map=N` param does NOT
+        # deep-link on a fresh page load, only this opaque id does.
+        cur.execute("ALTER TABLE maps ADD COLUMN vlr_game_id TEXT")
+    except sqlite3.OperationalError:
+        pass  # column already exists -- DB was created after this migration
 
     cur.executescript(
         """
@@ -398,6 +410,7 @@ def init_db(path: str = DB_PATH) -> sqlite3.Connection:
             team2_atk_score INTEGER,
             team2_def_score INTEGER,
             duration TEXT,
+            vlr_game_id TEXT,
             PRIMARY KEY (match_id, map_index)
         );
 
@@ -1119,6 +1132,57 @@ def rescrape_all_economy(session, conn, event_ids=None):
             continue
 
 
+def backfill_map_game_ids(session, conn, event_ids=None):
+    """Backfills just `maps.vlr_game_id` for every completed match already in
+    the DB -- one fetch/match (Overview tab only, via the existing
+    build_game_id_to_map_index() read-only helper -- see
+    rescrape_match_economy_only()'s own use of it above for the same
+    one-fetch pattern), not scrape_match_detail's three. Every other column
+    on `maps` is already correct; this only ever needs a targeted UPDATE,
+    never the INSERT OR REPLACE the full rescrape functions use (which would
+    require re-deriving every other column just to avoid wiping them)."""
+    cur = conn.cursor()
+    if event_ids:
+        placeholders = ",".join("?" * len(event_ids))
+        cur.execute(
+            f"SELECT match_id, match_url FROM matches "
+            f"WHERE status IN ('completed','partial') AND event_id IN ({placeholders}) ORDER BY match_id",
+            event_ids,
+        )
+    else:
+        cur.execute(
+            "SELECT match_id, match_url FROM matches WHERE status IN ('completed','partial') ORDER BY match_id"
+        )
+    rows = cur.fetchall()
+    print(f"Backfilling map game ids for {len(rows)} completed/partial matches...")
+    for i, (match_id, match_url) in enumerate(rows, 1):
+        try:
+            soup = fetch(match_url, session)
+            if soup is None:
+                print(f"  [{i}/{len(rows)}] match {match_id}: could not fetch, skipping")
+                continue
+            mapping = build_game_id_to_map_index(soup)
+            if not mapping:
+                print(f"  [{i}/{len(rows)}] match {match_id}: no maps found, skipping")
+                continue
+            for game_id, map_index in mapping.items():
+                cur.execute(
+                    "UPDATE maps SET vlr_game_id = ? WHERE match_id = ? AND map_index = ?",
+                    (game_id, match_id, map_index),
+                )
+            conn.commit()
+            print(f"  [{i}/{len(rows)}] match {match_id}: {len(mapping)} map id(s)")
+        except KeyboardInterrupt:
+            print("\nInterrupted — progress saved to DB.")
+            raise
+        except ScrapeFailure:
+            raise  # fatal and run-wide -- must not be swallowed as a per-match error
+        except Exception as e:
+            FAILURES["match"] += 1
+            print(f"  !! failed on match {match_id}: {e}")
+            continue
+
+
 def rescrape_all_match_details(session, conn, event_ids=None):
     """Re-scrapes FULL match detail (Overview + Performance + Economy) for
     every completed match already in the DB, skipping event-level stats/
@@ -1283,9 +1347,9 @@ def scrape_match_detail(session, conn, event_id: int, match_id: int, match_url: 
         cur.execute(
             """INSERT OR REPLACE INTO maps
             (match_id, map_index, map_name, team1_score, team2_score,
-             team1_atk_score, team1_def_score, team2_atk_score, team2_def_score, duration)
-            VALUES (?,?,?,?,?,?,?,?,?,?)""",
-            (match_id, map_index, map_name, t1_score, t2_score, t1_atk, t1_def, t2_atk, t2_def, duration),
+             team1_atk_score, team1_def_score, team2_atk_score, team2_def_score, duration, vlr_game_id)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+            (match_id, map_index, map_name, t1_score, t2_score, t1_atk, t1_def, t2_atk, t2_def, duration, game_id),
         )
 
         # Per-round winner + side + win condition, from the ".vlr-rounds"
@@ -1623,6 +1687,12 @@ def main():
                               "stats/agents/match-list discovery. Backfills the round-economy fix, "
                               "the attack/defense side-split, and the per-round winner/side/"
                               "win-condition table, all at once. Combine with --events to scope it.")
+    parser.add_argument("--backfill-game-ids", action="store_true",
+                         help="Backfill ONLY maps.vlr_game_id (VLR's own per-map id, powers "
+                              "per-map deep links) for every completed match already in the DB. "
+                              "One Overview-tab fetch/match, not the three --redo-match-details "
+                              "costs -- every other column is already correct. Combine with "
+                              "--events to scope it.")
     parser.add_argument("--db", default=DB_PATH, help="SQLite DB path")
     parser.add_argument("--require-existing-db", action="store_true",
                          help="Abort if the database does not already exist instead of "
@@ -1661,6 +1731,17 @@ def main():
     if args.redo_match_details:
         try:
             rescrape_all_match_details(session, conn, event_ids=args.events)
+        except ScrapeFailure as e:
+            print(f"\n[FATAL] {e}")
+            conn.close()
+            sys.exit(2)
+        conn.close()
+        print(f"\nDone. Data saved to {args.db}")
+        sys.exit(failure_exit_code())
+
+    if args.backfill_game_ids:
+        try:
+            backfill_map_game_ids(session, conn, event_ids=args.events)
         except ScrapeFailure as e:
             print(f"\n[FATAL] {e}")
             conn.close()

@@ -1612,6 +1612,14 @@ def main():
             "s1": int(row.team1_score) if pd.notna(row.team1_score) else None,
             "s2": int(row.team2_score) if pd.notna(row.team2_score) else None,
             "ot": int(row.is_ot),
+            # VLR's own opaque per-map id (its ?game=<id> query param) --
+            # lets the frontend deep-link straight to this map's own
+            # scoreboard on vlr.gg instead of just the match overall. Only
+            # populated for maps scraped/re-scraped since the scraper
+            # started keeping it (see vlr_vct_scraper.py's own migration
+            # comment); older rows fall back to null the same way an
+            # unbackfilled `duration` already does above.
+            "gid": row.vlr_game_id if pd.notna(row.vlr_game_id) else None,
         })
 
     # Map veto sequence per match ("t": acting team, null on the decider;

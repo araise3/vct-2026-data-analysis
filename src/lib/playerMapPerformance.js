@@ -59,6 +59,12 @@ export function buildPlayerMapPerformance(matches, matchPlayersData, teamMapDeta
         id: `${m.id}-${i}`,
         matchId: m.id,
         mapIndex: i,
+        // VLR's own opaque per-map id, straight off match_results.json's
+        // `maps[i].gid` -- null for anything scraped before the scraper
+        // started keeping it (see export_from_db.py's own comment), in
+        // which case the map just links to the match overall instead (see
+        // vlrMapUrl's own fallback).
+        gameId: mm.gid ?? null,
         map: mm.map,
         date: m.date,
         ts: m.ts,

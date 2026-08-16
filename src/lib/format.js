@@ -162,6 +162,22 @@ export function vlrMatchUrl(id) {
   return `https://www.vlr.gg/${id}`
 }
 
+// Deep-links straight to one map's own scoreboard tab, via VLR's own opaque
+// per-map id (`gameId` -- its `?game=<id>` query param). Confirmed live this
+// is the ONLY thing that works for this: a position-based `?map=1/2/3` param
+// also exists in VLR's own markup but does NOT actually select that map on a
+// fresh page load, only this id does -- `&tab=overview` is required too, or
+// VLR defaults to a blank tab state.
+//
+// Falls back to the plain match link when `gameId` is null -- true for any
+// map scraped before the scraper started keeping this id (see
+// vlr_vct_scraper.py's own migration comment) -- so an old map still links
+// somewhere useful instead of a broken deep link.
+export function vlrMapUrl(matchId, gameId) {
+  if (!gameId) return vlrMatchUrl(matchId)
+  return `https://www.vlr.gg/${matchId}?game=${gameId}&tab=overview`
+}
+
 // Clock-time duration in seconds -> "44:31" or "1:01:51" once past an hour,
 // matching VLR's own .map-duration display convention.
 export function duration(v) {

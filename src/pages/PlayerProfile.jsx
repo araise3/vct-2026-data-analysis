@@ -18,7 +18,8 @@ import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import AgentIcon from '../components/AgentIcon'
 import Button from '../components/ui/Button'
-import { rating, pct, num, ratingTier, vlrMatchUrl, eventLabel } from '../lib/format'
+import { rating, pct, num, ratingTier, vlrMatchUrl, eventLabel, birthDateLabel } from '../lib/format'
+import { useFollowed } from '../lib/useFollowed'
 
 export default function PlayerProfile() {
   const { name } = useParams()
@@ -34,6 +35,17 @@ export default function PlayerProfile() {
   // match this site's own player-name casing ("basic", sourced from VLR).
   const { data: realNamesData } = useData('player_real_names')
   const realName = realNamesData?.[decodedName.toLowerCase()]
+  // Same Liquipedia infobox fetch as realName above, see
+  // liquipedia_player_names_scraper.py -- a separate file rather than a
+  // second field on player_real_names.json since a birth date is a
+  // structurally different kind of value (needs its own null-safe date
+  // formatting, not just a display string).
+  const { data: birthdatesData } = useData('player_birthdates')
+  const birthDate = birthdatesData?.[decodedName.toLowerCase()]
+
+  // No accounts on a static site -- "Follow" persists per-browser via
+  // localStorage instead of a server-side watchlist. See useFollowed.js.
+  const [followed, toggleFollowed] = useFollowed('players', decodedName)
 
   // Every one of this player's own buckets, across every year/competition --
   // the page-wide multi-facet FilterPanel (region/event/phase/week/split/
@@ -345,30 +357,139 @@ export default function PlayerProfile() {
     <div className="flex flex-col gap-6">
       <Link to="/players" className="text-sm text-muted hover:text-ink w-fit">← Back to Players</Link>
 
-      <div className="flex items-stretch gap-4">
-        <div className="w-16 rounded-xl bg-surface2 border border-hairline flex items-center justify-center shrink-0">
-          <Flag countryCode={meta.countryCode} countryName={meta.countryName} size={28} />
-        </div>
-        <div className="flex flex-col justify-center gap-1">
-          <div className="flex items-center gap-2.5">
-            <h1 className="font-display text-2xl font-semibold text-ink">{decodedName}</h1>
-            {role && (
-              <span
-                className="text-[11px] font-medium uppercase tracking-wide px-2 py-0.5 rounded bg-surface2 text-muted"
-                title="Inferred from the agents played in the player's most recent season -- Valorant has no position field"
-              >
-                {role}
-              </span>
-            )}
+      <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-4 py-4 sm:px-6 overflow-hidden">
+        <div className="flex items-center gap-4 sm:gap-6 min-w-0">
+          {/* Headshot placeholder -- this site's scraper pipeline has no
+              player-photo source (VLR doesn't expose one in a scrapable way),
+              so this reserves the frame rather than silently omitting it.
+              Swap the SVG for a real <img src={meta.photo}> if a photo source
+              is ever added. The blurred halo behind it echoes rft.gg's own
+              header photo treatment, just without a real image to blur. */}
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0">
+            <div className="absolute inset-0 rounded-xl bg-accent/25 blur-2xl" aria-hidden="true" />
+            <div className="relative w-full h-full rounded-xl bg-surface2 border border-hairline flex items-center justify-center overflow-hidden">
+              <svg viewBox="0 0 24 24" fill="none" className="w-10 h-10 sm:w-12 sm:h-12 text-muted/40" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M4 20.5c0-4.42 3.58-7.5 8-7.5s8 3.08 8 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </div>
           </div>
-          {realName && <span className="text-muted text-sm">{realName}</span>}
-          <Link
-            to={`/teams/${encodeURIComponent(displayTeam)}`}
-            className="text-muted text-sm hover:text-accent-bright w-fit"
-          >
-            <TeamLogo team={displayTeam} size={22} />
-          </Link>
+
+          <div className="flex flex-col gap-1.5 min-w-0">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <h1 className="font-display text-xl sm:text-2xl font-semibold text-ink truncate">{decodedName}</h1>
+              <button
+                type="button"
+                onClick={toggleFollowed}
+                aria-pressed={followed}
+                title={followed ? 'Unfollow' : 'Follow'}
+                className={`flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-lg border transition-colors shrink-0 ${
+                  followed
+                    ? 'border-accent/40 text-accent-bright bg-accent/10'
+                    : 'border-hairline text-muted hover:text-ink hover:border-accent/40'
+                }`}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill={followed ? 'currentColor' : 'none'}
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-3.5 h-3.5"
+                  aria-hidden="true"
+                >
+                  <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+                </svg>
+                {followed ? 'Following' : 'Follow'}
+              </button>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap text-muted text-sm">
+              <span className="flex items-center gap-1.5">
+                <Flag countryCode={meta.countryCode} countryName={meta.countryName} size={14} />
+                {realName || meta.countryName}
+              </span>
+              {displayTeam && (
+                <>
+                  <span className="text-hairline">·</span>
+                  <Link
+                    to={`/teams/${encodeURIComponent(displayTeam)}`}
+                    className="flex items-center hover:text-accent-bright transition-colors"
+                  >
+                    <TeamLogo team={displayTeam} size={18} />
+                  </Link>
+                </>
+              )}
+              {role && (
+                <>
+                  <span className="text-hairline">·</span>
+                  <span
+                    // text-sm, not text-xs -- this row's font-size/line-height
+                    // is otherwise uniform across every item (flag+realname,
+                    // team, birthdate), all sized by the shared `text-sm` on
+                    // the row itself. A smaller size here alone shrank this
+                    // span's own line box, which the row's flex centering
+                    // then visibly nudged out of line with its neighbors.
+                    className="uppercase tracking-wide font-medium"
+                    title="Inferred from the agents played in the player's most recent season -- Valorant has no position field"
+                  >
+                    {role}
+                  </span>
+                </>
+              )}
+              {birthDate && (
+                <>
+                  <span className="text-hairline">·</span>
+                  <span className="flex items-center gap-1.5">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-3.5 h-3.5 opacity-70"
+                      aria-hidden="true"
+                    >
+                      <path d="M8 2v4" />
+                      <path d="M16 2v4" />
+                      <rect width="18" height="18" x="3" y="4" rx="2" />
+                      <path d="M3 10h18" />
+                    </svg>
+                    {birthDateLabel(birthDate)}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
+
+        <Button
+          as={Link}
+          to={`/compare?a=${encodeURIComponent(decodedName)}`}
+          variant="outline"
+          size="sm"
+          className="self-start sm:self-center shrink-0"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="w-3.5 h-3.5"
+            aria-hidden="true"
+          >
+            <circle cx="5" cy="6" r="3" />
+            <path d="M12 6h5a2 2 0 0 1 2 2v7" />
+            <path d="m15 9-3-3 3-3" />
+            <circle cx="19" cy="18" r="3" />
+            <path d="M12 18H7a2 2 0 0 1-2-2V9" />
+            <path d="m9 15 3 3-3 3" />
+          </svg>
+          Compare
+        </Button>
       </div>
 
       {stats && stats.mapsPlayed > 0 && (

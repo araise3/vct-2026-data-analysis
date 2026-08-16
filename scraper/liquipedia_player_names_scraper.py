@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
-Fetch each player's real (legal) name from their own Liquipedia page's
-Infobox player template (`|name=`), for every player handle this site
-tracks -- not just current partnered-org rosters.
+Fetch each player's real (legal) name AND birth date from their own
+Liquipedia page's Infobox player template (`|name=`, `|birth_date=`), for
+every player handle this site tracks -- not just current partnered-org
+rosters. Both come off the exact same Infobox block in the exact same
+wikitext fetch, so this one script produces two output files rather than
+fetching each player's page twice.
 
 REPLACES data_prep/build_player_real_names.py's Google Sheet source
 -------------------------------------------------------------------
@@ -55,17 +58,20 @@ same as a straightforward 404.
 USAGE
 -----
   python3 liquipedia_player_names_scraper.py --inspect TenZ aspas
-      Dump the resolved title + extracted name for a few handles, no
-      write. Use this to sanity-check a newly-added or oddly-spelled
-      handle before trusting a full run.
+      Dump the resolved title + extracted name + birth date for a few
+      handles, no write. Use this to sanity-check a newly-added or
+      oddly-spelled handle before trusting a full run.
 
   python3 liquipedia_player_names_scraper.py
       Reads every player handle from ../public/data/player_buckets.json's
       own `meta` table (this site's full known-player list, every season),
-      fetches all of them, and writes
-      ../public/data/player_real_names.json in the exact same
-      `{handleLower: "First Last"}` shape the old Google-Sheet-sourced
-      script produced -- PlayerProfile.jsx needed no changes.
+      fetches all of them, and writes:
+        - ../public/data/player_real_names.json, `{handleLower: "First
+          Last"}`, unchanged from before this script also extracted birth
+          dates.
+        - ../public/data/player_birthdates.json, `{handleLower:
+          "YYYY-MM-DD"}` -- ISO so the frontend can `new Date(...)` it
+          directly with no format-parsing of its own.
 """
 import argparse
 import hashlib
@@ -95,6 +101,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO_ROOT = os.path.dirname(HERE)
 DEFAULT_PLAYERS_FROM = os.path.join(_REPO_ROOT, "public", "data", "player_buckets.json")
 DEFAULT_OUT = os.path.join(_REPO_ROOT, "public", "data", "player_real_names.json")
+DEFAULT_BIRTHDATES_OUT = os.path.join(_REPO_ROOT, "public", "data", "player_birthdates.json")
 
 # A handful of handles this site stores don't match their Liquipedia page
 # title verbatim -- same category of gap TEAM_PAGES fixes for team names in
@@ -252,6 +259,45 @@ def extract_real_name(wikitext):
     return None
 
 
+# Valorant's Liquipedia infobox stores `|birth_date=` as a plain ISO string
+# right on the template (unlike the LoL wiki's `{{Birth date and age|...}}`
+# template wrapper this project's earlier scrapers had to unwrap elsewhere)
+# -- confirmed against real infoboxes: TenZ gives `birth_date=2001-05-05`
+# verbatim. Two real-world shapes this still has to handle, both confirmed
+# against the live wiki rather than assumed:
+#   - Non-zero-padded month/day ("2002-8-16") -- re-formatted rather than
+#     rejected, since the date itself is still fully known.
+#   - A same-LINE next field with no newline between them
+#     ("birth_date=2005-06-05|birth_location=Gianyar, Indonesia", confirmed
+#     on Monyet's page) -- the greedy `(.+)$` above happily captures
+#     "|birth_location=..." right along with the date, so this splits on
+#     the first "|" and keeps only what's actually the date.
+# A handful of pages carry a genuinely incomplete date instead -- year-only
+# with "??" for month/day (Diseased, Newzera, Harmii) or the reverse
+# (Septem7's "1999-??-??") -- those return None rather than a value with a
+# fake month/day baked in that would silently mis-render an age or "born on"
+# date.
+_BIRTH_DATE_RE = re.compile(r"^(\d{4})-(\d{1,2})-(\d{1,2})$")
+
+
+def extract_birth_date(wikitext):
+    if not wikitext:
+        return None
+    m = re.search(r"\{\{\s*Infobox\s+player\b", wikitext, re.IGNORECASE)
+    if not m:
+        return None
+    window = wikitext[m.end():m.end() + 4000]
+    m2 = re.search(r"^[ \t]*\|[ \t]*birth_date[ \t]*=[ \t]*(.+)$", window, re.MULTILINE)
+    if not m2:
+        return None
+    value = clean_wiki_value(m2.group(1).split("|")[0])
+    dm = _BIRTH_DATE_RE.match(value)
+    if not dm:
+        return None
+    year, month, day = dm.groups()
+    return f"{year}-{int(month):02d}-{int(day):02d}"
+
+
 def chunked(seq, size):
     for i in range(0, len(seq), size):
         yield seq[i:i + size]
@@ -265,6 +311,7 @@ def load_handles(path):
 
 def fetch_all(s, handles):
     names = {}
+    birthdates = {}
     total_batches = (len(handles) + 49) // 50
     for i, batch in enumerate(chunked(handles, 50), start=1):
         print(f"  batch {i}/{total_batches} ({len(batch)} handles)...")
@@ -273,7 +320,10 @@ def fetch_all(s, handles):
             name = extract_real_name(wikitext)
             if name:
                 names[handle] = name
-    return names
+            birth_date = extract_birth_date(wikitext)
+            if birth_date:
+                birthdates[handle] = birth_date
+    return names, birthdates
 
 
 def main():
@@ -283,6 +333,7 @@ def main():
     ap.add_argument("--players-from", default=DEFAULT_PLAYERS_FROM,
                      help="player_buckets.json (or any file with a top-level `meta` object of handles) to source the handle list from.")
     ap.add_argument("--out", default=DEFAULT_OUT)
+    ap.add_argument("--birthdates-out", default=DEFAULT_BIRTHDATES_OUT)
     args = ap.parse_args()
 
     s = session()
@@ -292,21 +343,30 @@ def main():
         for handle in args.inspect:
             wikitext = wikitexts.get(handle)
             name = extract_real_name(wikitext)
+            birth_date = extract_birth_date(wikitext)
             has_infobox = bool(wikitext and re.search(r"\{\{\s*Infobox\s+player\b", wikitext, re.IGNORECASE))
             print(f"{handle}: page_title={page_title(handle)!r} found={wikitext is not None} "
-                  f"has_infobox={has_infobox} name={name!r}")
+                  f"has_infobox={has_infobox} name={name!r} birth_date={birth_date!r}")
         return
 
     handles = load_handles(args.players_from)
-    print(f"Fetching real names for {len(handles)} players...")
-    names = {handle.lower(): name for handle, name in fetch_all(s, handles).items()}
+    print(f"Fetching real names and birth dates for {len(handles)} players...")
+    raw_names, raw_birthdates = fetch_all(s, handles)
+    names = {handle.lower(): name for handle, name in raw_names.items()}
+    birthdates = {handle.lower(): d for handle, d in raw_birthdates.items()}
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as f:
         json.dump(names, f, ensure_ascii=False, indent=2, sort_keys=True)
 
-    print(f"Resolved {len(names)} of {len(handles)} players ({len(names) / len(handles):.0%}).")
+    os.makedirs(os.path.dirname(args.birthdates_out), exist_ok=True)
+    with open(args.birthdates_out, "w", encoding="utf-8") as f:
+        json.dump(birthdates, f, ensure_ascii=False, indent=2, sort_keys=True)
+
+    print(f"Resolved {len(names)} names and {len(birthdates)} birth dates of {len(handles)} players "
+          f"({len(names) / len(handles):.0%} / {len(birthdates) / len(handles):.0%}).")
     print(f"Wrote {args.out}")
+    print(f"Wrote {args.birthdates_out}")
     print(ATTRIBUTION)
 
 

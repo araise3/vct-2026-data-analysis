@@ -221,6 +221,23 @@ export function longDate(iso) {
   return `${MONTHS[m - 1]} ${d}, ${y}`
 }
 
+/** "2000-07-22" -> "Jul 22, 2000 (26)" -- longDate plus the age computed
+ * against today's real date (not the season's), since a birth date is a
+ * real-world fact rather than something scoped to the current competitive
+ * year the rest of this site's dates are. */
+export function birthDateLabel(iso) {
+  if (!iso) return null
+  const [y, m, d] = iso.split('-').map(Number)
+  const birth = new Date(y, m - 1, d)
+  const now = new Date()
+  let age = now.getFullYear() - y
+  const hadBirthdayThisYear =
+    now.getMonth() > birth.getMonth() ||
+    (now.getMonth() === birth.getMonth() && now.getDate() >= birth.getDate())
+  if (!hadBirthdayThisYear) age -= 1
+  return `${longDate(iso)} (${age})`
+}
+
 /** "2026-08-06" -> "AUGUST 2026", for the centre column's month group headers. */
 export function monthLabel(iso) {
   if (!iso) return ''

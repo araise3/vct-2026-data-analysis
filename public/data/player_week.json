@@ -1,13 +1,13 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-08-16T06:53:11Z",
-    "playersConsidered": 256,
+    "generatedAt": "2026-08-16T09:39:39Z",
+    "playersConsidered": 215,
     "poolMeanRating": 1.0,
     "selection": "round-weighted (shrunk toward pool mean, m=20 rounds, no eligibility gate; see build_player_week.py)"
   },
-  "weekStart": "2026-08-09",
-  "weekEnd": "2026-08-15",
+  "weekStart": "2026-08-10",
+  "weekEnd": "2026-08-16",
   "player": "basic",
   "team": "FURIA",
   "countryCode": "br",

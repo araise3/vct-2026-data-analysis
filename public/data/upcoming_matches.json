@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-15T21:51:22Z"
+    "fetchedAt": "2026-08-16T02:08:42Z"
   },
   "matches": [
     {
@@ -353,22 +353,22 @@
       "bestOf": 3,
       "team1": "MIBR",
       "team2": "KRÜ Esports",
-      "score1": 0,
+      "score1": 2,
       "score2": 0,
       "started": true
     },
     {
-      "key": "1786838400|sentinels|envy",
+      "key": "1786835400|sentinels|envy",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
-      "timestamp": 1786838400,
+      "timestamp": 1786835400,
       "bestOf": 3,
       "team1": "Sentinels",
       "team2": "ENVY",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1786867200|nova-esports|titan-esports-club",
@@ -644,13 +644,13 @@
       "started": false
     },
     {
-      "key": "1787270400|tbd|fluxo-w7m",
+      "key": "1787270400|kr-esports|fluxo-w7m",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787270400,
       "bestOf": 3,
-      "team1": null,
+      "team1": "KRÜ Esports",
       "team2": "Fluxo W7M",
       "score1": null,
       "score2": null,
@@ -735,13 +735,13 @@
       "started": false
     },
     {
-      "key": "1787346000|tbd|tbd",
+      "key": "1787346000|mibr|tbd",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787346000,
       "bestOf": 3,
-      "team1": null,
+      "team1": "MIBR",
       "team2": null,
       "score1": null,
       "score2": null,
@@ -792,6 +792,19 @@
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787396400,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787410800|tbd|tbd",
+      "event": "Vct 2026 Emea Stage 2",
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
+      "phase": null,
+      "timestamp": 1787410800,
       "bestOf": 3,
       "team1": null,
       "team2": null,

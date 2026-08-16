@@ -20063,7 +20063,7 @@
           "name": "João Victor",
           "joinDate": "2025-11-26",
           "flag": "br",
-          "captain": false,
+          "captain": true,
           "playerStatus": "STARTER"
         },
         {
@@ -26019,7 +26019,7 @@
           "name": "Matheus Araújo",
           "joinDate": "2026-08-07",
           "flag": "br",
-          "captain": false,
+          "captain": true,
           "playerStatus": "STARTER"
         },
         {

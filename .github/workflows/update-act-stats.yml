@@ -1,0 +1,95 @@
+name: Update player Act stats
+
+# public/data/player_act_stats.json -- each linked player's PERSONAL ranked
+# ladder stats for the current VALORANT Act, aggregated from HenrikDev's
+# unofficial VALORANT API by data_prep/fetch_act_stats.py (see that script's
+# own docstring for why HenrikDev rather than tracker.gg or Riot directly,
+# and why the numbers have to be summed from match records).
+#
+# Runs at 05:00 UTC, deliberately AFTER update-tracker-links.yml's 04:30 slot:
+# this script can only work with accounts whose `puuid` that job has already
+# resolved, so this ordering means a tracker link added by hand today is
+# producing Act stats the same night rather than a day later. Also keeps all
+# four data workflows in their own non-overlapping commit slots
+# (update-data.yml 03:00, update-liquipedia-data.yml 04:15,
+# update-tracker-links.yml 04:30).
+#
+# Daily, not hourly, on purpose: these are ranked ladder games for pros who
+# mostly queue in bursts, the incremental cache below makes a run cheap but
+# not free, and nothing on the site presents this as live data.
+#
+# HENRIKDEV_API_KEY is the same GitHub Actions secret update-tracker-links.yml
+# already uses -- a free key from HenrikDev's own Discord, never committed,
+# used only server-side inside this workflow so it never reaches the built site.
+
+on:
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+    inputs:
+      full:
+        description: 'Ignore the incremental cache and re-sum each player whole Act'
+        type: boolean
+        default: false
+
+# Independent of the other data workflows' concurrency groups -- this only
+# ever writes public/data/player_act_stats.json, which none of them touch.
+concurrency:
+  group: update-act-stats
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    # The incremental cache keeps a steady-state run to a couple of requests
+    # per player, but a first run (or a --full rebuild, or the first run after
+    # a new Act starts and every player's counters reset) pages through each
+    # player's whole Act history, and the script paces itself off the API's
+    # own RateLimit-Remaining/Reset headers -- so it can legitimately spend a
+    # long time sleeping rather than failing. Generous ceiling for that.
+    timeout-minutes: 60
+
+    env:
+      HENRIKDEV_API_KEY: ${{ secrets.HENRIKDEV_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # No pip install -- fetch_act_stats.py is standard library only
+      # (json/os/sys/time/urllib), same as resolve_tracker_puuids.py.
+
+      - name: Fetch current-Act stats
+        run: |
+          if [ "${{ inputs.full }}" = "true" ]; then
+            python data_prep/fetch_act_stats.py --full
+          else
+            python data_prep/fetch_act_stats.py
+          fi
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/player_act_stats.json
+          if git diff --staged --quiet; then
+            echo "No Act stat changes -- nothing to publish."
+            exit 0
+          fi
+          git commit -m "Update player Act stats $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Pushed."
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt); rebasing onto latest main."
+            git pull --rebase --autostash origin main
+          done
+          echo "::error::Could not push after 3 attempts."
+          exit 1

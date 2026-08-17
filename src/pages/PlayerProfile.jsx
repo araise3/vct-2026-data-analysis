@@ -20,7 +20,6 @@ import AgentIcon from '../components/AgentIcon'
 import Button from '../components/ui/Button'
 import { rating, pct, num, ratingTier, vlrMatchUrl, eventLabel, birthDateLabel, trackerProfileUrl } from '../lib/format'
 import trackerLinks from '../lib/trackerLinks.json'
-import { useFollowed } from '../lib/useFollowed'
 
 export default function PlayerProfile() {
   const { name } = useParams()
@@ -52,10 +51,6 @@ export default function PlayerProfile() {
   // formatting, not just a display string).
   const { data: birthdatesData } = useData('player_birthdates')
   const birthDate = birthdatesData?.[decodedName.toLowerCase()]
-
-  // No accounts on a static site -- "Follow" persists per-browser via
-  // localStorage instead of a server-side watchlist. See useFollowed.js.
-  const [followed, toggleFollowed] = useFollowed('players', decodedName)
 
   // Every one of this player's own buckets, across every year/competition --
   // the page-wide multi-facet FilterPanel (region/event/phase/week/split/
@@ -388,31 +383,6 @@ export default function PlayerProfile() {
           <div className="flex flex-col gap-1.5 min-w-0">
             <div className="flex items-center gap-2.5 min-w-0">
               <h1 className="font-display text-xl sm:text-2xl font-semibold text-ink truncate">{decodedName}</h1>
-              <button
-                type="button"
-                onClick={toggleFollowed}
-                aria-pressed={followed}
-                title={followed ? 'Unfollow' : 'Follow'}
-                className={`flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-lg border transition-colors shrink-0 ${
-                  followed
-                    ? 'border-accent/40 text-accent-bright bg-accent/10'
-                    : 'border-hairline text-muted hover:text-ink hover:border-accent/40'
-                }`}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill={followed ? 'currentColor' : 'none'}
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-3.5 h-3.5"
-                  aria-hidden="true"
-                >
-                  <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
-                </svg>
-                {followed ? 'Following' : 'Follow'}
-              </button>
             </div>
             <div className="flex items-center gap-2 flex-wrap text-muted text-sm">
               <span className="flex items-center gap-1.5">

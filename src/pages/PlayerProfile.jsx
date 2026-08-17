@@ -210,7 +210,44 @@ export default function PlayerProfile() {
     return rows
   }, [data, recentYear])
 
-  const trackerScore = useMemo(() => {
+  // Percentile of `value` within `pool` -- share of the qualified
+  // population strictly below it, as a 0-100 float (never rounded here;
+  // Tracker Score's own "use decimals" requirement means the ONLY rounding
+  // in this whole computation happens once, at the very end, on the final
+  // 0-1000 score -- every percentile and every intermediate average stays
+  // full-precision float). Shared by both the giant stat pills and Tracker
+  // Score, pro and ranked alike, so "Top X%" always means the same thing
+  // wherever it's shown.
+  function percentileOf(pool, value) {
+    if (!pool.length || value == null) return null
+    const below = pool.filter((v) => v < value).length
+    return (below / pool.length) * 100
+  }
+
+  // One player-performance bundle per view: the 4 giant stat pills PLUS
+  // Tracker Score, built from the same qualified population and the same
+  // percentileOf() so a stat's percentile never disagrees between the pill
+  // showing it and Tracker Score's own breakdown of it (ADR and Win % each
+  // appear in both places). `statKey`, not `key`, on every metric object --
+  // spread into TrackerScoreMetric below, and React treats a literal `key`
+  // inside a spread props object as an error-worthy footgun (it looks like
+  // it's setting the reconciliation key but silently isn't) -- caught live
+  // via a real console warning while first building this.
+  //
+  // PRO: percentiles against every pro player with a bucket in this
+  // player's own recentYear (this site's real pro-match population),
+  // gated by the same round-count qualification bar Records.jsx's "Most
+  // consistent" card and Player of the Month already use. Pills are
+  // Rating/ADR/HS%/Win% -- tracker.gg's own quartet is DMG-Round/K-D/HS%/
+  // Win%, but swapped to lead with Rating 2.0 (this site's own headline
+  // number) and drop K/D in favour of directly showing ADR, per direct
+  // instruction. Tracker Score itself keeps tracker.gg's published 4
+  // inputs (Win%/KAST/ACS/ADR, with ADR standing in for the undisclosed-
+  // formula "Damage Delta/Round" -- see this useMemo's own comment
+  // history) -- a DIFFERENT set from the pills, same as tracker.gg's real
+  // page (its pills and its Tracker Score row don't show the same 4
+  // stats either).
+  const proPerf = useMemo(() => {
     if (!stats || !populationStats.length) return null
     // `fixed` is required -- every other call site in this codebase passes
     // one (dynamicQualifyThreshold's own default leaves it undefined,
@@ -226,30 +263,71 @@ export default function PlayerProfile() {
     const qualified = populationStats.filter((r) => r.roundsPlayed >= threshold)
     if (qualified.length < 2) return null
 
-    const percentileOf = (key, value) => {
-      const pool = qualified.map((r) => r[key]).filter((v) => v != null)
-      if (!pool.length || value == null) return null
-      const below = pool.filter((v) => v < value).length
-      return (below / pool.length) * 100
+    const metric = (statKey, label, value, format) => ({
+      statKey, label, value, format, percentile: percentileOf(qualified.map((r) => r[statKey]).filter((v) => v != null), value),
+    })
+    const rating_ = metric('avgRating', 'Rating', stats.avgRating, (v) => rating(v))
+    const adr = metric('avgAdr', 'ADR', stats.avgAdr, (v) => num(v, 1))
+    const hsPct = metric('avgHsPct', 'HS%', stats.avgHsPct, (v) => pct(v, 1))
+    const winPct = metric('winPct', 'Win %', stats.winPct, (v) => pct(v, 1))
+    const kast = metric('avgKast', 'KAST', stats.avgKast, (v) => pct(v, 0))
+    const acs = metric('avgAcs', 'ACS', stats.avgAcs, (v) => num(v, 0))
+
+    const scoreMetrics = [winPct, kast, acs, adr].filter((m) => m.percentile != null)
+    if (!scoreMetrics.length) return null
+    const avgPercentile = scoreMetrics.reduce((sum, m) => sum + m.percentile, 0) / scoreMetrics.length
+    return {
+      pills: [rating_, adr, hsPct, winPct],
+      scoreMetrics,
+      score: Math.round(avgPercentile * 10),
     }
-
-    // `statKey`, not `key` -- these objects get spread as JSX props below
-    // (`<TrackerScoreMetric {...m} />`), and React treats a literal `key`
-    // field inside a spread props object as an error-worthy footgun (it
-    // looks like it's setting the reconciliation key but silently isn't),
-    // caught live via a real console warning while testing this.
-    const metrics = [
-      { statKey: 'winPct', label: 'Win %', value: stats.winPct, format: (v) => pct(v, 0) },
-      { statKey: 'avgKast', label: 'KAST', value: stats.avgKast, format: (v) => pct(v, 0) },
-      { statKey: 'avgAcs', label: 'ACS', value: stats.avgAcs, format: (v) => num(v, 0) },
-      { statKey: 'avgAdr', label: 'ADR', value: stats.avgAdr, format: (v) => num(v, 0) },
-    ].map((m) => ({ ...m, percentile: percentileOf(m.statKey, m.value) }))
-
-    const scored = metrics.filter((m) => m.percentile != null)
-    if (!scored.length) return null
-    const avgPercentile = scored.reduce((sum, m) => sum + m.percentile, 0) / scored.length
-    return { score: Math.round(avgPercentile * 10), metrics: scored }
   }, [stats, populationStats])
+
+  // Every other tracked player's OWN linked-account ranked stats -- the
+  // population Ranked Tracker Score / pill percentiles are measured
+  // against. Not this site's pro population (that's a different game
+  // entirely from a stats standpoint -- solo ladder vs coordinated pro
+  // play) and not the general Valorant playerbase (this site has no access
+  // to that; the closest honest comparison group available is "other pros'
+  // own ranked accounts, the only ranked data this pipeline has at all").
+  const rankedPopulationStats = useMemo(
+    () => (actStatsData?.players ? Object.values(actStatsData.players) : []),
+    [actStatsData]
+  )
+
+  // RANKED: same shape as proPerf, but only 3 Tracker Score inputs, not 4
+  // -- KAST is a real, confirmed gap (see data_prep/fetch_act_stats.py's
+  // own "SCOPE CAVEATS": `kast` only exists on Riot's ESPORTS endpoints,
+  // never on the personal-match schema, so it cannot be computed for
+  // ranked games at all, not just left out for convenience). Pills are
+  // ACS/ADR/HS%/Win% -- ACS standing in for Rating in the lead slot, since
+  // Rating 2.0 has no ranked-ladder equivalent either.
+  const rankedPerf = useMemo(() => {
+    if (!actStats || !rankedPopulationStats.length) return null
+    const threshold = dynamicQualifyThreshold(rankedPopulationStats, 'matches', { fixed: 20 })
+    if (actStats.matches < threshold) return null
+    const qualified = rankedPopulationStats.filter((r) => r.matches >= threshold)
+    if (qualified.length < 2) return null
+
+    const metric = (statKey, label, value, format) => ({
+      statKey, label, value, format, percentile: percentileOf(qualified.map((r) => r[statKey]).filter((v) => v != null), value),
+    })
+    const acs = metric('acs', 'ACS', actStats.acs, (v) => num(v, 0))
+    const adr = metric('adr', 'ADR', actStats.adr, (v) => num(v, 1))
+    const hsPct = metric('hsPct', 'HS%', actStats.hsPct, (v) => pct(v, 1))
+    const winPct = metric('winPct', 'Win %', actStats.winPct, (v) => pct(v, 1))
+
+    const scoreMetrics = [winPct, acs, adr].filter((m) => m.percentile != null)
+    if (!scoreMetrics.length) return null
+    const avgPercentile = scoreMetrics.reduce((sum, m) => sum + m.percentile, 0) / scoreMetrics.length
+    return {
+      pills: [acs, adr, hsPct, winPct],
+      scoreMetrics,
+      score: Math.round(avgPercentile * 10),
+    }
+  }, [actStats, rankedPopulationStats])
+
+  const perf = showRanked ? rankedPerf : proPerf
 
   // Player duels, by opponent's country -- match_duels.json is comparable
   // in size to match_players.json (already loaded unconditionally above),
@@ -706,19 +784,17 @@ export default function PlayerProfile() {
       </div>
 
       {stats && stats.mapsPlayed > 0 && (
-        // tracker.gg-style "overview" card -- one unified dark panel with a
-        // brand-colored left rail, a row of headline stats (Rating/ACS/K-D/
-        // Win%, tracker.gg's own DMG-Round/K-D/HS%/Win% quartet with Rating
-        // 2.0 swapped in for DMG/Round -- this site treats Rating as the
-        // single most important number the same way tracker.gg treats raw
-        // damage), a denser secondary grid, and a Tracker Score footer --
-        // replacing the previous 3 separate cards (Avg Rating / Most Played
-        // / Most Kills). Most Played Agent and Most Kills were dropped
-        // entirely rather than folded in somewhere else -- neither has a
-        // real equivalent on tracker.gg's own overview (confirmed against
-        // the reference screenshot), and Most Played Agent duplicates the
-        // Agents table's own top row (sorted by mapsPlayed) further down
-        // anyway.
+        // tracker.gg-style "overview" card, built directly off a real saved
+        // copy of tracker.gg's own Competitive Overview page (class names
+        // like .rating-entry/.stat.giant/.performance-score confirmed by
+        // parsing it, not guessed from the screenshot alone) -- a brand rail,
+        // a rank/RR/leaderboard + W-L strip (ranked only -- pro matches have
+        // no personal rank), 4 "giant" stat pills with a percentile fill bar
+        // each, and a Tracker Score footer. No secondary stat grid anymore
+        // (dropped per direct instruction) -- Most Played Agent and Most
+        // Kills stay gone too (no equivalent on tracker.gg's real page;
+        // Most Played Agent duplicates the Agents table's own top row
+        // further down anyway).
         <div className="relative bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-hidden">
           <div className="absolute inset-y-0 left-0 w-1 bg-grad-accent" aria-hidden="true" />
           <div className="pl-4 pr-3 py-3 sm:pl-5 sm:pr-5 sm:py-4 flex flex-col gap-4">
@@ -726,13 +802,12 @@ export default function PlayerProfile() {
               {/* Source toggle -- only rendered when this player actually has
                   linked-account Act stats, so it never appears as a dead
                   control. Labels name the POPULATION each view describes
-                  ("Pro matches" vs "Ranked"), not the data source, since the
-                  distinction that matters to a reader is which games these
-                  numbers come from. */}
+                  ("Pro" vs "Ranked"), not the data source, since that's the
+                  distinction that matters to a reader. */}
               {actStats ? (
                 <div className="flex items-center gap-0.5 p-0.5 bg-surface2 rounded-lg">
                   {[
-                    { id: 'pro', label: 'Pro matches' },
+                    { id: 'pro', label: 'Pro' },
                     { id: 'ranked', label: 'Ranked' },
                   ].map((opt) => (
                     <button
@@ -752,13 +827,15 @@ export default function PlayerProfile() {
               ) : (
                 <span />
               )}
+              {/* W-L record only -- Win % dropped from this corner per direct
+                  instruction (it's already one of the 4 pills below now, so
+                  showing it twice was redundant). */}
               <div className="flex items-center gap-2">
                 {showRanked ? (
                   <span className="text-muted text-xs">
                     {actStats.actShort ? `Act ${actStats.actShort} · ` : ''}
                     {actStats.wins}W – {actStats.losses}L
                     {actStats.draws ? ` – ${actStats.draws}D` : ''}
-                    {actStats.winPct != null ? ` · ${pct(actStats.winPct, 0)} win` : ''}
                   </span>
                 ) : (
                   <>
@@ -770,97 +847,71 @@ export default function PlayerProfile() {
                       </span>
                     )}
                     <span className="text-muted text-xs">
-                      {stats.mapsWon}W – {stats.mapsLost}L · {pct(stats.winPct, 0)} win
+                      {stats.mapsWon}W – {stats.mapsLost}L
                     </span>
                   </>
                 )}
               </div>
             </div>
 
-            {showRanked ? (
-              <>
-                {/* No Rating 2.0 here, deliberately -- it's a VLR-computed
-                    stat that only exists for scraped pro matches, with no
-                    equivalent in Riot's own match data. Showing a blank or
-                    borrowed value would imply the two views are the same
-                    four measurements. */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-y-3 gap-x-4 md:gap-x-0 md:divide-x md:divide-hairline">
-                  <PrimaryStat label="ACS" value={actStats.acs != null ? num(actStats.acs, 0) : '—'} />
-                  <PrimaryStat label="K/D Ratio" value={actStats.kd != null ? actStats.kd.toFixed(2) : '—'} />
-                  <PrimaryStat label="Win %" value={actStats.winPct != null ? pct(actStats.winPct, 0) : '—'} />
-                  <PrimaryStat label="HS %" value={actStats.hsPct != null ? pct(actStats.hsPct, 1) : '—'} />
+            {/* Rank/RR/leaderboard + W-L ring -- tracker.gg's own rank badge
+                + level + ratio cluster, positioned the same way (rank info
+                left, ring right), minus Level (not requested, and this
+                pipeline doesn't fetch account level). Ranked view only --
+                there's no "rank" for a pro-match aggregate. Absent (not a
+                dash-filled placeholder) when the account has no rank on
+                file at all (e.g. genuinely unranked this Act). */}
+            {showRanked && actStats.rank && (
+              <div className="flex items-center justify-between gap-4 pb-1">
+                <div className="flex flex-col">
+                  <span className="text-ink text-sm font-semibold">{actStats.rank.tier}</span>
+                  <span className="flex items-baseline gap-1">
+                    <span className="font-display text-xl font-bold text-ink">{num(actStats.rank.rr)}</span>
+                    <span className="text-muted text-[10px] font-medium uppercase">RR</span>
+                  </span>
+                  {actStats.rank.leaderboardRank != null && (
+                    <span className="text-muted text-[10px]">#{num(actStats.rank.leaderboardRank)} leaderboard</span>
+                  )}
                 </div>
-
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-x-4 gap-y-3 pt-3 border-t border-hairline">
-                  <Stat label="Matches" value={num(actStats.matches)} />
-                  <Stat label="Wins" value={num(actStats.wins)} />
-                  <Stat label="Losses" value={num(actStats.losses)} />
-                  <Stat label="Kills" value={num(actStats.kills)} />
-                  <Stat label="Deaths" value={num(actStats.deaths)} />
-                  <Stat label="Assists" value={num(actStats.assists)} />
-                  <Stat label="ADR" value={actStats.adr != null ? num(actStats.adr, 1) : '—'} />
-                  <Stat label="KPR" value={actStats.kpr != null ? actStats.kpr.toFixed(2) : '—'} />
-                  <Stat label="KDA" value={actStats.kda != null ? actStats.kda.toFixed(2) : '—'} />
-                  <Stat label="Rounds" value={num(actStats.rounds)} />
-                  <Stat label="Avg Kills" value={actStats.avgKills != null ? num(actStats.avgKills, 1) : '—'} />
-                  <Stat label="Headshots" value={num(actStats.headshots)} />
-                </div>
-
-                <p className="text-muted text-[10px] leading-relaxed pt-1">
-                  Personal competitive ladder stats for {actStats.riotId}
-                  {actStats.region ? ` (${actStats.region.toUpperCase()})` : ''} this Act, via their
-                  linked Riot account — solo queue games, not pro matches, so these aren't comparable
-                  with the numbers above.
-                </p>
-              </>
-            ) : (
-              <>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-3 gap-x-4 md:gap-x-0 md:divide-x md:divide-hairline">
-              <PrimaryStat label="Rating 2.0" value={rating(stats.avgRating)} />
-              <PrimaryStat label="ACS" value={num(stats.avgAcs, 0)} />
-              <PrimaryStat label="K/D Ratio" value={stats.kd ? stats.kd.toFixed(2) : '—'} />
-              <PrimaryStat label="Win %" value={pct(stats.winPct, 0)} />
-            </div>
-
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-x-4 gap-y-3 pt-3 border-t border-hairline">
-              <Stat label="Wins" value={num(stats.mapsWon)} />
-              <Stat label="KAST" value={pct(stats.avgKast)} />
-              <Stat label="ADR" value={num(stats.avgAdr, 1)} />
-              <Stat label="Kills" value={num(stats.totalKills)} />
-              <Stat label="Deaths" value={num(stats.totalDeaths)} />
-              <Stat label="Assists" value={num(stats.totalAssists)} />
-              <Stat label="HS%" value={pct(stats.avgHsPct)} />
-              <Stat label="First Kills" value={num(stats.totalFirstKills)} />
-              <Stat label="First Deaths" value={num(stats.totalFirstDeaths)} />
-              <Stat label="Clutches" value={num(stats.totalClutches)} />
-              <Stat label="2K" value={num(stats.total2k)} />
-              <Stat label="3K" value={num(stats.total3k)} />
-            </div>
-              </>
+                <WinLossRing wins={actStats.wins} losses={actStats.losses} />
+              </div>
             )}
 
-            {/* Tracker Score is computed as percentiles against this site's
-                own PRO player population, so it's meaningless next to ranked
-                ladder numbers -- hidden rather than recomputed for a
-                population this site doesn't have. */}
-            {!showRanked && trackerScore && (
+            {perf && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {perf.pills.map((m) => (
+                  <GiantStat key={m.statKey} {...m} />
+                ))}
+              </div>
+            )}
+
+            {perf && (
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3 border-t border-hairline">
                 <div className="flex items-center gap-2.5 shrink-0 sm:w-36">
-                  <TrackerScoreBadge score={trackerScore.score} />
+                  <TrackerScoreBadge score={perf.score} />
                   <div className="flex flex-col">
                     <span className="text-muted text-[10px] uppercase tracking-wide">Tracker Score</span>
                     <span className="font-display text-lg font-bold text-ink">
-                      {trackerScore.score}
+                      {perf.score}
                       <span className="text-muted text-xs font-normal">/1000</span>
                     </span>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 flex-1 min-w-0">
-                  {trackerScore.metrics.map((m) => (
+                <div className={`grid grid-cols-2 ${perf.scoreMetrics.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-4'} gap-3 flex-1 min-w-0`}>
+                  {perf.scoreMetrics.map((m) => (
                     <TrackerScoreMetric key={m.statKey} {...m} />
                   ))}
                 </div>
               </div>
+            )}
+
+            {showRanked && (
+              <p className="text-muted text-[10px] leading-relaxed">
+                Personal competitive ladder stats for {actStats.riotId}
+                {actStats.region ? ` (${actStats.region.toUpperCase()})` : ''} this Act, via their
+                linked Riot account — solo queue games, not pro matches, so these aren't comparable
+                with the numbers above.
+              </p>
             )}
           </div>
         </div>
@@ -989,21 +1040,8 @@ function Stat({ label, value }) {
   )
 }
 
-// The overview card's headline row -- bigger/bolder than Stat above, and
-// padded for the md:divide-x rail between items (only active at md+, where
-// this is guaranteed a single row of 4; see that grid's own comment on why
-// the divider is skipped on the 2x2 mobile layout).
-function PrimaryStat({ label, value }) {
-  return (
-    <div className="flex flex-col gap-1 md:px-4 md:first:pl-0 md:last:pr-0">
-      <span className="text-muted text-[10px] font-medium tracking-wide uppercase truncate">{label}</span>
-      <span className="font-display text-2xl font-semibold text-ink">{value}</span>
-    </div>
-  )
-}
-
-// Tracker Score tier lookup -- see the trackerScore useMemo's own comment
-// for what's being adapted from tracker.gg's article and why. Colors
+// Tracker Score tier lookup -- see proPerf/rankedPerf's own comments for
+// what's being adapted from tracker.gg's article and why. Colors
 // mirror the article's own scheme (S=Blue, A=Green, B=Yellow, C=Grey,
 // D=Rose); this site has no "blue" token, so the existing slate-blue
 // `selected` color (already reserved for "this is the standout/active
@@ -1051,6 +1089,54 @@ function TrackerScoreMetric({ label, value, format, percentile }) {
           <span className="text-muted text-[9px]">Top {topPct.toFixed(1)}%</span>
         </>
       )}
+    </div>
+  )
+}
+
+// The overview card's headline "pills" -- tracker.gg's own `.stat.giant`
+// (confirmed against a saved copy of the real page): a vertical fill bar on
+// the left edge sized to the stat's own percentile (bottom-anchored, so it
+// visually "fills up" the same way tracker.gg's does), the label, the big
+// value, and a "Top X%" line underneath. No tier letter here -- tracker.gg's
+// own pills don't carry one either, only its Tracker Score row does.
+function GiantStat({ label, value, format, percentile }) {
+  const topPct = percentile == null ? null : Math.max(0.1, 100 - percentile)
+  return (
+    <div className="relative flex items-stretch gap-2.5 bg-surface2/40 rounded-lg pl-3 pr-3 py-2.5 overflow-hidden">
+      <div className="absolute inset-y-0 left-0 w-1 bg-surface3" aria-hidden="true">
+        {percentile != null && (
+          <div
+            className="absolute bottom-0 left-0 right-0 bg-grad-accent"
+            style={{ height: `${Math.max(4, percentile)}%` }}
+          />
+        )}
+      </div>
+      <div className="flex flex-col gap-0.5 min-w-0">
+        <span className="text-muted text-[10px] font-medium tracking-wide uppercase truncate">{label}</span>
+        <span className="font-display text-xl font-semibold text-ink">{value != null ? format(value) : '—'}</span>
+        {topPct != null && <span className="text-muted text-[10px]">Top {topPct.toFixed(1)}%</span>}
+      </div>
+    </div>
+  )
+}
+
+// The rank strip's W-L ring -- tracker.gg's own is an SVG arc pair; this is
+// a conic-gradient equivalent (same visual result, far less markup). Colors
+// are this site's own good/bad tokens (tailwind.config.js), not tracker.gg's
+// green/rose, to stay consistent with every other win/loss indicator already
+// on this page.
+function WinLossRing({ wins, losses }) {
+  const total = wins + losses
+  const winShare = total ? (wins / total) * 100 : 0
+  return (
+    <div
+      className="relative w-14 h-14 rounded-full shrink-0"
+      style={{ background: `conic-gradient(#4ac97e 0% ${winShare}%, #f7665e ${winShare}% 100%)` }}
+    >
+      <div className="absolute inset-[3px] rounded-full bg-surface flex flex-col items-center justify-center leading-none gap-0.5">
+        <span className="text-[10px] font-semibold text-good">{num(wins)}W</span>
+        <span className="text-[10px] font-semibold text-bad">{num(losses)}L</span>
+      </div>
     </div>
   )
 }

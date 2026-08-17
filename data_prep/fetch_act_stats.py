@@ -94,6 +94,23 @@ SCOPE CAVEATS (deliberate, and surfaced in the UI)
   - HenrikDev's region enum is na/eu/ap/kr; there is no China region, so
     CN-server players resolve to nothing here. That mirrors the China data
     gaps this project already documents elsewhere.
+  - No KAST for these matches, at all -- checked the full schema: `kast` only
+    exists on the Esports endpoints (real VCT match data), never on the
+    regular match/player-stats schema personal games use. Riot's own client
+    API simply doesn't expose the round-by-round trade/survive data KAST
+    needs for anything but tracked pro matches. A Ranked Tracker Score is
+    therefore 3 stats (Win%/ACS/ADR), not tracker.gg's own 4 -- a real gap
+    in what this source can provide, not a shortcut taken for convenience.
+
+RANK / RR / LEADERBOARD
+-------------------------
+One extra call per player (`/v3/by-puuid/mmr/...`) gets current tier, RR,
+and leaderboard placement all in one response -- `current.leaderboard_placement`
+is null off the board, `{rank, updated_at}` on it, so no separate
+leaderboard search is needed. Refreshed on EVERY run regardless of the
+incremental match cache: RR changes after every single game, so gating it
+behind "only fetch what's new" (correct for match history) would leave it
+stale.
 """
 import argparse
 import json
@@ -354,6 +371,27 @@ def fetch_region(client, puuid):
     return ((data or {}).get("data") or {}).get("region")
 
 
+def fetch_rank(client, region, puuid):
+    """Current competitive tier/RR + leaderboard placement, if the player is
+    ranked on it -- one MMR v3 call gives all three, no separate leaderboard
+    lookup needed (confirmed against the schema: `current.leaderboard_placement`
+    is null off the board, {rank, updated_at} on it). Fetched on EVERY run,
+    not gated by the incremental match cache -- RR moves after every game,
+    so it would go stale under the same "only fetch what's new" logic that's
+    correct for match history."""
+    data = client.get(f"/v3/by-puuid/mmr/{region}/{PLATFORM}/{puuid}")
+    current = ((data or {}).get("data") or {}).get("current") or {}
+    if not current:
+        return None
+    tier = current.get("tier") or {}
+    placement = current.get("leaderboard_placement") or {}
+    return {
+        "tier": tier.get("name"),
+        "rr": current.get("rr"),
+        "leaderboardRank": placement.get("rank"),
+    }
+
+
 def fetch_player(client, handle, riot_id, puuid, prev, full):
     """Aggregates one account's current-Act competitive stats.
 
@@ -368,6 +406,8 @@ def fetch_player(client, handle, riot_id, puuid, prev, full):
         if not region:
             return None, "no region"
 
+    rank = fetch_rank(client, region, puuid)
+
     prev_newest = None if full else (prev or {}).get("newestMatchId")
     prev_act = (prev or {}).get("actId")
 
@@ -377,6 +417,20 @@ def fetch_player(client, handle, riot_id, puuid, prev, full):
     newest_match_id = None
     unreadable = 0
     hit_cache = False
+    # Guards against a live-list drift: `start=N` pagination assumes the
+    # list is stable across requests, but a single player's fetch can span
+    # 20+ paginated requests (a top pro's Act history easily runs past 200
+    # matches) -- tens of seconds, comfortably enough for an actively
+    # laddering account to finish another ranked game mid-fetch. When that
+    # happens the newest-first list shifts by one, and the next page
+    # re-serves the boundary match the previous page already processed.
+    # Confirmed concretely by simulation: one live insertion during a fetch
+    # produces exactly one duplicated row AND silently drops the genuinely
+    # new match (it landed before the page that would have covered it was
+    # fetched) -- net effect on the stored count is +1 relative to the true
+    # number of distinct matches actually captured. `seen_match_ids` makes
+    # a repeated row a no-op instead of counting it twice.
+    seen_match_ids = set()
 
     for page in range(MAX_PAGES_PER_PLAYER):
         resp = client.get(
@@ -392,6 +446,11 @@ def fetch_player(client, handle, riot_id, puuid, prev, full):
             season = meta.get("season") or {}
             sid = season.get("id")
             match_id = meta.get("match_id")
+
+            if match_id and match_id in seen_match_ids:
+                continue
+            if match_id:
+                seen_match_ids.add(match_id)
 
             if act_id is None and sid:
                 act_id = sid
@@ -411,7 +470,7 @@ def fetch_player(client, handle, riot_id, puuid, prev, full):
             # previous season, so stop rather than keep paging.
             if sid and act_id and sid != act_id:
                 return _finish(counters, act_id, act_short, newest_match_id or prev_newest,
-                               region, riot_id, unreadable), None
+                               region, riot_id, unreadable, rank), None
 
             if prev_newest and match_id == prev_newest:
                 hit_cache = True
@@ -431,14 +490,17 @@ def fetch_player(client, handle, riot_id, puuid, prev, full):
 
     if counters is None:
         return None, "no competitive matches this act"
-    return _finish(counters, act_id, act_short, newest_match_id or prev_newest, region, riot_id, unreadable), None
+    return _finish(counters, act_id, act_short, newest_match_id or prev_newest,
+                   region, riot_id, unreadable, rank), None
 
 
-def _finish(counters, act_id, act_short, newest_match_id, region, riot_id, unreadable):
+def _finish(counters, act_id, act_short, newest_match_id, region, riot_id, unreadable, rank=None):
     if counters is None:
         counters = blank_counters()
     rec = dict(counters)
     rec.update(derive(counters))
+    if rank:
+        rec["rank"] = rank
     rec.update({
         "riotId": riot_id,
         "region": region,
@@ -504,7 +566,9 @@ def main():
         players[handle] = rec
         ok += 1
         if args.inspect:
-            print(f"  {handle} ({riot_id}, {rec['region']}): act={rec.get('actShort')} "
+            r = rec.get("rank") or {}
+            rank_str = f"{r.get('tier')} {r.get('rr')}RR" + (f" #{r['leaderboardRank']}" if r.get("leaderboardRank") else "") if r else "unranked"
+            print(f"  {handle} ({riot_id}, {rec['region']}): act={rec.get('actShort')} rank={rank_str} "
                   f"{rec['matches']} matches, {rec['wins']}W-{rec['losses']}L, "
                   f"ACS {rec['acs'] and round(rec['acs'])}, K/D {rec['kd'] and round(rec['kd'], 2)}, "
                   f"HS% {rec['hsPct'] and round(rec['hsPct'] * 100, 1)}")

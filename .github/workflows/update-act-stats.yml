@@ -49,8 +49,15 @@ jobs:
     # a new Act starts and every player's counters reset) pages through each
     # player's whole Act history, and the script paces itself off the API's
     # own RateLimit-Remaining/Reset headers -- so it can legitimately spend a
-    # long time sleeping rather than failing. Generous ceiling for that.
-    timeout-minutes: 60
+    # long time sleeping rather than failing. 60 was sized for ~19 linked
+    # accounts; a --full run at 168 accounts genuinely exceeded it (killed
+    # mid-run by the platform, "Fetch current-Act stats" never finished, so
+    # NOTHING from that run reached "Commit and push" -- not even the players
+    # already processed, since the incremental save only persists to the
+    # runner's own disk, not the repo, until that later step runs). 120
+    # gives real headroom for the account list's current size without
+    # requiring this number to be re-tuned every time the list grows a bit.
+    timeout-minutes: 120
 
     env:
       HENRIKDEV_API_KEY: ${{ secrets.HENRIKDEV_API_KEY }}

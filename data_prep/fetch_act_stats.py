@@ -295,6 +295,12 @@ def blank_counters():
         "matches": 0, "wins": 0, "losses": 0, "draws": 0, "rounds": 0,
         "kills": 0, "deaths": 0, "assists": 0, "score": 0,
         "headshots": 0, "bodyshots": 0, "legshots": 0, "damage": 0,
+        # Damage RECEIVED, not just dealt -- `damage` above is ADR's own
+        # numerator; this is the second half needed for tracker.gg's real
+        # "Damage Delta/Round" (see derive()'s own comment on why this
+        # matters -- it's a genuinely different stat from ADR, not ADR
+        # under another name).
+        "damageReceived": 0,
     }
 
 
@@ -331,6 +337,7 @@ def accumulate(counters, match, puuid):
     counters["bodyshots"] += stats.get("bodyshots") or 0
     counters["legshots"] += stats.get("legshots") or 0
     counters["damage"] += ((stats.get("damage") or {}).get("dealt") or 0)
+    counters["damageReceived"] += ((stats.get("damage") or {}).get("received") or 0)
 
     if my_team is not None:
         if my_team.get("won"):
@@ -359,6 +366,15 @@ def derive(counters):
         "kd": (counters["kills"] / counters["deaths"]) if counters["deaths"] else None,
         "acs": (counters["score"] / rounds) if rounds else None,
         "adr": (counters["damage"] / rounds) if rounds else None,
+        # tracker.gg's real "DDΔ/Round" -- confirmed against their own live
+        # tooltip: "Damage Dealt - Damage Received, averaged over Rounds
+        # played". A self-contained per-player stat, NOT a comparison
+        # against the opposing team's own average (the earlier, wrong
+        # assumption this pipeline was built on -- see this module's own
+        # "WHY ADR STANDS IN" note, since corrected). Genuinely different
+        # from ADR: two players with identical ADR can have very different
+        # DDΔ if one takes far more damage than the other on the way to it.
+        "ddDelta": ((counters["damage"] - counters["damageReceived"]) / rounds) if rounds else None,
         "hsPct": (counters["headshots"] / shots) if shots else None,
         "kpr": (counters["kills"] / rounds) if rounds else None,
         "kda": ((counters["kills"] + counters["assists"]) / counters["deaths"]) if counters["deaths"] else None,

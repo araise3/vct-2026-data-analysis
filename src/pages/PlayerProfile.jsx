@@ -185,9 +185,16 @@ export default function PlayerProfile() {
   //     combination of intuition... and a more boring detailed analysis")
   //     -- there's no published formula to match, so this weights all 4
   //     equally, the only defensible default absent real numbers.
-  //   - "Damage Delta per Round" (damage dealt minus the OPPOSING team's
-  //     average that round) isn't a stat this pipeline tracks at all --
-  //     only plain ADR is exported per player. ADR stands in for it here.
+  //   - "Damage Delta per Round" is Damage Dealt minus Damage RECEIVED,
+  //     averaged per round (confirmed against tracker.gg's own live
+  //     tooltip -- a self-contained per-player stat, not a comparison
+  //     against the opposing team, which was this comment's own earlier,
+  //     wrong assumption before that got checked). Pro-match data (VLR)
+  //     never captured damage received at all, only damage dealt (ADR) --
+  //     confirmed no such field exists anywhere in export_from_db.py's
+  //     pipeline -- so ADR still has to stand in for it HERE specifically.
+  //     Ranked (HenrikDev) data has both dealt and received per match, so
+  //     rankedPerf below computes the REAL formula instead of substituting.
   // This is an adaptation of the published CONCEPT for this site's own
   // data, not a port of tracker.gg's own (also non-public) implementation.
   //
@@ -242,10 +249,11 @@ export default function PlayerProfile() {
   // Win%, but swapped to lead with Rating 2.0 (this site's own headline
   // number) and drop K/D in favour of directly showing ADR, per direct
   // instruction. Tracker Score itself keeps tracker.gg's published 4
-  // inputs (Win%/KAST/ACS/ADR, with ADR standing in for the undisclosed-
-  // formula "Damage Delta/Round" -- see this useMemo's own comment
-  // history) -- a DIFFERENT set from the pills, same as tracker.gg's real
-  // page (its pills and its Tracker Score row don't show the same 4
+  // inputs (Win%/KAST/ACS/DDΔ-Round), with ADR standing in for DDΔ/Round
+  // specifically because pro (VLR) data has no damage-received field to
+  // compute the real formula from -- see populationStats' own comment
+  // above for why. A DIFFERENT set from the pills, same as tracker.gg's
+  // real page (its pills and its Tracker Score row don't show the same 4
   // stats either).
   const proPerf = useMemo(() => {
     if (!stats || !populationStats.length) return null
@@ -272,8 +280,14 @@ export default function PlayerProfile() {
     const winPct = metric('winPct', 'Win %', stats.winPct, (v) => pct(v, 1))
     const kast = metric('avgKast', 'KAST', stats.avgKast, (v) => pct(v, 0))
     const acs = metric('avgAcs', 'ACS', stats.avgAcs, (v) => num(v, 0))
+    // Same stat/percentile as the Win % pill above, but tracker.gg's own
+    // Tracker Score row specifically labels it "Round Win %" (confirmed
+    // against a screenshot of the real thing) -- a separate metric object
+    // rather than reusing `winPct` so the two labels can differ without
+    // one of the two renders being wrong.
+    const roundWinPct = { ...winPct, statKey: 'roundWinPct', label: 'Round Win %' }
 
-    const scoreMetrics = [winPct, kast, acs, adr].filter((m) => m.percentile != null)
+    const scoreMetrics = [roundWinPct, kast, acs, adr].filter((m) => m.percentile != null)
     if (!scoreMetrics.length) return null
     const avgPercentile = scoreMetrics.reduce((sum, m) => sum + m.percentile, 0) / scoreMetrics.length
     return {
@@ -299,9 +313,18 @@ export default function PlayerProfile() {
   // -- KAST is a real, confirmed gap (see data_prep/fetch_act_stats.py's
   // own "SCOPE CAVEATS": `kast` only exists on Riot's ESPORTS endpoints,
   // never on the personal-match schema, so it cannot be computed for
-  // ranked games at all, not just left out for convenience). Pills are
-  // ACS/ADR/HS%/Win% -- ACS standing in for Rating in the lead slot, since
-  // Rating 2.0 has no ranked-ladder equivalent either.
+  // ranked games at all, not just left out for convenience). Score's 3rd
+  // input is the REAL "DDΔ/Round" formula (Damage Dealt minus Damage
+  // RECEIVED, per round -- confirmed against tracker.gg's own tooltip),
+  // computed properly here since HenrikDev's match data has both halves
+  // -- unlike proPerf above, which has to fall back to plain ADR because
+  // pro (VLR) data never captured damage received at all. Pills stay
+  // ACS/ADR/HS%/Win% though (ADR, not DDΔ) -- tracker.gg's own real page
+  // shows Damage/Round as a PILL and DDΔ/Round in the Tracker Score row,
+  // two different stats shown in two different places, and this mirrors
+  // that split rather than picking one. ACS stands in for Rating in the
+  // lead pill slot, since Rating 2.0 has no ranked-ladder equivalent
+  // either.
   const rankedPerf = useMemo(() => {
     if (!actStats || !rankedPopulationStats.length) return null
     const threshold = dynamicQualifyThreshold(rankedPopulationStats, 'matches', { fixed: 20 })
@@ -316,8 +339,13 @@ export default function PlayerProfile() {
     const adr = metric('adr', 'ADR', actStats.adr, (v) => num(v, 1))
     const hsPct = metric('hsPct', 'HS%', actStats.hsPct, (v) => pct(v, 1))
     const winPct = metric('winPct', 'Win %', actStats.winPct, (v) => pct(v, 1))
+    const ddDelta = metric('ddDelta', 'DDΔ/Round', actStats.ddDelta, (v) => num(v, 0))
+    // Same stat/percentile as the Win % pill, relabelled for the Tracker
+    // Score row -- see proPerf's own comment on why this needs a separate
+    // object rather than reusing `winPct` directly.
+    const roundWinPct = { ...winPct, statKey: 'roundWinPct', label: 'Round Win %' }
 
-    const scoreMetrics = [winPct, acs, adr].filter((m) => m.percentile != null)
+    const scoreMetrics = [roundWinPct, acs, ddDelta].filter((m) => m.percentile != null)
     if (!scoreMetrics.length) return null
     const avgPercentile = scoreMetrics.reduce((sum, m) => sum + m.percentile, 0) / scoreMetrics.length
     return {

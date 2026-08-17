@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-17T19:10:01Z"
+    "fetchedAt": "2026-08-17T21:54:35Z"
   },
   "matches": [
-    {
-      "key": "1786555200|team-heretics|natus-vincere",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1786555200,
-      "bestOf": 3,
-      "team1": "Team Heretics",
-      "team2": "Natus Vincere",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1786608000|kiwoom-drx|onside-gaming",
       "event": "Vct 2026 Pacific Stage 2",

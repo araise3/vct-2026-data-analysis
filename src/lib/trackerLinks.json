@@ -1,78 +1,732 @@
 {
-  "pa1ze": {
-    "puuid": "05798cdc-0df9-544f-8732-831a1ab129c7",
-    "riotId": "JL Pa1ze#TTV"
-  },
-  "timotino": {
-    "puuid": "548830cb-5c73-5140-8846-e51eda21bb66",
-    "riotId": "100T Timotino#2007"
-  },
-  "sato": {
-    "puuid": "2549cb4b-2722-5f8f-9cef-382e34293985",
-    "riotId": "LEV Sato#paz"
-  },
-  "basic": {
-    "puuid": "a9d9b499-34ce-59dc-8b3d-acea3d6aabb2",
-    "riotId": "FURIA basic#mint"
-  },
-  "dantedeu5": {
-    "puuid": "05341389-d239-5e8b-8ae7-f371b627bdfc",
-    "riotId": "KRÜ dante#arima"
-  },
-  "zekken": {
-    "puuid": "57bf3aff-d0e2-5ef3-a446-1fcfe199853d",
-    "riotId": "MIBR zekken#1515"
-  },
-  "bang": {
-    "puuid": "a60e35e7-314b-5345-b83f-b813620be5cd",
-    "riotId": "100T bang#1111"
-  },
-  "asuna": {
-    "puuid": "f6581378-8d2c-59e3-b383-85a5f4401819",
-    "riotId": "100T Asuna#1111"
-  },
-  "neon": {
-    "puuid": "68ae99f4-552a-5b0f-a361-2662019e42a1",
-    "riotId": "LEV Neon#1111"
-  },
-  "keiko": {
-    "puuid": "75dda691-0e1d-5fdc-9dbe-0275eb6b918f",
-    "riotId": "NRG keiko#lili"
-  },
-  "brawk": {
-    "puuid": "ba4d7928-7d21-5e46-9730-e6c292d6c404",
-    "riotId": "bRaWk#kels"
-  },
-  "ethan": {
-    "puuid": "7ff76597-4864-54df-8939-bd0ba081099e",
-    "riotId": "Ethan#FARM"
-  },
-  "mada": {
-    "puuid": "1fd6fe52-7fbf-52b6-9b43-9885bd162498",
-    "riotId": "mada#444x"
-  },
-  "skuba": {
-    "puuid": "df454dbd-5312-5c69-9466-43ec666e8088",
-    "riotId": "sss#skuba"
-  },
-  "less": {
-    "puuid": "905b3128-6c8e-5897-855e-8653b08150d2",
-    "riotId": "less#vrau"
-  },
-  "mwzera": {
-    "puuid": "0ab8ff3c-7bee-593a-9f27-12a1c557c73b",
-    "riotId": "mwzera#6666"
-  },
-  "heat": {
-    "puuid": "9c7ac45c-9d36-5775-89e8-80cca52457f4",
-    "riotId": "heat#LNWLF"
-  },
-  "saadhak": {
-    "puuid": "5fcb9a26-3ce5-56a2-8d97-8d94cb38b8d1",
-    "riotId": "KRÜ Saadhak#ianca"
-  },
-  "s0pp": {
-    "puuid": "b1106ce0-cef1-5b36-ac0b-5160444fb129",
-    "riotId": "FUT s0pp#00001"
-  }
+  "pa1ze": [
+    {
+      "puuid": "05798cdc-0df9-544f-8732-831a1ab129c7",
+      "riotId": "JL Pa1ze#TTV"
+    }
+  ],
+  "timotino": [
+    {
+      "puuid": "548830cb-5c73-5140-8846-e51eda21bb66",
+      "riotId": "100T Timotino#2007"
+    }
+  ],
+  "sato": [
+    {
+      "puuid": "2549cb4b-2722-5f8f-9cef-382e34293985",
+      "riotId": "LEV Sato#paz"
+    }
+  ],
+  "basic": [
+    {
+      "puuid": "a9d9b499-34ce-59dc-8b3d-acea3d6aabb2",
+      "riotId": "FURIA basic#mint"
+    }
+  ],
+  "dantedeu5": [
+    {
+      "puuid": "05341389-d239-5e8b-8ae7-f371b627bdfc",
+      "riotId": "KRÜ dante#arima"
+    }
+  ],
+  "zekken": [
+    {
+      "puuid": "57bf3aff-d0e2-5ef3-a446-1fcfe199853d",
+      "riotId": "MIBR zekken#1515"
+    }
+  ],
+  "bang": [
+    {
+      "puuid": "a60e35e7-314b-5345-b83f-b813620be5cd",
+      "riotId": "100T bang#1111"
+    }
+  ],
+  "asuna": [
+    {
+      "puuid": "f6581378-8d2c-59e3-b383-85a5f4401819",
+      "riotId": "100T Asuna#1111"
+    }
+  ],
+  "neon": [
+    {
+      "puuid": "68ae99f4-552a-5b0f-a361-2662019e42a1",
+      "riotId": "LEV Neon#1111"
+    }
+  ],
+  "keiko": [
+    {
+      "puuid": "75dda691-0e1d-5fdc-9dbe-0275eb6b918f",
+      "riotId": "NRG keiko#lili"
+    }
+  ],
+  "brawk": [
+    {
+      "puuid": "ba4d7928-7d21-5e46-9730-e6c292d6c404",
+      "riotId": "bRaWk#kels"
+    }
+  ],
+  "ethan": [
+    {
+      "puuid": "7ff76597-4864-54df-8939-bd0ba081099e",
+      "riotId": "Ethan#FARM"
+    }
+  ],
+  "mada": [
+    {
+      "puuid": "1fd6fe52-7fbf-52b6-9b43-9885bd162498",
+      "riotId": "mada#444x"
+    }
+  ],
+  "skuba": [
+    {
+      "puuid": "df454dbd-5312-5c69-9466-43ec666e8088",
+      "riotId": "sss#skuba"
+    }
+  ],
+  "less": [
+    {
+      "puuid": "905b3128-6c8e-5897-855e-8653b08150d2",
+      "riotId": "less#vrau"
+    }
+  ],
+  "mwzera": [
+    {
+      "puuid": "0ab8ff3c-7bee-593a-9f27-12a1c557c73b",
+      "riotId": "mwzera#6666"
+    }
+  ],
+  "heat": [
+    {
+      "puuid": "9c7ac45c-9d36-5775-89e8-80cca52457f4",
+      "riotId": "heat#LNWLF"
+    }
+  ],
+  "saadhak": [
+    {
+      "puuid": "5fcb9a26-3ce5-56a2-8d97-8d94cb38b8d1",
+      "riotId": "KRÜ Saadhak#ianca"
+    }
+  ],
+  "s0pp": [
+    {
+      "puuid": "b1106ce0-cef1-5b36-ac0b-5160444fb129",
+      "riotId": "FUT s0pp#00001"
+    }
+  ],
+  "bao": [
+    {
+      "puuid": null,
+      "riotId": "bao victini#broke"
+    }
+  ],
+  "zerona": [
+    {
+      "puuid": null,
+      "riotId": "zerona#harpr"
+    }
+  ],
+  "supamen": [
+    {
+      "puuid": null,
+      "riotId": "supamen#612"
+    }
+  ],
+  "dgzin": [
+    {
+      "puuid": null,
+      "riotId": "dgzin u cant stop me#DG2WC"
+    }
+  ],
+  "paincakes": [
+    {
+      "puuid": null,
+      "riotId": "paincakes pANquequeziNdgz#1738"
+    },
+    {
+      "puuid": null,
+      "riotId": "Whiteboyotheyear#MADA"
+    }
+  ],
+  "jamelinho": [
+    {
+      "puuid": null,
+      "riotId": "SGE Jamelinho#213"
+    }
+  ],
+  "magnum": [
+    {
+      "puuid": null,
+      "riotId": "EP MAGNUM#rawr"
+    }
+  ],
+  "lewn": [
+    {
+      "puuid": null,
+      "riotId": "KC LewN#mamba"
+    }
+  ],
+  "batujnax": [
+    {
+      "puuid": null,
+      "riotId": "batujnax#suygu"
+    }
+  ],
+  "monsteerr": [
+    {
+      "puuid": null,
+      "riotId": "SGE MONSTEERR#Inori"
+    }
+  ],
+  "comeback": [
+    {
+      "puuid": null,
+      "riotId": "CB10#Aegon"
+    }
+  ],
+  "ara": [
+    {
+      "puuid": null,
+      "riotId": "GX ara#nvm"
+    }
+  ],
+  "musashi": [
+    {
+      "puuid": null,
+      "riotId": "SGE musashi#000"
+    }
+  ],
+  "yetujey": [
+    {
+      "puuid": null,
+      "riotId": "FUT yetujey#star"
+    }
+  ],
+  "filu": [
+    {
+      "puuid": null,
+      "riotId": "Filu#KING"
+    }
+  ],
+  "riens": [
+    {
+      "puuid": null,
+      "riotId": "TH rienszin#TURK"
+    }
+  ],
+  "fizzy": [
+    {
+      "puuid": null,
+      "riotId": "SGE elpastor#fizz"
+    }
+  ],
+  "deadink": [
+    {
+      "puuid": null,
+      "riotId": "FF Deadink#77777"
+    }
+  ],
+  "hezacoil": [
+    {
+      "puuid": null,
+      "riotId": "FF hezacoil#1337"
+    }
+  ],
+  "kachoww": [
+    {
+      "puuid": null,
+      "riotId": "FF redpanda#kchow"
+    }
+  ],
+  "reazy": [
+    {
+      "puuid": null,
+      "riotId": "FF rzz#nathz"
+    }
+  ],
+  "xeus": [
+    {
+      "puuid": null,
+      "riotId": "xeus#reta"
+    }
+  ],
+  "echo": [
+    {
+      "puuid": null,
+      "riotId": "EF echo2m#cumho"
+    }
+  ],
+  "krostaly": [
+    {
+      "puuid": null,
+      "riotId": "KROS#5OKAN"
+    }
+  ],
+  "will": [
+    {
+      "puuid": null,
+      "riotId": "CHUD MAXXING#Will"
+    }
+  ],
+  "zander": [
+    {
+      "puuid": null,
+      "riotId": "SR Zander#swag"
+    }
+  ],
+  "vora": [
+    {
+      "puuid": null,
+      "riotId": "kadeem alford 1#1111"
+    }
+  ],
+  "cryocells": [
+    {
+      "puuid": null,
+      "riotId": "100T Cryo#0001"
+    }
+  ],
+  "ambition": [
+    {
+      "puuid": null,
+      "riotId": "netzach#god"
+    }
+  ],
+  "frz": [
+    {
+      "puuid": null,
+      "riotId": "2G frzgod#2000"
+    }
+  ],
+  "brinks": [
+    {
+      "puuid": null,
+      "riotId": "2G BRKSS3#2000"
+    }
+  ],
+  "gobera": [
+    {
+      "puuid": null,
+      "riotId": "2G gOBO9#X1T3R"
+    }
+  ],
+  "xenom": [
+    {
+      "puuid": null,
+      "riotId": "2G xenom#777"
+    }
+  ],
+  "xiesta": [
+    {
+      "puuid": null,
+      "riotId": "ONG Xiesta#0324"
+    }
+  ],
+  "zeus": [
+    {
+      "puuid": null,
+      "riotId": "Secret Zeus#ela"
+    }
+  ],
+  "ray": [
+    {
+      "puuid": null,
+      "riotId": "ONG Ray#Ray"
+    }
+  ],
+  "happywei": [
+    {
+      "puuid": null,
+      "riotId": "XLG happywei#yst"
+    }
+  ],
+  "kitae": [
+    {
+      "puuid": null,
+      "riotId": "GGA KiTae#1029"
+    }
+  ],
+  "meiy": [
+    {
+      "puuid": null,
+      "riotId": "CGZ Meiy#2006"
+    }
+  ],
+  "dambi": [
+    {
+      "puuid": null,
+      "riotId": "NS Dambi#1117"
+    }
+  ],
+  "udotan": [
+    {
+      "puuid": null,
+      "riotId": "GE UdoTan#GOOSE"
+    }
+  ],
+  "kippei": [
+    {
+      "puuid": null,
+      "riotId": "Kippei is in QTD#Aura"
+    }
+  ],
+  "sylvan": [
+    {
+      "puuid": null,
+      "riotId": "Secret Sylvan#1004"
+    }
+  ],
+  "yong": [
+    {
+      "puuid": null,
+      "riotId": "DRX Yong#V S"
+    }
+  ],
+  "ash": [
+    {
+      "puuid": null,
+      "riotId": "GEN Ash#7777"
+    }
+  ],
+  "kellys": [
+    {
+      "puuid": null,
+      "riotId": "Secret kellyS#MJC"
+    }
+  ],
+  "absol": [
+    {
+      "puuid": null,
+      "riotId": "Absol#1321"
+    }
+  ],
+  "xdll": [
+    {
+      "puuid": null,
+      "riotId": "ZETA Xdll#mizo"
+    }
+  ],
+  "sugarz3ro": [
+    {
+      "puuid": null,
+      "riotId": "SugarZ3ro#397"
+    }
+  ],
+  "eko": [
+    {
+      "puuid": null,
+      "riotId": "ZETA eKo#twoSu"
+    }
+  ],
+  "wolverine": [
+    {
+      "puuid": null,
+      "riotId": "ONG Wolverine#715"
+    }
+  ],
+  "kadoom": [
+    {
+      "puuid": null,
+      "riotId": "SP Kadoom#0312"
+    }
+  ],
+  "syouta": [
+    {
+      "puuid": null,
+      "riotId": "下   忍#手裏剣"
+    }
+  ],
+  "florescent": [
+    {
+      "puuid": null,
+      "riotId": "ADG florescent#mochi"
+    }
+  ],
+  "tacolilla": [
+    {
+      "puuid": null,
+      "riotId": "BESTIA tacolilla#lila"
+    }
+  ],
+  "jerrwin": [
+    {
+      "puuid": null,
+      "riotId": "SEN Jerrwin#ysl"
+    }
+  ],
+  "cortezia": [
+    {
+      "puuid": null,
+      "riotId": "cortezia bty#YHWH"
+    }
+  ],
+  "reduxx": [
+    {
+      "puuid": null,
+      "riotId": "reduxx#0528"
+    }
+  ],
+  "johnqt": [
+    {
+      "puuid": null,
+      "riotId": "SEN johnqt#21MA"
+    }
+  ],
+  "icy": [
+    {
+      "puuid": null,
+      "riotId": "icy#madi"
+    }
+  ],
+  "zanatsu": [
+    {
+      "puuid": null,
+      "riotId": "FX Zanatsu#remi"
+    }
+  ],
+  "c0m": [
+    {
+      "puuid": null,
+      "riotId": "C0M#512"
+    }
+  ],
+  "notexxd": [
+    {
+      "puuid": null,
+      "riotId": "Notexxd#amru"
+    }
+  ],
+  "spike": [
+    {
+      "puuid": null,
+      "riotId": "LEV spikezin#ayra"
+    }
+  ],
+  "inspire": [
+    {
+      "puuid": null,
+      "riotId": "inspire#Julia"
+    }
+  ],
+  "mazino": [
+    {
+      "puuid": null,
+      "riotId": "MIBR Mazino#nicol"
+    }
+  ],
+  "nightz": [
+    {
+      "puuid": null,
+      "riotId": "nightz#vamp"
+    }
+  ],
+  "nerve": [
+    {
+      "puuid": null,
+      "riotId": "nerve#meg"
+    }
+  ],
+  "eeiu": [
+    {
+      "puuid": null,
+      "riotId": "eeiu#1da"
+    }
+  ],
+  "marved": [
+    {
+      "puuid": null,
+      "riotId": "Marved#ICE6"
+    }
+  ],
+  "shyy": [
+    {
+      "puuid": null,
+      "riotId": "TulaShyydeuS#Flo"
+    }
+  ],
+  "eggsterr": [
+    {
+      "puuid": null,
+      "riotId": "ENVY Eggsterr#NJLTC"
+    }
+  ],
+  "tuyz": [
+    {
+      "puuid": null,
+      "riotId": "FX tuyz#2003"
+    }
+  ],
+  "david": [
+    {
+      "puuid": null,
+      "riotId": "BESTIA david#isi"
+    }
+  ],
+  "nature": [
+    {
+      "puuid": null,
+      "riotId": "SR NaturE#RAT"
+    }
+  ],
+  "fireballops": [
+    {
+      "puuid": null,
+      "riotId": "C9 fireballops#lucky"
+    }
+  ],
+  "moose": [
+    {
+      "puuid": null,
+      "riotId": "lobster fisher#alxis"
+    }
+  ],
+  "infiltrator": [
+    {
+      "puuid": null,
+      "riotId": "QOR infiltrator#kay"
+    }
+  ],
+  "lukxo": [
+    {
+      "puuid": null,
+      "riotId": "luk xo#gii"
+    }
+  ],
+  "darker": [
+    {
+      "puuid": null,
+      "riotId": "Darker#NIUR"
+    }
+  ],
+  "erde": [
+    {
+      "puuid": null,
+      "riotId": "erde#zzz"
+    }
+  ],
+  "davih": [
+    {
+      "puuid": null,
+      "riotId": "davih#420"
+    }
+  ],
+  "keznit": [
+    {
+      "puuid": null,
+      "riotId": "keznitdeuS#isi"
+    }
+  ],
+  "blowz": [
+    {
+      "puuid": null,
+      "riotId": "LEV blowz#1111"
+    }
+  ],
+  "loss": [
+    {
+      "puuid": null,
+      "riotId": "BESTIA Loss#MVP"
+    }
+  ],
+  "alvinboy": [
+    {
+      "puuid": null,
+      "riotId": "M80 alvin#NO1"
+    }
+  ],
+  "tex": [
+    {
+      "puuid": null,
+      "riotId": "MIBR tex#sofia"
+    }
+  ],
+  "okeanos": [
+    {
+      "puuid": null,
+      "riotId": "okeanos#hana"
+    }
+  ],
+  "bdog": [
+    {
+      "puuid": null,
+      "riotId": "EG bdog#2916"
+    }
+  ],
+  "jonahp": [
+    {
+      "puuid": null,
+      "riotId": "SEN JonahP#0004"
+    }
+  ],
+  "verno": [
+    {
+      "puuid": null,
+      "riotId": "MIBR Verno#333"
+    }
+  ],
+  "fns": [
+    {
+      "puuid": null,
+      "riotId": "FNS#rtird"
+    }
+  ],
+  "mazin": [
+    {
+      "puuid": null,
+      "riotId": "FX mazin#2WC"
+    }
+  ],
+  "jzz": [
+    {
+      "puuid": null,
+      "riotId": "FX jzz#astro"
+    }
+  ],
+  "babybay": [
+    {
+      "puuid": null,
+      "riotId": "G2 BABYBAY#SMEAG"
+    }
+  ],
+  "chubizin": [
+    {
+      "puuid": null,
+      "riotId": "BST chbzn#zzz"
+    }
+  ],
+  "f4ngeer": [
+    {
+      "puuid": null,
+      "riotId": "AG f4ngeer#kem"
+    }
+  ],
+  "iamgrq": [
+    {
+      "puuid": null,
+      "riotId": "AG iamgrq#riki"
+    }
+  ],
+  "k1ra": [
+    {
+      "puuid": null,
+      "riotId": "AG L#K1ra"
+    }
+  ],
+  "shr1mp": [
+    {
+      "puuid": null,
+      "riotId": "AG Shr1mp#xia"
+    }
+  ],
+  "s1mon": [
+    {
+      "puuid": null,
+      "riotId": "S1Mon#625"
+    }
+  ],
+  "juicy": [
+    {
+      "puuid": null,
+      "riotId": "Lebron张姆斯#juicy"
+    }
+  ]
 }

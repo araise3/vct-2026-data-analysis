@@ -3,6 +3,13 @@ Keeps src/lib/trackerLinks.json's tracker.gg links pointing at the right
 player even after a Riot ID change (a "Name#Tag" is player-chosen and
 mutable; a puuid is Riot's own permanent per-account id).
 
+Each VLR handle maps to a LIST of accounts, not a single one -- a player
+can have more than one known tracker.gg-worthy account (their main plus a
+smurf/alt used in scrims or off-stream), and the site links to all of them
+from that player's profile. The first entry in the list is treated as the
+"main" one for display purposes only; this script resolves/refreshes every
+entry in every list identically, with no special-casing for position 0.
+
 Two calls to HenrikDev's unofficial Valorant API (docs.henrikdev.xyz),
 mirroring Riot's own account-v1 API it wraps:
   - GET /valorant/v2/account/{name}/{tag}   -> resolves a fresh riotId
@@ -62,6 +69,24 @@ def split_riot_id(riot_id):
     return name, tag
 
 
+def resolve_entry(entry):
+    """Refreshes one {puuid, riotId} entry in place. Returns True if changed."""
+    if entry.get("puuid"):
+        data = resolve_by_puuid(entry["puuid"])
+        fresh_riot_id = f"{data['name']}#{data['tag']}"
+        if fresh_riot_id != entry["riotId"]:
+            print(f"    renamed '{entry['riotId']}' -> '{fresh_riot_id}'")
+            entry["riotId"] = fresh_riot_id
+            return True
+        return False
+    else:
+        name, tag = split_riot_id(entry["riotId"])
+        data = resolve_by_name_tag(name, tag)
+        entry["puuid"] = data["puuid"]
+        print(f"    resolved puuid for '{entry['riotId']}'")
+        return True
+
+
 def main():
     if "HENRIKDEV_API_KEY" not in os.environ:
         print("[FATAL] HENRIKDEV_API_KEY not set.", file=sys.stderr)
@@ -71,34 +96,27 @@ def main():
         links = json.load(f)
 
     changed = False
-    for handle, entry in links.items():
-        try:
-            if entry.get("puuid"):
-                data = resolve_by_puuid(entry["puuid"])
-                fresh_riot_id = f"{data['name']}#{data['tag']}"
-                if fresh_riot_id != entry["riotId"]:
-                    print(f"  {handle}: renamed '{entry['riotId']}' -> '{fresh_riot_id}'")
-                    entry["riotId"] = fresh_riot_id
+    total_accounts = 0
+    for handle, accounts in links.items():
+        for i, entry in enumerate(accounts):
+            total_accounts += 1
+            label = "main" if i == 0 else f"alt {i}"
+            try:
+                if resolve_entry(entry):
                     changed = True
-            else:
-                name, tag = split_riot_id(entry["riotId"])
-                data = resolve_by_name_tag(name, tag)
-                entry["puuid"] = data["puuid"]
-                print(f"  {handle}: resolved puuid for '{entry['riotId']}'")
-                changed = True
-        except urllib.error.HTTPError as e:
-            print(f"  [warn] {handle} ('{entry['riotId']}'): HTTP {e.code}, leaving as-is", file=sys.stderr)
-        except Exception as e:
-            print(f"  [warn] {handle} ('{entry['riotId']}'): {e}, leaving as-is", file=sys.stderr)
-        time.sleep(REQUEST_DELAY_S)
+            except urllib.error.HTTPError as e:
+                print(f"  [warn] {handle} ({label}, '{entry['riotId']}'): HTTP {e.code}, leaving as-is", file=sys.stderr)
+            except Exception as e:
+                print(f"  [warn] {handle} ({label}, '{entry['riotId']}'): {e}, leaving as-is", file=sys.stderr)
+            time.sleep(REQUEST_DELAY_S)
 
     if changed:
         with open(LINKS_PATH, "w", encoding="utf-8") as f:
             json.dump(links, f, indent=2, ensure_ascii=False)
             f.write("\n")
-        print(f"trackerLinks.json updated ({len(links)} entries).")
+        print(f"trackerLinks.json updated ({len(links)} players, {total_accounts} accounts).")
     else:
-        print(f"trackerLinks.json unchanged ({len(links)} entries, no renames or new puuids).")
+        print(f"trackerLinks.json unchanged ({len(links)} players, {total_accounts} accounts, no renames or new puuids).")
 
 
 if __name__ == "__main__":

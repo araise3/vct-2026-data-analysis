@@ -890,6 +890,72 @@ def main():
                   f, separators=(',', ':'))
     print(f"player_buckets.json: {len(player_buckets)} buckets")
 
+    # --- direct VLR player links (player_urls.json) ---
+    # scraper/vlr_player_photos_scraper.py used to resolve a handle to a VLR
+    # player via a live fuzzy search (`/search/?q={handle}`) -- workable, but
+    # search returns substring matches too ("heat" also surfaces "Heather",
+    # "heat2k", "heatwave", ...), and an exact-name collision between two
+    # different real players was unresolvable from the search result alone
+    # (no team/country shown per row). This exports the DIRECT link instead:
+    # player_event_stats.player_url, scraped straight off each event's own
+    # /event/stats/ page (an actual <a href> the scraper followed, not a
+    # guess), so there's no ambiguity to resolve at photo-scrape time at all.
+    #
+    # Not already read anywhere else in this file -- every other player-level
+    # export above comes from map_player_stats, which carries no url column.
+    # Same multi-DB union pattern as load_nationality() just above:
+    # `keep='first'` with the 2026 DBs listed first means a player who
+    # appears in both a current and a historical DB keeps the CURRENT DB's
+    # link (their most likely still-valid URL), falling back to the
+    # historical one only for a player with no current-season row at all.
+    def load_player_urls(path):
+        conn = sqlite3.connect(path)
+        try:
+            df = pd.read_sql_query(
+                "SELECT player, team, player_url FROM player_event_stats WHERE player_url IS NOT NULL", conn)
+        except Exception:
+            df = pd.DataFrame(columns=['player', 'team', 'player_url'])
+        conn.close()
+        return df
+
+    # player_event_stats.player is NOT the clean handle every other export in
+    # this file uses (unlike map_player_stats.player) -- it's scraped straight
+    # off /event/stats/'s table cell, which renders as "<handle> <TEAM>" with
+    # no separator markup between them, so the raw text is e.g. "aspas MIBR",
+    # not "aspas". Confirmed mechanical and exact across all 2,671 historical
+    # rows across every committed DB: `player` always ends with exactly
+    # `" " + team` (team already its own separate column), zero exceptions --
+    # so stripping that literal suffix recovers the real handle. Deliberately
+    # NOT using the URL's own slug for this instead (tempting, since it's
+    # already guaranteed handle-only) -- checked that too, and VLR's slugifier
+    # substitutes spaces/underscores with hyphens ("Clutch_Fi" -> slug
+    # "clutch-fi", "Disguised Toast" -> "disguised-toast"), which would silently
+    # mismatch this site's own canonical handle spelling for that small class
+    # of player on lookup.
+    def strip_team_suffix(player, team):
+        suffix = f" {team}"
+        return player[:-len(suffix)] if team and player.endswith(suffix) else player
+
+    player_urls = pd.concat(
+        [load_player_urls(DB_PATH), load_player_urls(EWC_DB_PATH),
+         load_player_urls(VCT_2025_DB_PATH), load_player_urls(EWC_2025_DB_PATH),
+         load_player_urls(VCT_2024_DB_PATH), load_player_urls(VCT_2023_DB_PATH)],
+        ignore_index=True
+    )
+    player_urls['handle'] = [
+        strip_team_suffix(p, t) for p, t in zip(player_urls['player'], player_urls['team'])
+    ]
+    player_urls = player_urls.drop_duplicates(subset='handle', keep='first')
+    # Keyed lowercase, same convention as trackerLinks.json/player_real_names.json
+    # /player_birthdates.json -- every consumer looks a handle up via
+    # `.toLowerCase()` (or Python `.lower()` for another data_prep script).
+    player_url_map = {
+        str(h).lower(): u for h, u in zip(player_urls['handle'], player_urls['player_url'])
+    }
+    with open(f"{OUT}/player_urls.json", "w", encoding="utf-8") as f:
+        json.dump(player_url_map, f, indent=2, ensure_ascii=False, sort_keys=True)
+    print(f"player_urls.json: {len(player_url_map)} players")
+
     # --- attack/defense side splits (player_sides.json) ---
     # A much lighter parallel export of just the headline per-player stats
     # (Rating/ACS/K/D/A/KAST/ADR/HS%/FK/FD), computed for side='t' (attack)

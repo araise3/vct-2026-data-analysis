@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useParams, Link } from 'react-router-dom'
 import { useData, useIdle } from '../lib/useData'
 import {
@@ -8,7 +9,9 @@ import {
 import { rolesInScope } from '../lib/peerComparison'
 import { aggregatePlayerDuelsByOpponent, aggregateKdByCountry } from '../lib/playerDuels'
 import { buildPlayerMapPerformance } from '../lib/playerMapPerformance'
+import { buildTrophyWinners, playerTrophies } from '../lib/trophies'
 import CountryKdChart from '../components/CountryKdChart'
+import TrophyCase from '../components/TrophyCase'
 import FilterChips from '../components/FilterChips'
 import EventPicker from '../components/EventPicker'
 import DataTable from '../components/DataTable'
@@ -35,15 +38,77 @@ export default function PlayerProfile() {
   // match this site's own player-name casing ("basic", sourced from VLR).
   const { data: realNamesData } = useData('player_real_names')
   const realName = realNamesData?.[decodedName.toLowerCase()]
-  // Hand-curated handle -> {puuid, riotId} map for the tracker.gg link, see
-  // trackerLinks.json's own comment for why this can't be sourced from
-  // either scraper. A static import (like teamLogos.json), not a useData
-  // fetch -- this is source-committed lookup data, not a pipeline-generated
-  // public/data file. `riotId` is kept fresh by data_prep/
-  // resolve_tracker_puuids.py (run daily by CI) re-resolving `puuid` --
-  // Riot's own permanent per-account id -- back to the player's CURRENT
-  // Name#Tag, so a rename doesn't quietly break the link.
-  const trackerRiotId = trackerLinks[decodedName.toLowerCase()]?.riotId
+  // scraper/vlr_player_photos_scraper.py's own manifest -- {handleLower:
+  // "player_photos/{handle}.png"}, present only for a player VLR itself has
+  // a real (non-placeholder) avatar on file for. Absent entirely for most
+  // players until that scraper's been run; the header below falls back to
+  // the SVG placeholder exactly as it did before this existed.
+  const { data: photosData } = useData('player_photos')
+  const photoPath = photosData?.[decodedName.toLowerCase()]
+  const [photoLoadFailed, setPhotoLoadFailed] = useState(false)
+  useEffect(() => {
+    setPhotoLoadFailed(false)
+  }, [decodedName])
+  // Hand-curated handle -> [{puuid, riotId}, ...] map for the tracker.gg
+  // link(s), see trackerLinks.json's own comment for why this can't be
+  // sourced from either scraper. A static import (like teamLogos.json), not
+  // a useData fetch -- this is source-committed lookup data, not a
+  // pipeline-generated public/data file. A player can have more than one
+  // known account (main + smurf/alt), so this is a list -- the first entry
+  // is treated as the "main" one, any further entries render behind a
+  // dropdown (see trackerMenuOpen below). Each `riotId` is kept fresh by
+  // data_prep/resolve_tracker_puuids.py (run daily by CI) re-resolving
+  // `puuid` -- Riot's own permanent per-account id -- back to the player's
+  // CURRENT Name#Tag, so a rename doesn't quietly break the link.
+  const trackerAccounts = trackerLinks[decodedName.toLowerCase()] ?? []
+  const [trackerMenuOpen, setTrackerMenuOpen] = useState(false)
+  // The dropdown itself renders through a portal into document.body (see
+  // the createPortal call below) rather than as a normal descendant of the
+  // header card -- that card has `overflow-hidden` (needed to clip the
+  // headshot's blurred halo to the card's rounded corners), which was also
+  // silently clipping any dropdown item that fell past the card's own
+  // bottom edge. Portaling escapes that ancestor's overflow/stacking
+  // context entirely instead of fighting it with z-index. Two refs:
+  // trackerTriggerRef covers the visible button pair (for position + the
+  // "is this click on the trigger" half of outside-click detection),
+  // trackerMenuRef covers the portaled panel (the other half).
+  const [trackerMenuPos, setTrackerMenuPos] = useState(null)
+  const trackerTriggerRef = useRef(null)
+  const trackerMenuRef = useRef(null)
+  useEffect(() => {
+    if (!trackerMenuOpen) return
+    function onDocMouseDown(e) {
+      if (
+        trackerTriggerRef.current && !trackerTriggerRef.current.contains(e.target) &&
+        trackerMenuRef.current && !trackerMenuRef.current.contains(e.target)
+      ) setTrackerMenuOpen(false)
+    }
+    // Closes on scroll/resize rather than re-tracking position -- the menu
+    // is short-lived (pick an account, it closes itself) so a live-follow
+    // wasn't worth the extra scroll-listener churn.
+    function onScrollOrResize() {
+      setTrackerMenuOpen(false)
+    }
+    document.addEventListener('mousedown', onDocMouseDown)
+    window.addEventListener('scroll', onScrollOrResize, true)
+    window.addEventListener('resize', onScrollOrResize)
+    return () => {
+      document.removeEventListener('mousedown', onDocMouseDown)
+      window.removeEventListener('scroll', onScrollOrResize, true)
+      window.removeEventListener('resize', onScrollOrResize)
+    }
+  }, [trackerMenuOpen])
+  useEffect(() => {
+    setTrackerMenuOpen(false)
+  }, [decodedName])
+
+  function toggleTrackerMenu() {
+    if (!trackerMenuOpen && trackerTriggerRef.current) {
+      const rect = trackerTriggerRef.current.getBoundingClientRect()
+      setTrackerMenuPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right })
+    }
+    setTrackerMenuOpen((o) => !o)
+  }
   // Same Liquipedia infobox fetch as realName above, see
   // liquipedia_player_names_scraper.py -- a separate file rather than a
   // second field on player_real_names.json since a birth date is a
@@ -69,6 +134,15 @@ export default function PlayerProfile() {
     () => (records.length ? Math.max(...records.map((r) => r.year)) : null),
     [records]
   )
+
+  // Trophy case -- every Kickoff/Masters/Champions/LOCK//IN this player's
+  // own buckets show them on the champion team for, derived straight from
+  // match_results.json's real Grand Final results (see trophies.js). Career-
+  // wide like the header cards below it, not scoped to recentYear -- a
+  // trophy won two seasons ago doesn't stop being real once the page
+  // narrows to the current year.
+  const allTrophies = useMemo(() => buildTrophyWinners(matchData), [matchData])
+  const myTrophies = useMemo(() => playerTrophies(records, allTrophies), [records, allTrophies])
 
   const filtered = useMemo(
     () => records.filter((r) => r.year === recentYear),
@@ -362,21 +436,37 @@ export default function PlayerProfile() {
     <div className="flex flex-col gap-6">
       <Link to="/players" className="text-sm text-muted hover:text-ink w-fit">← Back to Players</Link>
 
-      <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-4 py-4 sm:px-6 overflow-hidden">
+      <div className="relative flex flex-col gap-4 bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-4 py-4 sm:px-6 overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4 sm:gap-6 min-w-0">
-          {/* Headshot placeholder -- this site's scraper pipeline has no
-              player-photo source (VLR doesn't expose one in a scrapable way),
-              so this reserves the frame rather than silently omitting it.
-              Swap the SVG for a real <img src={meta.photo}> if a photo source
-              is ever added. The blurred halo behind it echoes rft.gg's own
-              header photo treatment, just without a real image to blur. */}
+          {/* Real photo when scraper/vlr_player_photos_scraper.py's manifest
+              has one for this handle (a minority of players -- most of VLR
+              itself only has the shared placeholder silhouette, which this
+              site treats the same as "no photo known" rather than
+              downloading and showing VLR's own placeholder art). Falls back
+              to this SVG silhouette otherwise, which also reserves the frame
+              rather than silently omitting it. `photoLoadFailed` covers a
+              stale manifest entry pointing at a file that's since been
+              removed/renamed -- caught via onError rather than trusted blind,
+              since this is committed data that can drift from the actual
+              contents of public/player_photos/. The blurred halo behind it
+              echoes rft.gg's own header photo treatment. */}
           <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0">
             <div className="absolute inset-0 rounded-xl bg-accent/25 blur-2xl" aria-hidden="true" />
             <div className="relative w-full h-full rounded-xl bg-surface2 border border-hairline flex items-center justify-center overflow-hidden">
-              <svg viewBox="0 0 24 24" fill="none" className="w-10 h-10 sm:w-12 sm:h-12 text-muted/40" aria-hidden="true">
-                <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M4 20.5c0-4.42 3.58-7.5 8-7.5s8 3.08 8 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
+              {photoPath && !photoLoadFailed ? (
+                <img
+                  src={`${import.meta.env.BASE_URL}${photoPath}`}
+                  alt={decodedName}
+                  className="w-full h-full object-cover"
+                  onError={() => setPhotoLoadFailed(true)}
+                />
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" className="w-10 h-10 sm:w-12 sm:h-12 text-muted/40" aria-hidden="true">
+                  <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M4 20.5c0-4.42 3.58-7.5 8-7.5s8 3.08 8 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              )}
             </div>
           </div>
 
@@ -445,32 +535,84 @@ export default function PlayerProfile() {
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
-          {trackerRiotId && (
-            <Button
-              as="a"
-              href={trackerProfileUrl(trackerRiotId)}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="outline"
-              size="sm"
-              title={`tracker.gg profile for ${trackerRiotId}`}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-3.5 h-3.5"
-                aria-hidden="true"
+          {trackerAccounts.length > 0 && (
+            <div className="relative flex items-stretch" ref={trackerTriggerRef}>
+              <Button
+                as="a"
+                href={trackerProfileUrl(trackerAccounts[0].riotId)}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="outline"
+                size="sm"
+                title={`tracker.gg profile for ${trackerAccounts[0].riotId}`}
+                className={trackerAccounts.length > 1 ? 'rounded-r-none border-r-0' : ''}
               >
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                <path d="M15 3h6v6" />
-                <path d="M10 14 21 3" />
-              </svg>
-              Tracker.gg
-            </Button>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-3.5 h-3.5"
+                  aria-hidden="true"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <path d="M15 3h6v6" />
+                  <path d="M10 14 21 3" />
+                </svg>
+                Tracker.gg
+              </Button>
+              {trackerAccounts.length > 1 && (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={toggleTrackerMenu}
+                    title={`${trackerAccounts.length - 1} more account${trackerAccounts.length > 2 ? 's' : ''}`}
+                    className="rounded-l-none"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={`w-3.5 h-3.5 transition-transform ${trackerMenuOpen ? 'rotate-180' : ''}`}
+                      aria-hidden="true"
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </Button>
+                  {trackerMenuOpen && trackerMenuPos && createPortal(
+                    <div
+                      ref={trackerMenuRef}
+                      style={{ position: 'fixed', top: trackerMenuPos.top, right: trackerMenuPos.right }}
+                      className="z-50 min-w-[200px] bg-surface border border-hairline rounded-lg shadow-depth-md overflow-hidden"
+                    >
+                      {trackerAccounts.map((acct, i) => (
+                        <a
+                          key={acct.riotId}
+                          href={trackerProfileUrl(acct.riotId)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setTrackerMenuOpen(false)}
+                          className="flex items-center justify-between gap-3 px-3 py-2 text-xs text-ink hover:bg-surface2 transition-colors"
+                        >
+                          <span className="truncate">{acct.riotId}</span>
+                          <span className="text-[9px] uppercase tracking-wide text-muted shrink-0">
+                            {i === 0 ? 'Main' : 'Alt'}
+                          </span>
+                        </a>
+                      ))}
+                    </div>,
+                    document.body
+                  )}
+                </>
+              )}
+            </div>
           )}
           <Button
             as={Link}
@@ -498,6 +640,9 @@ export default function PlayerProfile() {
             Compare
           </Button>
         </div>
+        </div>
+
+        <TrophyCase trophies={myTrophies} />
       </div>
 
       {stats && stats.mapsPlayed > 0 && (

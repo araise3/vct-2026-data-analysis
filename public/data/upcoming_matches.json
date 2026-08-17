@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-17T04:22:34Z"
+    "fetchedAt": "2026-08-17T07:36:29Z"
   },
   "matches": [
     {
@@ -405,7 +405,7 @@
       "bestOf": 3,
       "team1": "Evil Geniuses",
       "team2": "Cloud9",
-      "score1": 0,
+      "score1": 2,
       "score2": 1,
       "started": true
     },
@@ -462,13 +462,13 @@
       "started": false
     },
     {
-      "key": "1787173200|tbd|bestia",
+      "key": "1787173200|cloud9|bestia",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787173200,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Cloud9",
       "team2": "BESTIA",
       "score1": null,
       "score2": null,
@@ -683,14 +683,14 @@
       "started": false
     },
     {
-      "key": "1787356800|furia|tbd",
+      "key": "1787356800|furia|evil-geniuses",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787356800,
       "bestOf": 3,
       "team1": "FURIA",
-      "team2": null,
+      "team2": "Evil Geniuses",
       "score1": null,
       "score2": null,
       "started": false

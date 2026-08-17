@@ -54,5 +54,25 @@
   "skuba": {
     "puuid": "df454dbd-5312-5c69-9466-43ec666e8088",
     "riotId": "sss#skuba"
+  },
+  "less": {
+    "puuid": "905b3128-6c8e-5897-855e-8653b08150d2",
+    "riotId": "less#vrau"
+  },
+  "mwzera": {
+    "puuid": "0ab8ff3c-7bee-593a-9f27-12a1c557c73b",
+    "riotId": "mwzera#6666"
+  },
+  "heat": {
+    "puuid": "9c7ac45c-9d36-5775-89e8-80cca52457f4",
+    "riotId": "heat#LNWLF"
+  },
+  "saadhak": {
+    "puuid": "5fcb9a26-3ce5-56a2-8d97-8d94cb38b8d1",
+    "riotId": "KRÜ Saadhak#ianca"
+  },
+  "s0pp": {
+    "puuid": "b1106ce0-cef1-5b36-ac0b-5160444fb129",
+    "riotId": "FUT s0pp#00001"
   }
 }

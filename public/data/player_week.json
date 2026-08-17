@@ -1,8 +1,8 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-08-17T01:31:17Z",
-    "playersConsidered": 225,
+    "generatedAt": "2026-08-17T04:08:46Z",
+    "playersConsidered": 230,
     "poolMeanRating": 1.0,
     "selection": "round-weighted (shrunk toward pool mean, m=20 rounds, no eligibility gate; see build_player_week.py)"
   },
@@ -12,12 +12,12 @@
   "team": "Cloud9",
   "countryCode": "us",
   "countryName": "United States",
-  "rating": 1.48,
-  "acs": 323.0,
-  "kd": 1.58,
-  "kast": 0.8319,
-  "adr": 195.0,
-  "hs": 0.2526,
-  "maps": 3,
-  "rounds": 54
+  "rating": 1.46,
+  "acs": 313.0,
+  "kd": 1.61,
+  "kast": 0.775,
+  "adr": 191.0,
+  "hs": 0.3052,
+  "maps": 6,
+  "rounds": 116
 }

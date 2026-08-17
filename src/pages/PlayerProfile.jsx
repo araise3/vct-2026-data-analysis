@@ -18,7 +18,8 @@ import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import AgentIcon from '../components/AgentIcon'
 import Button from '../components/ui/Button'
-import { rating, pct, num, ratingTier, vlrMatchUrl, eventLabel, birthDateLabel } from '../lib/format'
+import { rating, pct, num, ratingTier, vlrMatchUrl, eventLabel, birthDateLabel, trackerProfileUrl } from '../lib/format'
+import trackerLinks from '../lib/trackerLinks.json'
 import { useFollowed } from '../lib/useFollowed'
 
 export default function PlayerProfile() {
@@ -35,6 +36,15 @@ export default function PlayerProfile() {
   // match this site's own player-name casing ("basic", sourced from VLR).
   const { data: realNamesData } = useData('player_real_names')
   const realName = realNamesData?.[decodedName.toLowerCase()]
+  // Hand-curated handle -> {puuid, riotId} map for the tracker.gg link, see
+  // trackerLinks.json's own comment for why this can't be sourced from
+  // either scraper. A static import (like teamLogos.json), not a useData
+  // fetch -- this is source-committed lookup data, not a pipeline-generated
+  // public/data file. `riotId` is kept fresh by data_prep/
+  // resolve_tracker_puuids.py (run daily by CI) re-resolving `puuid` --
+  // Riot's own permanent per-account id -- back to the player's CURRENT
+  // Name#Tag, so a rename doesn't quietly break the link.
+  const trackerRiotId = trackerLinks[decodedName.toLowerCase()]?.riotId
   // Same Liquipedia infobox fetch as realName above, see
   // liquipedia_player_names_scraper.py -- a separate file rather than a
   // second field on player_real_names.json since a birth date is a
@@ -464,32 +474,60 @@ export default function PlayerProfile() {
           </div>
         </div>
 
-        <Button
-          as={Link}
-          to={`/compare?a=${encodeURIComponent(decodedName)}`}
-          variant="outline"
-          size="sm"
-          className="self-start sm:self-center shrink-0"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="w-3.5 h-3.5"
-            aria-hidden="true"
+        <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+          {trackerRiotId && (
+            <Button
+              as="a"
+              href={trackerProfileUrl(trackerRiotId)}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outline"
+              size="sm"
+              title={`tracker.gg profile for ${trackerRiotId}`}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-3.5 h-3.5"
+                aria-hidden="true"
+              >
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <path d="M15 3h6v6" />
+                <path d="M10 14 21 3" />
+              </svg>
+              Tracker.gg
+            </Button>
+          )}
+          <Button
+            as={Link}
+            to={`/compare?a=${encodeURIComponent(decodedName)}`}
+            variant="outline"
+            size="sm"
           >
-            <circle cx="5" cy="6" r="3" />
-            <path d="M12 6h5a2 2 0 0 1 2 2v7" />
-            <path d="m15 9-3-3 3-3" />
-            <circle cx="19" cy="18" r="3" />
-            <path d="M12 18H7a2 2 0 0 1-2-2V9" />
-            <path d="m9 15 3 3-3 3" />
-          </svg>
-          Compare
-        </Button>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-3.5 h-3.5"
+              aria-hidden="true"
+            >
+              <circle cx="5" cy="6" r="3" />
+              <path d="M12 6h5a2 2 0 0 1 2 2v7" />
+              <path d="m15 9-3-3 3-3" />
+              <circle cx="19" cy="18" r="3" />
+              <path d="M12 18H7a2 2 0 0 1-2-2V9" />
+              <path d="m9 15 3 3-3 3" />
+            </svg>
+            Compare
+          </Button>
+        </div>
       </div>
 
       {stats && stats.mapsPlayed > 0 && (

@@ -183,7 +183,11 @@ export function aggregateKdByCountry(groups) {
   const gate = Math.max(MAP_GATE_FLOOR, MAP_GATE_FRACTION * median(raw.map((c) => c.maps).sort((a, b) => a - b)))
 
   return raw
-    .filter((c) => c.kAgainst && c.maps >= gate)
+    // `code` is null for an opponent with no player_buckets meta entry at
+    // all (a rare cameo appearance, e.g. a Bo1-only sub) -- there's no flag
+    // to show and "which country" doesn't have a real answer, so this drops
+    // the group entirely rather than crashing flagUrl() or faking a flag.
+    .filter((c) => c.code && c.kAgainst && c.maps >= gate)
     .map((c) => {
       const kd = c.kFor / c.kAgainst
       const phat = c.kFor / (c.kFor + c.kAgainst)

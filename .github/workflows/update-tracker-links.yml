@@ -1,0 +1,84 @@
+name: Update tracker.gg links
+
+# src/lib/trackerLinks.json maps a player's VLR handle to their tracker.gg
+# profile -- but a tracker.gg URL is built from a player's Riot ID
+# ("Name#Tag"), which is player-chosen and can change at any time. Storing
+# only the Riot ID would mean every rename silently breaks that player's
+# link until someone notices and hand-fixes it.
+#
+# Each entry also carries a `puuid` -- Riot's own permanent per-account id,
+# resolved once via HenrikDev's unofficial Valorant API (a thin wrapper
+# around Riot's own account-v1 API; docs.henrikdev.xyz) and never changing
+# even if the player renames. data_prep/resolve_tracker_puuids.py re-checks
+# every stored puuid's CURRENT name/tag each run and updates riotId if it
+# drifted, so a rename fixes itself here within a day instead of needing a
+# human to notice a dead link.
+#
+# HENRIKDEV_API_KEY is a free key from HenrikDev's own Discord (see their
+# docs) -- a GitHub Actions secret, never committed; the script only ever
+# uses it server-side inside this workflow, so it's never shipped to the
+# built site. Free-tier rate limit is 60 req/min; this repo's handful of
+# entries make that a non-issue (the whole run takes well under a minute).
+
+on:
+  schedule:
+    # Once daily, offset from the other two data workflows' own slots
+    # (update-data.yml 03:00 UTC, update-liquipedia-data.yml 04:15 UTC) so
+    # none of the three race a commit to main at the same moment. Renames
+    # aren't a same-day-urgency thing, so daily is already more than enough.
+    - cron: '30 4 * * *'
+  workflow_dispatch:
+
+# Independent of the other two data workflows' own concurrency groups --
+# this only ever touches src/lib/trackerLinks.json, nothing they write.
+concurrency:
+  group: update-tracker-links
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    # A handful of entries at ~1.1s/request (see REQUEST_DELAY_S in the
+    # script) is well under a minute in the common case; real headroom for
+    # a future-larger list or transient API slowness.
+    timeout-minutes: 10
+
+    env:
+      HENRIKDEV_API_KEY: ${{ secrets.HENRIKDEV_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # No pip install -- resolve_tracker_puuids.py only uses the standard
+      # library (json/os/sys/time/urllib), same as build_patch_notes.py.
+
+      - name: Resolve tracker.gg Riot IDs
+        run: python data_prep/resolve_tracker_puuids.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/lib/trackerLinks.json
+          if git diff --staged --quiet; then
+            echo "No renames or new puuids -- nothing to publish."
+            exit 0
+          fi
+          git commit -m "Update tracker.gg links $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Pushed."
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt); rebasing onto latest main."
+            git pull --rebase --autostash origin main
+          done
+          echo "::error::Could not push after 3 attempts."
+          exit 1

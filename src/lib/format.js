@@ -178,6 +178,17 @@ export function vlrMapUrl(matchId, gameId) {
   return `https://www.vlr.gg/${matchId}?game=${gameId}&tab=overview`
 }
 
+// tracker.gg's own profile URL shape, /valorant/profile/riot/{riotId}, where
+// riotId is the player's real in-game "Name#Tag" -- NOT their VLR handle or
+// real name, and not derivable from either (checked live against both this
+// site's own data sources: neither VLR's player page nor Liquipedia's player
+// infobox publishes it). `riotId` comes from `trackerLinks.json`, a small
+// hand-curated map (same pattern as `liquipedia_overrides.json`) since
+// there's no scrapable source of truth for this mapping.
+export function trackerProfileUrl(riotId) {
+  return `https://tracker.gg/valorant/profile/riot/${encodeURIComponent(riotId)}`
+}
+
 // Clock-time duration in seconds -> "44:31" or "1:01:51" once past an hour,
 // matching VLR's own .map-duration display convention.
 export function duration(v) {

@@ -1,0 +1,58 @@
+{
+  "pa1ze": {
+    "puuid": "05798cdc-0df9-544f-8732-831a1ab129c7",
+    "riotId": "JL Pa1ze#TTV"
+  },
+  "timotino": {
+    "puuid": "548830cb-5c73-5140-8846-e51eda21bb66",
+    "riotId": "100T Timotino#2007"
+  },
+  "sato": {
+    "puuid": "2549cb4b-2722-5f8f-9cef-382e34293985",
+    "riotId": "LEV Sato#paz"
+  },
+  "basic": {
+    "puuid": "a9d9b499-34ce-59dc-8b3d-acea3d6aabb2",
+    "riotId": "FURIA basic#mint"
+  },
+  "dantedeu5": {
+    "puuid": "05341389-d239-5e8b-8ae7-f371b627bdfc",
+    "riotId": "KRÜ dante#arima"
+  },
+  "zekken": {
+    "puuid": "57bf3aff-d0e2-5ef3-a446-1fcfe199853d",
+    "riotId": "MIBR zekken#1515"
+  },
+  "bang": {
+    "puuid": "a60e35e7-314b-5345-b83f-b813620be5cd",
+    "riotId": "100T bang#1111"
+  },
+  "asuna": {
+    "puuid": "f6581378-8d2c-59e3-b383-85a5f4401819",
+    "riotId": "100T Asuna#1111"
+  },
+  "neon": {
+    "puuid": "68ae99f4-552a-5b0f-a361-2662019e42a1",
+    "riotId": "LEV Neon#1111"
+  },
+  "keiko": {
+    "puuid": "75dda691-0e1d-5fdc-9dbe-0275eb6b918f",
+    "riotId": "NRG keiko#lili"
+  },
+  "brawk": {
+    "puuid": "ba4d7928-7d21-5e46-9730-e6c292d6c404",
+    "riotId": "bRaWk#kels"
+  },
+  "ethan": {
+    "puuid": "7ff76597-4864-54df-8939-bd0ba081099e",
+    "riotId": "Ethan#FARM"
+  },
+  "mada": {
+    "puuid": "1fd6fe52-7fbf-52b6-9b43-9885bd162498",
+    "riotId": "mada#444x"
+  },
+  "skuba": {
+    "puuid": "df454dbd-5312-5c69-9466-43ec666e8088",
+    "riotId": "sss#skuba"
+  }
+}

@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useParams, Link } from 'react-router-dom'
 import { useData, useIdle } from '../lib/useData'
@@ -818,25 +818,27 @@ export default function PlayerProfile() {
       </div>
 
       {stats && stats.mapsPlayed > 0 && (
-        // tracker.gg-style "overview" card. Colors/radius on this card and
-        // its two children below (GiantStat, the Tracker Score sub-card)
-        // are tracker.gg's own real CSS custom properties -- pulled straight
-        // out of a saved copy of the actual page's <style id="trn-title-
-        // styles"> block (--color-surface-1 #0f1923, --color-surface-3
-        // #2c3f52, --border-radius 0.5rem, etc), not approximated from this
-        // site's own surface/hairline tokens, per direct instruction for a
-        // literal 1:1 match rather than "inspired by." Structure (a brand
-        // rail, a rank/RR/leaderboard + W-L strip -- ranked only, pro
-        // matches have no personal rank -- 4 "giant" stat pills with a
-        // percentile fill bar each, and a Tracker Score footer) still comes
-        // from that same real page, restricted to only the stats this site
-        // actually has data for. No secondary stat grid (dropped per
-        // earlier direct instruction) -- Most Played Agent and Most Kills
-        // stay gone too (no equivalent on tracker.gg's real page; Most
-        // Played Agent duplicates the Agents table's own top row further
-        // down anyway).
-        <div className="relative bg-[#0f1923] border border-white/5 rounded-lg shadow-depth-sm overflow-hidden">
-          <div className="absolute inset-y-0 left-0 w-1 bg-grad-accent" aria-hidden="true" />
+        // tracker.gg-style "overview" card. The two inner pieces (GiantStat,
+        // the Tracker Score sub-card) keep tracker.gg's own real CSS custom
+        // properties (--color-surface-1 #0f1923, --color-surface-3 #2c3f52,
+        // --border-radius 0.5rem, etc, pulled from a saved copy of the
+        // actual page) for a literal 1:1 match there -- but this OUTER
+        // wrapper uses this site's own default card background/border
+        // (bg-grad-surface/border-hairline, same as the Performances panel
+        // right below it) per direct instruction, rather than tracker.gg's
+        // real page background, so the card sits inside this site's own
+        // visual language instead of looking like a patch of a different
+        // site. No brand-color left rail either (removed per direct
+        // instruction). Structure (a rank/RR/leaderboard + W-L strip --
+        // ranked only, pro matches have no personal rank -- 4 "giant" stat
+        // pills with a percentile fill bar each, and a Tracker Score
+        // footer) still comes from that same real page, restricted to only
+        // the stats this site actually has data for. No secondary stat grid
+        // (dropped per earlier direct instruction) -- Most Played Agent and
+        // Most Kills stay gone too (no equivalent on tracker.gg's real
+        // page; Most Played Agent duplicates the Agents table's own top row
+        // further down anyway).
+        <div className="relative bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-hidden">
           <div className="pl-4 pr-3 py-3 sm:pl-5 sm:pr-5 sm:py-4 flex flex-col gap-4">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               {/* Source toggle -- only rendered when this player actually has
@@ -1161,42 +1163,40 @@ function trackerTier(percentile) {
   return { label: 'D', tone: 'text-[#bf868f]', light: '#bf868f', dark: '#6b454c', glow: '191,134,143' }
 }
 
-// The tier badge -- a colored medallion (SVG, gradient-filled in the tier's
-// own real color, soft outer glow) evoking the same "rating medal" idea as
-// tracker.gg's own crest (their real .score__emblem is a bespoke Illustrator
-// asset, a 5-point rosette around a diamond gem, colored per tier) without
-// tracing their exact artwork, per direct instruction. This is a 6-point
-// star/rosette around a small gem instead -- close enough to read as the
-// same "badge of honor" genre, deliberately not the same shape. `useId`
-// keeps the gradient's id collision-safe if this ever renders more than
-// once on a page (e.g. a future compare view) -- two SVGs sharing a literal
-// id would have the second silently reuse the first's gradient definition.
+// The tier badge -- a pentagon "gem" crest per direct instruction/reference
+// markup: a dark-filled pentagon, all 5 edges double-stroked (a muted base
+// pass, then the tier's own color on top of 4 of the 5 -- the top edge
+// deliberately stays muted-only, matching the reference exactly), 5 small
+// corner notches for the faceted-gem look, and the tier letter centered
+// (the reference's own center graphic is an external asset this repo
+// doesn't have, so the letter stands in for it). Replaces an earlier
+// 6-point star version that, per direct feedback, read as a Star of David
+// rather than a rating medal -- not the intended association at all, hence
+// this replacement rather than a tweak.
 function TrackerScoreBadge({ score }) {
   const tier = trackerTier(score / 10)
   const light = tier?.light ?? '#a7c6cc'
-  const dark = tier?.dark ?? '#5c6f74'
-  const glow = tier?.glow ?? '167,198,204'
-  const gradId = `ts-badge-${useId()}`
   return (
-    <div
-      className="relative w-14 h-14 shrink-0"
-      style={{ filter: `drop-shadow(0 0 8px rgba(${glow}, 0.65))` }}
-      title="Tracker Score tier"
-    >
-      <svg viewBox="0 0 24 24" className="w-full h-full" aria-hidden="true">
-        <defs>
-          <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor={light} />
-            <stop offset="100%" stopColor={dark} />
-          </linearGradient>
-        </defs>
-        <polygon
-          points="12,1.5 15,6.8 21.09,6.75 18,12 21.09,17.25 15,17.2 12,22.5 9,17.2 2.91,17.25 6,12 2.91,6.75 9,6.8"
-          fill={`url(#${gradId})`}
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth="0.3"
-        />
-        <circle cx="12" cy="12" r="3.4" fill="rgba(13,15,19,0.35)" stroke="rgba(255,255,255,0.6)" strokeWidth="0.4" />
+    <div className="relative w-14 h-[3.73rem] shrink-0" style={{ filter: `drop-shadow(0 0 8px ${light}99)` }} title="Tracker Score tier">
+      <svg viewBox="0 0 60 64" className="w-full h-full" aria-hidden="true">
+        <polygon points="44.11,10.58 52.83,37.42 30.00,54.00 7.17,37.42 15.89,10.58" fill="#080e1a" />
+        <line x1="44.11" y1="10.58" x2="52.83" y2="37.42" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />
+        <line x1="52.83" y1="37.42" x2="30.00" y2="54.00" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />
+        <line x1="30.00" y1="54.00" x2="7.17" y2="37.42" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />
+        <line x1="7.17" y1="37.42" x2="15.89" y2="10.58" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />
+        <line x1="15.89" y1="10.58" x2="44.11" y2="10.58" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />
+        <line x1="44.11" y1="10.58" x2="52.83" y2="37.42" stroke={light} strokeWidth="3.5" strokeLinecap="butt" />
+        <line x1="52.83" y1="37.42" x2="30.00" y2="54.00" stroke={light} strokeWidth="3.5" strokeLinecap="butt" />
+        <line x1="30.00" y1="54.00" x2="7.17" y2="37.42" stroke={light} strokeWidth="3.5" strokeLinecap="butt" />
+        <line x1="7.17" y1="37.42" x2="15.89" y2="10.58" stroke={light} strokeWidth="3.5" strokeLinecap="butt" />
+        <line x1="44.99" y1="9.37" x2="41.76" y2="13.82" stroke="#080e1a" strokeWidth="1.5" strokeLinecap="butt" />
+        <line x1="54.25" y1="37.88" x2="49.02" y2="36.18" stroke="#080e1a" strokeWidth="1.5" strokeLinecap="butt" />
+        <line x1="30.00" y1="55.50" x2="30.00" y2="50.00" stroke="#080e1a" strokeWidth="1.5" strokeLinecap="butt" />
+        <line x1="5.75" y1="37.88" x2="10.98" y2="36.18" stroke="#080e1a" strokeWidth="1.5" strokeLinecap="butt" />
+        <line x1="15.01" y1="9.37" x2="18.24" y2="13.82" stroke="#080e1a" strokeWidth="1.5" strokeLinecap="butt" />
+        <text x="30" y="35.5" textAnchor="middle" fontSize="16" fontWeight="800" fill="#ffffff" fontFamily="inherit">
+          {tier ? tier.label : '—'}
+        </text>
       </svg>
     </div>
   )

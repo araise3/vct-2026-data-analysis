@@ -1169,7 +1169,7 @@ function TrackerScoreBadge({ score }) {
   const tier = trackerTier(score / 10)
   const light = tier?.light ?? '#a7c6cc'
   return (
-    <div className="relative w-14 h-[3.73rem] shrink-0" title="Tracker Score tier">
+    <div className="relative w-14 h-[3.73rem] shrink-0" style={{ filter: `drop-shadow(0 0 8px ${light}99)` }} title="Tracker Score tier">
       <svg viewBox="0 0 60 64" className="w-full h-full" aria-hidden="true">
         <polygon points="44.11,10.58 52.83,37.42 30.00,54.00 7.17,37.42 15.89,10.58" fill="#080e1a" />
         <line x1="44.11" y1="10.58" x2="52.83" y2="37.42" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />

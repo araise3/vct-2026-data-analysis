@@ -944,16 +944,17 @@ export default function PlayerProfile() {
                 .performance-score (bg surface-1, border-radius) wrapping
                 .performance-score__container (bg surface-2, CSS GRID with
                 "score stats" areas -- min-content + 1fr, stacking to one
-                column below sm), a subtle 7.5%-white border overlay, and
-                the crest/label/value cluster on the left with the 4-stat
-                grid on the right. The "+" dividers are DOM siblings here
-                (real page does it as a `:before` pseudo-element referencing
-                a CDN plus-icon SVG at the same 16px/rounded-full size --
-                same visual result, this is just how it has to be done from
-                inside JSX rather than a dedicated stylesheet). */}
+                column below sm), and the crest/label/value cluster on the
+                left with the 4-stat grid on the right. No border overlay
+                (removed per direct instruction -- the real page's own
+                7.5%-white border read as an unwanted outline here). The "+"
+                dividers are DOM siblings here (real page does it as a
+                `:before` pseudo-element referencing a CDN plus-icon SVG at
+                the same 16px/rounded-full size -- same visual result, this
+                is just how it has to be done from inside JSX rather than a
+                dedicated stylesheet). */}
             {perf && (
               <div className="relative bg-[#0f1923] rounded-lg overflow-hidden">
-                <div className="absolute inset-0 rounded-lg border border-white/[0.075] pointer-events-none z-10" aria-hidden="true" />
                 <div className="bg-[#1b2733] rounded-lg grid grid-cols-1 sm:grid-cols-[min-content_1fr]">
                   <div
                     className="flex items-stretch"
@@ -1241,8 +1242,11 @@ function TrackerScoreMetric({ label, value, format, percentile }) {
 }
 
 // tracker.gg's real `.stat.giant`: bg surface-2, a 4px vertical fill bar
-// (track = --color-background, the darkest token, fill = accent) sized to
-// the stat's own percentile, a normal-weight/normal-case label (NOT the
+// (track = --color-background, the darkest token; fill = tracker.gg's own
+// real --color-accent, #bfbdb6 -- a neutral gray, confirmed by eyedropper
+// against a screenshot of the real page, and genuinely NOT the same as
+// their --color-action red used elsewhere) sized to the stat's own
+// percentile, a normal-weight/normal-case label (NOT the
 // small-caps micro-label this site uses everywhere else -- confirmed
 // against the real CSS, `.stat .numbers .name` carries no text-transform),
 // a big bold value, and a "Top X%" line -- gold (`#cbb765`, tracker.gg's
@@ -1258,7 +1262,7 @@ function GiantStat({ label, value, format, percentile }) {
       <div className="relative w-1 shrink-0 bg-[#0F141A] rounded-full overflow-hidden">
         {percentile != null && (
           <div
-            className="absolute bottom-0 left-0 right-0 bg-accent rounded-full"
+            className="absolute bottom-0 left-0 right-0 bg-[#bfbdb6] rounded-full"
             style={{ height: `${Math.max(4, percentile)}%` }}
           />
         )}

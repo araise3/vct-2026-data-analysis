@@ -13,7 +13,7 @@ import { scaleColor, rating, num, eventLabel, roundLabel, vlrMatchUrl } from '..
 // Matches RadarChart.jsx's own (unexported) constants -- kept in sync here
 // the same way PlayerProfile.jsx already does for its legend dots, rather
 // than exporting them just for this one shared use.
-const SUBJECT_COLOR = '#FF4655'
+const SUBJECT_COLOR = '#2F80ED'
 const COMPARE_COLOR = '#FFD47D'
 
 // Sentinel for "no year filter" (a player's whole career) -- distinct from

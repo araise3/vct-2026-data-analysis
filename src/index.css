@@ -48,7 +48,7 @@ body {
    9999px at the time, now mostly `rounded-2xl` 14px) in the cascade
    regardless of which one the element actually wanted. */
 :focus-visible {
-  outline: 2px solid #FF4655;
+  outline: 2px solid #2F80ED;
   outline-offset: 2px;
 }
 

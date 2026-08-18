@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useParams, Link } from 'react-router-dom'
 import { useData, useIdle } from '../lib/useData'
@@ -1129,42 +1129,61 @@ function WldBadge({ wins, losses, draws }) {
 }
 
 // Tracker Score tier lookup -- see proPerf/rankedPerf's own comments for
-// what's being adapted from tracker.gg's article and why. Colors
-// mirror the article's own scheme (S=Blue, A=Green, B=Yellow, C=Grey,
-// D=Rose); this site has no "blue" token, so the existing slate-blue
-// `selected` color (already reserved for "this is the standout/active
-// one" elsewhere -- see tailwind.config.js) stands in for it. Percentile
-// cutoffs (90/75/50/25) are an even split, not a reverse-engineered exact
-// match -- tracker.gg doesn't publish theirs either. `glow` is each tone's
-// raw RGB triplet (not a Tailwind class -- box-shadow color can't come from
-// one) for TrackerScoreBadge's own glow effect below.
+// what's being adapted from tracker.gg's article and why. Colors mirror the
+// article's own scheme (S=Blue, A=Green, B=Yellow, C=Grey, D=Rose); `tone`
+// (Tailwind classes, used by TrackerScoreMetric's small inline tier chip)
+// and `light`/`dark`/`glow` (raw hex/rgb, used by TrackerScoreBadge's own
+// shield gradient/glow below -- box-shadow and SVG fill can't consume a
+// Tailwind class) describe the same five tiers two different ways for two
+// different rendering needs. Percentile cutoffs (90/75/50/25) are an even
+// split, not a reverse-engineered exact match -- tracker.gg doesn't publish
+// theirs either.
 function trackerTier(percentile) {
   if (percentile == null) return null
-  if (percentile >= 90) return { label: 'S', tone: 'text-selected-bright bg-selected/15', glow: '124,143,209' }
-  if (percentile >= 75) return { label: 'A', tone: 'text-good bg-good/10', glow: '74,201,126' }
-  if (percentile >= 50) return { label: 'B', tone: 'text-mid bg-mid/10', glow: '255,212,125' }
-  if (percentile >= 25) return { label: 'C', tone: 'text-muted bg-surface2', glow: '155,161,176' }
-  return { label: 'D', tone: 'text-bad bg-bad/10', glow: '247,102,94' }
+  if (percentile >= 90) return { label: 'S', tone: 'text-selected-bright bg-selected/15', light: '#8fa3e0', dark: '#3c4a80', glow: '124,143,209' }
+  if (percentile >= 75) return { label: 'A', tone: 'text-good bg-good/10', light: '#7de3a3', dark: '#2d8a55', glow: '74,201,126' }
+  if (percentile >= 50) return { label: 'B', tone: 'text-mid bg-mid/10', light: '#ffe4ab', dark: '#d9a34a', glow: '255,212,125' }
+  if (percentile >= 25) return { label: 'C', tone: 'text-muted bg-surface2', light: '#c3c8d4', dark: '#6b7280', glow: '155,161,176' }
+  return { label: 'D', tone: 'text-bad bg-bad/10', light: '#ff9791', dark: '#c2453e', glow: '247,102,94' }
 }
 
-// A shield silhouette (CSS clip-path on the existing tone-colored box, no
-// extra SVG needed) with a soft outer glow in the tier's own color --
-// tracker.gg's real crest is a bespoke logo mark, which this doesn't try to
-// clone; this is this site's own equivalent treatment of "the score's tier
-// deserves a badge, not just a letter in a rounded square."
+// A real shield crest (SVG, gradient-filled top-to-bottom in the tier's own
+// color, soft outer glow to match) instead of a letter in a plain rounded
+// box -- tracker.gg's own real crest is a bespoke logo mark, which this
+// doesn't try to clone; this is this site's own equivalent treatment of
+// "the score's tier deserves a badge." `useId` keeps the gradient's id
+// collision-safe if this ever renders more than once on a page (e.g. a
+// future compare view) -- two SVGs sharing a literal id would have the
+// second silently reuse the first's gradient definition.
 function TrackerScoreBadge({ score }) {
   const tier = trackerTier(score / 10)
+  const light = tier?.light ?? '#c3c8d4'
+  const dark = tier?.dark ?? '#6b7280'
   const glow = tier?.glow ?? '155,161,176'
+  const gradId = `ts-shield-${useId()}`
   return (
     <div
-      className={`relative w-11 h-11 flex items-center justify-center text-base font-display font-bold shrink-0 ${tier ? tier.tone : 'text-muted bg-surface2'}`}
-      style={{
-        clipPath: 'polygon(50% 0%, 95% 22%, 95% 60%, 50% 100%, 5% 60%, 5% 22%)',
-        boxShadow: `0 0 16px -2px rgba(${glow}, 0.55)`,
-      }}
+      className="relative w-11 h-11 shrink-0"
+      style={{ filter: `drop-shadow(0 0 7px rgba(${glow}, 0.6))` }}
       title="Tracker Score tier"
     >
-      {tier ? tier.label : '—'}
+      <svg viewBox="0 0 24 24" className="w-full h-full" aria-hidden="true">
+        <defs>
+          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={light} />
+            <stop offset="100%" stopColor={dark} />
+          </linearGradient>
+        </defs>
+        <path
+          d="M12 2.1 4.4 5.05v5.45c0 5.15 3.36 9.37 7.6 10.9 4.24-1.53 7.6-5.75 7.6-10.9V5.05L12 2.1z"
+          fill={`url(#${gradId})`}
+          stroke="rgba(255,255,255,0.3)"
+          strokeWidth="0.4"
+        />
+        <text x="12" y="14.7" textAnchor="middle" fontSize="9" fontWeight="800" fill="#0d0f13" fontFamily="inherit">
+          {tier ? tier.label : '—'}
+        </text>
+      </svg>
     </div>
   )
 }

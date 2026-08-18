@@ -956,10 +956,10 @@ export default function PlayerProfile() {
                 <div className="absolute inset-0 rounded-lg border border-white/[0.075] pointer-events-none z-10" aria-hidden="true" />
                 <div className="bg-[#1b2733] rounded-lg grid grid-cols-1 sm:grid-cols-[min-content_1fr]">
                   <div
-                    className="flex items-center px-4 sm:px-7 py-3 sm:py-0"
+                    className="flex items-stretch"
                     style={{ backgroundImage: `linear-gradient(to right, ${trackerTier(perf.score / 10)?.light ?? '#a7c6cc'}, transparent)`, padding: '1px' }}
                   >
-                    <div className="flex items-center bg-[#1b2733] rounded-lg sm:rounded-r-none px-4 sm:px-7 py-3 w-full sm:w-auto">
+                    <div className="flex items-center bg-[#1b2733] rounded-lg sm:rounded-r-none px-4 sm:px-7 py-3 w-full h-full">
                       <TrackerScoreBadge score={perf.score} />
                       <div className="flex flex-col ml-5 whitespace-nowrap">
                         <span className="text-muted text-sm font-medium">Tracker Score</span>

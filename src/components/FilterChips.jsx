@@ -22,7 +22,7 @@ export default function FilterChips({ options, value, onChange, renderLabel, get
               key={opt}
               onClick={() => onChange(opt)}
               style={{
-                backgroundImage: `linear-gradient(${active ? 'rgba(47,128,237,0.5)' : 'rgba(19,22,25,0.55)'}, ${active ? 'rgba(47,128,237,0.5)' : 'rgba(19,22,25,0.55)'}), url(${bg})`,
+                backgroundImage: `linear-gradient(${active ? 'rgba(255,70,85,0.5)' : 'rgba(19,22,25,0.55)'}, ${active ? 'rgba(255,70,85,0.5)' : 'rgba(19,22,25,0.55)'}), url(${bg})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               }}

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
-const SUBJECT_COLOR = '#2F80ED' // matches the `accent` design token
-const COMPARE_COLOR = '#FFD47D' // matches the `mid` design token -- distinct from accent
+const SUBJECT_COLOR = '#FF4655'
+const COMPARE_COLOR = '#FFD47D' // matches the `mid` design token -- distinct from the brand red
 
 /**
  * Peer-relative radar chart -- one spoke per stat, each on its own scale

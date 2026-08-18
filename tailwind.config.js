@@ -20,22 +20,16 @@ export default {
         hairline: '#3d4557',    // brightened from #303133 -- now a real visible edge
         ink: '#fafafa',
         muted: '#9ba1b0',
-        // Vivid azure -- replaces the original Valorant-brand-red override
-        // per direct instruction (a full sitewide removal of the red
-        // accent, not just this profile card). Deliberately more saturated
-        // than `selected` below (a muted slate-blue) so the two stay
-        // visually distinct despite both now being "blue" -- accent still
-        // needs to read as the loud, primary-CTA one.
         accent: {
-          DEFAULT: '#2F80ED',
-          dim: '#1F5FB8',
-          bright: '#5B9FFF',
+          DEFAULT: '#FF4655',   // Valorant brand red -- reserved for primary CTAs/brand, not selection state
+          dim: '#B23440',
+          bright: '#FF6E79',
         },
         // Muted slate-blue for "this is selected" (active chips/tabs/
-        // toggles) -- kept distinct from accent above even now that both
-        // are blue, so selection state still doesn't compete with accent's
-        // own CTA/brand meaning. Callback to rft.gg's own original
-        // (pre-override) periwinkle accent, toned down further.
+        // toggles) -- direct feedback that red read as too loud once it
+        // was on every active facet, and that selection state shouldn't
+        // compete with accent's own CTA/brand meaning. Callback to rft.gg's
+        // own original (pre-override) periwinkle accent, toned down further.
         selected: {
           DEFAULT: '#5B6EAE',
           dim: '#42517F',
@@ -85,8 +79,8 @@ export default {
         // top-lit gradient plus the shadow pair below is what actually
         // sells "raised, catching light from above." Used by Button/Chip's
         // active states and Card's own surface.
-        'grad-accent': 'linear-gradient(180deg, #5B9FFF 0%, #2F80ED 55%, #1F5FB8 100%)',
-        'grad-accent-hover': 'linear-gradient(180deg, #7CB4FF 0%, #2F80ED 55%, #1F5FB8 100%)',
+        'grad-accent': 'linear-gradient(180deg, #FF6E79 0%, #FF4655 55%, #E63A48 100%)',
+        'grad-accent-hover': 'linear-gradient(180deg, #FF8890 0%, #FF4655 55%, #E63A48 100%)',
         'grad-selected': 'linear-gradient(180deg, #7C8FD1 0%, #5B6EAE 55%, #42517F 100%)',
         'grad-surface': 'linear-gradient(180deg, #20242f 0%, #1b1f28 100%)',
         'grad-surface2': 'linear-gradient(180deg, #2d3341 0%, #272d3a 100%)',
@@ -104,7 +98,7 @@ export default {
         // Button-specific: a real accent-colored glow on hover (not just a
         // darker cast shadow) and a deeper inset press on active.
         button: '0 2px 4px 0 rgb(0 0 0 / 0.5), inset 0 1px 0 0 rgb(255 255 255 / 0.12)',
-        'button-hover': '0 8px 20px -4px rgb(47 128 237 / 0.45), 0 3px 8px -2px rgb(0 0 0 / 0.5), inset 0 1px 0 0 rgb(255 255 255 / 0.16)',
+        'button-hover': '0 8px 20px -4px rgb(255 70 85 / 0.45), 0 3px 8px -2px rgb(0 0 0 / 0.5), inset 0 1px 0 0 rgb(255 255 255 / 0.16)',
         'button-active': 'inset 0 2px 6px 0 rgb(0 0 0 / 0.6)',
         // Muted slate-blue, not accent red -- a focus ring means "you're
         // interacting with this control," the same "selecting" meaning

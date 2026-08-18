@@ -1,0 +1,110 @@
+{
+  "ascendant 1": {
+    "displayName": "Ascendant 1",
+    "icon": "/ranks/ascendant-1.png"
+  },
+  "ascendant 2": {
+    "displayName": "Ascendant 2",
+    "icon": "/ranks/ascendant-2.png"
+  },
+  "ascendant 3": {
+    "displayName": "Ascendant 3",
+    "icon": "/ranks/ascendant-3.png"
+  },
+  "bronze 1": {
+    "displayName": "Bronze 1",
+    "icon": "/ranks/bronze-1.png"
+  },
+  "bronze 2": {
+    "displayName": "Bronze 2",
+    "icon": "/ranks/bronze-2.png"
+  },
+  "bronze 3": {
+    "displayName": "Bronze 3",
+    "icon": "/ranks/bronze-3.png"
+  },
+  "diamond 1": {
+    "displayName": "Diamond 1",
+    "icon": "/ranks/diamond-1.png"
+  },
+  "diamond 2": {
+    "displayName": "Diamond 2",
+    "icon": "/ranks/diamond-2.png"
+  },
+  "diamond 3": {
+    "displayName": "Diamond 3",
+    "icon": "/ranks/diamond-3.png"
+  },
+  "gold 1": {
+    "displayName": "Gold 1",
+    "icon": "/ranks/gold-1.png"
+  },
+  "gold 2": {
+    "displayName": "Gold 2",
+    "icon": "/ranks/gold-2.png"
+  },
+  "gold 3": {
+    "displayName": "Gold 3",
+    "icon": "/ranks/gold-3.png"
+  },
+  "immortal 1": {
+    "displayName": "Immortal 1",
+    "icon": "/ranks/immortal-1.png"
+  },
+  "immortal 2": {
+    "displayName": "Immortal 2",
+    "icon": "/ranks/immortal-2.png"
+  },
+  "immortal 3": {
+    "displayName": "Immortal 3",
+    "icon": "/ranks/immortal-3.png"
+  },
+  "iron 1": {
+    "displayName": "Iron 1",
+    "icon": "/ranks/iron-1.png"
+  },
+  "iron 2": {
+    "displayName": "Iron 2",
+    "icon": "/ranks/iron-2.png"
+  },
+  "iron 3": {
+    "displayName": "Iron 3",
+    "icon": "/ranks/iron-3.png"
+  },
+  "platinum 1": {
+    "displayName": "Platinum 1",
+    "icon": "/ranks/platinum-1.png"
+  },
+  "platinum 2": {
+    "displayName": "Platinum 2",
+    "icon": "/ranks/platinum-2.png"
+  },
+  "platinum 3": {
+    "displayName": "Platinum 3",
+    "icon": "/ranks/platinum-3.png"
+  },
+  "radiant": {
+    "displayName": "Radiant",
+    "icon": "/ranks/radiant.png"
+  },
+  "silver 1": {
+    "displayName": "Silver 1",
+    "icon": "/ranks/silver-1.png"
+  },
+  "silver 2": {
+    "displayName": "Silver 2",
+    "icon": "/ranks/silver-2.png"
+  },
+  "silver 3": {
+    "displayName": "Silver 3",
+    "icon": "/ranks/silver-3.png"
+  },
+  "unranked": {
+    "displayName": "Unranked",
+    "icon": "/ranks/unranked.png"
+  },
+  "unrated": {
+    "displayName": "Unranked",
+    "icon": "/ranks/unranked.png"
+  }
+}

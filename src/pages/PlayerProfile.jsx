@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useParams, Link } from 'react-router-dom'
 import { useData, useIdle } from '../lib/useData'
@@ -20,6 +20,7 @@ import PerformanceStrip from '../components/PerformanceStrip'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import AgentIcon from '../components/AgentIcon'
+import RankIcon from '../components/RankIcon'
 import Button from '../components/ui/Button'
 import { dynamicQualify, dynamicQualifyThreshold } from '../components/LeaderCard'
 import { rating, pct, num, ratingTier, eventLabel, birthDateLabel, trackerProfileUrl } from '../lib/format'
@@ -862,14 +863,21 @@ export default function PlayerProfile() {
               )}
               {/* W-L record only -- Win % dropped from this corner per direct
                   instruction (it's already one of the 4 pills below now, so
-                  showing it twice was redundant). */}
+                  showing it twice was redundant). Colored W/L/D (good/bad/
+                  muted tokens, same ones the rest of the site already uses
+                  for win-loss) instead of one flat muted string -- a wall of
+                  uniformly gray text read as lifeless next to the rest of
+                  this card. */}
               <div className="flex items-center gap-2">
                 {showRanked ? (
-                  <span className="text-muted text-xs">
-                    {actStats.actShort ? `Act ${actStats.actShort} · ` : ''}
-                    {actStats.wins}W – {actStats.losses}L
-                    {actStats.draws ? ` – ${actStats.draws}D` : ''}
-                  </span>
+                  <>
+                    {actStats.actShort && (
+                      <span className="text-muted text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-surface2">
+                        Act {actStats.actShort}
+                      </span>
+                    )}
+                    <WldBadge wins={actStats.wins} losses={actStats.losses} draws={actStats.draws} />
+                  </>
                 ) : (
                   <>
                     {ratingTier(stats.avgRating) && (
@@ -879,9 +887,7 @@ export default function PlayerProfile() {
                         {ratingTier(stats.avgRating).label}
                       </span>
                     )}
-                    <span className="text-muted text-xs">
-                      {stats.mapsWon}W – {stats.mapsLost}L
-                    </span>
+                    <WldBadge wins={stats.mapsWon} losses={stats.mapsLost} />
                   </>
                 )}
               </div>
@@ -891,20 +897,29 @@ export default function PlayerProfile() {
                 cluster, minus Level (not requested, and this pipeline
                 doesn't fetch account level) and minus the W-L ring (removed
                 per direct instruction -- the W-L record is already shown as
-                text in the corner above). Ranked view only -- there's no
-                "rank" for a pro-match aggregate. Absent (not a dash-filled
-                placeholder) when the account has no rank on file at all
-                (e.g. genuinely unranked this Act). */}
+                text in the corner above). The rank badge itself is a real
+                tier icon (data_prep/fetch_rank_icons.py, sourced from
+                valorant-api.com and cached locally same as agent icons --
+                see that script's own docstring), not just text -- silently
+                absent via RankIcon's own null-return if this tier name
+                somehow isn't in the lookup, rather than leaving a broken
+                <img>. Ranked view only -- there's no "rank" for a pro-match
+                aggregate. Absent entirely (not a dash-filled placeholder)
+                when the account has no rank on file at all (e.g. genuinely
+                unranked this Act). */}
             {showRanked && actStats.rank && (
-              <div className="flex flex-col gap-1 pb-1">
-                <span className="text-ink text-sm font-semibold">{actStats.rank.tier}</span>
-                <span className="flex items-baseline gap-1">
-                  <span className="font-display text-xl font-bold text-ink">{num(actStats.rank.rr)}</span>
-                  <span className="text-muted text-[10px] font-medium uppercase">RR</span>
-                </span>
-                {actStats.rank.leaderboardRank != null && (
-                  <span className="text-muted text-[10px]">#{num(actStats.rank.leaderboardRank)} leaderboard</span>
-                )}
+              <div className="flex items-center gap-3 pb-1">
+                <RankIcon tier={actStats.rank.tier} size={44} />
+                <div className="flex flex-col gap-1">
+                  <span className="text-ink text-sm font-semibold">{actStats.rank.tier}</span>
+                  <span className="flex items-baseline gap-1">
+                    <span className="font-display text-xl font-bold text-ink">{num(actStats.rank.rr)}</span>
+                    <span className="text-muted text-[10px] font-medium uppercase">RR</span>
+                  </span>
+                  {actStats.rank.leaderboardRank != null && (
+                    <span className="text-muted text-[10px]">#{num(actStats.rank.leaderboardRank)} leaderboard</span>
+                  )}
+                </div>
               </div>
             )}
 
@@ -916,22 +931,44 @@ export default function PlayerProfile() {
               </div>
             )}
 
+            {/* Tracker Score footer -- built as its own distinct sub-card
+                (a soft selected-blue wash bleeding in from the crest, on a
+                border of the same color) rather than a plain top-border
+                strip, since a flat divider read as an afterthought next to
+                everything else on this card getting real visual treatment.
+                "+" dividers between metrics (hidden below sm, where they
+                stack instead) mirror tracker.gg's own row layout, confirmed
+                against the real page. */}
             {perf && (
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3 border-t border-hairline">
-                <div className="flex items-center gap-2.5 shrink-0 sm:w-36">
-                  <TrackerScoreBadge score={perf.score} />
-                  <div className="flex flex-col">
-                    <span className="text-muted text-[10px] uppercase tracking-wide">Tracker Score</span>
-                    <span className="font-display text-lg font-bold text-ink">
-                      {perf.score}
-                      <span className="text-muted text-xs font-normal">/1000</span>
-                    </span>
+              <div className="relative rounded-xl border border-selected/25 bg-gradient-to-r from-selected/[0.12] via-surface2/50 to-surface2/20 px-3 py-3 sm:px-4 overflow-hidden">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex items-center gap-3 shrink-0 sm:w-36">
+                    <TrackerScoreBadge score={perf.score} />
+                    <div className="flex flex-col">
+                      <span className="text-muted text-[10px] uppercase tracking-wide">Tracker Score</span>
+                      <span className="font-display text-lg font-bold text-ink">
+                        {perf.score}
+                        <span className="text-muted text-xs font-normal">/1000</span>
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div className={`grid grid-cols-2 ${perf.scoreMetrics.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-4'} gap-3 flex-1 min-w-0`}>
-                  {perf.scoreMetrics.map((m) => (
-                    <TrackerScoreMetric key={m.statKey} {...m} />
-                  ))}
+                  <div className="flex flex-1 flex-wrap sm:flex-nowrap items-stretch gap-3 sm:gap-0 min-w-0">
+                    {perf.scoreMetrics.map((m, i) => (
+                      <Fragment key={m.statKey}>
+                        {i > 0 && (
+                          <span
+                            className="hidden sm:flex items-center justify-center w-5 h-5 my-auto mx-2.5 rounded-full bg-surface2 border border-hairline/70 text-muted text-xs shrink-0"
+                            aria-hidden="true"
+                          >
+                            +
+                          </span>
+                        )}
+                        <div className="flex-1 basis-[calc(50%-0.375rem)] sm:basis-0 min-w-[6rem] sm:min-w-0">
+                          <TrackerScoreMetric {...m} />
+                        </div>
+                      </Fragment>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -1071,6 +1108,26 @@ function Stat({ label, value }) {
   )
 }
 
+// Wins/losses(/draws) as colored counts (good/bad/muted -- the same tokens
+// every other win-loss indicator on the site already uses) instead of one
+// flat muted string. `draws` is optional -- the Pro corner has no concept
+// of a drawn map, so it's simply never passed there.
+function WldBadge({ wins, losses, draws }) {
+  return (
+    <span className="flex items-center gap-1 text-xs font-semibold">
+      <span className="text-good">{num(wins)}W</span>
+      <span className="text-muted/40">–</span>
+      <span className="text-bad">{num(losses)}L</span>
+      {draws ? (
+        <>
+          <span className="text-muted/40">–</span>
+          <span className="text-muted">{num(draws)}D</span>
+        </>
+      ) : null}
+    </span>
+  )
+}
+
 // Tracker Score tier lookup -- see proPerf/rankedPerf's own comments for
 // what's being adapted from tracker.gg's article and why. Colors
 // mirror the article's own scheme (S=Blue, A=Green, B=Yellow, C=Grey,
@@ -1078,21 +1135,33 @@ function Stat({ label, value }) {
 // `selected` color (already reserved for "this is the standout/active
 // one" elsewhere -- see tailwind.config.js) stands in for it. Percentile
 // cutoffs (90/75/50/25) are an even split, not a reverse-engineered exact
-// match -- tracker.gg doesn't publish theirs either.
+// match -- tracker.gg doesn't publish theirs either. `glow` is each tone's
+// raw RGB triplet (not a Tailwind class -- box-shadow color can't come from
+// one) for TrackerScoreBadge's own glow effect below.
 function trackerTier(percentile) {
   if (percentile == null) return null
-  if (percentile >= 90) return { label: 'S', tone: 'text-selected-bright bg-selected/15' }
-  if (percentile >= 75) return { label: 'A', tone: 'text-good bg-good/10' }
-  if (percentile >= 50) return { label: 'B', tone: 'text-mid bg-mid/10' }
-  if (percentile >= 25) return { label: 'C', tone: 'text-muted bg-surface2' }
-  return { label: 'D', tone: 'text-bad bg-bad/10' }
+  if (percentile >= 90) return { label: 'S', tone: 'text-selected-bright bg-selected/15', glow: '124,143,209' }
+  if (percentile >= 75) return { label: 'A', tone: 'text-good bg-good/10', glow: '74,201,126' }
+  if (percentile >= 50) return { label: 'B', tone: 'text-mid bg-mid/10', glow: '255,212,125' }
+  if (percentile >= 25) return { label: 'C', tone: 'text-muted bg-surface2', glow: '155,161,176' }
+  return { label: 'D', tone: 'text-bad bg-bad/10', glow: '247,102,94' }
 }
 
+// A shield silhouette (CSS clip-path on the existing tone-colored box, no
+// extra SVG needed) with a soft outer glow in the tier's own color --
+// tracker.gg's real crest is a bespoke logo mark, which this doesn't try to
+// clone; this is this site's own equivalent treatment of "the score's tier
+// deserves a badge, not just a letter in a rounded square."
 function TrackerScoreBadge({ score }) {
   const tier = trackerTier(score / 10)
+  const glow = tier?.glow ?? '155,161,176'
   return (
     <div
-      className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-display font-bold shrink-0 ${tier ? tier.tone : 'text-muted bg-surface2'}`}
+      className={`relative w-11 h-11 flex items-center justify-center text-base font-display font-bold shrink-0 ${tier ? tier.tone : 'text-muted bg-surface2'}`}
+      style={{
+        clipPath: 'polygon(50% 0%, 95% 22%, 95% 60%, 50% 100%, 5% 60%, 5% 22%)',
+        boxShadow: `0 0 16px -2px rgba(${glow}, 0.55)`,
+      }}
       title="Tracker Score tier"
     >
       {tier ? tier.label : '—'}

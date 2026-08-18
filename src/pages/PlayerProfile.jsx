@@ -23,7 +23,7 @@ import AgentIcon from '../components/AgentIcon'
 import RankIcon from '../components/RankIcon'
 import Button from '../components/ui/Button'
 import { dynamicQualify, dynamicQualifyThreshold } from '../components/LeaderCard'
-import { rating, pct, num, ratingTier, eventLabel, birthDateLabel, trackerProfileUrl } from '../lib/format'
+import { rating, pct, num, eventLabel, birthDateLabel, trackerProfileUrl } from '../lib/format'
 import trackerLinks from '../lib/trackerLinks.json'
 
 export default function PlayerProfile() {
@@ -871,11 +871,12 @@ export default function PlayerProfile() {
               )}
               {/* W-L record only -- Win % dropped from this corner per direct
                   instruction (it's already one of the 4 pills below now, so
-                  showing it twice was redundant). Colored W/L/D (good/bad/
-                  muted tokens, same ones the rest of the site already uses
-                  for win-loss) instead of one flat muted string -- a wall of
-                  uniformly gray text read as lifeless next to the rest of
-                  this card. */}
+                  showing it twice was redundant); the rating-tier word badge
+                  ("Great" etc) dropped too per direct instruction. Colored
+                  W/L/D (good/bad/muted tokens, same ones the rest of the
+                  site already uses for win-loss) instead of one flat muted
+                  string -- a wall of uniformly gray text read as lifeless
+                  next to the rest of this card. */}
               <div className="flex items-center gap-2">
                 {showRanked ? (
                   <>
@@ -887,16 +888,7 @@ export default function PlayerProfile() {
                     <WldBadge wins={actStats.wins} losses={actStats.losses} draws={actStats.draws} />
                   </>
                 ) : (
-                  <>
-                    {ratingTier(stats.avgRating) && (
-                      <span
-                        className={`text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded ${ratingTier(stats.avgRating).tone}`}
-                      >
-                        {ratingTier(stats.avgRating).label}
-                      </span>
-                    )}
-                    <WldBadge wins={stats.mapsWon} losses={stats.mapsLost} />
-                  </>
+                  <WldBadge wins={stats.mapsWon} losses={stats.mapsLost} />
                 )}
               </div>
             </div>
@@ -950,26 +942,24 @@ export default function PlayerProfile() {
                 (real page does it as a `:before` pseudo-element referencing
                 a CDN plus-icon SVG at the same 16px/rounded-full size --
                 same visual result, this is just how it has to be done from
-                inside JSX rather than a dedicated stylesheet). The badge's
-                own glow (a drop-shadow on TrackerScoreBadge) was the actual
-                "outline" asked to be removed -- see that component. */}
+                inside JSX rather than a dedicated stylesheet). No tier-
+                colored border around the score cell either (dropped per
+                direct instruction -- the real page's own 1px gradient-to-
+                transparent technique there, tinted by whatever tier this
+                player's score happens to be, read as an unwanted colored
+                outline around the whole card). */}
             {perf && (
               <div className="relative bg-[#0f1923] rounded-lg overflow-hidden">
                 <div className="absolute inset-0 rounded-lg border border-white/[0.075] pointer-events-none z-10" aria-hidden="true" />
                 <div className="bg-[#1b2733] rounded-lg grid grid-cols-1 sm:grid-cols-[min-content_1fr]">
-                  <div
-                    className="flex items-stretch"
-                    style={{ backgroundImage: `linear-gradient(to right, ${trackerTier(perf.score / 10)?.light ?? '#a7c6cc'}, transparent)`, padding: '1px' }}
-                  >
-                    <div className="flex items-center bg-[#1b2733] rounded-lg sm:rounded-r-none px-4 sm:px-7 py-3 w-full h-full">
-                      <TrackerScoreBadge score={perf.score} />
-                      <div className="flex flex-col ml-5 whitespace-nowrap">
-                        <span className="text-muted text-sm font-medium">Tracker Score</span>
-                        <span className="font-display text-2xl font-bold text-ink">
-                          {perf.score}
-                          <sup className="text-ink/75 text-xs">/1000</sup>
-                        </span>
-                      </div>
+                  <div className="flex items-center bg-[#1b2733] rounded-lg sm:rounded-r-none px-4 sm:px-7 py-3 w-full h-full">
+                    <TrackerScoreBadge score={perf.score} />
+                    <div className="flex flex-col ml-5 whitespace-nowrap">
+                      <span className="text-muted text-sm font-medium">Tracker Score</span>
+                      <span className="font-display text-2xl font-bold text-ink">
+                        {perf.score}
+                        <sup className="text-ink/75 text-xs">/1000</sup>
+                      </span>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4">

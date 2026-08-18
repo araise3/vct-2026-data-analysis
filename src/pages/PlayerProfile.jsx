@@ -944,17 +944,18 @@ export default function PlayerProfile() {
                 .performance-score (bg surface-1, border-radius) wrapping
                 .performance-score__container (bg surface-2, CSS GRID with
                 "score stats" areas -- min-content + 1fr, stacking to one
-                column below sm), and the crest/label/value cluster on the
-                left with the 4-stat grid on the right. No border overlay
-                (removed per direct instruction -- the real page's own
-                7.5%-white border read as an unwanted outline here). The "+"
-                dividers are DOM siblings here (real page does it as a
-                `:before` pseudo-element referencing a CDN plus-icon SVG at
-                the same 16px/rounded-full size -- same visual result, this
-                is just how it has to be done from inside JSX rather than a
-                dedicated stylesheet). */}
+                column below sm), a subtle 7.5%-white border overlay, and
+                the crest/label/value cluster on the left with the 4-stat
+                grid on the right. The "+" dividers are DOM siblings here
+                (real page does it as a `:before` pseudo-element referencing
+                a CDN plus-icon SVG at the same 16px/rounded-full size --
+                same visual result, this is just how it has to be done from
+                inside JSX rather than a dedicated stylesheet). The badge's
+                own glow (a drop-shadow on TrackerScoreBadge) was the actual
+                "outline" asked to be removed -- see that component. */}
             {perf && (
               <div className="relative bg-[#0f1923] rounded-lg overflow-hidden">
+                <div className="absolute inset-0 rounded-lg border border-white/[0.075] pointer-events-none z-10" aria-hidden="true" />
                 <div className="bg-[#1b2733] rounded-lg grid grid-cols-1 sm:grid-cols-[min-content_1fr]">
                   <div
                     className="flex items-stretch"
@@ -1178,7 +1179,7 @@ function TrackerScoreBadge({ score }) {
   const tier = trackerTier(score / 10)
   const light = tier?.light ?? '#a7c6cc'
   return (
-    <div className="relative w-14 h-[3.73rem] shrink-0" style={{ filter: `drop-shadow(0 0 8px ${light}99)` }} title="Tracker Score tier">
+    <div className="relative w-14 h-[3.73rem] shrink-0" title="Tracker Score tier">
       <svg viewBox="0 0 60 64" className="w-full h-full" aria-hidden="true">
         <polygon points="44.11,10.58 52.83,37.42 30.00,54.00 7.17,37.42 15.89,10.58" fill="#080e1a" />
         <line x1="44.11" y1="10.58" x2="52.83" y2="37.42" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />

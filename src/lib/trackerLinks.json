@@ -285,12 +285,6 @@
       "riotId": "100T Cryo#0001"
     }
   ],
-  "ambition": [
-    {
-      "puuid": "5d65f3be-4c01-585b-907b-07aa9f9517b2",
-      "riotId": "netzach#god"
-    }
-  ],
   "frz": [
     {
       "puuid": "189b68f5-1cef-5db6-a767-74873563ebcc",
@@ -1019,6 +1013,590 @@
     {
       "puuid": "dbab053d-77ec-50d4-b47e-54b27f866bf4",
       "riotId": "ivyfoxy9primmie#zxzxz"
+    }
+  ],
+  "oxy": [
+    {
+      "puuid": null,
+      "riotId": "Hide on Bush#VIC"
+    }
+  ],
+  "zellsis": [
+    {
+      "puuid": null,
+      "riotId": "C9 Zellsis#1240"
+    }
+  ],
+  "penny": [
+    {
+      "puuid": null,
+      "riotId": "C9 penny#9o9o"
+    }
+  ],
+  "jakee": [
+    {
+      "puuid": null,
+      "riotId": "EG big bean#jakee"
+    }
+  ],
+  "jawgemo": [
+    {
+      "puuid": null,
+      "riotId": "JAWGEMO#MANGO"
+    }
+  ],
+  "demon1": [
+    {
+      "puuid": null,
+      "riotId": "ENVY Demon1#kat"
+    }
+  ],
+  "bcj": [
+    {
+      "puuid": null,
+      "riotId": "SR BcJ#amy"
+    }
+  ],
+  "rossy": [
+    {
+      "puuid": null,
+      "riotId": "Sosuke Aizen#Rossy"
+    }
+  ],
+  "p0ppin": [
+    {
+      "puuid": null,
+      "riotId": "poppinsguide com#BBUYY"
+    }
+  ],
+  "valyn": [
+    {
+      "puuid": null,
+      "riotId": "G2 valyn#B2TB"
+    }
+  ],
+  "leaf": [
+    {
+      "puuid": null,
+      "riotId": "lllllll#X1TER"
+    }
+  ],
+  "trent": [
+    {
+      "puuid": null,
+      "riotId": "G2 trent#habib"
+    }
+  ],
+  "ninja": [
+    {
+      "puuid": null,
+      "riotId": "PCF NINJA#LOW9"
+    }
+  ],
+  "net": [
+    {
+      "puuid": null,
+      "riotId": "GX neT#jess"
+    }
+  ],
+  "baha": [
+    {
+      "puuid": null,
+      "riotId": "bahalas#sss"
+    }
+  ],
+  "doma": [
+    {
+      "puuid": null,
+      "riotId": "JL Doma#sumn"
+    }
+  ],
+  "zyppan": [
+    {
+      "puuid": null,
+      "riotId": "CGN Zyppan#Liza"
+    }
+  ],
+  "dos9": [
+    {
+      "puuid": null,
+      "riotId": "kc chaewon#frlss"
+    }
+  ],
+  "koshmaras": [
+    {
+      "puuid": null,
+      "riotId": "TH koshmaras#006"
+    }
+  ],
+  "cloud": [
+    {
+      "puuid": null,
+      "riotId": "FNC Cloud#001"
+    }
+  ],
+  "wo0t": [
+    {
+      "puuid": null,
+      "riotId": "TH Wo0t#Limon"
+    }
+  ],
+  "boo": [
+    {
+      "puuid": null,
+      "riotId": "TH Boo#16556"
+    }
+  ],
+  "alfajer": [
+    {
+      "puuid": null,
+      "riotId": "Alfajer#nmbr1"
+    }
+  ],
+  "kozzy": [
+    {
+      "puuid": null,
+      "riotId": "EP kozzy#1of1"
+    }
+  ],
+  "sayonara": [
+    {
+      "puuid": null,
+      "riotId": "VIT Sayonara#gud"
+    }
+  ],
+  "derke": [
+    {
+      "puuid": null,
+      "riotId": "Derke#BZZ"
+    }
+  ],
+  "profek": [
+    {
+      "puuid": null,
+      "riotId": "PROFEK#TOFIK"
+    }
+  ],
+  "chronicle": [
+    {
+      "puuid": null,
+      "riotId": "Chronicle#1337"
+    }
+  ],
+  "jamppi": [
+    {
+      "puuid": null,
+      "riotId": "Jamb0nese#1964"
+    }
+  ],
+  "crashies": [
+    {
+      "puuid": null,
+      "riotId": "FNATIC crashies#999"
+    }
+  ],
+  "cyvoph": [
+    {
+      "puuid": null,
+      "riotId": "NAVI CyvOph#2004"
+    }
+  ],
+  "avez": [
+    {
+      "puuid": null,
+      "riotId": "KC avez#nunu"
+    }
+  ],
+  "audaz": [
+    {
+      "puuid": null,
+      "riotId": "EF audaz#Why"
+    }
+  ],
+  "runner": [
+    {
+      "puuid": null,
+      "riotId": "JL runneR#003"
+    }
+  ],
+  "benjyfishy": [
+    {
+      "puuid": null,
+      "riotId": "TH benjyfishy#111"
+    }
+  ],
+  "grubinho": [
+    {
+      "puuid": null,
+      "riotId": "grubinho#123"
+    }
+  ],
+  "serial": [
+    {
+      "puuid": null,
+      "riotId": "SerialKiller#yukii"
+    }
+  ],
+  "kicks": [
+    {
+      "puuid": null,
+      "riotId": "Liquid Kicks#BONK"
+    }
+  ],
+  "iluri": [
+    {
+      "puuid": null,
+      "riotId": "EP iluri#koso"
+    }
+  ],
+  "patitek": [
+    {
+      "puuid": null,
+      "riotId": "EP PATITEK#1108"
+    }
+  ],
+  "avova": [
+    {
+      "puuid": null,
+      "riotId": "AvovA#1337"
+    }
+  ],
+  "nats": [
+    {
+      "puuid": null,
+      "riotId": "Liquid nAts#TATAR"
+    }
+  ],
+  "kamo": [
+    {
+      "puuid": null,
+      "riotId": "kamo#jasmi"
+    }
+  ],
+  "wayne": [
+    {
+      "puuid": null,
+      "riotId": "Liquid WAYNE#1410"
+    }
+  ],
+  "purp0": [
+    {
+      "puuid": null,
+      "riotId": "Liquid purp0#yane0"
+    }
+  ],
+  "miniboo": [
+    {
+      "puuid": null,
+      "riotId": "MiniBoo#2440"
+    }
+  ],
+  "redgar": [
+    {
+      "puuid": null,
+      "riotId": "Redgar#3D2Y"
+    }
+  ],
+  "mistic": [
+    {
+      "puuid": null,
+      "riotId": "Mistic#SUMN"
+    }
+  ],
+  "kaajak": [
+    {
+      "puuid": null,
+      "riotId": "FNATIC#mommy"
+    }
+  ],
+  "soulcas": [
+    {
+      "puuid": null,
+      "riotId": "soulcas#123"
+    }
+  ],
+  "deryeon": [
+    {
+      "puuid": null,
+      "riotId": "WOL Deryeon#BBMMR"
+    }
+  ],
+  "proxh": [
+    {
+      "puuid": null,
+      "riotId": "M8 Proxh#cold"
+    }
+  ],
+  "veqaj": [
+    {
+      "puuid": null,
+      "riotId": "Veqaj#111"
+    }
+  ],
+  "glyph": [
+    {
+      "puuid": null,
+      "riotId": "june#XLVII"
+    }
+  ],
+  "marteen": [
+    {
+      "puuid": null,
+      "riotId": "i miss him#yoruu"
+    },
+    {
+      "puuid": null,
+      "riotId": "m8rteen#amure"
+    }
+  ],
+  "alexiiik": [
+    {
+      "puuid": null,
+      "riotId": "alexiiik#EKRED"
+    }
+  ],
+  "h1ber": [
+    {
+      "puuid": null,
+      "riotId": "H1ber#dog"
+    }
+  ],
+  "minny": [
+    {
+      "puuid": null,
+      "riotId": "M8 Minny#M8M8"
+    },
+    {
+      "puuid": null,
+      "riotId": "Vytrvám dokudneu#spěji"
+    }
+  ],
+  "famsii": [
+    {
+      "puuid": null,
+      "riotId": "UCAM Famsii#alich"
+    }
+  ],
+  "robbiebk": [
+    {
+      "puuid": null,
+      "riotId": "RobbieBk#1234"
+    }
+  ],
+  "olizera": [
+    {
+      "puuid": null,
+      "riotId": "UCAM OLIZERA#1337"
+    }
+  ],
+  "flickless": [
+    {
+      "puuid": null,
+      "riotId": "GX Flickless#0001"
+    }
+  ],
+  "azury": [
+    {
+      "puuid": null,
+      "riotId": "SGE azury#000"
+    }
+  ],
+  "al0rante": [
+    {
+      "puuid": null,
+      "riotId": "PCF al0rante#al0"
+    }
+  ],
+  "westside": [
+    {
+      "puuid": null,
+      "riotId": "GX westside#uwu"
+    }
+  ],
+  "nekky": [
+    {
+      "puuid": null,
+      "riotId": "EF Lightning#nekky"
+    }
+  ],
+  "ardiis": [
+    {
+      "puuid": null,
+      "riotId": "ardiis#ardis"
+    }
+  ],
+  "leo": [
+    {
+      "puuid": null,
+      "riotId": "Leo#janne"
+    }
+  ],
+  "sayf": [
+    {
+      "puuid": null,
+      "riotId": "llllllllllllllll#BONK"
+    }
+  ],
+  "sociablee": [
+    {
+      "puuid": null,
+      "riotId": "FUT sociablEE#k4t1l"
+    }
+  ],
+  "kolosha": [
+    {
+      "puuid": null,
+      "riotId": "Kolosha#7697"
+    }
+  ],
+  "ruxic": [
+    {
+      "puuid": null,
+      "riotId": "Ruxic#AIM"
+    }
+  ],
+  "chloric": [
+    {
+      "puuid": null,
+      "riotId": "chloric#sadie"
+    }
+  ],
+  "hiro": [
+    {
+      "puuid": null,
+      "riotId": "hiro#luna"
+    }
+  ],
+  "ange1": [
+    {
+      "puuid": null,
+      "riotId": "ANGE1#A11"
+    }
+  ],
+  "exit": [
+    {
+      "puuid": null,
+      "riotId": "ExiT#028"
+    }
+  ],
+  "kess": [
+    {
+      "puuid": null,
+      "riotId": "LYON SUPERKESS#Bear"
+    }
+  ],
+  "askia": [
+    {
+      "puuid": null,
+      "riotId": "askia999#hnnh"
+    }
+  ],
+  "lz": [
+    {
+      "puuid": null,
+      "riotId": "Lz99#2003"
+    }
+  ],
+  "pryze": [
+    {
+      "puuid": null,
+      "riotId": "pryze#budy"
+    }
+  ],
+  "qck": [
+    {
+      "puuid": "5d65f3be-4c01-585b-907b-07aa9f9517b2",
+      "riotId": "netzach#god"
+    }
+  ],
+  "zap": [
+    {
+      "puuid": null,
+      "riotId": "ELV zap666#blu"
+    }
+  ],
+  "hype": [
+    {
+      "puuid": null,
+      "riotId": "hype#8124"
+    }
+  ],
+  "molsi": [
+    {
+      "puuid": null,
+      "riotId": "FOKUS MOLSI#187"
+    }
+  ],
+  "oderus": [
+    {
+      "puuid": null,
+      "riotId": "SR 9rwsquadawper#nsic"
+    }
+  ],
+  "aslanm4shadow": [
+    {
+      "puuid": null,
+      "riotId": "AsLanMashadWW#AsLan"
+    }
+  ],
+  "crewen": [
+    {
+      "puuid": null,
+      "riotId": "BBL Crewen#bait"
+    }
+  ],
+  "lar0k": [
+    {
+      "puuid": null,
+      "riotId": "BBL Lar0k#nlyki"
+    }
+  ],
+  "loita": [
+    {
+      "puuid": null,
+      "riotId": "BBL Loita#tolo"
+    }
+  ],
+  "lovers rock": [
+    {
+      "puuid": null,
+      "riotId": "BBL lovers rock#sel"
+    }
+  ],
+  "rosé": [
+    {
+      "puuid": null,
+      "riotId": "BBL Rosé#James"
+    }
+  ],
+  "brave": [
+    {
+      "puuid": null,
+      "riotId": "MISA BRAVEPATRON#BBB"
+    }
+  ],
+  "v1nny": [
+    {
+      "puuid": null,
+      "riotId": "v1nNy#3D2Y"
+    }
+  ],
+  "pxs": [
+    {
+      "puuid": null,
+      "riotId": "INTZ pxs#2001"
+    }
+  ],
+  "elite": [
+    {
+      "puuid": null,
+      "riotId": "MISA Elite#MVP"
+    }
+  ],
+  "paura": [
+    {
+      "puuid": null,
+      "riotId": "pAura#KEK"
     }
   ]
 }

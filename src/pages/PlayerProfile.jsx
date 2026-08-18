@@ -309,22 +309,26 @@ export default function PlayerProfile() {
     [actStatsData]
   )
 
-  // RANKED: same shape as proPerf, but only 3 Tracker Score inputs, not 4
-  // -- KAST is a real, confirmed gap (see data_prep/fetch_act_stats.py's
-  // own "SCOPE CAVEATS": `kast` only exists on Riot's ESPORTS endpoints,
-  // never on the personal-match schema, so it cannot be computed for
-  // ranked games at all, not just left out for convenience). Score's 3rd
-  // input is the REAL "DDΔ/Round" formula (Damage Dealt minus Damage
-  // RECEIVED, per round -- confirmed against tracker.gg's own tooltip),
-  // computed properly here since HenrikDev's match data has both halves
-  // -- unlike proPerf above, which has to fall back to plain ADR because
-  // pro (VLR) data never captured damage received at all. Pills stay
-  // ACS/ADR/HS%/Win% though (ADR, not DDΔ) -- tracker.gg's own real page
-  // shows Damage/Round as a PILL and DDΔ/Round in the Tracker Score row,
-  // two different stats shown in two different places, and this mirrors
-  // that split rather than picking one. ACS stands in for Rating in the
-  // lead pill slot, since Rating 2.0 has no ranked-ladder equivalent
-  // either.
+  // RANKED: same shape as proPerf, all 4 Tracker Score inputs including
+  // KAST -- HenrikDev's match-history response has no dedicated `kast`
+  // field, but it DOES carry the raw `kills[]`/`rounds[]` arrays (round
+  // number, timestamps, killer/victim/assistants) needed to derive it
+  // ourselves; see fetch_act_stats.py's own comment on _round_kast_participants
+  // for the derivation. `kast` is therefore null (not 0) for any player
+  // fetched before that derivation was added, until a --full re-run
+  // backfills it -- filtered out of scoreMetrics below like any other
+  // missing percentile, so the row degrades to 3 stats for those players
+  // rather than showing a wrong 0%. Score's 3rd input is the REAL
+  // "DDΔ/Round" formula (Damage Dealt minus Damage RECEIVED, per round --
+  // confirmed against tracker.gg's own tooltip), computed properly here
+  // since HenrikDev's match data has both halves -- unlike proPerf above,
+  // which has to fall back to plain ADR because pro (VLR) data never
+  // captured damage received at all. Pills stay ACS/ADR/HS%/Win% though
+  // (ADR, not DDΔ) -- tracker.gg's own real page shows Damage/Round as a
+  // PILL and DDΔ/Round in the Tracker Score row, two different stats shown
+  // in two different places, and this mirrors that split rather than
+  // picking one. ACS stands in for Rating in the lead pill slot, since
+  // Rating 2.0 has no ranked-ladder equivalent either.
   const rankedPerf = useMemo(() => {
     if (!actStats || !rankedPopulationStats.length) return null
     const threshold = dynamicQualifyThreshold(rankedPopulationStats, 'matches', { fixed: 20 })
@@ -339,13 +343,14 @@ export default function PlayerProfile() {
     const adr = metric('adr', 'ADR', actStats.adr, (v) => num(v, 1))
     const hsPct = metric('hsPct', 'HS%', actStats.hsPct, (v) => pct(v, 1))
     const winPct = metric('winPct', 'Win %', actStats.winPct, (v) => pct(v, 1))
+    const kast = metric('kast', 'KAST', actStats.kast, (v) => pct(v, 0))
     const ddDelta = metric('ddDelta', 'DDΔ/Round', actStats.ddDelta, (v) => num(v, 0))
     // Same stat/percentile as the Win % pill, relabelled for the Tracker
     // Score row -- see proPerf's own comment on why this needs a separate
     // object rather than reusing `winPct` directly.
     const roundWinPct = { ...winPct, statKey: 'roundWinPct', label: 'Round Win %' }
 
-    const scoreMetrics = [roundWinPct, acs, ddDelta].filter((m) => m.percentile != null)
+    const scoreMetrics = [roundWinPct, kast, acs, ddDelta].filter((m) => m.percentile != null)
     if (!scoreMetrics.length) return null
     const avgPercentile = scoreMetrics.reduce((sum, m) => sum + m.percentile, 0) / scoreMetrics.length
     return {
@@ -882,26 +887,24 @@ export default function PlayerProfile() {
               </div>
             </div>
 
-            {/* Rank/RR/leaderboard + W-L ring -- tracker.gg's own rank badge
-                + level + ratio cluster, positioned the same way (rank info
-                left, ring right), minus Level (not requested, and this
-                pipeline doesn't fetch account level). Ranked view only --
-                there's no "rank" for a pro-match aggregate. Absent (not a
-                dash-filled placeholder) when the account has no rank on
-                file at all (e.g. genuinely unranked this Act). */}
+            {/* Rank/RR/leaderboard -- tracker.gg's own rank badge + level
+                cluster, minus Level (not requested, and this pipeline
+                doesn't fetch account level) and minus the W-L ring (removed
+                per direct instruction -- the W-L record is already shown as
+                text in the corner above). Ranked view only -- there's no
+                "rank" for a pro-match aggregate. Absent (not a dash-filled
+                placeholder) when the account has no rank on file at all
+                (e.g. genuinely unranked this Act). */}
             {showRanked && actStats.rank && (
-              <div className="flex items-center justify-between gap-4 pb-1">
-                <div className="flex flex-col">
-                  <span className="text-ink text-sm font-semibold">{actStats.rank.tier}</span>
-                  <span className="flex items-baseline gap-1">
-                    <span className="font-display text-xl font-bold text-ink">{num(actStats.rank.rr)}</span>
-                    <span className="text-muted text-[10px] font-medium uppercase">RR</span>
-                  </span>
-                  {actStats.rank.leaderboardRank != null && (
-                    <span className="text-muted text-[10px]">#{num(actStats.rank.leaderboardRank)} leaderboard</span>
-                  )}
-                </div>
-                <WinLossRing wins={actStats.wins} losses={actStats.losses} />
+              <div className="flex flex-col gap-1 pb-1">
+                <span className="text-ink text-sm font-semibold">{actStats.rank.tier}</span>
+                <span className="flex items-baseline gap-1">
+                  <span className="font-display text-xl font-bold text-ink">{num(actStats.rank.rr)}</span>
+                  <span className="text-muted text-[10px] font-medium uppercase">RR</span>
+                </span>
+                {actStats.rank.leaderboardRank != null && (
+                  <span className="text-muted text-[10px]">#{num(actStats.rank.leaderboardRank)} leaderboard</span>
+                )}
               </div>
             )}
 
@@ -1143,27 +1146,6 @@ function GiantStat({ label, value, format, percentile }) {
         <span className="text-muted text-[10px] font-medium tracking-wide uppercase truncate">{label}</span>
         <span className="font-display text-xl font-semibold text-ink">{value != null ? format(value) : '—'}</span>
         {topPct != null && <span className="text-muted text-[10px]">Top {topPct.toFixed(1)}%</span>}
-      </div>
-    </div>
-  )
-}
-
-// The rank strip's W-L ring -- tracker.gg's own is an SVG arc pair; this is
-// a conic-gradient equivalent (same visual result, far less markup). Colors
-// are this site's own good/bad tokens (tailwind.config.js), not tracker.gg's
-// green/rose, to stay consistent with every other win/loss indicator already
-// on this page.
-function WinLossRing({ wins, losses }) {
-  const total = wins + losses
-  const winShare = total ? (wins / total) * 100 : 0
-  return (
-    <div
-      className="relative w-14 h-14 rounded-full shrink-0"
-      style={{ background: `conic-gradient(#4ac97e 0% ${winShare}%, #f7665e ${winShare}% 100%)` }}
-    >
-      <div className="absolute inset-[3px] rounded-full bg-surface flex flex-col items-center justify-center leading-none gap-0.5">
-        <span className="text-[10px] font-semibold text-good">{num(wins)}W</span>
-        <span className="text-[10px] font-semibold text-bad">{num(losses)}L</span>
       </div>
     </div>
   )

@@ -94,13 +94,15 @@ SCOPE CAVEATS (deliberate, and surfaced in the UI)
   - HenrikDev's region enum is na/eu/ap/kr; there is no China region, so
     CN-server players resolve to nothing here. That mirrors the China data
     gaps this project already documents elsewhere.
-  - No KAST for these matches, at all -- checked the full schema: `kast` only
-    exists on the Esports endpoints (real VCT match data), never on the
-    regular match/player-stats schema personal games use. Riot's own client
-    API simply doesn't expose the round-by-round trade/survive data KAST
-    needs for anything but tracked pro matches. A Ranked Tracker Score is
-    therefore 3 stats (Win%/ACS/ADR), not tracker.gg's own 4 -- a real gap
-    in what this source can provide, not a shortcut taken for convenience.
+  - No dedicated `kast` field on this schema -- confirmed against the full
+    OpenAPI spec, it only exists as a precomputed field on the Esports
+    endpoints (real VCT match data), never on the regular match/player-stats
+    schema personal games use. It IS derivable by hand, though: each v4
+    match object carries top-level `kills[]` (round, timestamp, killer,
+    victim, assistants) and `rounds[]` (per-player per-round participation)
+    -- everything KAST's own K/A/S/T definition needs. See
+    `_round_kast_participants()` below for the derivation this script
+    actually does with them.
 
 RANK / RR / LEADERBOARD
 -------------------------
@@ -301,7 +303,107 @@ def blank_counters():
         # matters -- it's a genuinely different stat from ADR, not ADR
         # under another name).
         "damageReceived": 0,
+        # KAST's own two counters -- see _round_kast_participants(). Kept
+        # separate from `rounds` above (that one comes from team round
+        # totals) since kastEligibleRounds is however many rounds this
+        # match's own `rounds[]` array actually lists this player as having
+        # played, which is the correct KAST denominator even on a rare
+        # match where the two counts would otherwise disagree (e.g. a
+        # remake).
+        "kastRounds": 0, "kastEligibleRounds": 0,
     }
+
+
+# Commonly cited across community KAST explainers (VLR/tracker writeups) as
+# the window a trade must land within; Riot has never published an exact
+# figure. Chosen as the conservative end of the "3-5s" range typically
+# quoted, rather than guessed.
+TRADE_WINDOW_MS = 5000
+
+
+def _round_kast_participants(match, puuid):
+    """Returns (kast_qualifying_round_ids, total_round_ids) for one player
+    in one match, or (None, None) if this match's data doesn't cover them
+    (e.g. an unreadable/partial match already skipped by accumulate()).
+
+    There's no dedicated `kast` field on this schema (see module docstring),
+    but `match['kills']` and `match['rounds']` together carry everything
+    KAST's own definition needs: a round counts if the player got a Kill,
+    an Assist, Survived to round end, or was killed but a teammate killed
+    that same killer within TRADE_WINDOW_MS (Traded). Meeting more than one
+    of these in the same round still only counts once, per KAST's own
+    definition -- this returns a set of round ids for exactly that reason
+    (adding the same id twice is a no-op).
+    """
+    rounds = match.get("rounds") or []
+    kills = match.get("kills") or []
+    if not rounds:
+        return None, None
+
+    # Which team this player was on -- needed to know who a "teammate" is
+    # for trade purposes. Read off any kill/death event this player
+    # appears in rather than match['players'], so this function only
+    # depends on the two arrays it's already walking.
+    my_team = None
+    for k in kills:
+        killer, victim = k.get("killer") or {}, k.get("victim") or {}
+        if killer.get("puuid") == puuid:
+            my_team = killer.get("team")
+            break
+        if victim.get("puuid") == puuid:
+            my_team = victim.get("team")
+            break
+    if my_team is None:
+        return None, None
+
+    total_round_ids = {
+        r.get("id") for r in rounds
+        if any((s.get("player") or {}).get("puuid") == puuid for s in (r.get("stats") or []))
+    }
+    if not total_round_ids:
+        return None, None
+
+    kills_by_round = {}
+    for k in kills:
+        kills_by_round.setdefault(k.get("round"), []).append(k)
+
+    qualifying = set()
+    for round_id in total_round_ids:
+        events = kills_by_round.get(round_id, [])
+        got_kill_or_assist = False
+        died_at = None
+        killer_puuid = None
+        for k in events:
+            killer = k.get("killer") or {}
+            victim = k.get("victim") or {}
+            assistants = k.get("assistants") or []
+            if killer.get("puuid") == puuid or any(a.get("puuid") == puuid for a in assistants):
+                got_kill_or_assist = True
+                break
+            if victim.get("puuid") == puuid:
+                died_at = k.get("time_in_round_in_ms")
+                killer_puuid = killer.get("puuid")
+
+        if got_kill_or_assist or died_at is None:
+            # Either a K/A this round, or no death recorded at all -- the
+            # latter means they survived to round end.
+            qualifying.add(round_id)
+            continue
+
+        # Died with no kill/assist of their own this round -- qualifies
+        # only if a teammate traded their killer within the window.
+        for k2 in events:
+            k2_killer = k2.get("killer") or {}
+            k2_victim = k2.get("victim") or {}
+            t2 = k2.get("time_in_round_in_ms")
+            if (k2_victim.get("puuid") == killer_puuid
+                    and k2_killer.get("team") == my_team
+                    and t2 is not None and died_at is not None
+                    and t2 >= died_at and t2 - died_at <= TRADE_WINDOW_MS):
+                qualifying.add(round_id)
+                break
+
+    return qualifying, total_round_ids
 
 
 def accumulate(counters, match, puuid):
@@ -338,6 +440,11 @@ def accumulate(counters, match, puuid):
     counters["legshots"] += stats.get("legshots") or 0
     counters["damage"] += ((stats.get("damage") or {}).get("dealt") or 0)
     counters["damageReceived"] += ((stats.get("damage") or {}).get("received") or 0)
+
+    kast_rounds, kast_eligible = _round_kast_participants(match, puuid)
+    if kast_rounds is not None:
+        counters["kastRounds"] += len(kast_rounds)
+        counters["kastEligibleRounds"] += len(kast_eligible)
 
     if my_team is not None:
         if my_team.get("won"):
@@ -376,6 +483,11 @@ def derive(counters):
         # DDΔ if one takes far more damage than the other on the way to it.
         "ddDelta": ((counters["damage"] - counters["damageReceived"]) / rounds) if rounds else None,
         "hsPct": (counters["headshots"] / shots) if shots else None,
+        # See _round_kast_participants() -- derived from raw kill/round
+        # events, not a field the API provides directly. None (not 0) for a
+        # player whose matches were all fetched/cached before this field
+        # existed, until a --full re-run backfills kastEligibleRounds.
+        "kast": (counters["kastRounds"] / counters["kastEligibleRounds"]) if counters.get("kastEligibleRounds") else None,
         "kpr": (counters["kills"] / rounds) if rounds else None,
         "kda": ((counters["kills"] + counters["assists"]) / counters["deaths"]) if counters["deaths"] else None,
         "avgKills": (counters["kills"] / m) if m else None,
@@ -587,7 +699,8 @@ def main():
             print(f"  {handle} ({riot_id}, {rec['region']}): act={rec.get('actShort')} rank={rank_str} "
                   f"{rec['matches']} matches, {rec['wins']}W-{rec['losses']}L, "
                   f"ACS {rec['acs'] and round(rec['acs'])}, K/D {rec['kd'] and round(rec['kd'], 2)}, "
-                  f"HS% {rec['hsPct'] and round(rec['hsPct'] * 100, 1)}")
+                  f"HS% {rec['hsPct'] and round(rec['hsPct'] * 100, 1)}, "
+                  f"KAST {rec['kast'] and round(rec['kast'] * 100, 1)}")
         elif i % 10 == 0 or i == len(targets):
             print(f"  ...{i}/{len(targets)}")
         # Persist as we go -- a run interrupted partway (or aborted by a

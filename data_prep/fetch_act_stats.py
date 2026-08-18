@@ -103,6 +103,14 @@ SCOPE CAVEATS (deliberate, and surfaced in the UI)
     -- everything KAST's own K/A/S/T definition needs. See
     `_round_kast_participants()` below for the derivation this script
     actually does with them.
+  - ADR/HS%/DDΔ are computed ENEMY-only, not from the match-summary
+    `players[].stats.damage` total -- that total includes friendly fire
+    (AOE utility clipping a teammate), which inflates it. Verified against
+    a real profile where raw damage/rounds read 180.8 but tracker.gg's own
+    "Damage/Round" pill read 180.3; the gap closed once friendly-fire hits
+    were excluded via `rounds[].stats[].damage_events[]`, which (unlike the
+    summary total) records each hit's own receiver. See
+    `_round_enemy_combat()` below.
 
 RANK / RR / LEADERBOARD
 -------------------------
@@ -295,6 +303,11 @@ def save(out):
 def blank_counters():
     return {
         "matches": 0, "wins": 0, "losses": 0, "draws": 0, "rounds": 0,
+        # Rounds actually WON by the player's team -- needed for the real
+        # per-round "Round Win %" tracker.gg shows in its Tracker Score row,
+        # a genuinely different number from match-level Win% (see derive()'s
+        # own comment on both).
+        "roundsWon": 0,
         "kills": 0, "deaths": 0, "assists": 0, "score": 0,
         "headshots": 0, "bodyshots": 0, "legshots": 0, "damage": 0,
         # Damage RECEIVED, not just dealt -- `damage` above is ADR's own
@@ -303,6 +316,16 @@ def blank_counters():
         # matters -- it's a genuinely different stat from ADR, not ADR
         # under another name).
         "damageReceived": 0,
+        # ENEMY-only counterparts of the four above -- see
+        # _round_enemy_combat()'s own docstring for why plain `damage` et al
+        # (Riot's match-summary totals) over-count ADR/HS%: they include
+        # friendly-fire hits (AOE utility clipping a teammate), which a real
+        # per-round damage/HS% stat should never credit. None of the four
+        # `enemy*` counters exist until a --full re-run backfills them for a
+        # cached player (same rollout pattern as kastEligibleRounds below).
+        "enemyDamage": 0, "enemyDamageReceived": 0,
+        "enemyHeadshots": 0, "enemyBodyshots": 0, "enemyLegshots": 0,
+        "enemyCombatRounds": 0,
         # KAST's own two counters -- see _round_kast_participants(). Kept
         # separate from `rounds` above (that one comes from team round
         # totals) since kastEligibleRounds is however many rounds this
@@ -406,6 +429,63 @@ def _round_kast_participants(match, puuid):
     return qualifying, total_round_ids
 
 
+def _round_enemy_combat(match, puuid):
+    """Sums ENEMY-only damage dealt (with its headshot/bodyshot/legshot
+    breakdown) and enemy-only damage received for one player across a
+    match's `rounds[]`, or (None, None, 0) if this match has no round data.
+
+    The match-summary `players[].stats.damage.{dealt,received}` totals this
+    script used before this existed count ALL damage, including friendly
+    fire (AOE utility -- Raze satchels/ult, Viper/Brimstone/KAY-O mollies,
+    etc. -- clipping a teammate). Verified concretely against a real
+    profile: raw damage/rounds landed at 180.8, but the player's actual
+    tracker.gg "Damage/Round" pill read 180.3, and the gap disappeared once
+    friendly-fire hits were excluded. `rounds[].stats[].damage_events[]` is
+    what makes the filtering possible -- each hit records its own receiver
+    (and therefore team), unlike the match-summary total.
+    """
+    rounds = match.get("rounds") or []
+    if not rounds:
+        return None, None, 0
+
+    my_team = None
+    for r in rounds:
+        for s in (r.get("stats") or []):
+            p = s.get("player") or {}
+            if p.get("puuid") == puuid:
+                my_team = p.get("team")
+                break
+        if my_team:
+            break
+    if my_team is None:
+        return None, None, 0
+
+    dealt = {"damage": 0, "headshots": 0, "bodyshots": 0, "legshots": 0}
+    received = 0
+    eligible_rounds = 0
+    for r in rounds:
+        stats = r.get("stats") or []
+        mine = next((s for s in stats if (s.get("player") or {}).get("puuid") == puuid), None)
+        if mine is None:
+            continue
+        eligible_rounds += 1
+        for e in (mine.get("damage_events") or []):
+            if (e.get("player") or {}).get("team") != my_team:
+                dealt["damage"] += e.get("damage") or 0
+                dealt["headshots"] += e.get("headshots") or 0
+                dealt["bodyshots"] += e.get("bodyshots") or 0
+                dealt["legshots"] += e.get("legshots") or 0
+        for s in stats:
+            attacker = s.get("player") or {}
+            if attacker.get("puuid") == puuid or attacker.get("team") == my_team:
+                continue
+            for e in (s.get("damage_events") or []):
+                if (e.get("player") or {}).get("puuid") == puuid:
+                    received += e.get("damage") or 0
+
+    return dealt, received, eligible_rounds
+
+
 def accumulate(counters, match, puuid):
     """Folds one v4 match into `counters`. Returns False if the match
     couldn't be read (missing player row / malformed), so the caller can
@@ -425,12 +505,15 @@ def accumulate(counters, match, puuid):
     # denominator (Riot's `score` is a match TOTAL combat score, and ACS is
     # that averaged per round) -- there's no rounds field on the player.
     rounds = 0
+    rounds_won = 0
     if my_team:
         r = my_team.get("rounds") or {}
-        rounds = (r.get("won") or 0) + (r.get("lost") or 0)
+        rounds_won = r.get("won") or 0
+        rounds = rounds_won + (r.get("lost") or 0)
 
     counters["matches"] += 1
     counters["rounds"] += rounds
+    counters["roundsWon"] += rounds_won
     counters["kills"] += stats.get("kills") or 0
     counters["deaths"] += stats.get("deaths") or 0
     counters["assists"] += stats.get("assists") or 0
@@ -445,6 +528,15 @@ def accumulate(counters, match, puuid):
     if kast_rounds is not None:
         counters["kastRounds"] += len(kast_rounds)
         counters["kastEligibleRounds"] += len(kast_eligible)
+
+    enemy_dealt, enemy_received, enemy_rounds = _round_enemy_combat(match, puuid)
+    if enemy_dealt is not None:
+        counters["enemyDamage"] += enemy_dealt["damage"]
+        counters["enemyHeadshots"] += enemy_dealt["headshots"]
+        counters["enemyBodyshots"] += enemy_dealt["bodyshots"]
+        counters["enemyLegshots"] += enemy_dealt["legshots"]
+        counters["enemyDamageReceived"] += enemy_received
+        counters["enemyCombatRounds"] += enemy_rounds
 
     if my_team is not None:
         if my_team.get("won"):
@@ -466,13 +558,29 @@ def derive(counters):
     computed from the totals here, never averaged from per-match rates."""
     m = counters["matches"]
     rounds = counters["rounds"]
-    shots = counters["headshots"] + counters["bodyshots"] + counters["legshots"]
-    decided = counters["wins"] + counters["losses"]
+    # Match-level Win% denominator is every DECIDED-OR-DRAWN match, not just
+    # decided ones -- a draw isn't a loss, but excluding it entirely
+    # overstates the rate (confirmed against a real profile: 88W-61L-1D
+    # showed 58.7% on tracker.gg, i.e. 88/150, not 88/149).
+    total_matches = counters["wins"] + counters["losses"] + counters["draws"]
+    enemy_rounds = counters["enemyCombatRounds"]
+    enemy_shots = counters["enemyHeadshots"] + counters["enemyBodyshots"] + counters["enemyLegshots"]
     return {
-        "winPct": (counters["wins"] / decided) if decided else None,
+        "winPct": (counters["wins"] / total_matches) if total_matches else None,
+        # tracker.gg's real "Round Win %" (its Tracker Score row) -- a
+        # genuinely different number from match Win% above (a team can win
+        # a match 13-11, going 13/24 = 54% on rounds despite "winning").
+        "roundWinPct": (counters["roundsWon"] / rounds) if rounds else None,
         "kd": (counters["kills"] / counters["deaths"]) if counters["deaths"] else None,
         "acs": (counters["score"] / rounds) if rounds else None,
-        "adr": (counters["damage"] / rounds) if rounds else None,
+        # ENEMY-only damage per round -- see _round_enemy_combat()'s own
+        # docstring for why the match-summary `damage` total (friendly fire
+        # included) overstates this. None (not a value derived from the raw
+        # total) for a player whose matches were all fetched/cached before
+        # this existed, until a --full re-run backfills enemyCombatRounds --
+        # same rollout pattern as `kast` below, deliberately not silently
+        # falling back to the inflated raw-total figure.
+        "adr": (counters["enemyDamage"] / enemy_rounds) if enemy_rounds else None,
         # tracker.gg's real "DDΔ/Round" -- confirmed against their own live
         # tooltip: "Damage Dealt - Damage Received, averaged over Rounds
         # played". A self-contained per-player stat, NOT a comparison
@@ -481,8 +589,10 @@ def derive(counters):
         # "WHY ADR STANDS IN" note, since corrected). Genuinely different
         # from ADR: two players with identical ADR can have very different
         # DDΔ if one takes far more damage than the other on the way to it.
-        "ddDelta": ((counters["damage"] - counters["damageReceived"]) / rounds) if rounds else None,
-        "hsPct": (counters["headshots"] / shots) if shots else None,
+        # Uses the same enemy-only halves as `adr` above, for the same
+        # friendly-fire reason.
+        "ddDelta": ((counters["enemyDamage"] - counters["enemyDamageReceived"]) / enemy_rounds) if enemy_rounds else None,
+        "hsPct": (counters["enemyHeadshots"] / enemy_shots) if enemy_shots else None,
         # See _round_kast_participants() -- derived from raw kill/round
         # events, not a field the API provides directly. None (not 0) for a
         # player whose matches were all fetched/cached before this field

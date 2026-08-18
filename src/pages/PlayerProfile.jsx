@@ -339,16 +339,16 @@ export default function PlayerProfile() {
     const metric = (statKey, label, value, format) => ({
       statKey, label, value, format, percentile: percentileOf(qualified.map((r) => r[statKey]).filter((v) => v != null), value),
     })
-    const acs = metric('acs', 'ACS', actStats.acs, (v) => num(v, 0))
+    const acs = metric('acs', 'ACS', actStats.acs, (v) => num(v, 1))
     const adr = metric('adr', 'ADR', actStats.adr, (v) => num(v, 1))
     const hsPct = metric('hsPct', 'HS%', actStats.hsPct, (v) => pct(v, 1))
     const winPct = metric('winPct', 'Win %', actStats.winPct, (v) => pct(v, 1))
-    const kast = metric('kast', 'KAST', actStats.kast, (v) => pct(v, 0))
+    const kast = metric('kast', 'KAST', actStats.kast, (v) => pct(v, 1))
     const ddDelta = metric('ddDelta', 'DDΔ/Round', actStats.ddDelta, (v) => num(v, 0))
-    // Same stat/percentile as the Win % pill, relabelled for the Tracker
-    // Score row -- see proPerf's own comment on why this needs a separate
-    // object rather than reusing `winPct` directly.
-    const roundWinPct = { ...winPct, statKey: 'roundWinPct', label: 'Round Win %' }
+    // A genuinely different per-ROUND stat from the Win % pill above (which
+    // is per-MATCH) -- see fetch_act_stats.py's derive() for why they can't
+    // share a value (a team going 13-11 is a match win at 54% on rounds).
+    const roundWinPct = metric('roundWinPct', 'Round Win %', actStats.roundWinPct, (v) => pct(v, 1))
 
     const scoreMetrics = [roundWinPct, kast, acs, ddDelta].filter((m) => m.percentile != null)
     if (!scoreMetrics.length) return null

@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-18T10:01:20Z"
+    "fetchedAt": "2026-08-18T13:26:50Z"
   },
   "matches": [
     {
@@ -527,27 +527,27 @@
       "started": false
     },
     {
-      "key": "1787238000|team-liquid|fut-esports",
+      "key": "1787238000|team-vitality|enterprise-esports",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1787238000,
       "bestOf": 3,
-      "team1": "Team Liquid",
-      "team2": "FUT Esports",
+      "team1": "Team Vitality",
+      "team2": "Enterprise Esports",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1787248800|team-vitality|enterprise-esports",
+      "key": "1787248800|team-liquid|fut-esports",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1787248800,
       "bestOf": 3,
-      "team1": "Team Vitality",
-      "team2": "Enterprise Esports",
+      "team1": "Team Liquid",
+      "team2": "FUT Esports",
       "score1": null,
       "score2": null,
       "started": false
@@ -631,26 +631,26 @@
       "started": false
     },
     {
-      "key": "1787324400|bbl-esports|tbd",
+      "key": "1787324400|karmine-corp|tbd",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1787324400,
       "bestOf": 3,
-      "team1": "BBL Esports",
+      "team1": "Karmine Corp",
       "team2": null,
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1787335200|karmine-corp|tbd",
+      "key": "1787335200|bbl-esports|tbd",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1787335200,
       "bestOf": 3,
-      "team1": "Karmine Corp",
+      "team1": "BBL Esports",
       "team2": null,
       "score1": null,
       "score2": null,

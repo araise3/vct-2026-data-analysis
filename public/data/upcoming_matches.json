@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-18T16:00:28Z"
+    "fetchedAt": "2026-08-18T21:52:25Z"
   },
   "matches": [
     {
@@ -911,6 +911,45 @@
       "timestamp": 1787828400,
       "bestOf": 3,
       "team1": "VARREL",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787864400|loud|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1787864400,
+      "bestOf": 3,
+      "team1": "LOUD",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787875200|leviat-n|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1787875200,
+      "bestOf": 3,
+      "team1": "LEVIATÁN",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787904000|tbd|tbd",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1787904000,
+      "bestOf": 3,
+      "team1": null,
       "team2": null,
       "score1": null,
       "score2": null,

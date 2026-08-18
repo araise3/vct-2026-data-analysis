@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-17T21:54:35Z"
+    "fetchedAt": "2026-08-18T02:03:17Z"
   },
   "matches": [
     {
@@ -859,6 +859,45 @@
       "timestamp": 1787529600,
       "bestOf": 3,
       "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787731200|paper-rex|tbd",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1787731200,
+      "bestOf": 3,
+      "team1": "Paper Rex",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787742000|global-esports|tbd",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1787742000,
+      "bestOf": 3,
+      "team1": "Global Esports",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787817600|gen-g|tbd",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1787817600,
+      "bestOf": 3,
+      "team1": "Gen.G",
       "team2": null,
       "score1": null,
       "score2": null,

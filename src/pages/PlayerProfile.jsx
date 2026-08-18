@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useParams, Link } from 'react-router-dom'
 import { useData, useIdle } from '../lib/useData'
@@ -818,18 +818,24 @@ export default function PlayerProfile() {
       </div>
 
       {stats && stats.mapsPlayed > 0 && (
-        // tracker.gg-style "overview" card, built directly off a real saved
-        // copy of tracker.gg's own Competitive Overview page (class names
-        // like .rating-entry/.stat.giant/.performance-score confirmed by
-        // parsing it, not guessed from the screenshot alone) -- a brand rail,
-        // a rank/RR/leaderboard + W-L strip (ranked only -- pro matches have
-        // no personal rank), 4 "giant" stat pills with a percentile fill bar
-        // each, and a Tracker Score footer. No secondary stat grid anymore
-        // (dropped per direct instruction) -- Most Played Agent and Most
-        // Kills stay gone too (no equivalent on tracker.gg's real page;
-        // Most Played Agent duplicates the Agents table's own top row
-        // further down anyway).
-        <div className="relative bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-hidden">
+        // tracker.gg-style "overview" card. Colors/radius on this card and
+        // its two children below (GiantStat, the Tracker Score sub-card)
+        // are tracker.gg's own real CSS custom properties -- pulled straight
+        // out of a saved copy of the actual page's <style id="trn-title-
+        // styles"> block (--color-surface-1 #0f1923, --color-surface-3
+        // #2c3f52, --border-radius 0.5rem, etc), not approximated from this
+        // site's own surface/hairline tokens, per direct instruction for a
+        // literal 1:1 match rather than "inspired by." Structure (a brand
+        // rail, a rank/RR/leaderboard + W-L strip -- ranked only, pro
+        // matches have no personal rank -- 4 "giant" stat pills with a
+        // percentile fill bar each, and a Tracker Score footer) still comes
+        // from that same real page, restricted to only the stats this site
+        // actually has data for. No secondary stat grid (dropped per
+        // earlier direct instruction) -- Most Played Agent and Most Kills
+        // stay gone too (no equivalent on tracker.gg's real page; Most
+        // Played Agent duplicates the Agents table's own top row further
+        // down anyway).
+        <div className="relative bg-[#0f1923] border border-white/5 rounded-lg shadow-depth-sm overflow-hidden">
           <div className="absolute inset-y-0 left-0 w-1 bg-grad-accent" aria-hidden="true" />
           <div className="pl-4 pr-3 py-3 sm:pl-5 sm:pr-5 sm:py-4 flex flex-col gap-4">
             <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -908,13 +914,13 @@ export default function PlayerProfile() {
                 when the account has no rank on file at all (e.g. genuinely
                 unranked this Act). */}
             {showRanked && actStats.rank && (
-              <div className="flex items-center gap-3 pb-1">
-                <RankIcon tier={actStats.rank.tier} size={44} />
+              <div className="flex items-center gap-4 pb-1">
+                <RankIcon tier={actStats.rank.tier} size={40} />
                 <div className="flex flex-col gap-1">
-                  <span className="text-ink text-sm font-semibold">{actStats.rank.tier}</span>
+                  <span className="text-muted text-sm font-medium">{actStats.rank.tier}</span>
                   <span className="flex items-baseline gap-1">
-                    <span className="font-display text-xl font-bold text-ink">{num(actStats.rank.rr)}</span>
-                    <span className="text-muted text-[10px] font-medium uppercase">RR</span>
+                    <span className="font-display text-lg font-medium text-ink">{num(actStats.rank.rr)}</span>
+                    <span className="text-ink/75 text-xs font-bold">RR</span>
                   </span>
                   {actStats.rank.leaderboardRank != null && (
                     <span className="text-muted text-[10px]">#{num(actStats.rank.leaderboardRank)} leaderboard</span>
@@ -924,49 +930,57 @@ export default function PlayerProfile() {
             )}
 
             {perf && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {perf.pills.map((m) => (
                   <GiantStat key={m.statKey} {...m} />
                 ))}
               </div>
             )}
 
-            {/* Tracker Score footer -- built as its own distinct sub-card
-                (a soft selected-blue wash bleeding in from the crest, on a
-                border of the same color) rather than a plain top-border
-                strip, since a flat divider read as an afterthought next to
-                everything else on this card getting real visual treatment.
-                "+" dividers between metrics (hidden below sm, where they
-                stack instead) mirror tracker.gg's own row layout, confirmed
-                against the real page. */}
+            {/* Tracker Score footer -- rebuilt against tracker.gg's own real
+                markup/CSS (a saved "Webpage, Complete" copy, not a guess):
+                .performance-score (bg surface-1, border-radius) wrapping
+                .performance-score__container (bg surface-2, CSS GRID with
+                "score stats" areas -- min-content + 1fr, stacking to one
+                column below sm), a subtle 7.5%-white border overlay, and
+                the crest/label/value cluster on the left with the 4-stat
+                grid on the right. The "+" dividers are DOM siblings here
+                (real page does it as a `:before` pseudo-element referencing
+                a CDN plus-icon SVG at the same 16px/rounded-full size --
+                same visual result, this is just how it has to be done from
+                inside JSX rather than a dedicated stylesheet). */}
             {perf && (
-              <div className="relative rounded-xl border border-selected/25 bg-gradient-to-r from-selected/[0.12] via-surface2/50 to-surface2/20 px-3 py-3 sm:px-4 overflow-hidden">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                  <div className="flex items-center gap-3 shrink-0 sm:w-36">
-                    <TrackerScoreBadge score={perf.score} />
-                    <div className="flex flex-col">
-                      <span className="text-muted text-[10px] uppercase tracking-wide">Tracker Score</span>
-                      <span className="font-display text-lg font-bold text-ink">
-                        {perf.score}
-                        <span className="text-muted text-xs font-normal">/1000</span>
-                      </span>
+              <div className="relative bg-[#0f1923] rounded-lg overflow-hidden">
+                <div className="absolute inset-0 rounded-lg border border-white/[0.075] pointer-events-none z-10" aria-hidden="true" />
+                <div className="bg-[#1b2733] rounded-lg grid grid-cols-1 sm:grid-cols-[min-content_1fr]">
+                  <div
+                    className="flex items-center px-4 sm:px-7 py-3 sm:py-0"
+                    style={{ backgroundImage: `linear-gradient(to right, ${trackerTier(perf.score / 10)?.light ?? '#a7c6cc'}, transparent)`, padding: '1px' }}
+                  >
+                    <div className="flex items-center bg-[#1b2733] rounded-lg sm:rounded-r-none px-4 sm:px-7 py-3 w-full sm:w-auto">
+                      <TrackerScoreBadge score={perf.score} />
+                      <div className="flex flex-col ml-5 whitespace-nowrap">
+                        <span className="text-muted text-sm font-medium">Tracker Score</span>
+                        <span className="font-display text-2xl font-bold text-ink">
+                          {perf.score}
+                          <sup className="text-ink/75 text-xs">/1000</sup>
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-1 flex-wrap sm:flex-nowrap items-stretch gap-3 sm:gap-0 min-w-0">
+                  <div className="grid grid-cols-2 sm:grid-cols-4">
                     {perf.scoreMetrics.map((m, i) => (
-                      <Fragment key={m.statKey}>
+                      <div key={m.statKey} className="relative">
                         {i > 0 && (
                           <span
-                            className="hidden sm:flex items-center justify-center w-5 h-5 my-auto mx-2.5 rounded-full bg-surface2 border border-hairline/70 text-muted text-xs shrink-0"
+                            className="hidden sm:flex absolute -left-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-4 h-4 rounded-full bg-[#0f1923]"
                             aria-hidden="true"
                           >
-                            +
+                            <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 fill-white/70"><path d="M19,13H13v6H11V13H5V11h6V5h2v6h6Z" /></svg>
                           </span>
                         )}
-                        <div className="flex-1 basis-[calc(50%-0.375rem)] sm:basis-0 min-w-[6rem] sm:min-w-0">
-                          <TrackerScoreMetric {...m} />
-                        </div>
-                      </Fragment>
+                        <TrackerScoreMetric {...m} />
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -1128,112 +1142,135 @@ function WldBadge({ wins, losses, draws }) {
   )
 }
 
-// Tracker Score tier lookup -- see proPerf/rankedPerf's own comments for
-// what's being adapted from tracker.gg's article and why. Colors mirror the
-// article's own scheme (S=Blue, A=Green, B=Yellow, C=Grey, D=Rose); `tone`
-// (Tailwind classes, used by TrackerScoreMetric's small inline tier chip)
-// and `light`/`dark`/`glow` (raw hex/rgb, used by TrackerScoreBadge's own
-// shield gradient/glow below -- box-shadow and SVG fill can't consume a
-// Tailwind class) describe the same five tiers two different ways for two
-// different rendering needs. Percentile cutoffs (90/75/50/25) are an even
-// split, not a reverse-engineered exact match -- tracker.gg doesn't publish
-// theirs either.
+// Tracker Score tier lookup -- colors are tracker.gg's own REAL per-tier
+// `--color-tier` values, pulled verbatim out of a saved copy of the site's
+// real stylesheet (.score--tier-S/A/B/C/D), not approximated: S=#3ecbff,
+// A=#5ee790, B=#e6bc5c, C=#a7c6cc, D=#bf868f. `tone` is the same color as an
+// arbitrary-value Tailwind text class (TrackerScoreMetric's tier letter is
+// plain colored text on the real page, not a background chip -- see that
+// component below). `dark`/`glow` are TrackerScoreBadge's own gradient/glow
+// inputs (raw hex/rgb -- box-shadow and SVG fill can't consume a Tailwind
+// class). Percentile cutoffs (90/75/50/25) are an even split, not a
+// reverse-engineered exact match -- tracker.gg doesn't publish theirs.
 function trackerTier(percentile) {
   if (percentile == null) return null
-  if (percentile >= 90) return { label: 'S', tone: 'text-selected-bright bg-selected/15', light: '#8fa3e0', dark: '#3c4a80', glow: '124,143,209' }
-  if (percentile >= 75) return { label: 'A', tone: 'text-good bg-good/10', light: '#7de3a3', dark: '#2d8a55', glow: '74,201,126' }
-  if (percentile >= 50) return { label: 'B', tone: 'text-mid bg-mid/10', light: '#ffe4ab', dark: '#d9a34a', glow: '255,212,125' }
-  if (percentile >= 25) return { label: 'C', tone: 'text-muted bg-surface2', light: '#c3c8d4', dark: '#6b7280', glow: '155,161,176' }
-  return { label: 'D', tone: 'text-bad bg-bad/10', light: '#ff9791', dark: '#c2453e', glow: '247,102,94' }
+  if (percentile >= 90) return { label: 'S', tone: 'text-[#3ecbff]', light: '#3ecbff', dark: '#1f6b8c', glow: '62,203,255' }
+  if (percentile >= 75) return { label: 'A', tone: 'text-[#5ee790]', light: '#5ee790', dark: '#2f7a52', glow: '94,231,144' }
+  if (percentile >= 50) return { label: 'B', tone: 'text-[#e6bc5c]', light: '#e6bc5c', dark: '#8a6b30', glow: '230,188,92' }
+  if (percentile >= 25) return { label: 'C', tone: 'text-[#a7c6cc]', light: '#a7c6cc', dark: '#5c6f74', glow: '167,198,204' }
+  return { label: 'D', tone: 'text-[#bf868f]', light: '#bf868f', dark: '#6b454c', glow: '191,134,143' }
 }
 
-// A real shield crest (SVG, gradient-filled top-to-bottom in the tier's own
-// color, soft outer glow to match) instead of a letter in a plain rounded
-// box -- tracker.gg's own real crest is a bespoke logo mark, which this
-// doesn't try to clone; this is this site's own equivalent treatment of
-// "the score's tier deserves a badge." `useId` keeps the gradient's id
-// collision-safe if this ever renders more than once on a page (e.g. a
-// future compare view) -- two SVGs sharing a literal id would have the
-// second silently reuse the first's gradient definition.
+// The tier badge -- a colored medallion (SVG, gradient-filled in the tier's
+// own real color, soft outer glow) evoking the same "rating medal" idea as
+// tracker.gg's own crest (their real .score__emblem is a bespoke Illustrator
+// asset, a 5-point rosette around a diamond gem, colored per tier) without
+// tracing their exact artwork, per direct instruction. This is a 6-point
+// star/rosette around a small gem instead -- close enough to read as the
+// same "badge of honor" genre, deliberately not the same shape. `useId`
+// keeps the gradient's id collision-safe if this ever renders more than
+// once on a page (e.g. a future compare view) -- two SVGs sharing a literal
+// id would have the second silently reuse the first's gradient definition.
 function TrackerScoreBadge({ score }) {
   const tier = trackerTier(score / 10)
-  const light = tier?.light ?? '#c3c8d4'
-  const dark = tier?.dark ?? '#6b7280'
-  const glow = tier?.glow ?? '155,161,176'
-  const gradId = `ts-shield-${useId()}`
+  const light = tier?.light ?? '#a7c6cc'
+  const dark = tier?.dark ?? '#5c6f74'
+  const glow = tier?.glow ?? '167,198,204'
+  const gradId = `ts-badge-${useId()}`
   return (
     <div
-      className="relative w-11 h-11 shrink-0"
-      style={{ filter: `drop-shadow(0 0 7px rgba(${glow}, 0.6))` }}
+      className="relative w-14 h-14 shrink-0"
+      style={{ filter: `drop-shadow(0 0 8px rgba(${glow}, 0.65))` }}
       title="Tracker Score tier"
     >
       <svg viewBox="0 0 24 24" className="w-full h-full" aria-hidden="true">
         <defs>
-          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor={light} />
             <stop offset="100%" stopColor={dark} />
           </linearGradient>
         </defs>
-        <path
-          d="M12 2.1 4.4 5.05v5.45c0 5.15 3.36 9.37 7.6 10.9 4.24-1.53 7.6-5.75 7.6-10.9V5.05L12 2.1z"
+        <polygon
+          points="12,1.5 15,6.8 21.09,6.75 18,12 21.09,17.25 15,17.2 12,22.5 9,17.2 2.91,17.25 6,12 2.91,6.75 9,6.8"
           fill={`url(#${gradId})`}
-          stroke="rgba(255,255,255,0.3)"
-          strokeWidth="0.4"
+          stroke="rgba(255,255,255,0.35)"
+          strokeWidth="0.3"
         />
-        <text x="12" y="14.7" textAnchor="middle" fontSize="9" fontWeight="800" fill="#0d0f13" fontFamily="inherit">
-          {tier ? tier.label : '—'}
-        </text>
+        <circle cx="12" cy="12" r="3.4" fill="rgba(13,15,19,0.35)" stroke="rgba(255,255,255,0.6)" strokeWidth="0.4" />
       </svg>
     </div>
   )
 }
 
+// tracker.gg's real `.stat`: centered column (label, big value, percentile
+// line), a background gradient from --color-surface-1 at the top to the
+// tier color at 20% opacity at the bottom, and a fixed-width (not
+// percentile-sized -- confirmed against the real CSS, there is no
+// percentage-fill bar here at all, this site's earlier version invented
+// one) 3rem tier-colored accent bar along the very bottom edge. The tier
+// letter is plain colored text next to "· Top X%", not a background chip --
+// also corrected to match the real page.
 function TrackerScoreMetric({ label, value, format, percentile }) {
   const tier = trackerTier(percentile)
   const topPct = percentile == null ? null : Math.max(0.1, 100 - percentile)
+  const bg = tier
+    ? { backgroundImage: `linear-gradient(to bottom, #0f1923, rgba(${tier.glow}, 0.2))` }
+    : undefined
   return (
-    <div className="flex flex-col gap-1 min-w-0">
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-muted text-[10px] uppercase tracking-wide truncate">{label}</span>
-        {tier && (
-          <span className={`text-[9px] font-semibold px-1 rounded shrink-0 ${tier.tone}`}>{tier.label}</span>
-        )}
-      </div>
-      <span className="font-body text-sm text-ink font-medium">{format(value)}</span>
+    <div
+      className="relative flex flex-col items-center justify-center text-center gap-1 py-3 px-2 min-w-0 border-l border-[#0f1923] first:border-l-0"
+      style={bg}
+    >
+      <span className="text-muted text-sm font-medium truncate max-w-full">{label}</span>
+      <span className="font-display text-2xl font-bold text-ink">{format(value)}</span>
       {topPct != null && (
-        <>
-          <div className="h-1 rounded-full bg-surface2 overflow-hidden">
-            <div className="h-full bg-grad-accent rounded-full" style={{ width: `${Math.max(4, percentile)}%` }} />
-          </div>
-          <span className="text-muted text-[9px]">Top {topPct.toFixed(1)}%</span>
-        </>
+        <span className="text-ink/75 text-[10px]">
+          {tier && <span className="font-semibold" style={{ color: tier.light }}>{tier.label}</span>}
+          {tier ? ' · ' : ''}Top {topPct.toFixed(1)}%
+        </span>
+      )}
+      {tier && (
+        <span
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 rounded-t"
+          style={{ backgroundColor: tier.light }}
+          aria-hidden="true"
+        />
       )}
     </div>
   )
 }
 
-// The overview card's headline "pills" -- tracker.gg's own `.stat.giant`
-// (confirmed against a saved copy of the real page): a vertical fill bar on
-// the left edge sized to the stat's own percentile (bottom-anchored, so it
-// visually "fills up" the same way tracker.gg's does), the label, the big
-// value, and a "Top X%" line underneath. No tier letter here -- tracker.gg's
-// own pills don't carry one either, only its Tracker Score row does.
+// tracker.gg's real `.stat.giant`: bg surface-2, a 4px vertical fill bar
+// (track = --color-background, the darkest token, fill = accent) sized to
+// the stat's own percentile, a normal-weight/normal-case label (NOT the
+// small-caps micro-label this site uses everywhere else -- confirmed
+// against the real CSS, `.stat .numbers .name` carries no text-transform),
+// a big bold value, and a "Top X%" line -- gold (`#cbb765`, tracker.gg's
+// own real literal value for this, not a design token) once the percentile
+// clears an approximate "elite" cutoff, same as the real page's
+// `rank--leader` class (exact cutoff isn't published; 3% is this site's own
+// read of a handful of examples in a saved copy of the real page).
 function GiantStat({ label, value, format, percentile }) {
   const topPct = percentile == null ? null : Math.max(0.1, 100 - percentile)
+  const isLeader = topPct != null && topPct <= 3
   return (
-    <div className="relative flex items-stretch gap-2.5 bg-surface2/40 rounded-lg pl-3 pr-3 py-2.5 overflow-hidden">
-      <div className="absolute inset-y-0 left-0 w-1 bg-surface3" aria-hidden="true">
+    <div className="flex items-stretch gap-4 bg-[#1b2733] rounded-lg px-5 py-3 shadow-[0_3px_6px_rgba(0,0,0,0.15)]">
+      <div className="relative w-1 shrink-0 bg-[#0F141A] rounded-full overflow-hidden">
         {percentile != null && (
           <div
-            className="absolute bottom-0 left-0 right-0 bg-grad-accent"
+            className="absolute bottom-0 left-0 right-0 bg-accent rounded-full"
             style={{ height: `${Math.max(4, percentile)}%` }}
           />
         )}
       </div>
-      <div className="flex flex-col gap-0.5 min-w-0">
-        <span className="text-muted text-[10px] font-medium tracking-wide uppercase truncate">{label}</span>
-        <span className="font-display text-xl font-semibold text-ink">{value != null ? format(value) : '—'}</span>
-        {topPct != null && <span className="text-muted text-[10px]">Top {topPct.toFixed(1)}%</span>}
+      <div className="flex flex-col justify-center min-w-0">
+        <span className="text-muted text-base font-medium truncate">{label}</span>
+        <span className="font-display text-xl font-bold text-ink">{value != null ? format(value) : '—'}</span>
+        {topPct != null && (
+          <span className={`text-[10px] font-medium ${isLeader ? '' : 'text-muted'}`} style={isLeader ? { color: '#cbb765' } : undefined}>
+            Top {topPct.toFixed(1)}%
+          </span>
+        )}
       </div>
     </div>
   )

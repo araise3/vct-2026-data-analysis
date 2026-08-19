@@ -47,6 +47,11 @@ BEFORE RUNNING
      into your real browser) -- don't use the mouse/keyboard until it's
      done with the current page. `--delay` controls how long it waits
      between actions.
+  4. Each handle opens in a NEW tab (Firefox's default when it's already
+     running) and gets closed (Ctrl+W) right after its screenshot, so at
+     most one extra tab is ever alive at once -- a 264-profile run would
+     otherwise pile up 264 open tabs and eat RAM. --keep-tabs disables
+     this if you want to leave a page open to inspect by hand.
 
 CALIBRATING SCROLL + CAPTURE REGION
 --------------------------------------
@@ -171,6 +176,10 @@ def main():
                          "profile, so one calibrated value should hold for the whole batch; 0 (default) scrolls "
                          "nothing. Negative pyautogui.scroll() convention is handled internally -- pass a plain "
                          "positive number for \"scroll down\".")
+    ap.add_argument("--keep-tabs", action="store_true",
+                    help="Don't close each tab after capturing it (default: close every tab right after its "
+                         "screenshot, since open_url() opens a new one each time -- a long batch would otherwise "
+                         "pile up one tab per handle and eat RAM). Only useful for debugging one page by hand.")
     ap.add_argument("--warmup", action="store_true",
                     help="Load the first target URL, then pause for you to press Enter in this terminal once "
                          "the page (and any Cloudflare challenge) has actually resolved, before starting the "
@@ -250,6 +259,19 @@ def main():
                 img = pyautogui.screenshot()
         img.save(out_path)
 
+    def close_tab():
+        # Ctrl+W on the active tab -- since open_url() always opens a NEW
+        # tab (Firefox's default remoting behaviour when it's already
+        # running), doing this right after every capture keeps at most one
+        # extra tab alive at a time instead of accumulating one per handle
+        # across a 264-profile run. Firefox's own default on closing the
+        # last tab is to replace it with a blank tab, not close the window,
+        # so this can't accidentally end the session.
+        win = find_firefox_window()
+        if win:
+            win.activate()
+        pyautogui.hotkey("ctrl", "w")
+
     if args.warmup:
         handle, riot_id = targets[0]
         print(f"[warmup] Opening {handle}'s profile -- solve any Cloudflare challenge by hand, "
@@ -258,6 +280,9 @@ def main():
         input()
         if args.scroll:
             scroll_page()
+        if not args.keep_tabs:
+            close_tab()
+            time.sleep(0.5)
 
     print(f"Capturing {len(targets)} profile(s) -> {OUT_DIR}")
     ok = failed = 0
@@ -275,6 +300,14 @@ def main():
         except Exception as e:  # noqa: BLE001 -- keep the batch going on one bad page
             print(f"  [{i}/{len(targets)}] {handle}: [error] {e}", file=sys.stderr)
             failed += 1
+        finally:
+            # Close even on a failed capture -- a page that errored out is
+            # exactly as much dead weight in RAM as one that succeeded, and
+            # leaving it open just to inspect after the fact isn't worth
+            # the accumulation risk this exists to avoid.
+            if not args.keep_tabs:
+                close_tab()
+                time.sleep(0.5)
 
     print(f"\nDone. {ok} saved, {failed} failed. Spot-check a few -- this can't detect a "
           f"missed-data or still-loading page the way the old DOM-selector version could, "

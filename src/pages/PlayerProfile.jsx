@@ -277,6 +277,7 @@ export default function PlayerProfile() {
     })
     const rating_ = metric('avgRating', 'Rating', stats.avgRating, (v) => rating(v))
     const adr = metric('avgAdr', 'ADR', stats.avgAdr, (v) => num(v, 1))
+    const kd = metric('kd', 'K/D', stats.kd, (v) => num(v, 2))
     const hsPct = metric('avgHsPct', 'HS%', stats.avgHsPct, (v) => pct(v, 1))
     const winPct = metric('winPct', 'Win %', stats.winPct, (v) => pct(v, 1))
     const kast = metric('avgKast', 'KAST', stats.avgKast, (v) => pct(v, 0))
@@ -292,7 +293,7 @@ export default function PlayerProfile() {
     if (!scoreMetrics.length) return null
     const avgPercentile = scoreMetrics.reduce((sum, m) => sum + m.percentile, 0) / scoreMetrics.length
     return {
-      pills: [rating_, adr, hsPct, winPct],
+      pills: [rating_, kd, hsPct, winPct],
       scoreMetrics,
       score: Math.round(avgPercentile * 10),
     }
@@ -342,6 +343,7 @@ export default function PlayerProfile() {
     })
     const acs = metric('acs', 'ACS', actStats.acs, (v) => num(v, 1))
     const adr = metric('adr', 'ADR', actStats.adr, (v) => num(v, 1))
+    const kd = metric('kd', 'K/D', actStats.kd, (v) => num(v, 2))
     const hsPct = metric('hsPct', 'HS%', actStats.hsPct, (v) => pct(v, 1))
     const winPct = metric('winPct', 'Win %', actStats.winPct, (v) => pct(v, 1))
     const kast = metric('kast', 'KAST', actStats.kast, (v) => pct(v, 1))
@@ -355,7 +357,7 @@ export default function PlayerProfile() {
     if (!scoreMetrics.length) return null
     const avgPercentile = scoreMetrics.reduce((sum, m) => sum + m.percentile, 0) / scoreMetrics.length
     return {
-      pills: [acs, adr, hsPct, winPct],
+      pills: [kd, adr, hsPct, winPct],
       scoreMetrics,
       score: Math.round(avgPercentile * 10),
     }

@@ -36,15 +36,27 @@ just... using a real browser:
   - `--browser firefox` (the default) drives Playwright's real Firefox
     build instead of Chromium -- a different engine with a different,
     less automation-associated fingerprint by default. `--profile-dir
-    <path>` goes a step further: launches against YOUR ACTUAL Firefox
-    profile (find its path via Firefox's own about:profiles page) instead
-    of a blank one, so the session carries your real cookies and history
-    rather than looking like a browser that's never been used. Close
-    Firefox first -- a profile directory can't be open in two processes
-    at once. This is still just automating a genuine, already-authenticated
-    browser session (the same idea "Claude in Chrome" already does against
-    a user's real Chrome for other tasks), not spoofing what the browser
-    reports about itself.
+    <path>` goes a step further: launches against a COPY of your actual
+    Firefox profile (find its path via Firefox's own about:profiles page)
+    instead of a blank one, so the session carries your real cookies and
+    history rather than looking like a browser that's never been used.
+    This is still just automating a genuine, already-authenticated
+    browser session (the same idea "Claude in Chrome" already does
+    against a user's real Chrome for other tasks), not spoofing what the
+    browser reports about itself.
+
+    ALWAYS A COPY, NEVER YOUR LIVE PROFILE DIRECTLY: Playwright's bundled
+    Firefox build is pinned to a specific (often older) version, and
+    Firefox itself will refuse to open a newer real profile with an older
+    build without warning that it may corrupt your saved bookmarks/
+    history (confirmed live -- this is a real Firefox safety prompt, not
+    a bug here). Since real corruption risk to someone's actual browsing
+    data is a completely disproportionate price for taking a few
+    screenshots, this script copies your profile directory to a scratch
+    location under the system temp dir and launches against THAT --
+    your real profile is never opened by this script at all. Still worth
+    closing Firefox first so the copy isn't racing live writes (a locked
+    file mid-copy fails loudly rather than silently skipping).
 
 SETUP
 -----
@@ -68,7 +80,9 @@ interrupted batch resumes cheaply.
 import argparse
 import json
 import os
+import shutil
 import sys
+import tempfile
 import time
 import urllib.parse
 
@@ -108,6 +122,26 @@ def load_targets(handles_filter=None, limit=None):
     return targets
 
 
+def copy_profile(source_dir):
+    """Copies a real browser profile directory to a scratch location under
+    the system temp dir and returns that copy's path -- see the module
+    docstring's own section on why this is never optional. Locked files
+    (Firefox still running, mid-write) surface as a clear error asking the
+    user to close the browser, rather than silently producing a partial/
+    inconsistent copy.
+    """
+    dest_root = tempfile.mkdtemp(prefix="tracker_screenshot_profile_")
+    dest = os.path.join(dest_root, "profile")
+    print(f"Copying profile to a scratch location (your real profile is never opened): {dest}")
+    try:
+        shutil.copytree(source_dir, dest)
+    except (OSError, shutil.Error) as e:
+        print(f"[FATAL] Couldn't copy the profile -- likely a file locked by a running Firefox. "
+              f"Close Firefox and retry. ({e})", file=sys.stderr)
+        sys.exit(1)
+    return dest
+
+
 def profile_url(riot_id, season):
     # matches e.g. "VIT Sayonara#gud" -> ".../VIT%20Sayonara%23gud/..."
     encoded = urllib.parse.quote(riot_id, safe="")
@@ -128,10 +162,16 @@ def main():
     ap.add_argument("--browser", choices=["firefox", "chromium"], default="firefox",
                     help="Engine to drive (default: firefox -- see the module docstring on why).")
     ap.add_argument("--profile-dir", metavar="PATH",
-                    help="Launch against a real Firefox profile directory (Firefox's own about:profiles page "
-                         "shows the path) instead of a blank one, so the session carries real cookies/history. "
-                         "Close Firefox first. Chromium profile dirs work too if --browser chromium.")
+                    help="Launch against a COPY of a real Firefox profile directory (Firefox's own "
+                         "about:profiles page shows the path) instead of a blank one, so the session carries "
+                         "real cookies/history -- your actual profile is never opened directly (see the "
+                         "module docstring on why). Close Firefox first so the copy isn't racing live writes. "
+                         "Chromium profile dirs work too if --browser chromium.")
     args = ap.parse_args()
+
+    if args.profile_dir and not os.path.isdir(args.profile_dir):
+        print(f"[FATAL] --profile-dir does not exist or isn't a directory: {args.profile_dir}", file=sys.stderr)
+        return 1
 
     try:
         from playwright.sync_api import sync_playwright
@@ -160,12 +200,13 @@ def main():
         engine = getattr(pw, args.browser)
         browser = None
         if args.profile_dir:
+            profile_copy = copy_profile(args.profile_dir)
             # A persistent context IS the browser -- no separate launch()/
             # new_context() step, and it owns the profile directory for its
             # whole lifetime (hence closing it via `context`, not `browser`,
             # below).
             context = engine.launch_persistent_context(
-                args.profile_dir, headless=not args.headful, viewport=VIEWPORT,
+                profile_copy, headless=not args.headful, viewport=VIEWPORT,
             )
             page = context.pages[0] if context.pages else context.new_page()
         else:

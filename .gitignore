@@ -18,6 +18,11 @@ scraper/.liquipedia_player_names_cache/
 data_cache/
 *.db
 
+# tracker.gg overview screenshots (screenshot_tracker_overviews.py) -- a
+# local QA aid for comparing this site's Ranked stats against tracker.gg's
+# real page, not data the site ships.
+data_prep/tracker_screenshots/
+
 __pycache__/
 *.pyc
 

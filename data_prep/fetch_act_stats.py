@@ -337,26 +337,26 @@ def blank_counters():
     }
 
 
-# Calibrated against real tracker.gg KAST% (user-reported discrepancies),
-# not just the "commonly cited 3-5s" community range this used to be picked
-# from. `diagnose_trade_windows()` (--inspect --trade-windows) recomputed
-# KAST at several candidate windows for 3 real accounts in one pass each and
-# compared against their real tracker.gg KAST%: at the old 5000ms, ALL THREE
-# came out ~0.1pp HIGH (azury 73.41 vs real 73.3, keiko 69.00 vs real 68.9,
-# kozzy 73.32 vs real 73.2) -- a consistent, same-direction, same-magnitude
-# gap across independent accounts, not noise. Narrowing to 4800ms (found by
-# bisecting: azury/kozzy's KAST is flat across roughly [4750,4900]ms since
-# KAST only changes value at the discrete trade timestamps that actually
-# occur in their matches) lands azury and kozzy within rounding of their
-# real values; keiko's own real value falls between two of her own discrete
-# steps (68.77 at 4600ms, 69.00 from ~4700ms on) with nothing in between --
-# expected, not a bug, since her much smaller round count (871 vs kozzy's
-# 5419) makes each achievable KAST value ~0.115pp apart, coarser than the
-# 0.1pp being chased. 4800ms is still a real, evidence-based improvement
-# over the old blind 5000ms guess, just not a perfect fit for every account
-# down to the last decimal -- that's not achievable from 3 data points
-# against an unpublished formula.
-TRADE_WINDOW_MS = 4800
+# Commonly cited across community KAST explainers (VLR/tracker writeups) as
+# the window a trade must land within; Riot has never published an exact
+# figure. Chosen as the conservative end of the "3-5s" range typically
+# quoted, rather than guessed.
+#
+# Tried narrowing this to 4800ms after `diagnose_trade_windows()` found all
+# 3 spot-checked accounts (azury/keiko/kozzy) reading ~0.1pp HIGH on KAST
+# against their real tracker.gg values at 5000ms -- reverted at direct
+# request: the window isn't accepted as the actual cause, so the gap is
+# still open. Prime suspect, not yet confirmed: `_round_kast_participants`'s
+# `total_round_ids` and `_round_enemy_combat`'s `eligible_rounds` landed on
+# the IDENTICAL inflated total for kozzy (5419, vs a real 5408 -- see the
+# enemyCombatRounds clamp fix above) despite being built by two independently
+# written loops, which argues for a shared root cause (e.g. a genuinely
+# duplicate round entry in match['rounds'] carrying its own distinct round
+# id, which would inflate `eligible_rounds`'s plain per-round counter AND
+# escape total_round_ids' set-based dedup since a real duplicate wouldn't
+# reuse the same id) rather than the trade window itself. Not yet verified
+# against a real raw match payload.
+TRADE_WINDOW_MS = 5000
 
 
 def _round_kast_participants(match, puuid, trade_window_ms=TRADE_WINDOW_MS):
@@ -719,6 +719,87 @@ def diagnose_trade_windows(client, handle, riot_id, puuid, windows):
         print(f"    {w}ms -> KAST {pct:.2f}%" if pct is not None else f"    {w}ms -> no data")
 
 
+def diagnose_round_anomalies(client, handle, riot_id, puuid):
+    """One-off, non-persisting diagnostic: for every match in the player's
+    current Act, compares the team's official round total (rounds_won +
+    rounds_lost -- the same denominator ACS/`rounds` use, proven correct
+    earlier by matching tracker.gg's real ACS exactly) against the raw
+    round-array length AND its distinct-id count, to find WHERE a mismatch
+    actually originates (duplicate round ids, extra ids, or something else)
+    instead of guessing from the aggregate totals alone. Prints only the
+    matches that disagree. Never writes to player_act_stats.json.
+    """
+    region = fetch_region(client, puuid)
+    if not region:
+        print(f"  [skip] {handle}: no region")
+        return
+
+    act_id = None
+    seen_match_ids = set()
+    matches_seen = 0
+    flagged = 0
+
+    for page in range(MAX_PAGES_PER_PLAYER):
+        resp = client.get(
+            f"/v4/by-puuid/matches/{region}/{PLATFORM}/{puuid}",
+            {"mode": QUEUE_MODE, "size": PAGE_SIZE, "start": page * PAGE_SIZE},
+        )
+        matches = (resp or {}).get("data") or []
+        if not matches:
+            break
+        stop = False
+        for match in matches:
+            meta = match.get("metadata") or {}
+            season = meta.get("season") or {}
+            sid = season.get("id")
+            match_id = meta.get("match_id")
+            if match_id and match_id in seen_match_ids:
+                continue
+            if match_id:
+                seen_match_ids.add(match_id)
+            if act_id is None and sid:
+                act_id = sid
+            if sid and act_id and sid != act_id:
+                stop = True
+                break
+            matches_seen += 1
+
+            players = match.get("players") or []
+            me = next((p for p in players if p.get("puuid") == puuid), None)
+            teams = match.get("teams") or []
+            my_team = next((t for t in teams if me and t.get("team_id") == me.get("team_id")), None)
+            if not my_team:
+                continue
+            r = my_team.get("rounds") or {}
+            team_rounds = (r.get("won") or 0) + (r.get("lost") or 0)
+
+            raw_rounds = match.get("rounds") or []
+            raw_ids = [rr.get("id") for rr in raw_rounds]
+            distinct_ids = set(raw_ids)
+
+            _, kast_eligible = _round_kast_participants(match, puuid)
+            _, _, enemy_rounds = _round_enemy_combat(match, puuid)
+
+            kast_n = len(kast_eligible) if kast_eligible is not None else None
+            mismatch = (
+                len(raw_rounds) != team_rounds
+                or len(distinct_ids) != len(raw_rounds)
+                or (kast_n is not None and kast_n != team_rounds)
+                or (enemy_rounds and enemy_rounds != team_rounds)
+            )
+            if mismatch:
+                flagged += 1
+                dupes = [i for i in distinct_ids if raw_ids.count(i) > 1]
+                print(f"    match {match_id}: team_rounds={team_rounds} "
+                      f"raw_round_entries={len(raw_rounds)} distinct_ids={len(distinct_ids)} "
+                      f"kast_eligible={kast_n} enemy_combat_rounds={enemy_rounds} "
+                      f"duplicate_ids={dupes[:5]}")
+        if stop:
+            break
+
+    print(f"  {handle} ({riot_id}, {region}): {matches_seen} matches, {flagged} with a round-count mismatch")
+
+
 def fetch_player(client, handle, riot_id, puuid, prev, full):
     """Aggregates one account's current-Act competitive stats.
 
@@ -857,6 +938,12 @@ def main():
                     help="Diagnostic only, requires --inspect: recompute KAST at each of these "
                          "trade-window values (ms) in one pass per handle, no write. For "
                          "calibrating TRADE_WINDOW_MS against known-real tracker.gg KAST%% values.")
+    ap.add_argument("--dump-round-anomalies", action="store_true",
+                    help="Diagnostic only, requires --inspect: for each match, compares the team's "
+                         "official round total against the raw round-array length/distinct-id count "
+                         "and prints any mismatch, to find WHERE a round-count inflation actually "
+                         "comes from (duplicate ids, extra ids, etc) instead of guessing from "
+                         "aggregate totals. No write.")
     args = ap.parse_args()
 
     api_key = os.environ.get("HENRIKDEV_API_KEY")
@@ -895,6 +982,14 @@ def main():
         windows = [int(w.strip()) for w in args.trade_windows.split(",") if w.strip()]
         for handle, riot_id, puuid in targets:
             diagnose_trade_windows(client, handle, riot_id, puuid, windows)
+        return 0
+
+    if args.dump_round_anomalies:
+        if not args.inspect:
+            print("[FATAL] --dump-round-anomalies requires --inspect.", file=sys.stderr)
+            return 1
+        for handle, riot_id, puuid in targets:
+            diagnose_round_anomalies(client, handle, riot_id, puuid)
         return 0
 
     print(f"Fetching current-Act stats for {len(targets)} linked account(s).")

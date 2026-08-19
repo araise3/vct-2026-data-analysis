@@ -1,13 +1,14 @@
-name: Diagnose Act stats trade window
+name: Diagnose Act stats
 
-# One-off, read-only diagnostic: runs data_prep/fetch_act_stats.py's
-# --inspect/--trade-windows mode, which pages a handful of players' current-
-# Act matches once and recomputes KAST at several candidate TRADE_WINDOW_MS
-# values in the same pass, printed to the job log -- never writes to
-# public/data/player_act_stats.json, so there's no "Commit and push" step
-# here at all. Own concurrency group (not update-act-stats) specifically so
-# a quick calibration check doesn't queue for hours behind that workflow's
-# own long --full runs.
+# One-off, read-only diagnostics for data_prep/fetch_act_stats.py -- either
+# --trade-windows (recomputes KAST at several candidate TRADE_WINDOW_MS
+# values in one pass per handle) or --dump-round-anomalies (compares each
+# match's official round total against the raw round-array/distinct-id
+# count to find where a round-count inflation actually originates). Both
+# print to the job log and never write to public/data/player_act_stats.json,
+# so there's no "Commit and push" step here at all. Own concurrency group
+# (not update-act-stats) specifically so a quick check doesn't queue for
+# hours behind that workflow's own long --full runs.
 #
 # HENRIKDEV_API_KEY is the same secret update-act-stats.yml uses.
 
@@ -18,8 +19,15 @@ on:
         description: 'Space-separated handles to inspect'
         type: string
         required: true
+      mode:
+        description: 'Which diagnostic to run'
+        type: choice
+        options:
+          - trade-windows
+          - round-anomalies
+        default: trade-windows
       trade_windows:
-        description: 'Comma-separated trade-window values in ms to test'
+        description: 'Comma-separated trade-window values in ms to test (trade-windows mode only)'
         type: string
         default: '3000,3500,4000,4500,5000,5500,6000,7000'
 
@@ -42,6 +50,10 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Diagnose trade windows
+      - name: Diagnose
         run: |
-          python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }} --trade-windows "${{ inputs.trade_windows }}"
+          if [ "${{ inputs.mode }}" = "round-anomalies" ]; then
+            python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }} --dump-round-anomalies
+          else
+            python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }} --trade-windows "${{ inputs.trade_windows }}"
+          fi

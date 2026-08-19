@@ -1,13 +1,13 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-08-19T09:43:26Z",
-    "playersConsidered": 230,
-    "poolMeanRating": 1.0,
+    "generatedAt": "2026-08-19T13:02:27Z",
+    "playersConsidered": 210,
+    "poolMeanRating": 0.998,
     "selection": "round-weighted (shrunk toward pool mean, m=20 rounds, no eligibility gate; see build_player_week.py)"
   },
-  "weekStart": "2026-08-10",
-  "weekEnd": "2026-08-16",
+  "weekStart": "2026-08-13",
+  "weekEnd": "2026-08-19",
   "player": "OXY",
   "team": "Cloud9",
   "countryCode": "us",

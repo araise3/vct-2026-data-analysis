@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-19T19:05:13Z"
+    "fetchedAt": "2026-08-19T21:55:15Z"
   },
   "matches": [
     {
@@ -418,9 +418,9 @@
       "bestOf": 3,
       "team1": "Cloud9",
       "team2": "BESTIA",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1787184000|g2-esports|m80",
@@ -987,6 +987,19 @@
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787990400,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1788001200|tbd|tbd",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1788001200,
       "bestOf": 3,
       "team1": null,
       "team2": null,

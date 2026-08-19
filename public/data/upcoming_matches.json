@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-19T13:27:51Z"
+    "fetchedAt": "2026-08-19T16:00:35Z"
   },
   "matches": [
-    {
-      "key": "1786633200|joblife|pcific-esports",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1786633200,
-      "bestOf": 3,
-      "team1": "Joblife",
-      "team2": "PCIFIC Esports",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1786644000|giantx|fnatic",
       "event": "Vct 2026 Emea Stage 2",
@@ -418,8 +405,8 @@
       "bestOf": 3,
       "team1": "Bilibili Gaming",
       "team2": "Xi Lai Gaming",
-      "score1": 1,
-      "score2": 0,
+      "score1": 2,
+      "score2": 1,
       "started": true
     },
     {
@@ -475,13 +462,13 @@
       "started": false
     },
     {
-      "key": "1787220000|tbd|nova-esports",
+      "key": "1787220000|xi-lai-gaming|nova-esports",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1787220000,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Xi Lai Gaming",
       "team2": "Nova Esports",
       "score1": null,
       "score2": null,
@@ -553,14 +540,14 @@
       "started": false
     },
     {
-      "key": "1787299200|jdg-esports|tbd",
+      "key": "1787299200|jdg-esports|bilibili-gaming",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1787299200,
       "bestOf": 3,
       "team1": "JDG Esports",
-      "team2": null,
+      "team2": "Bilibili Gaming",
       "score1": null,
       "score2": null,
       "started": false
@@ -989,6 +976,19 @@
       "timestamp": 1787961600,
       "bestOf": 3,
       "team1": "100 Thieves",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787990400|tbd|tbd",
+      "event": "Vct 2026 Pacific Stage 2",
+      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
+      "phase": null,
+      "timestamp": 1787990400,
+      "bestOf": 3,
+      "team1": null,
       "team2": null,
       "score1": null,
       "score2": null,

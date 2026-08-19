@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-08-19T13:02:27Z",
+    "generatedAt": "2026-08-19T15:42:29Z",
     "playersConsidered": 210,
     "poolMeanRating": 0.998,
     "selection": "round-weighted (shrunk toward pool mean, m=20 rounds, no eligibility gate; see build_player_week.py)"

@@ -894,6 +894,84 @@ def diagnose_kast_detail(client, handle, riot_id, puuid):
           f"{flagged} match(es) flagged as worth a look")
 
 
+def diagnose_assist_mismatch(client, handle, riot_id, puuid):
+    """One-off, non-persisting diagnostic: tests whether the "A" in
+    _round_kast_participants' K/A/S/T logic actually means what VLR's own
+    published KAST definition says it should ("deal damage OR use utility
+    that helps a teammate get a kill" -- broader than a bare assist tag).
+    For each match, counts how many times this player appears in a kill
+    event's `assistants` array (what the KAST code trusts) and compares it
+    against `stats.assists` (the match's own OFFICIAL, Riot-reported assist
+    total for this player, already the source of the `assists` field in
+    player_act_stats.json) -- if these two numbers disagree, the
+    `assistants` array on kill events is NOT the same signal as Riot's
+    real assist stat, which would explain KAST reading a bit high (crediting
+    fewer or more qualifying rounds than the real per-round assist signal
+    would). Never writes to player_act_stats.json.
+    """
+    region = fetch_region(client, puuid)
+    if not region:
+        print(f"  [skip] {handle}: no region")
+        return
+
+    act_id = None
+    seen_match_ids = set()
+    matches_seen = 0
+    mismatches = 0
+    total_official = total_tagged = 0
+
+    for page in range(MAX_PAGES_PER_PLAYER):
+        resp = client.get(
+            f"/v4/by-puuid/matches/{region}/{PLATFORM}/{puuid}",
+            {"mode": QUEUE_MODE, "size": PAGE_SIZE, "start": page * PAGE_SIZE},
+        )
+        matches = (resp or {}).get("data") or []
+        if not matches:
+            break
+        stop = False
+        for match in matches:
+            meta = match.get("metadata") or {}
+            season = meta.get("season") or {}
+            sid = season.get("id")
+            match_id = meta.get("match_id")
+            if match_id and match_id in seen_match_ids:
+                continue
+            if match_id:
+                seen_match_ids.add(match_id)
+            if act_id is None and sid:
+                act_id = sid
+            if sid and act_id and sid != act_id:
+                stop = True
+                break
+            matches_seen += 1
+
+            players = match.get("players") or []
+            me = next((p for p in players if p.get("puuid") == puuid), None)
+            if not me:
+                continue
+            official = (me.get("stats") or {}).get("assists")
+            if official is None:
+                continue
+
+            tagged = 0
+            for k in (match.get("kills") or []):
+                if any((a.get("puuid") == puuid) for a in (k.get("assistants") or [])):
+                    tagged += 1
+
+            total_official += official
+            total_tagged += tagged
+            if tagged != official:
+                mismatches += 1
+                print(f"    match {match_id}: official_assists={official} "
+                      f"assistant_tag_count={tagged} diff={tagged - official:+d}")
+        if stop:
+            break
+
+    print(f"  {handle} ({riot_id}, {region}): {matches_seen} matches, "
+          f"{mismatches} with official != tagged, totals: official={total_official} tagged={total_tagged} "
+          f"(diff={total_tagged - total_official:+d})")
+
+
 def fetch_player(client, handle, riot_id, puuid, prev, full):
     """Aggregates one account's current-Act competitive stats.
 
@@ -1043,6 +1121,12 @@ def main():
                          "rounds for every match, flagging low-round (<10, forfeit-shaped) or "
                          "implausibly-high (>95%%) matches -- for a player-specific KAST bias NOT "
                          "explained by --dump-round-anomalies' round-count inflation. No write.")
+    ap.add_argument("--dump-assist-mismatch", action="store_true",
+                    help="Diagnostic only, requires --inspect: per match, compares how many times "
+                         "this player appears in a kill event's `assistants` array (what the KAST "
+                         "A-criterion trusts) against `stats.assists` (Riot's own official per-match "
+                         "assist total) -- tests whether the assistants array is the same signal as "
+                         "a real assist credit. No write.")
     args = ap.parse_args()
 
     api_key = os.environ.get("HENRIKDEV_API_KEY")
@@ -1097,6 +1181,14 @@ def main():
             return 1
         for handle, riot_id, puuid in targets:
             diagnose_kast_detail(client, handle, riot_id, puuid)
+        return 0
+
+    if args.dump_assist_mismatch:
+        if not args.inspect:
+            print("[FATAL] --dump-assist-mismatch requires --inspect.", file=sys.stderr)
+            return 1
+        for handle, riot_id, puuid in targets:
+            diagnose_assist_mismatch(client, handle, riot_id, puuid)
         return 0
 
     print(f"Fetching current-Act stats for {len(targets)} linked account(s).")

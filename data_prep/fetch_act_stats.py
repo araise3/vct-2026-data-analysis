@@ -344,7 +344,7 @@ def blank_counters():
 TRADE_WINDOW_MS = 5000
 
 
-def _round_kast_participants(match, puuid):
+def _round_kast_participants(match, puuid, trade_window_ms=TRADE_WINDOW_MS):
     """Returns (kast_qualifying_round_ids, total_round_ids) for one player
     in one match, or (None, None) if this match's data doesn't cover them
     (e.g. an unreadable/partial match already skipped by accumulate()).
@@ -422,7 +422,7 @@ def _round_kast_participants(match, puuid):
             if (k2_victim.get("puuid") == killer_puuid
                     and k2_killer.get("team") == my_team
                     and t2 is not None and died_at is not None
-                    and t2 >= died_at and t2 - died_at <= TRADE_WINDOW_MS):
+                    and t2 >= died_at and t2 - died_at <= trade_window_ms):
                 qualifying.add(round_id)
                 break
 
@@ -646,6 +646,64 @@ def fetch_rank(client, region, puuid):
     }
 
 
+def diagnose_trade_windows(client, handle, riot_id, puuid, windows):
+    """One-off, non-persisting diagnostic: pages through a player's whole
+    current-Act match history ONCE, then recomputes KAST at every requested
+    trade window (ms) in that single pass -- so comparing several candidate
+    windows against a known-real tracker.gg KAST% costs one fetch, not one
+    per window. Never called from the normal fetch path; only reachable via
+    --inspect --trade-windows, and never writes to player_act_stats.json.
+    """
+    region = fetch_region(client, puuid)
+    if not region:
+        print(f"  [skip] {handle}: no region")
+        return
+
+    per_window = {w: {"qual": 0, "elig": 0} for w in windows}
+    act_id = None
+    act_short = None
+    seen_match_ids = set()
+    matches_seen = 0
+
+    for page in range(MAX_PAGES_PER_PLAYER):
+        resp = client.get(
+            f"/v4/by-puuid/matches/{region}/{PLATFORM}/{puuid}",
+            {"mode": QUEUE_MODE, "size": PAGE_SIZE, "start": page * PAGE_SIZE},
+        )
+        matches = (resp or {}).get("data") or []
+        if not matches:
+            break
+        stop = False
+        for match in matches:
+            meta = match.get("metadata") or {}
+            season = meta.get("season") or {}
+            sid = season.get("id")
+            match_id = meta.get("match_id")
+            if match_id and match_id in seen_match_ids:
+                continue
+            if match_id:
+                seen_match_ids.add(match_id)
+            if act_id is None and sid:
+                act_id, act_short = sid, season.get("short")
+            if sid and act_id and sid != act_id:
+                stop = True
+                break
+            matches_seen += 1
+            for w in windows:
+                qual, elig = _round_kast_participants(match, puuid, trade_window_ms=w)
+                if qual is not None:
+                    per_window[w]["qual"] += len(qual)
+                    per_window[w]["elig"] += len(elig)
+        if stop:
+            break
+
+    print(f"  {handle} ({riot_id}, {region}, act={act_short}, {matches_seen} matches):")
+    for w in windows:
+        elig = per_window[w]["elig"]
+        pct = (100 * per_window[w]["qual"] / elig) if elig else None
+        print(f"    {w}ms -> KAST {pct:.2f}%" if pct is not None else f"    {w}ms -> no data")
+
+
 def fetch_player(client, handle, riot_id, puuid, prev, full):
     """Aggregates one account's current-Act competitive stats.
 
@@ -780,6 +838,10 @@ def main():
                          "linked population.")
     ap.add_argument("--full", action="store_true",
                     help="Ignore the incremental cache and re-sum each player's whole current Act.")
+    ap.add_argument("--trade-windows", metavar="MS,MS,...",
+                    help="Diagnostic only, requires --inspect: recompute KAST at each of these "
+                         "trade-window values (ms) in one pass per handle, no write. For "
+                         "calibrating TRADE_WINDOW_MS against known-real tracker.gg KAST%% values.")
     args = ap.parse_args()
 
     api_key = os.environ.get("HENRIKDEV_API_KEY")
@@ -810,6 +872,15 @@ def main():
         targets = [t for t in targets if t[0].lower() in wanted]
     if args.limit:
         targets = targets[:args.limit]
+
+    if args.trade_windows:
+        if not args.inspect:
+            print("[FATAL] --trade-windows requires --inspect.", file=sys.stderr)
+            return 1
+        windows = [int(w.strip()) for w in args.trade_windows.split(",") if w.strip()]
+        for handle, riot_id, puuid in targets:
+            diagnose_trade_windows(client, handle, riot_id, puuid, windows)
+        return 0
 
     print(f"Fetching current-Act stats for {len(targets)} linked account(s).")
     ok = skipped = failed = 0

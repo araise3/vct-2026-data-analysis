@@ -1,0 +1,47 @@
+name: Diagnose Act stats trade window
+
+# One-off, read-only diagnostic: runs data_prep/fetch_act_stats.py's
+# --inspect/--trade-windows mode, which pages a handful of players' current-
+# Act matches once and recomputes KAST at several candidate TRADE_WINDOW_MS
+# values in the same pass, printed to the job log -- never writes to
+# public/data/player_act_stats.json, so there's no "Commit and push" step
+# here at all. Own concurrency group (not update-act-stats) specifically so
+# a quick calibration check doesn't queue for hours behind that workflow's
+# own long --full runs.
+#
+# HENRIKDEV_API_KEY is the same secret update-act-stats.yml uses.
+
+on:
+  workflow_dispatch:
+    inputs:
+      handles:
+        description: 'Space-separated handles to inspect'
+        type: string
+        required: true
+      trade_windows:
+        description: 'Comma-separated trade-window values in ms to test'
+        type: string
+        default: '3000,3500,4000,4500,5000,5500,6000,7000'
+
+concurrency:
+  group: diagnose-act-stats
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      HENRIKDEV_API_KEY: ${{ secrets.HENRIKDEV_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Diagnose trade windows
+        run: |
+          python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }} --trade-windows "${{ inputs.trade_windows }}"

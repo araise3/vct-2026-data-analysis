@@ -3,35 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-19T07:23:36Z"
+    "fetchedAt": "2026-08-19T13:27:51Z"
   },
   "matches": [
-    {
-      "key": "1786608000|kiwoom-drx|onside-gaming",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
-      "phase": null,
-      "timestamp": 1786608000,
-      "bestOf": 3,
-      "team1": "KIWOOM DRX",
-      "team2": "ONSIDE GAMING",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
-    {
-      "key": "1786616400|rex-regum-qeon|sharper-esports",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
-      "phase": null,
-      "timestamp": 1786616400,
-      "bestOf": 3,
-      "team1": "Rex Regum Qeon",
-      "team2": "Sharper Esports",
-      "score1": 1,
-      "score2": 2,
-      "started": true
-    },
     {
       "key": "1786633200|joblife|pcific-esports",
       "event": "Vct 2026 Emea Stage 2",
@@ -405,9 +379,9 @@
       "bestOf": 3,
       "team1": "JDG Esports",
       "team2": "TYLOO",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1787126400|team-secret|onside-gaming",
@@ -418,35 +392,35 @@
       "bestOf": 3,
       "team1": "Team Secret",
       "team2": "ONSIDE GAMING",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 2,
+      "started": true
     },
     {
-      "key": "1787133600|bilibili-gaming|xi-lai-gaming",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1787133600,
-      "bestOf": 3,
-      "team1": "Bilibili Gaming",
-      "team2": "Xi Lai Gaming",
-      "score1": null,
-      "score2": null,
-      "started": false
-    },
-    {
-      "key": "1787137200|full-sense|rex-regum-qeon",
+      "key": "1787134800|full-sense|rex-regum-qeon",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
-      "timestamp": 1787137200,
+      "timestamp": 1787134800,
       "bestOf": 3,
       "team1": "FULL SENSE",
       "team2": "Rex Regum Qeon",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 1,
+      "started": true
+    },
+    {
+      "key": "1787139600|bilibili-gaming|xi-lai-gaming",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1787139600,
+      "bestOf": 3,
+      "team1": "Bilibili Gaming",
+      "team2": "Xi Lai Gaming",
+      "score1": 1,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1787173200|cloud9|bestia",
@@ -488,13 +462,13 @@
       "started": false
     },
     {
-      "key": "1787212800|tbd|all-gamers",
+      "key": "1787212800|tyloo|all-gamers",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1787212800,
       "bestOf": 3,
-      "team1": null,
+      "team1": "TYLOO",
       "team2": "All Gamers",
       "score1": null,
       "score2": null,
@@ -579,6 +553,19 @@
       "started": false
     },
     {
+      "key": "1787299200|jdg-esports|tbd",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1787299200,
+      "bestOf": 3,
+      "team1": "JDG Esports",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
       "key": "1787299200|kiwoom-drx|sharper-esports",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
@@ -587,19 +574,6 @@
       "bestOf": 3,
       "team1": "KIWOOM DRX",
       "team2": "Sharper Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
-    },
-    {
-      "key": "1787299200|tbd|tbd",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1787299200,
-      "bestOf": 3,
-      "team1": null,
-      "team2": null,
       "score1": null,
       "score2": null,
       "started": false
@@ -683,14 +657,14 @@
       "started": false
     },
     {
-      "key": "1787385600|tbd|tbd",
+      "key": "1787385600|onside-gaming|full-sense",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787385600,
       "bestOf": 3,
-      "team1": null,
-      "team2": null,
+      "team1": "ONSIDE GAMING",
+      "team2": "FULL SENSE",
       "score1": null,
       "score2": null,
       "started": false
@@ -963,6 +937,58 @@
       "timestamp": 1787914800,
       "bestOf": 3,
       "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787925600|tbd|tbd",
+      "event": "Vct 2026 Emea Stage 2",
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
+      "phase": null,
+      "timestamp": 1787925600,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787936400|tbd|tbd",
+      "event": "Vct 2026 Emea Stage 2",
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
+      "phase": null,
+      "timestamp": 1787936400,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787950800|nrg|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1787950800,
+      "bestOf": 3,
+      "team1": "NRG",
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1787961600|100-thieves|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1787961600,
+      "bestOf": 3,
+      "team1": "100 Thieves",
       "team2": null,
       "score1": null,
       "score2": null,

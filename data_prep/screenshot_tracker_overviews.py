@@ -14,34 +14,51 @@ endpoints that are off-limits (see fetch_act_stats.py's own docstring on
 that). One request at a time with a real delay between them, same
 politeness convention as this repo's own scrapers.
 
-HEADLESS GETS CLOUDFLARE-CHALLENGED -- USE --headful
-------------------------------------------------------
+HEADLESS CHROMIUM GETS CLOUDFLARE-CHALLENGED -- USE --headful (AND PREFER FIREFOX)
+------------------------------------------------------------------------------------
 Confirmed live: headless Chromium hits tracker.gg's Cloudflare "Performing
 security verification" interstitial instead of the real page (title "Just a
 moment...", no stats markup at all). This is the same Cloudflare protection
 fetch_act_stats.py's own docstring already documents for their internal
 API, just also covering the plain profile pages when the client looks
-automated. No fingerprinting workaround was attempted here (stealth
-plugins, spoofed headers, cookie/session reuse from another tool) --
-deliberately: that's circumventing a site's own active anti-bot measure,
-not a bug to patch around. `--headful` (a real, visible browser window) is
-the one lever this script exposes, since a normal visible browser session
-is what tracker.gg is trying to distinguish FROM a bot in the first place,
-not a workaround targeting their detection specifically -- run it from a
-real desktop, not a headless CI/sandboxed environment (this repo's own
-sandbox has no display server, so --headful can't even launch there).
+automated. No fingerprinting-evasion workaround was added for this
+(stealth plugins, spoofed automation flags, cookie/session reuse from
+another tool) -- deliberately: that's circumventing a site's own active
+anti-bot measure, not a bug to patch around.
+
+Two levers this script DOES expose, because they're not evasion tricks,
+just... using a real browser:
+  - `--headful` shows a real, visible browser window -- a normal visible
+    session is what tracker.gg is trying to distinguish FROM a bot in the
+    first place. Can't launch in a display-less sandbox (confirmed: this
+    repo's own sandboxed environment has no display server) -- run this
+    from a real desktop.
+  - `--browser firefox` (the default) drives Playwright's real Firefox
+    build instead of Chromium -- a different engine with a different,
+    less automation-associated fingerprint by default. `--profile-dir
+    <path>` goes a step further: launches against YOUR ACTUAL Firefox
+    profile (find its path via Firefox's own about:profiles page) instead
+    of a blank one, so the session carries your real cookies and history
+    rather than looking like a browser that's never been used. Close
+    Firefox first -- a profile directory can't be open in two processes
+    at once. This is still just automating a genuine, already-authenticated
+    browser session (the same idea "Claude in Chrome" already does against
+    a user's real Chrome for other tasks), not spoofing what the browser
+    reports about itself.
 
 SETUP
 -----
     pip install playwright
-    python -m playwright install chromium
+    python -m playwright install firefox
+    # or: python -m playwright install chromium   (if using --browser chromium)
 
 USAGE
 -----
-    python data_prep/screenshot_tracker_overviews.py --headful             # everyone
+    python data_prep/screenshot_tracker_overviews.py --headful                         # everyone, fresh Firefox profile
     python data_prep/screenshot_tracker_overviews.py --headful --handles kozzy azury
     python data_prep/screenshot_tracker_overviews.py --headful --limit 10
-    python data_prep/screenshot_tracker_overviews.py --headful --season <guid> --delay 3
+    python data_prep/screenshot_tracker_overviews.py --headful --profile-dir "C:/Users/you/AppData/Roaming/Mozilla/Firefox/Profiles/xxxxxxxx.default-release"
+    python data_prep/screenshot_tracker_overviews.py --headful --browser chromium --season <guid> --delay 3
 
 Screenshots land in data_prep/tracker_screenshots/{handle}.png (gitignored --
 these are a local QA aid, not data the site ships). Re-running skips a
@@ -107,14 +124,20 @@ def main():
     ap.add_argument("--season", default=DEFAULT_SEASON, help="tracker.gg season guid (default: V26 Act 4).")
     ap.add_argument("--delay", type=float, default=DEFAULT_DELAY_S, help="Seconds between page loads.")
     ap.add_argument("--overwrite", action="store_true", help="Re-capture handles that already have a screenshot.")
-    ap.add_argument("--headful", action="store_true", help="Show the browser window (debugging).")
+    ap.add_argument("--headful", action="store_true", help="Show the browser window -- do this on a real desktop.")
+    ap.add_argument("--browser", choices=["firefox", "chromium"], default="firefox",
+                    help="Engine to drive (default: firefox -- see the module docstring on why).")
+    ap.add_argument("--profile-dir", metavar="PATH",
+                    help="Launch against a real Firefox profile directory (Firefox's own about:profiles page "
+                         "shows the path) instead of a blank one, so the session carries real cookies/history. "
+                         "Close Firefox first. Chromium profile dirs work too if --browser chromium.")
     args = ap.parse_args()
 
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
         print("[FATAL] playwright not installed. Run:\n  pip install playwright\n"
-              "  python -m playwright install chromium", file=sys.stderr)
+              f"  python -m playwright install {args.browser}", file=sys.stderr)
         return 1
 
     targets = load_targets(args.handles, args.limit)
@@ -134,8 +157,21 @@ def main():
     ok = missing = failed = 0
 
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=not args.headful)
-        page = browser.new_page(viewport=VIEWPORT)
+        engine = getattr(pw, args.browser)
+        browser = None
+        if args.profile_dir:
+            # A persistent context IS the browser -- no separate launch()/
+            # new_context() step, and it owns the profile directory for its
+            # whole lifetime (hence closing it via `context`, not `browser`,
+            # below).
+            context = engine.launch_persistent_context(
+                args.profile_dir, headless=not args.headful, viewport=VIEWPORT,
+            )
+            page = context.pages[0] if context.pages else context.new_page()
+        else:
+            browser = engine.launch(headless=not args.headful)
+            context = browser.new_context(viewport=VIEWPORT)
+            page = context.new_page()
         page.set_default_navigation_timeout(NAV_TIMEOUT_MS)
 
         for i, (handle, riot_id) in enumerate(targets, start=1):
@@ -162,7 +198,9 @@ def main():
                 failed += 1
             time.sleep(args.delay)
 
-        browser.close()
+        context.close()
+        if browser:
+            browser.close()
 
     print(f"\nDone. {ok} saved, {missing} with no data this season, {failed} failed.")
     return 0

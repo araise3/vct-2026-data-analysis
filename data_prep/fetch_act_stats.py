@@ -337,11 +337,26 @@ def blank_counters():
     }
 
 
-# Commonly cited across community KAST explainers (VLR/tracker writeups) as
-# the window a trade must land within; Riot has never published an exact
-# figure. Chosen as the conservative end of the "3-5s" range typically
-# quoted, rather than guessed.
-TRADE_WINDOW_MS = 5000
+# Calibrated against real tracker.gg KAST% (user-reported discrepancies),
+# not just the "commonly cited 3-5s" community range this used to be picked
+# from. `diagnose_trade_windows()` (--inspect --trade-windows) recomputed
+# KAST at several candidate windows for 3 real accounts in one pass each and
+# compared against their real tracker.gg KAST%: at the old 5000ms, ALL THREE
+# came out ~0.1pp HIGH (azury 73.41 vs real 73.3, keiko 69.00 vs real 68.9,
+# kozzy 73.32 vs real 73.2) -- a consistent, same-direction, same-magnitude
+# gap across independent accounts, not noise. Narrowing to 4800ms (found by
+# bisecting: azury/kozzy's KAST is flat across roughly [4750,4900]ms since
+# KAST only changes value at the discrete trade timestamps that actually
+# occur in their matches) lands azury and kozzy within rounding of their
+# real values; keiko's own real value falls between two of her own discrete
+# steps (68.77 at 4600ms, 69.00 from ~4700ms on) with nothing in between --
+# expected, not a bug, since her much smaller round count (871 vs kozzy's
+# 5419) makes each achievable KAST value ~0.115pp apart, coarser than the
+# 0.1pp being chased. 4800ms is still a real, evidence-based improvement
+# over the old blind 5000ms guess, just not a perfect fit for every account
+# down to the last decimal -- that's not achievable from 3 data points
+# against an unpublished formula.
+TRADE_WINDOW_MS = 4800
 
 
 def _round_kast_participants(match, puuid, trade_window_ms=TRADE_WINDOW_MS):

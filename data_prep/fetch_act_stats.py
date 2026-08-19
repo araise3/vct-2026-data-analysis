@@ -541,8 +541,24 @@ def accumulate(counters, match, puuid):
 
     kast_rounds, kast_eligible = _round_kast_participants(match, puuid)
     if kast_rounds is not None:
-        counters["kastRounds"] += len(kast_rounds)
-        counters["kastEligibleRounds"] += len(kast_eligible)
+        # Clamped to this match's own official round count, same reasoning
+        # and same fix shape as the enemyCombatRounds clamp below --
+        # confirmed via --dump-round-anomalies against real match data (not
+        # guessed): a small number of matches (2 of 258 for one spot-checked
+        # account) have MORE entries in match['rounds'] than the team's real
+        # round total, with no duplicate round ids involved (17 real,
+        # distinct ids vs a team total of 14; 13 vs 5 on the other) -- most
+        # likely a remake/restart leaving extra round records behind. Total
+        # eligible-round inflation from just those 2 matches (+3, +8 = +11)
+        # exactly matched that account's whole-Act denominator excess found
+        # earlier, confirming this -- not the trade window -- as the real
+        # source of the small KAST gap against tracker.gg's real numbers.
+        # `kast_rounds` (qualifying) is clamped the same way it's bounded by
+        # construction (a subset of kast_eligible) rather than separately
+        # attributing which specific extra rounds were phantom.
+        eligible_n = min(len(kast_eligible), rounds) if rounds else len(kast_eligible)
+        counters["kastEligibleRounds"] += eligible_n
+        counters["kastRounds"] += min(len(kast_rounds), eligible_n)
 
     enemy_dealt, enemy_received, enemy_rounds = _round_enemy_combat(match, puuid)
     if enemy_dealt is not None:

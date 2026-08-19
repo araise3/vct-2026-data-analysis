@@ -31,6 +31,10 @@ on:
         description: 'Ignore the incremental cache and re-sum each player whole Act'
         type: boolean
         default: false
+      handles:
+        description: 'Space-separated handles to retry (leave blank for everyone) -- for backfilling a subset that failed on a prior run, e.g. from a transient regional API outage, without paying for the whole population again'
+        type: string
+        default: ''
 
 # Independent of the other data workflows' concurrency groups -- this only
 # ever writes public/data/player_act_stats.json, which none of them touch.
@@ -75,11 +79,14 @@ jobs:
 
       - name: Fetch current-Act stats
         run: |
+          args=""
           if [ "${{ inputs.full }}" = "true" ]; then
-            python data_prep/fetch_act_stats.py --full
-          else
-            python data_prep/fetch_act_stats.py
+            args="$args --full"
           fi
+          if [ -n "${{ inputs.handles }}" ]; then
+            args="$args --handles ${{ inputs.handles }}"
+          fi
+          python data_prep/fetch_act_stats.py $args
 
       - name: Commit and push
         run: |

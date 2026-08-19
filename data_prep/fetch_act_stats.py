@@ -757,6 +757,11 @@ def main():
     ap.add_argument("--inspect", nargs="+", metavar="HANDLE",
                     help="Fetch specific handles and print the result, no write.")
     ap.add_argument("--limit", type=int, default=None, help="Only process the first N linked players.")
+    ap.add_argument("--handles", nargs="+", metavar="HANDLE",
+                    help="Only process these specific handles (and DO write the result, unlike "
+                         "--inspect) -- for retrying a targeted subset that failed on a prior run "
+                         "(e.g. a transient regional API outage) without re-running the whole "
+                         "linked population.")
     ap.add_argument("--full", action="store_true",
                     help="Ignore the incremental cache and re-sum each player's whole current Act.")
     args = ap.parse_args()
@@ -783,6 +788,9 @@ def main():
 
     if args.inspect:
         wanted = {h.lower() for h in args.inspect}
+        targets = [t for t in targets if t[0].lower() in wanted]
+    if args.handles:
+        wanted = {h.lower() for h in args.handles}
         targets = [t for t in targets if t[0].lower() in wanted]
     if args.limit:
         targets = targets[:args.limit]

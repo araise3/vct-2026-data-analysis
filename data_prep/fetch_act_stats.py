@@ -816,6 +816,84 @@ def diagnose_round_anomalies(client, handle, riot_id, puuid):
     print(f"  {handle} ({riot_id}, {region}): {matches_seen} matches, {flagged} with a round-count mismatch")
 
 
+def diagnose_kast_detail(client, handle, riot_id, puuid):
+    """One-off, non-persisting diagnostic: dumps a per-match KAST breakdown
+    (qualifying rounds / eligible rounds / team's real round total) for
+    EVERY match, not just ones already flagged by --dump-round-anomalies --
+    for tracking down a player-specific bias that isn't explained by that
+    round-count-inflation bug (e.g. it shows up even on a player with zero
+    inflated matches). Flags matches worth a second look: unusually few
+    real rounds (<10, a forfeit/early-surrender shape where most rounds
+    would default to "survived" and inflate the qualifying rate) or a
+    per-match qualifying rate over 95% (implausibly high for a normal
+    game). Never writes to player_act_stats.json.
+    """
+    region = fetch_region(client, puuid)
+    if not region:
+        print(f"  [skip] {handle}: no region")
+        return
+
+    act_id = None
+    seen_match_ids = set()
+    matches_seen = 0
+    total_qual = total_elig = 0
+    flagged = 0
+
+    for page in range(MAX_PAGES_PER_PLAYER):
+        resp = client.get(
+            f"/v4/by-puuid/matches/{region}/{PLATFORM}/{puuid}",
+            {"mode": QUEUE_MODE, "size": PAGE_SIZE, "start": page * PAGE_SIZE},
+        )
+        matches = (resp or {}).get("data") or []
+        if not matches:
+            break
+        stop = False
+        for match in matches:
+            meta = match.get("metadata") or {}
+            season = meta.get("season") or {}
+            sid = season.get("id")
+            match_id = meta.get("match_id")
+            if match_id and match_id in seen_match_ids:
+                continue
+            if match_id:
+                seen_match_ids.add(match_id)
+            if act_id is None and sid:
+                act_id = sid
+            if sid and act_id and sid != act_id:
+                stop = True
+                break
+            matches_seen += 1
+
+            players = match.get("players") or []
+            me = next((p for p in players if p.get("puuid") == puuid), None)
+            teams = match.get("teams") or []
+            my_team = next((t for t in teams if me and t.get("team_id") == me.get("team_id")), None)
+            team_rounds = 0
+            if my_team:
+                r = my_team.get("rounds") or {}
+                team_rounds = (r.get("won") or 0) + (r.get("lost") or 0)
+
+            kast_rounds, kast_eligible = _round_kast_participants(match, puuid)
+            if kast_rounds is None:
+                continue
+            qual, elig = len(kast_rounds), len(kast_eligible)
+            total_qual += qual
+            total_elig += elig
+            rate = (qual / elig) if elig else None
+            worth_a_look = elig and (elig < 10 or (rate is not None and rate > 0.95))
+            if worth_a_look:
+                flagged += 1
+                print(f"    match {match_id}: team_rounds={team_rounds} eligible={elig} "
+                      f"qualifying={qual} rate={rate*100:.1f}%")
+        if stop:
+            break
+
+    overall = (100 * total_qual / total_elig) if total_elig else None
+    print(f"  {handle} ({riot_id}, {region}): {matches_seen} matches, "
+          f"overall KAST {overall:.2f}% ({total_qual}/{total_elig} rounds), "
+          f"{flagged} match(es) flagged as worth a look")
+
+
 def fetch_player(client, handle, riot_id, puuid, prev, full):
     """Aggregates one account's current-Act competitive stats.
 
@@ -960,6 +1038,11 @@ def main():
                          "and prints any mismatch, to find WHERE a round-count inflation actually "
                          "comes from (duplicate ids, extra ids, etc) instead of guessing from "
                          "aggregate totals. No write.")
+    ap.add_argument("--dump-kast-detail", action="store_true",
+                    help="Diagnostic only, requires --inspect: per-match qualifying/eligible KAST "
+                         "rounds for every match, flagging low-round (<10, forfeit-shaped) or "
+                         "implausibly-high (>95%%) matches -- for a player-specific KAST bias NOT "
+                         "explained by --dump-round-anomalies' round-count inflation. No write.")
     args = ap.parse_args()
 
     api_key = os.environ.get("HENRIKDEV_API_KEY")
@@ -1006,6 +1089,14 @@ def main():
             return 1
         for handle, riot_id, puuid in targets:
             diagnose_round_anomalies(client, handle, riot_id, puuid)
+        return 0
+
+    if args.dump_kast_detail:
+        if not args.inspect:
+            print("[FATAL] --dump-kast-detail requires --inspect.", file=sys.stderr)
+            return 1
+        for handle, riot_id, puuid in targets:
+            diagnose_kast_detail(client, handle, riot_id, puuid)
         return 0
 
     print(f"Fetching current-Act stats for {len(targets)} linked account(s).")

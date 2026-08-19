@@ -25,6 +25,7 @@ on:
         options:
           - trade-windows
           - round-anomalies
+          - kast-detail
           - normal
         default: trade-windows
       trade_windows:
@@ -55,6 +56,8 @@ jobs:
         run: |
           if [ "${{ inputs.mode }}" = "round-anomalies" ]; then
             python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }} --dump-round-anomalies
+          elif [ "${{ inputs.mode }}" = "kast-detail" ]; then
+            python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }} --dump-kast-detail
           elif [ "${{ inputs.mode }}" = "normal" ]; then
             python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }}
           else

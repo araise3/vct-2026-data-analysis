@@ -18,6 +18,7 @@ import DataTable from '../components/DataTable'
 import CompositionsTable from '../components/CompositionsTable'
 import AgentIcon from '../components/AgentIcon'
 import Button from '../components/ui/Button'
+import Select from '../components/ui/Select'
 import { buildTeamMapRows, aggregateCompositions, aggregateCompositionPlayers } from '../lib/compositions'
 import { aggregateTeamVetoStats } from '../lib/vetoStats'
 import mapIcons from '../lib/mapIcons.json'
@@ -584,7 +585,7 @@ export default function TeamProfile() {
           uses, per direct request. */}
       <div className="flex items-center gap-2 flex-wrap">
         {eventOverrides.length === 0 && (
-          <FilterChips options={['All', ...yearOptions]} value={effectiveYear} onChange={setYear} />
+          <Select variant="ghost" options={['All', ...yearOptions]} value={effectiveYear} onChange={setYear} />
         )}
         <EventPicker
           options={eventOptions}

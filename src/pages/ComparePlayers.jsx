@@ -4,7 +4,6 @@ import { useData } from '../lib/useData'
 import { expandBuckets, expandMatchRows, groupMatchPlayers } from '../lib/entityBuckets'
 import { buildRadarProfile } from '../lib/radarProfile'
 import RadarChart from '../components/RadarChart'
-import FilterChips from '../components/FilterChips'
 import Select from '../components/ui/Select'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
@@ -592,7 +591,7 @@ function PlayerField({ color, value, onChange, options, placeholder, renderIcon,
             View profile →
           </Link>
           {yearOptions.length > 1 && (
-            <FilterChips options={yearOptions} value={year} onChange={onYearChange} />
+            <Select variant="ghost" options={yearOptions} value={year} onChange={onYearChange} />
           )}
         </div>
       )}

@@ -12,8 +12,6 @@ import { buildPlayerMapPerformance } from '../lib/playerMapPerformance'
 import { buildTrophyWinners, playerTrophies } from '../lib/trophies'
 import CountryKdChart from '../components/CountryKdChart'
 import TrophyCase from '../components/TrophyCase'
-import FilterChips from '../components/FilterChips'
-import EventPicker from '../components/EventPicker'
 import DataTable from '../components/DataTable'
 import MatchHistory from '../components/MatchHistory'
 import PerformanceStrip from '../components/PerformanceStrip'
@@ -21,10 +19,21 @@ import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import AgentIcon from '../components/AgentIcon'
 import RankIcon from '../components/RankIcon'
+import EventLogo from '../components/EventLogo'
 import Button from '../components/ui/Button'
+import Select from '../components/ui/Select'
 import { dynamicQualify, dynamicQualifyThreshold } from '../components/LeaderCard'
 import { rating, pct, num, eventLabel, birthDateLabel, trackerProfileUrl } from '../lib/format'
 import trackerLinks from '../lib/trackerLinks.json'
+
+// Mirrors rft.gg's own player-page tab row (Overview/Matches/Champions/
+// Career) minus Career -- this site has no per-season team-history dataset
+// to build an equivalent of rft.gg's roster-timeline tab from.
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'matches', label: 'Matches' },
+  { id: 'agents', label: 'Agents' },
+]
 
 export default function PlayerProfile() {
   const { name } = useParams()
@@ -143,9 +152,19 @@ export default function PlayerProfile() {
   // the page-wide multi-facet FilterPanel (region/event/phase/week/split/
   // competition + date range) this used to run through was built for list
   // pages with dozens of entities in scope at once; on a single player's
-  // profile it was mostly empty chip groups. Replaced with one fixed rule
-  // instead: everything below except the Agents table (its own small
-  // year/event picker, see below) pins to this player's most recent season.
+  // profile it was mostly empty chip groups. Replaced with this page's own
+  // pair of Season/Event dropdowns instead (see below) -- a single shared
+  // scope control governing every tab (Overview/Matches/Agents), matching
+  // rft.gg's own player page (one tournament + one year picker sitting
+  // above its tabs, driving all of them). This also folds in what used to
+  // be the Agents table's own separate, independent year/event picker
+  // (previously a deliberate multi-select-events control scoped ONLY to
+  // that table, per an earlier direct request) -- unified here per a later
+  // direct request that the whole page respond to one real season/event
+  // scope rather than staying pinned to the most recent season everywhere
+  // else. That does mean an Agents-only multi-event comparison is no
+  // longer expressible in one view (the shared picker is single-select,
+  // same as rft.gg's own), the one real tradeoff of the unification.
   const records = useMemo(
     () => (data ? expandBuckets(data, 'p', (b) => b.p === decodedName) : []),
     [data, decodedName]
@@ -159,20 +178,75 @@ export default function PlayerProfile() {
   // Trophy case -- every Kickoff/Masters/Champions/LOCK//IN this player's
   // own buckets show them on the champion team for, derived straight from
   // match_results.json's real Grand Final results (see trophies.js). Career-
-  // wide like the header cards below it, not scoped to recentYear -- a
-  // trophy won two seasons ago doesn't stop being real once the page
-  // narrows to the current year.
+  // wide like the header cards below it, not scoped to the Season/Event
+  // picker -- a trophy won two seasons ago doesn't stop being real once the
+  // page narrows to a single season.
   const allTrophies = useMemo(() => buildTrophyWinners(matchData), [matchData])
   const myTrophies = useMemo(() => playerTrophies(records, allTrophies), [records, allTrophies])
 
-  const filtered = useMemo(
-    () => records.filter((r) => r.year === recentYear),
-    [records, recentYear]
+  // Season/Event scope -- `selectedYear` of `null` means "default to the
+  // most recent season" (recentYear), same default the old fixed pin used;
+  // `'All'` means career-wide. `selectedEvent` of `'Overall'` means no
+  // event-level narrowing beyond the year. Picking an event always wins
+  // over the year (an event fully determines its own season), and picking
+  // a year resets any event selection -- same override relationship the
+  // old Agents-only picker used, just promoted to the whole page now.
+  const [selectedYear, setSelectedYear] = useState(null)
+  const [selectedEvent, setSelectedEvent] = useState('Overall')
+  const [activeTab, setActiveTab] = useState('overview')
+  useEffect(() => {
+    setSelectedYear(null)
+    setSelectedEvent('Overall')
+    setActiveTab('overview')
+  }, [decodedName])
+
+  const effectiveYear = selectedYear ?? recentYear
+
+  const yearOptions = useMemo(
+    () => [...new Set(records.map((r) => r.year))].sort((a, b) => b - a),
+    [records]
   )
 
+  // Events available for the Event dropdown -- scoped to the currently
+  // selected year (so it never offers an event that would silently produce
+  // an empty page), or every event this player has ever played if the year
+  // picker itself is set to 'All'. Most recent first, by raw event id (see
+  // the identical pattern this replaces, agentEventOptions, for why event
+  // id -- not a date lookup -- is a safe sort key here).
+  const eventOptions = useMemo(() => {
+    const pool = selectedYear === 'All' ? records : records.filter((r) => r.year === effectiveYear)
+    const latestIdByEvent = new Map()
+    for (const r of pool) {
+      const cur = latestIdByEvent.get(r.event)
+      if (cur === undefined || r.e > cur) latestIdByEvent.set(r.event, r.e)
+    }
+    return [...latestIdByEvent.entries()].sort((a, b) => b[1] - a[1]).map(([evt]) => evt)
+  }, [records, selectedYear, effectiveYear])
+
+  function handleYearChange(y) {
+    setSelectedYear(y)
+    setSelectedEvent('Overall')
+  }
+
+  const yearSelectOptions = useMemo(
+    () => [{ value: 'All', label: 'All' }, ...yearOptions.map((y) => ({ value: y, label: String(y) }))],
+    [yearOptions]
+  )
+  const eventSelectOptions = useMemo(
+    () => [{ value: 'Overall', label: 'Overall' }, ...eventOptions.map((evt) => ({ value: evt, label: eventLabel(evt) }))],
+    [eventOptions]
+  )
+
+  // The buckets actually in scope for Overview/Agents -- everything below
+  // that used to read `filtered`/pin to `recentYear` now reads this.
+  const scopedRecords = useMemo(() => {
+    if (selectedEvent !== 'Overall') return records.filter((r) => r.event === selectedEvent)
+    return selectedYear === 'All' ? records : records.filter((r) => r.year === effectiveYear)
+  }, [records, selectedYear, effectiveYear, selectedEvent])
+
   const stats = useMemo(
-    () => aggregatePlayerBuckets(filtered),
-    [filtered]
+    () => aggregatePlayerBuckets(scopedRecords),
+    [scopedRecords]
   )
 
   // Tracker Score -- tracker.gg's own composite performance rating (see
@@ -199,16 +273,23 @@ export default function PlayerProfile() {
   // This is an adaptation of the published CONCEPT for this site's own
   // data, not a port of tracker.gg's own (also non-public) implementation.
   //
-  // Population = every player with a bucket in this player's own
-  // recentYear (same "current season" scope everything else on this page
-  // uses), gated by the same round-count qualification bar Records.jsx's
-  // "Most consistent" card and Player of the Month already use
-  // (`dynamicQualify`/`dynamicQualifyThreshold` from LeaderCard.jsx) --
-  // without it, a 1-map call-up with a lucky ace would sit at a false
-  // 100th percentile and skew the whole distribution.
+  // Population = every player with a bucket in the same season the
+  // Season/Event picker currently resolves to (populationYear -- the
+  // selected event's own year if one's picked, else the selected year,
+  // else recentYear as the fallback for a career-wide 'All' scope, since a
+  // percentile needs SOME single season to compare within), gated by the
+  // same round-count qualification bar Records.jsx's "Most consistent"
+  // card and Player of the Month already use (`dynamicQualify`/
+  // `dynamicQualifyThreshold` from LeaderCard.jsx) -- without it, a 1-map
+  // call-up with a lucky ace would sit at a false 100th percentile and skew
+  // the whole distribution.
+  const populationYear = useMemo(
+    () => (scopedRecords.length ? Math.max(...scopedRecords.map((r) => r.year)) : recentYear),
+    [scopedRecords, recentYear]
+  )
   const populationStats = useMemo(() => {
-    if (!data || !recentYear) return []
-    const yearRecords = expandBuckets(data, 'p').filter((r) => r.year === recentYear)
+    if (!data || !populationYear) return []
+    const yearRecords = expandBuckets(data, 'p').filter((r) => r.year === populationYear)
     const byPlayer = groupByEntity(yearRecords)
     const rows = []
     for (const buckets of byPlayer.values()) {
@@ -216,7 +297,7 @@ export default function PlayerProfile() {
       if (s) rows.push(s)
     }
     return rows
-  }, [data, recentYear])
+  }, [data, populationYear])
 
   // Percentile of `value` within `pool` -- share of the qualified
   // population strictly below it, as a 0-100 float (never rounded here;
@@ -282,12 +363,16 @@ export default function PlayerProfile() {
     const winPct = metric('winPct', 'Win %', stats.winPct, (v) => pct(v, 1))
     const kast = metric('avgKast', 'KAST', stats.avgKast, (v) => pct(v, 0))
     const acs = metric('avgAcs', 'ACS', stats.avgAcs, (v) => num(v, 0))
-    // Same stat/percentile as the Win % pill above, but tracker.gg's own
-    // Tracker Score row specifically labels it "Round Win %" (confirmed
-    // against a screenshot of the real thing) -- a separate metric object
-    // rather than reusing `winPct` so the two labels can differ without
-    // one of the two renders being wrong.
-    const roundWinPct = { ...winPct, statKey: 'roundWinPct', label: 'Round Win %' }
+    // A genuinely different per-ROUND stat from the Win % pill above (which
+    // is per-MAP) -- see aggregatePlayerBuckets' own roundWinPct comment
+    // for why they can't share a value (a 13-11 map win is only 54% on
+    // rounds). Used to be a relabeled copy of winPct because pro data had
+    // no rounds-won field to compute the real thing from; export_from_db.py
+    // now derives it from each map's own final score. `stats.roundWinPct`
+    // is null (not 0) for any player whose scope predates that field's
+    // backfill, so this correctly drops out of scoreMetrics below like any
+    // other missing percentile rather than showing a false 0%.
+    const roundWinPct = metric('roundWinPct', 'Round Win %', stats.roundWinPct, (v) => pct(v, 1))
 
     const scoreMetrics = [roundWinPct, kast, acs, adr].filter((m) => m.percentile != null)
     if (!scoreMetrics.length) return null
@@ -372,7 +457,7 @@ export default function PlayerProfile() {
     if (!scoreMetrics.length) return null
     const avgPercentile = scoreMetrics.reduce((sum, m) => sum + m.percentile, 0) / scoreMetrics.length
     return {
-      pills: [kd, adr, hsPct, winPct],
+      pills: [adr, kd, hsPct, winPct],
       scoreMetrics,
       score: Math.round(avgPercentile * 10),
     }
@@ -401,74 +486,22 @@ export default function PlayerProfile() {
     [agentData, decodedName]
   )
 
-  // The role badge next to the player's name pins to the most recent
-  // season, same rule as the rest of the header -- NOT the Agents table's
-  // own year/event pickers below, which the user can switch independently
-  // without the header jumping around underneath them.
-  const agentRecordsRecentYear = useMemo(
-    () => agentRecords.filter((r) => r.year === recentYear),
-    [agentRecords, recentYear]
-  )
+  // The role badge next to the player's name, and the Agents tab's table,
+  // both now read the SAME page-level Season/Event scope everything else
+  // does (see scopedRecords above) rather than a separate local picker.
+  const agentScoped = useMemo(() => {
+    if (selectedEvent !== 'Overall') return agentRecords.filter((r) => r.event === selectedEvent)
+    return selectedYear === 'All' ? agentRecords : agentRecords.filter((r) => r.year === effectiveYear)
+  }, [agentRecords, selectedYear, effectiveYear, selectedEvent])
 
   const role = useMemo(
-    () => rolesInScope(agentRecordsRecentYear).get(decodedName) ?? null,
-    [agentRecordsRecentYear, decodedName]
+    () => rolesInScope(agentScoped).get(decodedName) ?? null,
+    [agentScoped, decodedName]
   )
-
-  // The Agents table's own scope controls -- the one part of this page
-  // that's still user-adjustable, per direct request. Two independent
-  // pickers, both small and both scoped to this table alone:
-  //   - a year picker (FilterChips, same as everywhere else on the site)
-  //   - a multi-select event search (EventPicker) -- more than one event
-  //     can be added into scope at once, ORed together below
-  // Any committed events take priority over the year chips when both are
-  // "set" -- the chips grey out (see the wrapper below) as the visual cue
-  // that they're not the thing currently driving the table.
-  const [agentYear, setAgentYear] = useState(null)
-  const [agentEventOverrides, setAgentEventOverrides] = useState([])
-  useEffect(() => {
-    setAgentYear(null)
-    setAgentEventOverrides([])
-  }, [decodedName])
-
-  const agentYearOptions = useMemo(
-    () => [...new Set(agentRecords.map((r) => r.year))].sort((a, b) => a - b),
-    [agentRecords]
-  )
-  const effectiveAgentYear = agentYear ?? recentYear
-
-  // Every event this player has at least one AGENT bucket in, most recent
-  // first (by raw event id -- ids increase with time within a season and
-  // 2026's range sits entirely above 2025's, confirmed in
-  // export_from_db.py's own verification notes -- so this needs no
-  // separate date lookup).
-  const agentEventOptions = useMemo(() => {
-    const latestIdByEvent = new Map()
-    for (const r of agentRecords) {
-      const cur = latestIdByEvent.get(r.event)
-      if (cur === undefined || r.e > cur) latestIdByEvent.set(r.event, r.e)
-    }
-    return [...latestIdByEvent.entries()].sort((a, b) => b[1] - a[1]).map(([evt]) => evt)
-  }, [agentRecords])
-
-  function addAgentEvent(evt) {
-    setAgentEventOverrides((prev) => (prev.includes(evt) ? prev : [...prev, evt]))
-  }
-  function removeAgentEvent(evt) {
-    setAgentEventOverrides((prev) => prev.filter((e) => e !== evt))
-  }
-
-  const agentInScope = useMemo(() => {
-    if (agentEventOverrides.length) {
-      const set = new Set(agentEventOverrides)
-      return agentRecords.filter((r) => set.has(r.event))
-    }
-    return effectiveAgentYear === 'All' ? agentRecords : agentRecords.filter((r) => r.year === effectiveAgentYear)
-  }, [agentRecords, effectiveAgentYear, agentEventOverrides])
 
   const agentRows = useMemo(() => {
     const grouped = new Map()
-    for (const r of agentInScope) {
+    for (const r of agentScoped) {
       if (!grouped.has(r.ag)) grouped.set(r.ag, [])
       grouped.get(r.ag).push(r)
     }
@@ -479,24 +512,22 @@ export default function PlayerProfile() {
       out.push({ agent, ...s })
     }
     return out.sort((a, b) => b.mapsPlayed - a.mapsPlayed)
-  }, [agentInScope])
+  }, [agentScoped])
 
   // "Overall" row pinned above the per-agent breakdown: aggregateAgentBuckets
-  // over the SAME ungrouped agentInScope rows the per-agent rows are built
+  // over the SAME ungrouped agentScoped rows the per-agent rows are built
   // from (not a re-sum of the already-divided per-agent percentages), so
   // it's exactly consistent with the per-agent rows -- Maps/Rounds/wins
   // sum exactly, Win%/Rating/etc. are the true rounds-weighted totals
   // rather than an average-of-averages.
   const agentOverall = useMemo(() => {
-    const s = aggregateAgentBuckets(agentInScope)
+    const s = aggregateAgentBuckets(agentScoped)
     return s ? { agent: 'Overall', ...s } : null
-  }, [agentInScope])
+  }, [agentScoped])
 
-  const agentScopeLabel = agentEventOverrides.length === 1
-    ? eventLabel(agentEventOverrides[0])
-    : agentEventOverrides.length > 1
-      ? `${agentEventOverrides.length} events`
-      : effectiveAgentYear
+  const agentScopeLabel = selectedEvent !== 'Overall'
+    ? eventLabel(selectedEvent)
+    : (selectedYear === 'All' ? 'this career' : effectiveYear)
 
   // Match history. The scoreboard rows carry no event/week of their own,
   // so the filtering happens on the match records (which expandMatchRows
@@ -517,21 +548,26 @@ export default function PlayerProfile() {
     return expandMatchRows(matchData).filter((m) => mine.has(m.id))
   }, [matchData, matchPlayerData, decodedName])
 
+  // Matches actually in scope -- same Season/Event scope as
+  // scopedRecords/agentScoped above, now that this page has a real, shared
+  // scope control instead of the old fixed "always career-wide" rule.
+  // `allMatchRows` itself stays career-wide (it's the pool this filters
+  // from); nothing downstream reads it directly any more.
+  const scopedMatchRows = useMemo(() => {
+    if (selectedEvent !== 'Overall') return allMatchRows.filter((m) => m.event === selectedEvent)
+    return selectedYear === 'All' ? allMatchRows : allMatchRows.filter((m) => m.year === effectiveYear)
+  }, [allMatchRows, selectedYear, effectiveYear, selectedEvent])
+
   // One row per MAP (not per series) for the Performances strip -- see
   // playerMapPerformance.js. Empty until team_map_detail.json lands
   // (idle-loaded), same graceful-until-ready pattern every idle-loaded
   // section on this page already follows.
   const mapPerformanceRows = useMemo(
-    () => buildPlayerMapPerformance(allMatchRows, matchPlayerData, teamMapDetailData, decodedName),
-    [allMatchRows, matchPlayerData, teamMapDetailData, decodedName]
+    () => buildPlayerMapPerformance(scopedMatchRows, matchPlayerData, teamMapDetailData, decodedName),
+    [scopedMatchRows, matchPlayerData, teamMapDetailData, decodedName]
   )
 
-  // Career-wide, same as allMatchRows/Performances/Match history above --
-  // not scoped to recentYear, since narrowing to one season would hide
-  // real duel history against opponents faced in earlier years for no
-  // clear benefit (same reasoning ComparePlayers.jsx's own h2h duels
-  // already settled on).
-  const duelMatchIds = useMemo(() => new Set(allMatchRows.map((m) => m.id)), [allMatchRows])
+  const duelMatchIds = useMemo(() => new Set(scopedMatchRows.map((m) => m.id)), [scopedMatchRows])
   // Per-opponent duel records, grouped by opponent country -- an
   // intermediate step only. Nothing renders this shape directly any more
   // (the "Duels by country" chart that once did was removed); it exists
@@ -547,20 +583,22 @@ export default function PlayerProfile() {
   // from that country, not that country's general skill level.
   const countryKdBars = useMemo(() => aggregateKdByCountry(duelGroups), [duelGroups])
 
-  // Match history newest-first, across every year -- no longer pinned to
-  // recentYear like the rest of the page. Paginated 30 at a time rather
-  // than rendered in full, since a long career can run to hundreds of
-  // matches; `matchLimit` resets whenever the profile switches players.
+  // Match history newest-first, within the current Season/Event scope.
+  // Paginated 30 at a time rather than rendered in full, since a long
+  // career can run to hundreds of matches; `matchLimit` resets whenever
+  // the profile switches players OR the scope narrows/widens (a stale
+  // limit from a much longer list otherwise just means "everything" on a
+  // freshly-narrowed one, which reads as broken pagination).
   const sortedMatchRows = useMemo(
-    () => [...allMatchRows].sort(
+    () => [...scopedMatchRows].sort(
       (a, b) => (b.ts || b.date || '').localeCompare(a.ts || a.date || '') || b.id - a.id
     ),
-    [allMatchRows]
+    [scopedMatchRows]
   )
   const [matchLimit, setMatchLimit] = useState(30)
   useEffect(() => {
     setMatchLimit(30)
-  }, [decodedName])
+  }, [decodedName, selectedYear, selectedEvent])
   const visibleMatchRows = useMemo(
     () => sortedMatchRows.slice(0, matchLimit),
     [sortedMatchRows, matchLimit]
@@ -570,7 +608,7 @@ export default function PlayerProfile() {
   if (loading) return <div className="text-muted text-sm">Loading…</div>
 
   const meta = data?.meta?.[decodedName]
-  const displayTeam = meta ? teamInScope(filtered, meta.team) : null
+  const displayTeam = meta ? teamInScope(scopedRecords, meta.team) : null
 
   const agentColumns = [
     {
@@ -619,7 +657,17 @@ export default function PlayerProfile() {
     <div className="flex flex-col gap-6">
       <Link to="/players" className="text-sm text-muted hover:text-ink w-fit">← Back to Players</Link>
 
-      <div className="relative flex flex-col gap-4 bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm px-4 py-4 sm:px-6 overflow-hidden">
+      {/* One merged card for the header info AND the tab row/Season-Event
+          pickers below it -- a literal 1:1 structural copy of rft.gg's own
+          player-page header (a single `rounded-md bg-background border
+          overflow-hidden` box containing the info block, a `border-t`
+          hairline divider, then the tabs+selects row -- NOT two separate
+          stacked elements, which is what an earlier pass here got wrong).
+          The padding/gap that used to live on this outer div now lives on
+          the inner content wrapper instead, so the divider and tab row can
+          sit flush against the card's own edges the way rft.gg's does. */}
+      <div className="relative flex flex-col bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-hidden">
+        <div className="flex flex-col gap-4 px-4 py-4 sm:px-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4 sm:gap-6 min-w-0">
           {/* Real photo when scraper/vlr_player_photos_scraper.py's manifest
@@ -832,8 +880,54 @@ export default function PlayerProfile() {
         </div>
 
         <TrophyCase trophies={myTrophies} />
+        </div>
+
+        {/* Divider -- flush against the card's own edges, same as rft.gg's
+            bare `border-t` between its header block and tab row (no gap on
+            either side, unlike everything above it which uses this card's
+            gap-4). */}
+        <div className="border-t border-hairline" />
+
+        {/* Tab row + Season/Event scope, INSIDE the same card as the header
+            above -- one shared pair of ghost dropdowns (Select.jsx's
+            `variant="ghost"`) driving every tab below, not a per-tab
+            control. `flex-col-reverse md:flex-row` mirrors rft.gg's own
+            responsive order: the pickers sit above the (horizontally
+            scrollable) tab strip on narrow widths, side-by-side with it on
+            desktop. Event options are already narrowed to the selected
+            year (or every year if the year picker itself is 'All'), so
+            this can never land on a combination with nothing in it. */}
+        <div className="flex flex-col-reverse items-center md:flex-row md:justify-between gap-2 sm:gap-4 px-3 sm:px-6 pt-1 pb-2 sm:pb-0">
+          <div className="flex items-center gap-1 max-w-full overflow-x-auto">
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setActiveTab(t.id)}
+                className={`shrink-0 px-3 pt-2 pb-3 text-xs font-semibold border-0 border-b-2 transition-colors ${
+                  activeTab === t.id
+                    ? 'text-ink border-accent-bright'
+                    : 'text-muted border-transparent hover:text-ink'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
+            <Select variant="ghost" value={effectiveYear} onChange={handleYearChange} options={yearSelectOptions} />
+            <Select
+              variant="ghost"
+              value={selectedEvent}
+              onChange={setSelectedEvent}
+              options={eventSelectOptions}
+              renderIcon={(v) => (v !== 'Overall' ? <EventLogo event={v} size={14} /> : null)}
+            />
+          </div>
+        </div>
       </div>
 
+      {activeTab === 'overview' && <>
       {stats && stats.mapsPlayed > 0 && (
         // tracker.gg-style "overview" card. The two inner pieces (GiantStat,
         // the Tracker Score sub-card) keep tracker.gg's own real CSS custom
@@ -857,88 +951,93 @@ export default function PlayerProfile() {
         // further down anyway).
         <div className="relative bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-hidden">
           <div className="pl-4 pr-3 py-3 sm:pl-5 sm:pr-5 sm:py-4 flex flex-col gap-4">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              {/* Source toggle -- only rendered when this player actually has
-                  linked-account Act stats, so it never appears as a dead
-                  control. Labels name the POPULATION each view describes
-                  ("Pro" vs "Ranked"), not the data source, since that's the
-                  distinction that matters to a reader. */}
-              {actStats ? (
-                <div className="flex items-center gap-0.5 p-0.5 bg-surface2 rounded-lg">
-                  {[
-                    { id: 'pro', label: 'Pro' },
-                    { id: 'ranked', label: 'Ranked' },
-                  ].map((opt) => (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => setStatSource(opt.id)}
-                      className={`text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors ${
-                        (opt.id === 'ranked') === showRanked
-                          ? 'bg-selected text-white'
-                          : 'text-muted hover:text-ink'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
+            {/* Rank/RR (left) + Source toggle/W-L (right) share one row --
+                the toggle and W-L record used to sit on their own line
+                above this, moved down to line up with the Rank/RR cluster
+                per direct request. Rank/RR itself is tracker.gg's own rank
+                badge + level cluster, minus Level (not requested, and this
+                pipeline doesn't fetch account level) and minus the W-L ring
+                (redundant with the W-L text on the right). The rank badge
+                is a real tier icon (data_prep/fetch_rank_icons.py, sourced
+                from valorant-api.com and cached locally same as agent
+                icons -- see that script's own docstring), not just text --
+                silently absent via RankIcon's own null-return if this tier
+                name somehow isn't in the lookup, rather than leaving a
+                broken <img>. Ranked view only -- there's no "rank" for a
+                pro-match aggregate, and absent entirely (not a dash-filled
+                placeholder) when the account has no rank on file at all
+                (e.g. genuinely unranked this Act) -- the row still holds
+                its height via the toggle/W-L column alone in either case. */}
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              {showRanked && actStats.rank ? (
+                <div className="flex items-center gap-4">
+                  <RankIcon tier={actStats.rank.tier} size={40} />
+                  <div className="flex flex-col gap-1">
+                    <span className="text-muted text-sm font-medium">{actStats.rank.tier}</span>
+                    <span className="flex items-baseline gap-1">
+                      <span className="font-display text-lg font-medium text-ink">{num(actStats.rank.rr)}</span>
+                      <span className="text-ink/75 text-xs font-bold">RR</span>
+                    </span>
+                    {actStats.rank.leaderboardRank != null && (
+                      <span className="text-muted text-[10px]">#{num(actStats.rank.leaderboardRank)} leaderboard</span>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <span />
               )}
-              {/* W-L record only -- Win % dropped from this corner per direct
-                  instruction (it's already one of the 4 pills below now, so
-                  showing it twice was redundant); the rating-tier word badge
-                  ("Great" etc) dropped too per direct instruction. Colored
-                  W/L/D (good/bad/muted tokens, same ones the rest of the
-                  site already uses for win-loss) instead of one flat muted
-                  string -- a wall of uniformly gray text read as lifeless
-                  next to the rest of this card. */}
-              <div className="flex items-center gap-2">
-                {showRanked ? (
-                  <>
-                    {actStats.actShort && (
-                      <span className="text-muted text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-surface2">
-                        Act {actStats.actShort}
-                      </span>
-                    )}
-                    <WldBadge wins={actStats.wins} losses={actStats.losses} draws={actStats.draws} />
-                  </>
-                ) : (
-                  <WldBadge wins={stats.mapsWon} losses={stats.mapsLost} />
-                )}
-              </div>
-            </div>
 
-            {/* Rank/RR/leaderboard -- tracker.gg's own rank badge + level
-                cluster, minus Level (not requested, and this pipeline
-                doesn't fetch account level) and minus the W-L ring (removed
-                per direct instruction -- the W-L record is already shown as
-                text in the corner above). The rank badge itself is a real
-                tier icon (data_prep/fetch_rank_icons.py, sourced from
-                valorant-api.com and cached locally same as agent icons --
-                see that script's own docstring), not just text -- silently
-                absent via RankIcon's own null-return if this tier name
-                somehow isn't in the lookup, rather than leaving a broken
-                <img>. Ranked view only -- there's no "rank" for a pro-match
-                aggregate. Absent entirely (not a dash-filled placeholder)
-                when the account has no rank on file at all (e.g. genuinely
-                unranked this Act). */}
-            {showRanked && actStats.rank && (
-              <div className="flex items-center gap-4 pb-1">
-                <RankIcon tier={actStats.rank.tier} size={40} />
-                <div className="flex flex-col gap-1">
-                  <span className="text-muted text-sm font-medium">{actStats.rank.tier}</span>
-                  <span className="flex items-baseline gap-1">
-                    <span className="font-display text-lg font-medium text-ink">{num(actStats.rank.rr)}</span>
-                    <span className="text-ink/75 text-xs font-bold">RR</span>
-                  </span>
-                  {actStats.rank.leaderboardRank != null && (
-                    <span className="text-muted text-[10px]">#{num(actStats.rank.leaderboardRank)} leaderboard</span>
+              <div className="flex flex-col items-end gap-1.5">
+                {/* Source toggle -- only rendered when this player actually
+                    has linked-account Act stats, so it never appears as a
+                    dead control. Labels name the POPULATION each view
+                    describes ("Pro" vs "Ranked"), not the data source,
+                    since that's the distinction that matters to a reader. */}
+                {actStats && (
+                  <div className="flex items-center gap-0.5 p-0.5 bg-surface2 rounded-lg">
+                    {[
+                      { id: 'pro', label: 'Pro' },
+                      { id: 'ranked', label: 'Ranked' },
+                    ].map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => setStatSource(opt.id)}
+                        className={`text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors ${
+                          (opt.id === 'ranked') === showRanked
+                            ? 'bg-selected text-white'
+                            : 'text-muted hover:text-ink'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {/* W-L record only -- Win % dropped from this corner per direct
+                    instruction (it's already one of the 4 pills below now, so
+                    showing it twice was redundant); the rating-tier word badge
+                    ("Great" etc) dropped too per direct instruction. Colored
+                    W/L/D (good/bad/muted tokens, same ones the rest of the
+                    site already uses for win-loss) instead of one flat muted
+                    string -- a wall of uniformly gray text read as lifeless
+                    next to the rest of this card. */}
+                <div className="flex items-center gap-2">
+                  {showRanked ? (
+                    <>
+                      {actStats.actShort && (
+                        <span className="text-muted text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-surface2">
+                          Act {actStats.actShort}
+                        </span>
+                      )}
+                      <WldBadge wins={actStats.wins} losses={actStats.losses} draws={actStats.draws} />
+                    </>
+                  ) : (
+                    <WldBadge wins={stats.mapsWon} losses={stats.mapsLost} />
                   )}
                 </div>
               </div>
-            )}
+            </div>
 
             {perf && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -1010,47 +1109,8 @@ export default function PlayerProfile() {
         </div>
       )}
 
-      {allMatchRows.length > 0 && (
+      {scopedMatchRows.length > 0 && (
         <PerformanceStrip rows={mapPerformanceRows} />
-      )}
-
-      {agentRecords.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <h3 className="font-display text-sm font-semibold text-ink">Agents</h3>
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Year chips only make sense as a scope control while no
-                  event is selected -- once one is, the events themselves
-                  are the scope, so the chips are dropped entirely rather
-                  than left visible-but-dimmed and non-interactive. */}
-              {agentEventOverrides.length === 0 && (
-                <FilterChips
-                  options={['All', ...agentYearOptions]}
-                  value={effectiveAgentYear}
-                  onChange={setAgentYear}
-                />
-              )}
-              <EventPicker
-                options={agentEventOptions}
-                selected={agentEventOverrides}
-                onAdd={addAgentEvent}
-                onRemove={removeAgentEvent}
-              />
-            </div>
-          </div>
-          {agentRows.length > 0 ? (
-            <DataTable
-              columns={agentColumns}
-              rows={agentRows}
-              summaryRow={agentOverall}
-              defaultSortKey="mapsPlayed"
-            />
-          ) : (
-            <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-6 text-center">
-              <p className="text-muted text-sm">No agent data for {agentScopeLabel}.</p>
-            </div>
-          )}
-        </div>
       )}
 
       {countryKdBars.length > 0 && (
@@ -1089,8 +1149,24 @@ export default function PlayerProfile() {
             </div>
           </div>
 
+          {meta.isChina && (
+            <div className="bg-surface2/40 border border-hairline rounded-xl px-4 py-3 text-xs text-muted leading-relaxed">
+              China-region matches don't publish multi-kill, clutch, or economy data on VLR, so those
+              totals read 0 here for any of this scope based in China, even if {decodedName} also
+              competed internationally.
+            </div>
+          )}
+        </>
+      )}
+      </>}
+
+      {activeTab === 'matches' && (
+        sortedMatchRows.length === 0 ? (
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-8 text-center">
+            <p className="text-muted text-sm">No matches in this scope.</p>
+          </div>
+        ) : (
           <div className="flex flex-col gap-2">
-            <h3 className="font-display text-sm font-semibold text-ink">Match history</h3>
             <p className="text-muted text-xs">
               {decodedName}'s line in every match — click a row for the full scoreboard.
             </p>
@@ -1110,15 +1186,22 @@ export default function PlayerProfile() {
               </Button>
             )}
           </div>
+        )
+      )}
 
-          {meta.isChina && (
-            <div className="bg-surface2/40 border border-hairline rounded-xl px-4 py-3 text-xs text-muted leading-relaxed">
-              China-region matches don't publish multi-kill, clutch, or economy data on VLR, so those
-              totals read 0 here if this player's {recentYear} season was based in China, even if
-              they also competed internationally.
-            </div>
-          )}
-        </>
+      {activeTab === 'agents' && (
+        agentRows.length > 0 ? (
+          <DataTable
+            columns={agentColumns}
+            rows={agentRows}
+            summaryRow={agentOverall}
+            defaultSortKey="mapsPlayed"
+          />
+        ) : (
+          <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-6 text-center">
+            <p className="text-muted text-sm">No agent data for {agentScopeLabel}.</p>
+          </div>
+        )
       )}
     </div>
   )

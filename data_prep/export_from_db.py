@@ -764,7 +764,8 @@ def main():
     mps_ctx = all_mps.merge(
         all_matches[['match_id', 'event_id', 'stage', 'match_date']], on='match_id', how='left'
     ).merge(
-        am[['match_id', 'map_index', 'rounds_total', 'winner']], on=['match_id', 'map_index'], how='left'
+        am[['match_id', 'map_index', 'rounds_total', 'winner', 'c1', 'c2', 'team1_score', 'team2_score']],
+        on=['match_id', 'map_index'], how='left'
     )
     # Did this player's team win this map? `winner` is already canonical
     # (built from c1/c2 on `am`), so it's compared against canonical_team,
@@ -773,6 +774,19 @@ def main():
     # A drawn/unfinished map has winner=NaN and correctly counts as a
     # non-win rather than erroring.
     mps_ctx['won'] = (mps_ctx['canonical_team'] == mps_ctx['winner']).astype(int)
+    # This player's own team's ROUND count for this map (e.g. 13 out of a
+    # 13-7 map), not just the map win/loss `won` above -- team1_score/
+    # team2_score are already each team's real final round count (no
+    # map_round_results join needed; every team on a map shares the same
+    # round outcomes as the map's own box score). Whichever of c1/c2 this
+    # player's canonical_team matches picks the right side; a row where
+    # neither matches (shouldn't happen for a real map, only a data gap)
+    # is left NaN and excluded by the same `.fillna(0)` pattern every other
+    # summed field here uses, rather than raising.
+    mps_ctx['team_rounds_won'] = np.where(
+        mps_ctx['canonical_team'] == mps_ctx['c1'], mps_ctx['team1_score'],
+        np.where(mps_ctx['canonical_team'] == mps_ctx['c2'], mps_ctx['team2_score'], np.nan)
+    )
 
     def day_col(series):
         """match_date timestamps -> 'YYYY-MM-DD' strings (NaT -> None)."""
@@ -814,6 +828,12 @@ def main():
             # rare chance a group's rows disagree.
             "t": g['canonical_team'].iloc[0],
             "maps": int(len(g)), "rnd": int(g['rounds_total'].fillna(0).sum()),
+            # Rounds WON by this player's team across these maps (not just
+            # rounds PLAYED just above) -- lets the site compute a real
+            # per-round win rate ("Round Win %") instead of aliasing the
+            # per-map winPct below, a different, coarser stat (a 13-11 win
+            # and a 13-1 win are both just "1 map won").
+            "rndWn": int(g['team_rounds_won'].fillna(0).sum()),
             # Maps won by this player's team. Enables a per-player W-L
             # record and win rate (the Players/PlayerProfile pages had no
             # win data at all before this) without a second join on the
@@ -867,6 +887,7 @@ def main():
             row["u"] = {
                 "maps": int(len(unrated)), "rnd": int(unrated['rounds_total'].fillna(0).sum()),
                 "wn": int(unrated['won'].sum()),
+                "rndWn": int(unrated['team_rounds_won'].fillna(0).sum()),
                 "acsS": round(float(u_acs.sum()), 2), "acsM": int(len(u_acs)),
                 "kastS": round(wsum(unrated, 'kast')[0], 4), "kastR": wsum(unrated, 'kast')[1],
                 "adrS": round(wsum(unrated, 'adr')[0], 3), "adrR": wsum(unrated, 'adr')[1],

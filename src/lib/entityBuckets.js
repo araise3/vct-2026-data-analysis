@@ -284,11 +284,18 @@ function div(num, den) {
 export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
   if (!buckets.length) return null
   const t = {
-    maps: 0, rnd: 0, wn: 0, ratS: 0, ratR: 0, acsS: 0, acsM: 0,
+    maps: 0, rnd: 0, wn: 0, rndWn: 0, ratS: 0, ratR: 0, acsS: 0, acsM: 0,
     kastS: 0, kastR: 0, adrS: 0, adrR: 0, hsS: 0, hsR: 0,
     k: 0, d: 0, a: 0, fk: 0, fd: 0, m2: 0, m3: 0, m4: 0, m5: 0, cl: 0,
     pl: 0, df: 0, ecS: 0, utN: 0, rmS: 0, rmSq: 0, rmN: 0,
   }
+  // Whether any bucket in scope actually carries `rndWn` (rounds won, as
+  // opposed to maps won) -- absent on data exported before that field was
+  // added to export_from_db.py, same "backfill gap" situation as ranked's
+  // own `kast` field elsewhere on this page. `null`, not a false 0%, is
+  // what should render until a re-export backfills it -- see roundWinPct
+  // below.
+  let hasRoundWinData = false
   for (const b of buckets) {
     const u = ratedOnly ? b.u : null
     t.maps += b.maps - (u?.maps || 0)
@@ -297,6 +304,10 @@ export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
     // schema (see export_from_db.py, where using `w` for this would have
     // silently overwritten every bucket's week).
     t.wn += (b.wn || 0) - (u?.wn || 0)
+    if (b.rndWn != null) {
+      t.rndWn += b.rndWn - (u?.rndWn || 0)
+      hasRoundWinData = true
+    }
     t.ratS += b.ratS
     t.ratR += b.ratR
     t.acsS += b.acsS - (u?.acsS || 0)
@@ -334,6 +345,14 @@ export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
     mapsWon: t.wn,
     mapsLost: t.maps - t.wn,
     winPct: div(t.wn, t.maps),
+    // Real per-ROUND win rate (rounds this player's team won / rounds
+    // played), distinct from winPct above which is per-MAP -- a 13-11 win
+    // and a 13-1 win are both just "1 map won" to winPct, but very
+    // different to this. `null` (not 0) when no bucket in scope has
+    // `rndWn` at all, so a stale/pre-backfill scope degrades the same way
+    // ranked's own `kast` gap already does elsewhere on this page, rather
+    // than rendering a false 0%.
+    roundWinPct: hasRoundWinData ? div(t.rndWn, t.rnd) : null,
     avgRating: div(t.ratS, t.ratR),
     avgAcs: div(t.acsS, t.acsM),
     totalKills: t.k,

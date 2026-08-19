@@ -68,8 +68,17 @@ const CHART_PX = 256
 // hint -- the badge doesn't need to fit INSIDE the bar (it overlaps the
 // bar's top edge regardless of height, matching the reference), so this
 // only has to be tall enough to read as a bar, not tall enough to contain
-// a label.
-const MIN_BAR_PX = 6
+// a label. BUT it does have to be tall enough that the badge -- centred on
+// the bar's own top edge via `-translate-y-1/2`, so it extends UPWARD by
+// half its own 30px height (15px) past that edge -- never extends past the
+// bar's bottom edge too, straight into the W/L indicator on the team logo
+// sitting in the `mt-2` gap right below this h-64 box. The original 6px
+// floor was well under that 15px, so any near-domain-floor map (a real bug
+// caught live: two 0.3x Rating maps right next to each other, both short
+// enough to shove their red badges down into the team logos' "L" text)
+// visibly collided every time. 18px clears the badge with a couple px of
+// breathing room to spare.
+const MIN_BAR_PX = 18
 
 // The badge is centred on the bar's own top edge (see the `-translate-y-1/2`
 // below) and so overlaps upward by roughly half its own rendered height

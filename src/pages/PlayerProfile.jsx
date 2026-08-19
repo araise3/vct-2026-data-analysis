@@ -951,99 +951,78 @@ export default function PlayerProfile() {
         // further down anyway).
         <div className="relative bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-hidden">
           <div className="pl-4 pr-3 py-3 sm:pl-5 sm:pr-5 sm:py-4 flex flex-col gap-4">
-            {/* Rank/RR (left) + Source toggle/W-L (right) share one row --
-                the toggle and W-L record used to sit on their own line
-                above this, moved down to line up with the Rank/RR cluster
-                per direct request. Rank/RR itself is tracker.gg's own rank
-                badge + level cluster, minus Level (not requested, and this
-                pipeline doesn't fetch account level) and minus the W-L ring
-                (redundant with the W-L text on the right). The rank badge
-                is a real tier icon (data_prep/fetch_rank_icons.py, sourced
-                from valorant-api.com and cached locally same as agent
-                icons -- see that script's own docstring), not just text --
-                silently absent via RankIcon's own null-return if this tier
-                name somehow isn't in the lookup, rather than leaving a
-                broken <img>. Ranked view only -- there's no "rank" for a
-                pro-match aggregate, and absent entirely (not a dash-filled
-                placeholder) when the account has no rank on file at all
-                (e.g. genuinely unranked this Act) -- the row still holds
-                its height via the toggle/W-L column alone in either case. */}
+            {/* Rank plate (left) + Source toggle (right) share one row --
+                the toggle used to sit on its own line above this, moved
+                down to line up with the rank plate per direct request. See
+                RankPlate's own comment for what the plate itself is built
+                from and why the Act tag lives there now rather than up
+                here next to the toggle. Ranked view only -- there's no
+                "rank" for a pro-match aggregate -- and absent entirely (not
+                a dash-filled placeholder) when the account has no rank on
+                file at all (e.g. genuinely unranked this Act); the row
+                still holds its height via the toggle alone in either
+                case. */}
             <div className="flex items-start justify-between gap-4 flex-wrap">
               {showRanked && actStats.rank ? (
-                <div className="flex items-center gap-4">
-                  <RankIcon tier={actStats.rank.tier} size={40} />
-                  <div className="flex flex-col gap-1">
-                    <span className="text-muted text-sm font-medium">{actStats.rank.tier}</span>
-                    <span className="flex items-baseline gap-1">
-                      <span className="font-display text-lg font-medium text-ink">{num(actStats.rank.rr)}</span>
-                      <span className="text-ink/75 text-xs font-bold">RR</span>
-                    </span>
-                    {actStats.rank.leaderboardRank != null && (
-                      <span className="text-muted text-[10px]">#{num(actStats.rank.leaderboardRank)} leaderboard</span>
-                    )}
-                  </div>
-                </div>
+                <RankPlate rank={actStats.rank} actShort={actStats.actShort} />
               ) : (
                 <span />
               )}
 
-              <div className="flex flex-col items-end gap-1.5">
-                {/* Source toggle -- only rendered when this player actually
-                    has linked-account Act stats, so it never appears as a
-                    dead control. Labels name the POPULATION each view
-                    describes ("Pro" vs "Ranked"), not the data source,
-                    since that's the distinction that matters to a reader. */}
-                {actStats && (
-                  <div className="flex items-center gap-0.5 p-0.5 bg-surface2 rounded-lg">
-                    {[
-                      { id: 'pro', label: 'Pro' },
-                      { id: 'ranked', label: 'Ranked' },
-                    ].map((opt) => (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => setStatSource(opt.id)}
-                        className={`text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors ${
-                          (opt.id === 'ranked') === showRanked
-                            ? 'bg-selected text-white'
-                            : 'text-muted hover:text-ink'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {/* W-L record only -- Win % dropped from this corner per direct
-                    instruction (it's already one of the 4 pills below now, so
-                    showing it twice was redundant); the rating-tier word badge
-                    ("Great" etc) dropped too per direct instruction. Colored
-                    W/L/D (good/bad/muted tokens, same ones the rest of the
-                    site already uses for win-loss) instead of one flat muted
-                    string -- a wall of uniformly gray text read as lifeless
-                    next to the rest of this card. */}
-                <div className="flex items-center gap-2">
-                  {showRanked ? (
-                    <>
-                      {actStats.actShort && (
-                        <span className="text-muted text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-surface2">
-                          Act {actStats.actShort}
-                        </span>
-                      )}
-                      <WldBadge wins={actStats.wins} losses={actStats.losses} draws={actStats.draws} />
-                    </>
-                  ) : (
-                    <WldBadge wins={stats.mapsWon} losses={stats.mapsLost} />
-                  )}
+              {/* Source toggle -- only rendered when this player actually
+                  has linked-account Act stats, so it never appears as a
+                  dead control. Labels name the POPULATION each view
+                  describes ("Pro" vs "Ranked"), not the data source, since
+                  that's the distinction that matters to a reader. Alone in
+                  this corner now that the Act badge moved into the rank
+                  cluster above. */}
+              {actStats && (
+                <div className="flex items-center gap-0.5 p-0.5 bg-surface2 rounded-lg">
+                  {[
+                    { id: 'pro', label: 'Pro' },
+                    { id: 'ranked', label: 'Ranked' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setStatSource(opt.id)}
+                      className={`text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors ${
+                        (opt.id === 'ranked') === showRanked
+                          ? 'bg-selected text-white'
+                          : 'text-muted hover:text-ink'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
                 </div>
-              </div>
+              )}
             </div>
 
+            {/* First 3 pills stay equal-width to each other; Win % still
+                gets extra room for the docked donut+legend block at its own
+                right edge (see WinRateStat's comment), but less of it than
+                the first pass -- that version's stacked bar needed the full
+                width of a much wider column (1.6fr), the compact donut
+                doesn't, so 1fr/1fr/1fr/1.6fr shrank to 1.1fr/1.1fr/1.1fr/1.3fr
+                per direct request: the 0.3fr this frees up goes back into
+                the first three pills (+0.1fr each) instead of sitting
+                unused as extra Win % whitespace. Single column below sm
+                (each card, WinRateStat included, is legible full-width on
+                mobile without an awkward odd-one-out span), 2x2 at sm,
+                widened 4-across from md up. Tightened from gap-2 to gap-1.5
+                per direct request. */}
             {perf && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                {perf.pills.map((m) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[1.1fr_1.1fr_1.1fr_1.3fr] gap-1.5">
+                {perf.pills.slice(0, 3).map((m) => (
                   <GiantStat key={m.statKey} {...m} />
                 ))}
+                <WinRateStat
+                  {...perf.pills[3]}
+                  wins={showRanked ? actStats.wins : stats.mapsWon}
+                  losses={showRanked ? actStats.losses : stats.mapsLost}
+                  draws={showRanked ? actStats.draws : undefined}
+                />
               </div>
             )}
 
@@ -1095,15 +1074,6 @@ export default function PlayerProfile() {
                   </div>
                 </div>
               </div>
-            )}
-
-            {showRanked && (
-              <p className="text-muted text-[10px] leading-relaxed">
-                Personal competitive ladder stats for {actStats.riotId}
-                {actStats.region ? ` (${actStats.region.toUpperCase()})` : ''} this Act, via their
-                linked Riot account — solo queue games, not pro matches, so these aren't comparable
-                with the numbers above.
-              </p>
             )}
           </div>
         </div>
@@ -1216,23 +1186,81 @@ function Stat({ label, value }) {
   )
 }
 
-// Wins/losses(/draws) as colored counts (good/bad/muted -- the same tokens
-// every other win-loss indicator on the site already uses) instead of one
-// flat muted string. `draws` is optional -- the Pro corner has no concept
-// of a drawn map, so it's simply never passed there.
-function WldBadge({ wins, losses, draws }) {
+// Real (if approximated) per-tier VALORANT competitive rank colors -- the
+// game's own rank icons are famously color-coded (Iron gray through
+// Radiant's pale gold-white) but rankIcons.json only carries an icon path,
+// no color, so this is a hand-picked hex per base tier eyedropped off the
+// real rank badges rather than an exact palette pull -- same "close, not
+// pixel-perfect" honesty as trackerTier's own percentile cutoffs below.
+// Keyed by BASE tier name (rank strips its own trailing " 1"/"2"/"3" --
+// "Diamond 2" and "Diamond 3" share one color, matching how the game
+// itself only recolors per major rank, not per division). Used to tint the
+// rank plate's icon glow and its Act tag so the whole cluster reads as one
+// tier-colored unit instead of a gray icon next to plain white text.
+const RANK_TIER_COLORS = {
+  iron: '#565a5e',
+  bronze: '#a3714a',
+  silver: '#9fb6ba',
+  gold: '#e8c15a',
+  platinum: '#3fa9a3',
+  diamond: '#c46fe0',
+  ascendant: '#39c47a',
+  immortal: '#b23458',
+  radiant: '#eee8b0',
+}
+function rankTierColor(tier) {
+  if (!tier) return null
+  const base = tier.toLowerCase().replace(/\s*\d+$/, '').trim()
+  return RANK_TIER_COLORS[base] ?? null
+}
+
+// The rank cluster, rebuilt as a self-contained tier-tinted plate -- its
+// own dark sub-panel (bg-[#11161f], hairline border) rather than a bare
+// icon+text cluster sitting directly on the overview card's background,
+// matching this card's own nested-panel language (the Tracker Score footer
+// further down does the same: a darker sub-surface bounded by its own
+// border). rankTierColor threads through THREE places here -- the ambient
+// blurred glow behind the icon, the icon's own drop-shadow, and the Act
+// tag's text color -- so "this rank" and "this Act" read as one tier-
+// colored unit instead of a gray icon sitting next to plain white text
+// with an unrelated badge bolted on. Falls back to a plain muted Act tag
+// and no glow for any tier not in RANK_TIER_COLORS (only "unranked"/
+// "unrated" hit this in practice) rather than rendering broken color math.
+function RankPlate({ rank, actShort }) {
+  const tierColor = rankTierColor(rank.tier)
   return (
-    <span className="flex items-center gap-1 text-xs font-semibold">
-      <span className="text-good">{num(wins)}W</span>
-      <span className="text-muted/40">–</span>
-      <span className="text-bad">{num(losses)}L</span>
-      {draws ? (
-        <>
-          <span className="text-muted/40">–</span>
-          <span className="text-muted">{num(draws)}D</span>
-        </>
-      ) : null}
-    </span>
+    <div className="relative flex items-center gap-3.5 pl-3.5 pr-5 py-2.5 rounded-xl bg-[#11161f] border border-white/[0.06] overflow-hidden">
+      {tierColor && (
+        <div
+          className="absolute -left-8 -top-8 w-28 h-28 rounded-full blur-2xl opacity-25 pointer-events-none"
+          style={{ backgroundColor: tierColor }}
+          aria-hidden="true"
+        />
+      )}
+      <div
+        className="relative shrink-0"
+        style={tierColor ? { filter: `drop-shadow(0 0 8px ${tierColor}99)` } : undefined}
+      >
+        <RankIcon tier={rank.tier} size={48} />
+      </div>
+      <div className="relative flex flex-col gap-0.5 min-w-0">
+        {actShort && (
+          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: tierColor ?? '#9ba1b0' }}>
+            Act {actShort}
+          </span>
+        )}
+        <span className="font-display text-sm font-semibold text-ink truncate">{rank.tier}</span>
+        <span className="flex items-baseline gap-1.5 flex-wrap">
+          <span className="flex items-baseline gap-1">
+            <span className="font-display text-lg font-bold text-ink">{num(rank.rr)}</span>
+            <span className="text-ink/60 text-[10px] font-bold">RR</span>
+          </span>
+          {rank.leaderboardRank != null && (
+            <span className="text-muted text-[10px]">· #{num(rank.leaderboardRank)} leaderboard</span>
+          )}
+        </span>
+      </div>
+    </div>
   )
 }
 
@@ -1367,6 +1395,114 @@ function GiantStat({ label, value, format, percentile }) {
           </span>
         )}
       </div>
+    </div>
+  )
+}
+
+// The Win % pill, widened (see its md:1.6fr grid column above) to also
+// carry the map/match record that used to live in a separate WldBadge up
+// in the card's top-right corner. First pass put that record in a stacked
+// bar UNDER the value -- reverted per direct feedback ("add something on
+// the right where the space is gained, not underneath the stat"): the gap
+// this card gains over its 3 siblings is horizontal, on its right edge, so
+// the record now docks there instead, as its own block separated by a
+// hairline divider -- label/value/percentile keep the exact left-aligned
+// layout every other GiantStat pill uses, untouched by the wider column.
+function WinRateStat({ label, value, format, percentile, wins, losses, draws }) {
+  const topPct = percentile == null ? null : Math.max(0.1, 100 - percentile)
+  const isLeader = topPct != null && topPct <= 3
+  const total = (wins ?? 0) + (losses ?? 0) + (draws ?? 0)
+  return (
+    <div className="flex items-stretch gap-4 bg-[#1b2733] rounded-lg px-5 py-3 shadow-[0_3px_6px_rgba(0,0,0,0.15)]">
+      <div className="relative w-1 shrink-0 bg-[#0F141A] rounded-full overflow-hidden">
+        {percentile != null && (
+          <div
+            className="absolute bottom-0 left-0 right-0 bg-[#bfbdb6] rounded-full"
+            style={{ height: `${Math.max(4, percentile)}%` }}
+          />
+        )}
+      </div>
+      <div className="flex flex-col justify-center min-w-0 flex-1">
+        <span className="text-muted text-base font-medium truncate">{label}</span>
+        <span className="font-display text-xl font-bold text-ink">{value != null ? format(value) : '—'}</span>
+        {topPct != null && (
+          <span className={`text-[10px] font-medium ${isLeader ? '' : 'text-muted'}`} style={isLeader ? { color: '#cbb765' } : undefined}>
+            Top {topPct.toFixed(1)}%
+          </span>
+        )}
+      </div>
+      {/* The record block itself: a small win/loss/draw donut ring plus a
+          W/L/D legend, both fed by the same total-and-outcome numbers so
+          they never disagree. Center of the ring carries the map/match
+          COUNT (`total`) rather than repeating the win percentage already
+          shown as this pill's own headline value -- a number not shown
+          anywhere else on the card, so the ring earns its place instead of
+          just re-illustrating Win % a second time. */}
+      {total > 0 && (
+        <div className="flex items-center gap-3 pl-4 border-l border-white/[0.07] shrink-0">
+          <WinLossDonut wins={wins} losses={losses} draws={draws} total={total} />
+          <div className="flex flex-col gap-0.5 text-[10px] font-bold tabular-nums">
+            <span className="text-good">{num(wins)}W</span>
+            <span className="text-bad">{num(losses)}L</span>
+            {draws ? <span className="text-mid">{num(draws)}D</span> : null}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Win/loss(/draw) donut ring -- three (or two, Pro side has no draws)
+// stroke segments around one circle, each sized to its outcome's own share
+// of `total` (same `strokeDasharray`/`strokeDashoffset` technique behind
+// every SVG donut chart; the whole ring is rotated -90deg first so the
+// first segment starts at 12 o'clock instead of SVG's default 3 o'clock).
+// Colors are the literal good/bad/mid hex values from tailwind.config.js,
+// not Tailwind fill/stroke classes -- this codebase has no prior instance
+// of a token-color stroke utility, and TrackerScoreBadge right above this
+// already establishes raw hex as how an SVG stroke/fill in this file
+// consumes these tokens. The center label is the map/match COUNT, not a
+// repeat of Win % -- see WinRateStat's own comment for why.
+function WinLossDonut({ wins, losses, draws, total }) {
+  if (!total) return null
+  const size = 40
+  const strokeWidth = 6
+  const r = (size - strokeWidth) / 2
+  const c = 2 * Math.PI * r
+  const segments = [
+    { v: wins, color: '#4ac97e' },
+    { v: losses, color: '#f7665e' },
+    ...(draws ? [{ v: draws, color: '#ffd47d' }] : []),
+  ].filter((s) => s.v > 0)
+  let cumulative = 0
+  return (
+    <div
+      className="relative shrink-0"
+      style={{ width: size, height: size }}
+      title={`${wins}W ${losses}L${draws ? ` ${draws}D` : ''}`}
+    >
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90" aria-hidden="true">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#0F141A" strokeWidth={strokeWidth} />
+        {segments.map((s, i) => {
+          const len = (s.v / total) * c
+          const dashoffset = -cumulative
+          cumulative += len
+          return (
+            <circle
+              key={i}
+              cx={size / 2} cy={size / 2} r={r}
+              fill="none"
+              stroke={s.color}
+              strokeWidth={strokeWidth}
+              strokeDasharray={`${len} ${c - len}`}
+              strokeDashoffset={dashoffset}
+            />
+          )
+        })}
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center font-display text-[11px] font-bold text-ink">
+        {total}
+      </span>
     </div>
   )
 }

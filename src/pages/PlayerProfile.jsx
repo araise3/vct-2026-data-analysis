@@ -306,10 +306,22 @@ export default function PlayerProfile() {
   // play) and not the general Valorant playerbase (this site has no access
   // to that; the closest honest comparison group available is "other pros'
   // own ranked accounts, the only ranked data this pipeline has at all").
-  const rankedPopulationStats = useMemo(
-    () => (actStatsData?.players ? Object.values(actStatsData.players) : []),
-    [actStatsData]
-  )
+  //
+  // Scoped to the SUBJECT's own current Act (actShort) -- player_act_stats.json
+  // holds one row per player with no per-Act history, so right after an Act
+  // rolls over the file is a mix of accounts already reset to the new Act
+  // (a handful of matches so far) and accounts still sitting on the old one
+  // (their full prior-Act total, untouched until they next queue). Without
+  // this filter, a fresh e11a5 player's 4-match sample got compared against
+  // a qualification bar derived from an e11a4 straggler's 120-match total --
+  // real bug found live the day Act 5 started: every fresh-Act profile's
+  // entire Tracker Score panel silently vanished (failed the bogus 20-match
+  // bar) rather than comparing against the much smaller, honest pool of
+  // players who'd actually played e11a5 so far.
+  const rankedPopulationStats = useMemo(() => {
+    if (!actStatsData?.players || !actStats) return []
+    return Object.values(actStatsData.players).filter((r) => r.actShort === actStats.actShort)
+  }, [actStatsData, actStats])
 
   // RANKED: same shape as proPerf, all 4 Tracker Score inputs including
   // KAST -- HenrikDev's match-history response has no dedicated `kast`
@@ -333,9 +345,12 @@ export default function PlayerProfile() {
   // Rating 2.0 has no ranked-ladder equivalent either.
   const rankedPerf = useMemo(() => {
     if (!actStats || !rankedPopulationStats.length) return null
-    const threshold = dynamicQualifyThreshold(rankedPopulationStats, 'matches', { fixed: 20 })
-    if (actStats.matches < threshold) return null
-    const qualified = rankedPopulationStats.filter((r) => r.matches >= threshold)
+    // No sample-size qualification bar -- removed per direct request. Every
+    // linked account counts toward the comparison pool and every account
+    // gets a Tracker Score, regardless of how few matches they've played
+    // this Act (most visible right after an Act rolls over, when almost
+    // everyone's sample is small).
+    const qualified = rankedPopulationStats
     if (qualified.length < 2) return null
 
     const metric = (statKey, label, value, format) => ({

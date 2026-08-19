@@ -122,13 +122,30 @@ def load_targets(handles_filter=None, limit=None):
     return targets
 
 
+# Build-version-tagged files inside a Firefox profile -- safe to strip from
+# a disposable copy (Firefox regenerates all of them on next launch) and
+# necessary to: Playwright's bundled Firefox is pinned to its own version,
+# almost always older than a real, auto-updating install, and a real
+# profile records the LAST build that opened it. `compatibility.ini` is
+# what actually triggers the "older version... may corrupt" prompt/silent
+# bail (confirmed live: the copy launch above exited cleanly in ~0.3s with
+# no window and no interactive dialog captured, consistent with Firefox
+# refusing the mismatch non-interactively rather than genuinely crashing).
+# `startupCache`/`shader-cache` are compiled-code/GPU caches keyed to the
+# exact build that wrote them; a stale one from a much newer real Firefox
+# is a plausible source of the "shader-cache: Shader disk cache is not
+# supported" GraphicsCriticalError also seen in that same failed launch.
+_VERSION_TAGGED_PROFILE_ENTRIES = ("compatibility.ini", "startupCache", "shader-cache")
+
+
 def copy_profile(source_dir):
     """Copies a real browser profile directory to a scratch location under
-    the system temp dir and returns that copy's path -- see the module
-    docstring's own section on why this is never optional. Locked files
-    (Firefox still running, mid-write) surface as a clear error asking the
-    user to close the browser, rather than silently producing a partial/
-    inconsistent copy.
+    the system temp dir, strips the build-version-tagged entries above, and
+    returns the copy's path -- see the module docstring's own section on
+    why copying (rather than opening the real profile) is never optional.
+    Locked files (Firefox still running, mid-write) surface as a clear
+    error asking the user to close the browser, rather than silently
+    producing a partial/inconsistent copy.
     """
     dest_root = tempfile.mkdtemp(prefix="tracker_screenshot_profile_")
     dest = os.path.join(dest_root, "profile")
@@ -139,6 +156,14 @@ def copy_profile(source_dir):
         print(f"[FATAL] Couldn't copy the profile -- likely a file locked by a running Firefox. "
               f"Close Firefox and retry. ({e})", file=sys.stderr)
         sys.exit(1)
+
+    for name in _VERSION_TAGGED_PROFILE_ENTRIES:
+        path = os.path.join(dest, name)
+        if os.path.isdir(path):
+            shutil.rmtree(path, ignore_errors=True)
+        elif os.path.isfile(path):
+            os.remove(path)
+
     return dest
 
 

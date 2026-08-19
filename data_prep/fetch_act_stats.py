@@ -536,7 +536,23 @@ def accumulate(counters, match, puuid):
         counters["enemyBodyshots"] += enemy_dealt["bodyshots"]
         counters["enemyLegshots"] += enemy_dealt["legshots"]
         counters["enemyDamageReceived"] += enemy_received
-        counters["enemyCombatRounds"] += enemy_rounds
+        # Clamped to this match's own official round count (`rounds`, from
+        # the team totals above -- the same denominator ACS already uses and
+        # which matches tracker.gg's real ACS exactly). `_round_enemy_combat`
+        # counts eligible rounds from `match['rounds']` independently, via
+        # its own per-round team lookup, and on rare matches that array
+        # carries more entries than the team's real round total (confirmed
+        # live: a real player's cumulative enemyCombatRounds landed 11 rounds
+        # ABOVE their cumulative `rounds`, 5419 vs 5408) -- a duplicate/
+        # phantom round entry inflates the denominator here with no matching
+        # damage to go with it, since a phantom round has no real
+        # damage_events. Uncapped, this silently underreports ADR/HS%/DDΔ
+        # (confirmed: a real profile's ADR read 189.3 against tracker.gg's
+        # real 189.6 -- capping this recovers 189.65, matching almost
+        # exactly). `rounds` can be 0 on a match where the top-level team
+        # lookup itself failed; uncapped in that case rather than zeroing out
+        # real enemy-combat data over an unrelated lookup miss.
+        counters["enemyCombatRounds"] += min(enemy_rounds, rounds) if rounds else enemy_rounds
 
     if my_team is not None:
         if my_team.get("won"):

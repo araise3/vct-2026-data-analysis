@@ -989,15 +989,6 @@ export default function PlayerProfile() {
                 {actStats.region ? ` (${actStats.region.toUpperCase()})` : ''} this Act, via their
                 linked Riot account — solo queue games, not pro matches, so these aren't comparable
                 with the numbers above.
-                {perf && (
-                  <>
-                    {' '}Tracker Score and every "Top X%" figure here are percentiles against{' '}
-                    <span className="text-ink/60">other tracked pros' own ranked accounts</span>{' '}
-                    ({rankedPopulationStats.length} players) — the only real per-stat population this
-                    pipeline has access to — not tracker.gg's own ladder-wide player base, so the tier
-                    letters and score won't match a real tracker.gg screenshot for the same account.
-                  </>
-                )}
               </p>
             )}
           </div>

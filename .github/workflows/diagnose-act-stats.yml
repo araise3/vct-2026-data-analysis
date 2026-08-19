@@ -25,6 +25,7 @@ on:
         options:
           - trade-windows
           - round-anomalies
+          - normal
         default: trade-windows
       trade_windows:
         description: 'Comma-separated trade-window values in ms to test (trade-windows mode only)'
@@ -54,6 +55,8 @@ jobs:
         run: |
           if [ "${{ inputs.mode }}" = "round-anomalies" ]; then
             python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }} --dump-round-anomalies
+          elif [ "${{ inputs.mode }}" = "normal" ]; then
+            python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }}
           else
             python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }} --trade-windows "${{ inputs.trade_windows }}"
           fi

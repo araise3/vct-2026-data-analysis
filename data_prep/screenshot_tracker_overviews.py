@@ -48,20 +48,28 @@ BEFORE RUNNING
      done with the current page. `--delay` controls how long it waits
      between actions.
 
-CALIBRATING THE CAPTURE REGION
--------------------------------
+CALIBRATING SCROLL + CAPTURE REGION
+--------------------------------------
 Without a debugging protocol, this script can't ask the page "where is the
-overview card" the way the Playwright version could -- it can only crop a
-fixed pixel rectangle from the screen. Maximize Firefox once, load any real
-profile URL, and note the on-screen pixel box around the overview card
-(Windows' own Snip & Sketch, Shift+Win+S, shows a live coordinate readout
-while you drag a selection). Pass it as --region x,y,width,height. Omitted,
-it screenshots the whole Firefox window and you crop afterward.
+overview card" the way the Playwright version could -- it can only scroll a
+fixed amount and then crop a fixed pixel rectangle, both calibrated by eye
+once and reused for the whole batch (every profile shares the same page
+layout, so one calibration holds). Maximize Firefox, load any real profile
+URL by hand, and:
+  1. Scroll down with your own mouse wheel until the overview card is
+     framed the way you want, counting roughly how many wheel clicks that
+     took -- pass it as --scroll N.
+  2. With the page scrolled to that position, note the on-screen pixel box
+     around the card (Windows' own Snip & Sketch, Shift+Win+S, shows a
+     live coordinate readout while you drag a selection) and pass it as
+     --region x,y,width,height. Omitted, it screenshots the whole Firefox
+     window at whatever scroll position --scroll left it at, and you crop
+     afterward.
 
 USAGE
 -----
     python data_prep/screenshot_tracker_overviews.py --warmup --limit 1
-    python data_prep/screenshot_tracker_overviews.py --region 320,300,940,600
+    python data_prep/screenshot_tracker_overviews.py --scroll 6 --region 320,300,940,600
     python data_prep/screenshot_tracker_overviews.py --handles kozzy azury --region 320,300,940,600
     python data_prep/screenshot_tracker_overviews.py --season <guid> --delay 4
 
@@ -157,6 +165,12 @@ def main():
     ap.add_argument("--region", type=str, metavar="X,Y,W,H",
                     help="Fixed screen pixel rectangle to crop (see the module docstring's calibration section). "
                          "Omitted: screenshots the whole Firefox window.")
+    ap.add_argument("--scroll", type=int, default=0,
+                    help="Mouse-wheel clicks to scroll down after a page loads, before the screenshot -- the "
+                         "overview card sits below the fold on tracker.gg's real layout. Same page shape every "
+                         "profile, so one calibrated value should hold for the whole batch; 0 (default) scrolls "
+                         "nothing. Negative pyautogui.scroll() convention is handled internally -- pass a plain "
+                         "positive number for \"scroll down\".")
     ap.add_argument("--warmup", action="store_true",
                     help="Load the first target URL, then pause for you to press Enter in this terminal once "
                          "the page (and any Cloudflare challenge) has actually resolved, before starting the "
@@ -203,18 +217,37 @@ def main():
         # link click or "Open With Firefox" already relies on.
         subprocess.Popen([firefox_exe, url])
 
+    def find_firefox_window():
+        if gw is None:
+            return None
+        wins = [w for w in gw.getAllTitles() if "Mozilla Firefox" in w]
+        return gw.getWindowsWithTitle(wins[0])[0] if wins else None
+
+    def scroll_page():
+        if not args.scroll:
+            return
+        win = find_firefox_window()
+        # Scrolling happens wherever the mouse currently sits -- move it
+        # into the page content first (a plain window-center point clears
+        # tab bar/toolbar chrome on any normal Firefox layout), or fall
+        # back to the screen center if the window can't be found.
+        if win:
+            cx, cy = win.left + win.width // 2, win.top + win.height // 2
+        else:
+            sw, sh = pyautogui.size()
+            cx, cy = sw // 2, sh // 2
+        pyautogui.moveTo(cx, cy)
+        pyautogui.scroll(-abs(args.scroll))
+
     def capture(out_path):
         if region:
             img = pyautogui.screenshot(region=region)
-        elif gw is not None:
-            wins = [w for w in gw.getAllTitles() if "Mozilla Firefox" in w or "— Mozilla Firefox" in w]
-            win = gw.getWindowsWithTitle(wins[0])[0] if wins else None
+        else:
+            win = find_firefox_window()
             if win:
                 img = pyautogui.screenshot(region=(win.left, win.top, win.width, win.height))
             else:
                 img = pyautogui.screenshot()
-        else:
-            img = pyautogui.screenshot()
         img.save(out_path)
 
     if args.warmup:
@@ -223,6 +256,8 @@ def main():
               f"confirm the real page has loaded, then press Enter here to continue.")
         open_url(profile_url(riot_id, args.season))
         input()
+        if args.scroll:
+            scroll_page()
 
     print(f"Capturing {len(targets)} profile(s) -> {OUT_DIR}")
     ok = failed = 0
@@ -232,6 +267,8 @@ def main():
         try:
             open_url(profile_url(riot_id, args.season))
             time.sleep(args.delay)
+            scroll_page()
+            time.sleep(0.5)  # let the scrolled layout settle before capturing
             capture(out_path)
             print(f"  [{i}/{len(targets)}] {handle}: saved")
             ok += 1

@@ -13,6 +13,7 @@ import MatchHistory from '../components/MatchHistory'
 import TeamLogo from '../components/TeamLogo'
 import RosterTable from '../components/RosterTable'
 import RosterTimeline from '../components/RosterTimeline'
+import TeamRatingSection from '../components/TeamRatingSection'
 import DataTable from '../components/DataTable'
 import CompositionsTable from '../components/CompositionsTable'
 import AgentIcon from '../components/AgentIcon'
@@ -592,6 +593,22 @@ export default function TeamProfile() {
           onRemove={removeEvent}
         />
       </div>
+
+      {/* Glicko-2 season rating. Sits outside the `stats.mapsPlayed` gate
+          below on purpose: it reads match_results, not the team_buckets
+          this page's other stats aggregate, so it still has something to
+          say for a scope those come up empty for -- and it renders nothing
+          at all when the team has no rated season, so an empty gap isn't a
+          risk. Passed the year only, never eventOverrides: see the
+          component's own comment on why a Glicko rating can't be scoped
+          narrower than a whole run. */}
+      {matchData && (
+        <TeamRatingSection
+          matchData={matchData}
+          team={decodedName}
+          year={typeof effectiveYear === 'number' ? effectiveYear : null}
+        />
+      )}
 
       {/* Match-stat sections (KPIs/Map Stats/round curve/win conditions/
           rating trend/match history) stay gated on `stats.mapsPlayed` --

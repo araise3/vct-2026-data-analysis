@@ -22,6 +22,7 @@ const items = [
   // the path of every visitor who was just passing over the link.
   { to: '/compare', label: 'Compare', data: [] },
   { to: '/teams', label: 'Teams', data: ['team_buckets'] },
+  { to: '/ratings', label: 'Ratings', data: ['match_results'] },
   { to: '/agents', label: 'Agents', data: ['agents'] },
   { to: '/compositions', label: 'Compositions', data: ['match_results', 'match_players'] },
   // Not player_agents: that 9.57MB file is idle-deferred inside the page

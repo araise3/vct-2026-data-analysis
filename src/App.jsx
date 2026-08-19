@@ -16,6 +16,7 @@ const Players = lazy(() => import('./pages/Players'))
 const PlayerProfile = lazy(() => import('./pages/PlayerProfile'))
 const ComparePlayers = lazy(() => import('./pages/ComparePlayers'))
 const Teams = lazy(() => import('./pages/Teams'))
+const Ratings = lazy(() => import('./pages/Ratings'))
 const TeamProfile = lazy(() => import('./pages/TeamProfile'))
 const CoachProfile = lazy(() => import('./pages/CoachProfile'))
 const Agents = lazy(() => import('./pages/Agents'))
@@ -76,6 +77,7 @@ export default function App() {
             <Route path="/compare" element={<ComparePlayers />} />
             <Route path="/teams" element={<Teams />} />
             <Route path="/teams/:name" element={<TeamProfile />} />
+            <Route path="/ratings" element={<Ratings />} />
             <Route path="/coaches/:id" element={<CoachProfile />} />
             <Route path="/agents" element={<Agents />} />
             <Route path="/compositions" element={<Compositions />} />

@@ -45,12 +45,18 @@ function RatingRange({ row }) {
   )
 }
 
-// Fixed order so the four league tables don't reshuffle between years just
+// Fixed order so the league tables don't reshuffle between years just
 // because a region's top team out-rated another's. International is
 // deliberately absent: teamRatings.js only assigns it to teams seen at no
 // domestic event at all, which is a handful of one-off EWC entrants, not a
 // league worth its own standings table.
 const REGION_ORDER = ['Americas', 'EMEA', 'Pacific', 'China']
+
+// China had no developed VCT franchise league yet in 2023 -- the only
+// China-tagged event that year (match_results.json) is a one-off Champions
+// qualifier bracket, ~21 mostly Challengers-tier orgs, not a real season
+// worth standing alongside the other three regions' actual leagues.
+const YEARS_WITHOUT_CHINA = new Set([2023])
 
 // How many teams the comparison chart opens with. Five reads as a title
 // race; the full six the palette supports gets crowded once every line is
@@ -83,6 +89,7 @@ const ALWAYS_SETTLED = new Set([
   'Apeks|2025',
   'BLEED|2024', // canonical name is bare "BLEED", not "Bleed Esports"
   'FURIA|2024',
+  'DetonatioN FocusMe|2023',
 ])
 
 /**
@@ -375,6 +382,11 @@ export default function Ratings() {
     return out
   }, [table])
 
+  const visibleRegions = useMemo(
+    () => (YEARS_WITHOUT_CHINA.has(year) ? REGION_ORDER.filter((r) => r !== 'China') : REGION_ORDER),
+    [year]
+  )
+
   const summary = useMemo(() => {
     if (!run) return null
     const rated = table.filter((t) => !t.provisional)
@@ -617,15 +629,18 @@ export default function Ratings() {
 
       <div className="flex flex-col gap-3">
         <p className="text-muted text-[11px] max-w-xl">
-          The same ratings, split by league. Ratings stay comparable across these four tables —
+          The same ratings, split by league. Ratings stay comparable across these tables —
           every team is rated in one pool, and the international events are what tie the regions
           to each other.
+          {YEARS_WITHOUT_CHINA.has(year) && ' China is omitted for this year -- no developed league yet, just a one-off qualifier bracket.'}
         </p>
         {/* 2x2 by default rather than widening to a 4-across row at xl --
             four tables that narrow stay easier to scan down than a single
-            row that keeps stretching with the viewport. */}
+            row that keeps stretching with the viewport. A year missing one
+            region (see YEARS_WITHOUT_CHINA) just leaves the grid's last
+            cell empty rather than needing a different layout. */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {REGION_ORDER.map((region) => (
+          {visibleRegions.map((region) => (
             <RegionTable
               key={region}
               region={region}

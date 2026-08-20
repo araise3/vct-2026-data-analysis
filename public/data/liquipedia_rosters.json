@@ -22632,7 +22632,7 @@
           "name": "Ömer Samet Şenlik",
           "joinDate": "2026-01-05",
           "leaveDate": "2026-05-05",
-          "newTeam": null,
+          "newTeam": "Misa Esports",
           "flag": "tr",
           "playerStatus": "STARTER"
         },
@@ -26083,7 +26083,7 @@
           "name": "Marc-Andre Tayar",
           "joinDate": "2026-03-18",
           "flag": "ca",
-          "captain": true,
+          "captain": false,
           "playerStatus": "STARTER"
         },
         {
@@ -26091,7 +26091,7 @@
           "name": "Mirel Braco Hrustemovic",
           "joinDate": "2026-03-20",
           "flag": "ca",
-          "captain": false,
+          "captain": true,
           "playerStatus": "STARTER"
         },
         {

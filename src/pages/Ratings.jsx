@@ -628,12 +628,6 @@ export default function Ratings() {
       <DataTable columns={columns} rows={rows} defaultSortKey="rating" />
 
       <div className="flex flex-col gap-3">
-        <p className="text-muted text-[11px] max-w-xl">
-          The same ratings, split by league. Ratings stay comparable across these tables —
-          every team is rated in one pool, and the international events are what tie the regions
-          to each other.
-          {YEARS_WITHOUT_CHINA.has(year) && ' China is omitted for this year -- no developed league yet, just a one-off qualifier bracket.'}
-        </p>
         {/* 2x2 by default rather than widening to a 4-across row at xl --
             four tables that narrow stay easier to scan down than a single
             row that keeps stretching with the viewport. A year missing one

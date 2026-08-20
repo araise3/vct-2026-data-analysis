@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useData } from '../lib/useData'
-import { buildRatings, buildTeamPoints, PROVISIONAL_RD, RATINGS_CAVEAT } from '../lib/teamRatings'
+import {
+  buildDailyRun, buildRatings, buildTeamPoints, internationalEventWindows, PROVISIONAL_RD,
+  RATINGS_CAVEAT,
+} from '../lib/teamRatings'
 import DataTable from '../components/DataTable'
 import TeamLogo from '../components/TeamLogo'
-import RatingChart, { MAX_SERIES, SERIES_COLORS } from '../components/RatingChart'
+import RatingChart, { MAX_SERIES, seriesColor, STAGE_STYLE } from '../components/RatingChart'
 import Card from '../components/ui/Card'
 import { RC, PANEL_STYLE, pillStyle } from '../lib/ratingTheme'
 import Select from '../components/ui/Select'
@@ -144,14 +147,38 @@ export default function Ratings() {
     return visible.map((t, i) => ({ ...t, rank: i + 1 }))
   }, [run, showProvisional])
 
+  const eventBands = useMemo(
+    () => internationalEventWindows(run, data?.events),
+    [run, data]
+  )
+
+  // Set by clicking a Masters/Champions/Lock-In band (scopeToEvent below).
+  // Looked up by id rather than trusting whatever's in `band.teams`/dates at
+  // click time, so the URL stays the single source of truth -- reloading a
+  // shared link re-derives the same field and window from this year's run
+  // instead of needing them serialized too.
+  const scopedEvent = useMemo(() => {
+    const id = searchParams.get('event')
+    if (!id) return null
+    return eventBands.find((b) => String(b.id) === id) || null
+  }, [eventBands, searchParams])
+
   // Charted teams come from the URL so a comparison is linkable, filtered
   // to the ones that exist in THIS year's run -- the year picker and the
   // team picker are independent, so switching 2026 -> 2023 with NRG
   // selected would otherwise leave an empty chart for a team that wasn't
   // in that run. Whatever survives is topped up from the leaderboard, so
   // the chart is never empty and never needs an "add a team" empty state.
+  //
+  // Event scope overrides all of that: every team in the field, uncapped --
+  // MAX_SERIES exists to keep a hand-built comparison legible, not to
+  // truncate "who played Champions" down to six of twelve entrants.
   const chartTeams = useMemo(() => {
     if (!run) return []
+    if (scopedEvent) {
+      const field = new Set(scopedEvent.teams)
+      return rows.filter((r) => field.has(r.team)).map((r) => r.team)
+    }
     const requested = (searchParams.get('teams') || '')
       .split(',')
       .map((s) => s.trim())
@@ -163,7 +190,7 @@ export default function Ratings() {
       if (!seen.has(r.team)) { out.push(r.team); seen.add(r.team) }
     }
     return out.slice(0, MAX_SERIES)
-  }, [run, rows, searchParams])
+  }, [run, rows, searchParams, scopedEvent])
 
   const teamOptions = useMemo(() => {
     if (!run) return []
@@ -172,26 +199,122 @@ export default function Ratings() {
       .map((t) => ({ value: t.team, label: t.team }))
   }, [run])
 
+  // Recomputed lazily, only while an event is actually scoped -- see
+  // buildDailyRun's own comment for why the season-long chart can't just
+  // use this run all the time (weekly periods read better at full-season
+  // width, and this run's per-date numbers can drift slightly from the
+  // weekly one's).
+  const dailyRun = useMemo(
+    () => (scopedEvent && data ? buildDailyRun(data, year) : null),
+    [scopedEvent, data, year]
+  )
+
+  // One calendar day before an event started -- the fixed lead-in date the
+  // anchor point below is re-dated to and the chart's x-axis starts from.
+  function dayBefore(dateStr) {
+    const d = new Date(`${dateStr}T00:00:00Z`)
+    d.setUTCDate(d.getUTCDate() - 1)
+    return d.toISOString().slice(0, 10)
+  }
+
+  // Trims a team's full-season points down to an event's own window --
+  // "only from start to finish of the event" -- plus one synthetic anchor
+  // point just before it, carrying whatever rating the team actually held
+  // then. That anchor is load-bearing: even at daily granularity a lone
+  // point inside the window can't show a team moving up or down, only
+  // where it ended up -- one point of pre-event context is the minimum
+  // that turns "where they landed" back into "what the event did to them".
+  //
+  // It's re-dated to dayBefore(event.start) and forced to games: 0 rather
+  // than kept at its real date/games -- it isn't a result, it shouldn't
+  // claim a game happened on a day that, for most teams, saw none of
+  // theirs, and games: 0 is what RatingChart's dot renderer keys off, so
+  // that alone keeps it dot-free. `synthetic: true` is what keeps it
+  // hoverable anyway despite that -- games: 0 also normally excludes a
+  // point from the hover crosshair (an idle week has nothing to show), but
+  // this one still has a rating worth reading, just not a result to list.
+  function windowToEvent(points, event) {
+    if (!event) return points
+    const before = points.filter((p) => p.date < event.start)
+    const inside = points.filter((p) => p.date >= event.start && p.date <= event.end)
+    if (!before.length) return inside
+    const anchor = { ...before[before.length - 1], date: dayBefore(event.start), games: 0, synthetic: true }
+    return [anchor, ...inside]
+  }
+
+  // The date each team's tournament ended, for whichever teams lost their
+  // last match in the event -- straight off match_results.json's own rows
+  // rather than anything bracket-shaped, since "lost your last match in
+  // this event" is a correct definition of eliminated regardless of
+  // whether that loss came in Swiss, groups, or a playoff bracket. The one
+  // team whose last match in the event was a WIN is the champion, not
+  // eliminated, and is correctly left out of this map -- there's no bracket
+  // structure to consult, but a team can't both win their last game and be
+  // out of the tournament.
+  const eliminationByTeam = useMemo(() => {
+    const map = new Map()
+    if (!scopedEvent || !data?.rows) return map
+    for (const team of scopedEvent.teams) {
+      const played = data.rows
+        .filter((r) => r.e === scopedEvent.id && (r.team1 === team || r.team2 === team))
+        .sort((a, b) => (a.ts || a.date).localeCompare(b.ts || b.date))
+      const last = played[played.length - 1]
+      if (!last) continue
+      const won = last.team1 === team ? last.s1 > last.s2 : last.s2 > last.s1
+      if (!won) map.set(team, last.date)
+    }
+    return map
+  }, [scopedEvent, data])
+
   const chartSeries = useMemo(() => {
     if (!run) return []
+    const sourceRun = scopedEvent ? dailyRun : run
     return chartTeams
       .map((team, i) => ({
         key: team,
         label: team,
-        color: SERIES_COLORS[i % SERIES_COLORS.length],
+        color: seriesColor(i, chartTeams.length),
+        eliminatedAt: eliminationByTeam.get(team) || null,
         // buildTeamPoints attaches each week's opponents/scores/event for
         // the tooltip, and trims the leading pre-debut rows -- see its own
         // comment on why a flat 1500 tail would misread as "played and
         // stayed level".
-        points: buildTeamPoints(run, team, data?.events),
+        points: windowToEvent(buildTeamPoints(sourceRun, team, data?.events), scopedEvent),
       }))
       .filter((s) => s.points.length > 0)
-  }, [run, chartTeams, data])
+  }, [run, dailyRun, chartTeams, data, scopedEvent, eliminationByTeam])
 
+  // Manually building a comparison exits event scope rather than appending
+  // to its (possibly 12- or 30-team) field -- picking a team from the
+  // dropdown reads as "start a custom comparison", and a custom comparison
+  // should get the whole season back, not stay pinned to one event's dates.
   function addChartTeam(team) {
-    if (!team || chartTeams.includes(team)) return
-    const next = [...chartTeams, team].slice(-MAX_SERIES)
-    setParam('teams', next.join(','))
+    if (!team) return
+    const base = scopedEvent ? [] : chartTeams
+    if (base.includes(team)) return
+    const next = new URLSearchParams(searchParams)
+    next.delete('event')
+    next.set('teams', [...base, team].slice(-MAX_SERIES).join(','))
+    setSearchParams(next, { replace: true })
+  }
+
+  // Clicking a Masters/Champions/Lock-In band scopes the whole chart to it:
+  // every team that played there (chartTeams above), rating movement only
+  // across the event's own dates (windowToEvent above). Stored as just the
+  // event id -- see scopedEvent's comment on why the field/window aren't
+  // serialized into the URL alongside it.
+  function scopeToEvent(band) {
+    const next = new URLSearchParams(searchParams)
+    next.delete('teams')
+    next.set('event', String(band.id))
+    setSearchParams(next, { replace: true })
+  }
+
+  function resetChart() {
+    const next = new URLSearchParams(searchParams)
+    next.delete('teams')
+    next.delete('event')
+    setSearchParams(next, { replace: true })
   }
 
   // Grouped from the full table, not from `rows` -- the region tables run
@@ -356,32 +479,55 @@ export default function Ratings() {
         {chartSeries.length > 0 ? (
           <RatingChart
             series={chartSeries}
+            // Once a chart IS an event's own window, a tint spanning
+            // (near enough) the whole plot stops being a band -- it's just
+            // the background -- so bands only render pre-zoom, when they're
+            // still marking out a fraction of a season-long chart. The
+            // color carries over as the title's accent swatch instead (see
+            // accentColor below), rather than disappearing outright.
+            eventBands={scopedEvent ? [] : eventBands}
+            onBandClick={scopeToEvent}
+            accentColor={scopedEvent ? STAGE_STYLE[scopedEvent.stage]?.color : undefined}
+            // Starts one calendar day before the event itself, as a fixed
+            // lead-in for the pre-event anchor point (dayBefore above) --
+            // see RatingChart's own comment on how that point still
+            // contributes its rating without setting the start date itself.
+            xDomain={scopedEvent
+              ? { start: dayBefore(scopedEvent.start), end: scopedEvent.end }
+              : undefined}
             height={300}
-            title={chartSeries.length === 1 ? 'Rating over the season' : `${year} title race`}
-            subtitle={chartSeries.length === 1
-              ? 'Hover any week for the results that moved it. ± in the tooltip is the 95% interval.'
-              : 'Click a team below to mute it. Drop to one team for markers and annotations.'}
+            title={scopedEvent
+              ? scopedEvent.name
+              : (chartSeries.length === 1 ? 'Rating over the season' : `${year} title race`)}
+            subtitle={scopedEvent
+              ? `Every team that played, ${shortDate(scopedEvent.start)}–${shortDate(scopedEvent.end)}. `
+                + 'Recomputed daily for this view, so ratings here can drift slightly from the season table.'
+              : (chartSeries.length === 1
+                ? 'Hover any week for the results that moved it. ± in the tooltip is the 95% interval.'
+                : 'Click a team below to mute it. Drop to one team for markers and annotations.')}
             controls={(
               <>
-                <div className="w-44">
-                  <Select
-                    value={null}
-                    onChange={addChartTeam}
-                    options={teamOptions.filter((o) => !chartTeams.includes(o.value))}
-                    placeholder="Add a team…"
-                    renderIcon={(v) => <TeamLogo team={v} size={16} showName={false} />}
-                    searchable
-                    disabled={chartTeams.length >= MAX_SERIES}
-                  />
-                </div>
+                {!scopedEvent && (
+                  <div className="w-44">
+                    <Select
+                      value={null}
+                      onChange={addChartTeam}
+                      options={teamOptions.filter((o) => !chartTeams.includes(o.value))}
+                      placeholder="Add a team…"
+                      renderIcon={(v) => <TeamLogo team={v} size={16} showName={false} />}
+                      searchable
+                      disabled={chartTeams.length >= MAX_SERIES}
+                    />
+                  </div>
+                )}
                 <button
                   type="button"
-                  onClick={() => setParam('teams', null)}
+                  onClick={resetChart}
                   className="text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-md transition-colors"
                   style={pillStyle(false)}
-                  title={`Back to this season's top ${DEFAULT_CHART_TEAMS}`}
+                  title={scopedEvent ? 'Back to this season\'s top teams' : `Back to this season's top ${DEFAULT_CHART_TEAMS}`}
                 >
-                  Reset
+                  {scopedEvent ? 'Exit event view' : 'Reset'}
                 </button>
               </>
             )}
@@ -390,8 +536,10 @@ export default function Ratings() {
           <p className="text-xs py-6" style={{ color: RC.textDim }}>Nothing to plot for {year}.</p>
         )}
         <p className="text-[11px]" style={{ color: RC.textDim, opacity: 0.85 }}>
-          One point per week a team played. Flat stretches are weeks off — the rating holds, but its
-          deviation widens — the ± figure in the tooltip grows even while the line holds flat.
+          {scopedEvent
+            ? 'One point per day a team played, so a multi-series day still shows as a single step.'
+            : 'One point per week a team played. Flat stretches are weeks off — the rating holds, but ' +
+              'its deviation widens — the ± figure in the tooltip grows even while the line holds flat.'}
         </p>
       </div>
 

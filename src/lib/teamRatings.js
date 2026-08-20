@@ -434,6 +434,91 @@ export function buildRatings(data, opts = {}) {
 }
 
 /**
+ * A second, finer-grained run of one year, used only when the ratings
+ * chart is scoped to a single international event.
+ *
+ * The season-long chart uses weekly periods -- see periodOf's own comment
+ * on why -- but a week is a third to a half the width of a ~2-week Masters
+ * bracket, so zoomed into just that window it costs the event view two
+ * things at once: most of a team's actual match days collapse into a
+ * single weekly dot (games update the rating together at the period's end,
+ * not incrementally as they're played), and the "one point before the
+ * event" anchor the chart adds for context sits up to a week earlier than
+ * the event actually started -- which is what stretches the shaded band
+ * down to half the visible chart instead of filling it.
+ *
+ * Re-running the same season at DAILY granularity (period = the match date
+ * itself) fixes both: one point per day a team actually played, and an
+ * anchor at most a day before the event started rather than up to a week.
+ * This isn't a weaker model swapped in for convenience -- teamRatings.js's
+ * own period sweep already measured daily as marginally *better* by log
+ * loss than weekly (0.6920 vs 0.6985); weekly was chosen for the
+ * season-long chart's readability and its alignment with the VCT calendar,
+ * neither of which matters once the view is zoomed to a single event.
+ *
+ * The tradeoff is made explicit rather than hidden: because it's a
+ * genuinely different run, a team's rating at a given date here can differ
+ * slightly from the same date read off the weekly `run` used everywhere
+ * else on the page -- daily and weekly periods batch the same results in a
+ * different order, so the two don't converge to identical intermediate
+ * numbers even over the same games. This only powers the event-scoped
+ * chart, never the leaderboard or region tables, but it's the seam to
+ * remember if that context is ever lost.
+ */
+export function buildDailyRun(data, year) {
+  const rows = sortedRows(data).filter((r) => {
+    const y = data.events?.[String(r.e)]?.year ?? Number(r.date.slice(0, 4))
+    return y === year
+  })
+  const regions = regionsByTeam(data, rows)
+  return buildYearRun(rows, regions, { period: (date) => date })
+}
+
+/**
+ * Date windows for the international events (Masters / Champions / the 2023
+ * LOCK//IN) that fell inside this year's run, for shading behind the title
+ * race chart.
+ *
+ * A window is [earliest series date, latest series date] across every match
+ * tagged to that event in `run.matches` -- there's no explicit start/end on
+ * the event record itself, so the bracket's own played dates stand in for
+ * it. That undershoots the true tournament dates slightly (day 1's group
+ * stage played before that day's series resolve, closing ceremony after the
+ * final's last series) but is never off by more than a day, which doesn't
+ * matter at the width a season-long chart draws these bands.
+ *
+ * Filtered to `competition === 'VCT'` -- EWC's Main Event is also tagged
+ * `region: 'International'` but isn't one of the three event types asked
+ * for here, and giving it a fourth band color would need its own request.
+ *
+ * `teams` is every team that played at least one series there -- who
+ * "qualified" read straight off who showed up in the bracket, rather than
+ * cross-referencing a separate qualification list this data doesn't carry.
+ * It's what lets the chart scope itself to an event's field on click.
+ */
+export function internationalEventWindows(run, events) {
+  if (!run || !events) return []
+  const byEvent = new Map()
+  for (const m of run.matches) {
+    const ev = events[String(m.event)]
+    if (!ev || ev.region !== 'International' || ev.competition !== 'VCT') continue
+    if (!byEvent.has(m.event)) {
+      byEvent.set(m.event, {
+        id: m.event, name: ev.name, stage: ev.stage, start: m.date, end: m.date, teams: new Set(),
+      })
+    }
+    const w = byEvent.get(m.event)
+    if (m.date < w.start) w.start = m.date
+    if (m.date > w.end) w.end = m.date
+    w.teams.add(m.team1)
+    w.teams.add(m.team2)
+  }
+  return [...byEvent.values()]
+    .map((w) => ({ ...w, teams: [...w.teams] }))
+    .sort((a, b) => a.start.localeCompare(b.start))
+}
+
+/**
  * One team's plottable rating history, enriched with the results that
  * caused each move.
  *

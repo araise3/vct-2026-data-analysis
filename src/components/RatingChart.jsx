@@ -62,6 +62,37 @@ export const SERIES_COLORS = [RC.accent, '#7C8FD1', RC.positive, RC.warning, '#1
 export const MAX_SERIES = SERIES_COLORS.length
 
 /**
+ * Color for series i of `total`. The curated six-color palette above for
+ * anything that fits it -- every default or manually-built comparison,
+ * capped at MAX_SERIES -- and evenly-spaced hues around the color wheel
+ * for anything past it, which today only means an event-scoped chart:
+ * Champions is 12 teams, Lock-In was 30, both well past six hand-picked
+ * colors. Nobody can tell 30 lines apart by color regardless, but spacing
+ * them evenly beats cycling the same six every five teams, which would put
+ * two identically-colored lines right next to each other in the legend.
+ */
+export function seriesColor(i, total) {
+  if (total <= SERIES_COLORS.length) return SERIES_COLORS[i % SERIES_COLORS.length]
+  return `hsl(${Math.round((i * 360) / total)}, 65%, 62%)`
+}
+
+// Background shading for the international events inside the visible
+// window, keyed on the `stage` field teamRatings.js's
+// internationalEventWindows() reads straight off the event record. Colors
+// picked to read as their own real-world identity rather than the site's
+// usual good/bad semantics -- '#B78BEA' is already SERIES_COLORS' comparison
+// purple, reused here rather than adding a second purple to the palette.
+//
+// Exported so Ratings.jsx can key the same color into the accent swatch it
+// shows next to the title once a chart is scoped INTO one of these events --
+// see `accentColor` below for why the band itself stops being drawn then.
+export const STAGE_STYLE = {
+  Masters: { color: '#B78BEA', label: 'Masters' },
+  Champions: { color: RC.warning, label: 'Champions' },
+  'LOCK//IN': { color: RC.positive, label: 'Lock-In' },
+}
+
+/**
  * Two viewBox widths, picked from the container's measured width rather
  * than one fixed value.
  *
@@ -123,7 +154,8 @@ function findAnnotations(coords) {
 }
 
 export default function RatingChart({
-  series, height = 300, baseline = 1500, title, subtitle, controls,
+  series, height = 300, baseline = 1500, title, subtitle, controls, eventBands = [], onBandClick,
+  accentColor, xDomain,
 }) {
   const wrapRef = useRef(null)
   const svgRef = useRef(null)
@@ -158,9 +190,25 @@ export default function RatingChart({
     const all = visible.flatMap((s) => s.points)
     if (all.length === 0) return null
 
-    const times = all.map((p) => new Date(p.date).getTime())
-    let tMin = Math.min(...times)
-    let tMax = Math.max(...times)
+    // xDomain forces the visible range to an event's own dates rather than
+    // the data's actual earliest/latest point -- the event-scoped chart
+    // still carries one point from *before* the event (its pre-event
+    // anchor rating; see Ratings.jsx's windowToEvent) so the line has
+    // something to move from, but that point's real date is up to a day
+    // before the event started and shouldn't be what draws the axis start.
+    // `.clamp(true)` below is what lets the axis say "Feb 28" while that
+    // anchor point still contributes its rating value, pinned visually to
+    // the left edge instead of poking out before it.
+    let tMin
+    let tMax
+    if (xDomain) {
+      tMin = new Date(`${xDomain.start}T00:00:00Z`).getTime()
+      tMax = new Date(`${xDomain.end}T23:59:59Z`).getTime()
+    } else {
+      const times = all.map((p) => new Date(p.date).getTime())
+      tMin = Math.min(...times)
+      tMax = Math.max(...times)
+    }
     if (tMin === tMax) { tMin -= 6048e5; tMax += 6048e5 }
 
     // The value axis is scaled to the RATINGS, never to the confidence band,
@@ -177,7 +225,10 @@ export default function RatingChart({
     }
     const padV = (vMax - vMin) * 0.12 || 50
 
-    const x = scaleTime().domain([tMin, tMax]).range([PAD.l, W - PAD.r])
+    // clamp(true) is a no-op outside event scope (tMin/tMax already bound
+    // the data exactly there) and is what pins the pre-event anchor point
+    // to the left edge when xDomain is forced -- see the comment above.
+    const x = scaleTime().domain([tMin, tMax]).range([PAD.l, W - PAD.r]).clamp(true)
     const y = scaleLinear().domain([vMin - padV, vMax + padV]).range([H - PAD.b, PAD.t])
 
     const curve = line().x((c) => c.cx).y((c) => c.cy).curve(curveMonotoneX)
@@ -192,30 +243,61 @@ export default function RatingChart({
         cHigh: y(p.high),
       }))
 
+      // Cut at eliminatedAt (set by Ratings.jsx for an event-scoped chart on
+      // whichever team lost its last match there) -- the line and area both
+      // stop there rather than continuing flat through the idle rating a
+      // team holds once it's out. splitIdx lands on the elimination point
+      // itself, included so the line still visibly reaches that result
+      // instead of stopping one point short of it.
+      const splitIdx = s.eliminatedAt ? coords.findIndex((c) => c.date >= s.eliminatedAt) : -1
+      const liveCoords = splitIdx === -1 ? coords : coords.slice(0, splitIdx + 1)
+
       return {
         ...s,
         uid: `s${i}`,
         color: s.color || SERIES_COLORS[i % SERIES_COLORS.length],
-        coords,
-        linePath: curve(coords),
-        areaPath: fillArea(coords),
+        coords: liveCoords,
+        linePath: curve(liveCoords),
+        areaPath: fillArea(liveCoords),
       }
     })
+
+    // International-event bands, clipped to the visible time domain and
+    // dropped entirely if they don't overlap it at all -- a Champions band
+    // from a year the chart isn't showing (or from before the earliest
+    // charted team debuted) shouldn't draw a sliver at the plot's edge.
+    // Widths under a couple of pixels (a Bo1-only bracket day) are floored
+    // so the band is still visible rather than vanishing to a hairline.
+    const bands = eventBands
+      .filter((b) => STAGE_STYLE[b.stage])
+      .map((b) => {
+        const s = new Date(`${b.start}T00:00:00Z`).getTime()
+        const e = new Date(`${b.end}T23:59:59Z`).getTime()
+        if (e < tMin || s > tMax) return null
+        const x1 = x(Math.max(s, tMin))
+        const x2 = Math.max(x(Math.min(e, tMax)), x1 + 3)
+        return { ...b, x1, x2, style: STAGE_STYLE[b.stage] }
+      })
+      .filter(Boolean)
 
     const dates = all.map((p) => p.date).sort()
     return {
       x,
       y,
       shaped,
+      bands,
       // At most four gridlines, on round values, chosen by d3's own tick
       // algorithm -- they read as a scale rather than as arbitrary fractions
       // of whatever range the data happens to span.
       ticks: y.ticks(4),
-      firstDate: dates[0],
-      lastDate: dates[dates.length - 1],
+      // Axis-end labels follow the same forced domain as everything else
+      // when it's set -- otherwise the corner would read "Feb 27" (the
+      // anchor point's real date) while the axis itself starts at Feb 28.
+      firstDate: xDomain ? xDomain.start : dates[0],
+      lastDate: xDomain ? xDomain.end : dates[dates.length - 1],
       annotations: detailed && shaped[0] ? findAnnotations(shaped[0].coords) : [],
     }
-  }, [visible, detailed, baseline, H, W])
+  }, [visible, detailed, baseline, H, W, eventBands, xDomain])
 
   // Draw-in: measure each path once it exists, then release the dash offset
   // on the next frame so the transition has something to move from. Re-runs
@@ -279,7 +361,12 @@ export default function RatingChart({
     let bestDist = Infinity
     for (const s of geom.shaped) {
       for (const c of s.coords) {
-        if (!c.games) continue
+        // `synthetic` is the one deliberate exception -- the event-scoped
+        // chart's pre-event anchor point (see Ratings.jsx's windowToEvent)
+        // carries games: 0 same as any idle week, but it's a reading of
+        // where a team stood rather than an absence of one, so it should
+        // still be a place the cursor can land even though it draws no dot.
+        if (!c.games && !c.synthetic) continue
         const d = Math.abs(c.cx - ux)
         if (d < bestDist) { bestDist = d; bestDate = c.date }
       }
@@ -319,7 +406,10 @@ export default function RatingChart({
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex flex-col gap-0.5 min-w-0">
             {title && (
-              <h3 className="font-display text-sm font-semibold" style={{ color: RC.text }}>{title}</h3>
+              <h3 className="font-display text-sm font-semibold flex items-center gap-2" style={{ color: RC.text }}>
+                {accentColor && <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: accentColor }} />}
+                {title}
+              </h3>
             )}
             {subtitle && <p className="text-[11px]" style={{ color: RC.textDim }}>{subtitle}</p>}
           </div>
@@ -354,6 +444,24 @@ export default function RatingChart({
               </button>
             )
           })}
+        </div>
+      )}
+
+      {geom?.bands.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3 -mb-1">
+          {Object.entries(STAGE_STYLE)
+            .filter(([stage]) => geom.bands.some((b) => b.stage === stage))
+            .map(([stage, style]) => (
+              <span key={stage} className="flex items-center gap-1.5 text-[10px]" style={{ color: RC.textDim }}>
+                <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: style.color, opacity: 0.7 }} />
+                {style.label}
+              </span>
+            ))}
+          {onBandClick && (
+            <span className="text-[10px]" style={{ color: RC.textDim, opacity: 0.7 }}>
+              — click a band for its field
+            </span>
+          )}
         </div>
       )}
 
@@ -393,6 +501,44 @@ export default function RatingChart({
                 <rect x={PAD.l} y={PAD.t} width={W - PAD.l - PAD.r} height={H - PAD.t - PAD.b} />
               </clipPath>
             </defs>
+
+            {/* International-event bands, drawn first so gridlines, the
+                baseline, and every series render on top of the tint rather
+                than under it. */}
+            {geom.bands.map((b) => (
+              <g
+                key={b.id}
+                clipPath={`url(#${gradId}-clip)`}
+                onClick={onBandClick ? () => onBandClick(b) : undefined}
+                style={onBandClick ? { cursor: 'pointer' } : undefined}
+              >
+                {/* A wider, invisible hit target under the visible tint --
+                    the real band is often just a few days wide (a single
+                    Bo1 bracket day floors to 3px), too thin to click
+                    reliably otherwise. */}
+                {onBandClick && (
+                  <rect
+                    x={Math.max(b.x1 - 4, PAD.l)} y={PAD.t}
+                    width={Math.min(b.x2 + 4, W - PAD.r) - Math.max(b.x1 - 4, PAD.l)}
+                    height={H - PAD.t - PAD.b}
+                    fill="transparent"
+                  />
+                )}
+                <rect
+                  x={b.x1} y={PAD.t} width={b.x2 - b.x1} height={H - PAD.t - PAD.b}
+                  fill={b.style.color} opacity="0.14"
+                />
+                {onBandClick && <title>{`${b.name} — click to scope the chart to its field`}</title>}
+                {b.x2 - b.x1 > 34 && (
+                  <text
+                    x={(b.x1 + b.x2) / 2} y={PAD.t + 11} textAnchor="middle"
+                    style={{ fontSize: 8, fontWeight: 600, letterSpacing: '0.02em', fill: b.style.color, opacity: 0.9 }}
+                  >
+                    {b.style.label.toUpperCase()}
+                  </text>
+                )}
+              </g>
+            ))}
 
             {/* Horizontal gridlines only -- no vertical rules. */}
             {geom.ticks.map((v) => (
@@ -459,7 +605,10 @@ export default function RatingChart({
                 there's no result there and the hover crosshair never stops
                 on one either (see handleMove). Small and undetailed lines
                 get a slightly smaller dot so several overlaid series don't
-                turn into a field of circles. */}
+                turn into a field of circles. Nothing to filter for
+                elimination here -- geom already cut a team's coords at its
+                last match, so there's no later "idle" games:0 stretch for
+                this to skip in the first place. */}
             {geom.shaped.map((s) => (
               s.coords.filter((c) => c.games > 0).map((c) => (
                 <circle
@@ -501,16 +650,6 @@ export default function RatingChart({
                 </g>
               )
             })}
-
-            {hover && hover.rows.map(({ series: s, point }) => (
-              <g key={s.key}>
-                <circle cx={point.cx} cy={point.cy} r="9" fill={s.color} opacity="0.18" />
-                <circle
-                  cx={point.cx} cy={point.cy} r="4.5"
-                  fill={RC.panel} stroke={s.color} strokeWidth="3"
-                />
-              </g>
-            ))}
 
             {/* Axis ends come from the shared time domain, not from the first
                 series -- with several teams overlaid they debut on different
@@ -599,7 +738,7 @@ export default function RatingChart({
                   </div>
                 ))}
             </div>
-            {hover.rows.length === 1 && !hover.rows[0].point.games && (
+            {hover.rows.length === 1 && !hover.rows[0].point.games && !hover.rows[0].point.synthetic && (
               <div className="text-[10px] mt-1" style={{ color: RC.textDim }}>
                 No games — deviation widening
               </div>

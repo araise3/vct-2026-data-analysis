@@ -60,17 +60,24 @@ import TeamPickerModal from './TeamPickerModal'
 // reserved for rating data rather than spread across the interface, and six
 // reds would be indistinguishable overlaid in any case.
 export const SERIES_COLORS = [RC.accent, '#7C8FD1', RC.positive, RC.warning, '#14b8a6', '#B78BEA']
-export const MAX_SERIES = SERIES_COLORS.length
+// Decoupled from SERIES_COLORS.length -- a manually-built comparison is
+// allowed the same 16-team ceiling as an event-scoped one (MAX_EVENT_TEAMS
+// in Ratings.jsx, and the side table's own SIDE_TABLE_ROWS padding below is
+// already sized for exactly this many). Past the six curated colors,
+// seriesColor()'s hue-wheel branch takes over -- the same one an
+// event-scoped chart already relies on for a 12-30 team field, so raising
+// this needed no new color logic, only a higher number.
+export const MAX_SERIES = 16
 
 /**
  * Color for series i of `total`. The curated six-color palette above for
- * anything that fits it -- every default or manually-built comparison,
- * capped at MAX_SERIES -- and evenly-spaced hues around the color wheel
- * for anything past it, which today only means an event-scoped chart:
- * Champions is 12 teams, Lock-In was 30, both well past six hand-picked
- * colors. Nobody can tell 30 lines apart by color regardless, but spacing
- * them evenly beats cycling the same six every five teams, which would put
- * two identically-colored lines right next to each other in the legend.
+ * anything that fits it, and evenly-spaced hues around the color wheel for
+ * anything past it -- an event-scoped chart (Champions at 12, Lock-In at
+ * 30) or a manually-built comparison past six teams, now that MAX_SERIES
+ * allows one. Nobody can tell 16 lines apart by color regardless, but
+ * spacing them evenly beats cycling the same six every five teams, which
+ * would put two identically-colored lines right next to each other in the
+ * legend.
  */
 export function seriesColor(i, total) {
   if (total <= SERIES_COLORS.length) return SERIES_COLORS[i % SERIES_COLORS.length]

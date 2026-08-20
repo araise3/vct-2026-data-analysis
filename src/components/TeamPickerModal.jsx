@@ -123,7 +123,12 @@ export default function TeamPickerModal({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search teams…"
-            className="w-full bg-surface2 border border-hairline rounded-lg px-3 py-2 text-sm text-ink placeholder:text-muted shadow-depth-xs focus:outline-none"
+            // Subtle focus tell -- a one-step background lighten (the same
+            // surface2 -> surface3 step already used for a hover state
+            // elsewhere) rather than the earlier glow/border-color ring,
+            // which read as too loud for a box that's focused by default
+            // the instant the modal opens.
+            className="w-full bg-surface2 border border-hairline rounded-lg px-3 py-2 text-sm text-ink placeholder:text-muted shadow-depth-xs transition-colors duration-150 focus:outline-none focus:bg-surface3"
           />
         </div>
 

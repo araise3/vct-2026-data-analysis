@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-20T07:26:08Z"
+    "fetchedAt": "2026-08-20T10:03:29Z"
   },
   "matches": [
-    {
-      "key": "1786654800|kr-esports|bestia",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
-      "phase": null,
-      "timestamp": 1786654800,
-      "bestOf": 3,
-      "team1": "KRÜ Esports",
-      "team2": "BESTIA",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1786665000|envy|m80",
       "event": "Vct 2026 Americas Stage 2",
@@ -418,7 +405,7 @@
       "bestOf": 3,
       "team1": "G2 Esports",
       "team2": "M80",
-      "score1": 1,
+      "score1": 2,
       "score2": 0,
       "started": true
     },
@@ -431,9 +418,9 @@
       "bestOf": 3,
       "team1": "DetonatioN FocusMe",
       "team2": "QT DIG",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1787212800|tyloo|all-gamers",
@@ -444,16 +431,16 @@
       "bestOf": 3,
       "team1": "TYLOO",
       "team2": "All Gamers",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 0,
+      "started": true
     },
     {
-      "key": "1787220000|xi-lai-gaming|nova-esports",
+      "key": "1787221800|xi-lai-gaming|nova-esports",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
-      "timestamp": 1787220000,
+      "timestamp": 1787221800,
       "bestOf": 3,
       "team1": "Xi Lai Gaming",
       "team2": "Nova Esports",
@@ -696,14 +683,14 @@
       "started": false
     },
     {
-      "key": "1787432400|bestia|tbd",
+      "key": "1787432400|bestia|g2-esports",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787432400,
       "bestOf": 3,
       "team1": "BESTIA",
-      "team2": null,
+      "team2": "G2 Esports",
       "score1": null,
       "score2": null,
       "started": false
@@ -1001,6 +988,19 @@
       "phase": null,
       "timestamp": 1788015600,
       "bestOf": 5,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1788037200|tbd|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1788037200,
+      "bestOf": 3,
       "team1": null,
       "team2": null,
       "score1": null,

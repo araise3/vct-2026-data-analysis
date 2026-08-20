@@ -461,19 +461,35 @@ export default function Ratings() {
             about 2025.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          {yearPills.map((y) => (
-            <button
-              key={y}
-              type="button"
-              onClick={() => setParam('year', y)}
-              aria-pressed={y === year}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
-              style={pillStyle(y === year)}
-            >
-              {y}
-            </button>
-          ))}
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2">
+            {yearPills.map((y) => (
+              <button
+                key={y}
+                type="button"
+                onClick={() => setParam('year', y)}
+                aria-pressed={y === year}
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                style={pillStyle(y === year)}
+              >
+                {y}
+              </button>
+            ))}
+          </div>
+          {/* Was its own header row directly above the ratings table
+              ("{year} ratings" + this checkbox) -- moved up under the year
+              picker once that header was dropped, since it's a scope
+              control for the SAME table the year picker already scopes,
+              not something that needs a heading of its own to explain it. */}
+          <label className="flex items-center gap-2 text-xs text-muted cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showProvisional}
+              onChange={(e) => setShowProvisional(e.target.checked)}
+              className="accent-accent"
+            />
+            Include provisional teams (RD above {PROVISIONAL_RD})
+          </label>
         </div>
       </div>
 
@@ -489,6 +505,14 @@ export default function Ratings() {
         </div>
       )}
 
+      {/* Chart panel, ratings table, and region tables tightened into their
+          own gap-3 cluster instead of inheriting the page's outer gap-6 --
+          the two <h2> headers that used to separate them ("{year} ratings",
+          "By region") are gone (the year picker and the section above it
+          already say what's being looked at), so the old spacing between
+          these three would otherwise read as an unexplained gap where a
+          heading used to sit. */}
+      <div className="flex flex-col gap-3">
       <div style={PANEL_STYLE} className="flex flex-col gap-3">
         {chartSeries.length > 0 ? (
           <RatingChart
@@ -557,30 +581,14 @@ export default function Ratings() {
         </p>
       </div>
 
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <h2 className="font-display text-sm font-semibold text-ink">{year} ratings</h2>
-        <label className="flex items-center gap-2 text-xs text-muted cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showProvisional}
-            onChange={(e) => setShowProvisional(e.target.checked)}
-            className="accent-accent"
-          />
-          Include provisional teams (RD above {PROVISIONAL_RD})
-        </label>
-      </div>
-
       <DataTable columns={columns} rows={rows} defaultSortKey="rating" />
 
       <div className="flex flex-col gap-3">
-        <div className="flex items-baseline justify-between gap-4 flex-wrap">
-          <h2 className="font-display text-sm font-semibold text-ink">By region</h2>
-          <p className="text-muted text-[11px] max-w-xl">
-            The same ratings, split by league. Ratings stay comparable across these four tables —
-            every team is rated in one pool, and the international events are what tie the regions
-            to each other.
-          </p>
-        </div>
+        <p className="text-muted text-[11px] max-w-xl">
+          The same ratings, split by league. Ratings stay comparable across these four tables —
+          every team is rated in one pool, and the international events are what tie the regions
+          to each other.
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           {REGION_ORDER.map((region) => (
             <RegionTable
@@ -591,6 +599,7 @@ export default function Ratings() {
             />
           ))}
         </div>
+      </div>
       </div>
 
       <Card className="p-4 flex flex-col gap-2">

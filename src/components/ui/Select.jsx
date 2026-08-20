@@ -48,20 +48,9 @@ import { cx } from '../../lib/cx'
  * `data-slot="select-trigger"`/`select-value` naming is literally shadcn's,
  * so this is the correct default to assume for the part that couldn't be
  * captured directly.
- *
- * `variant="icon"`: a small round "+" button with no visible label -- for
- * an "add one more" affordance sitting inline in a row of existing chips
- * (e.g. RatingChart's team-toggle legend) rather than a labelled field of
- * its own. `value` is meaningless here (there's no "current" selection to
- * show, only a place to pick the next addition from), so the trigger never
- * reads it; `iconLabel` supplies the `aria-label`/`title` a sighted user
- * would otherwise get from the missing text. Everything below the trigger
- * -- panel, search, positioning, outside-click/scroll close -- stays
- * unchanged.
  */
 export default function Select({
   value, onChange, options, placeholder = 'Select…', renderIcon, searchable, className, disabled, variant = 'default',
-  iconLabel,
 }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -134,60 +123,40 @@ export default function Select({
 
   return (
     <>
-      {variant === 'icon' ? (
-        <button
-          type="button"
-          ref={triggerRef}
-          disabled={disabled}
-          onClick={toggleOpen}
-          aria-expanded={open}
-          aria-label={iconLabel || placeholder}
-          title={iconLabel || placeholder}
-          className={cx(
-            'flex items-center justify-center shrink-0 w-6 h-6 rounded-full border border-dashed border-hairline text-muted cursor-pointer transition-colors hover:border-solid hover:border-selected/50 hover:text-ink hover:bg-surface2 focus:outline-none focus-visible:ring-2 focus-visible:ring-selected/20 disabled:opacity-40 disabled:pointer-events-none',
-            className
-          )}
-        >
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round">
-            <path d="M12 5v14M5 12h14" />
+      <button
+        type="button"
+        ref={triggerRef}
+        disabled={disabled}
+        onClick={toggleOpen}
+        aria-expanded={open}
+        className={cx(
+          variant === 'ghost'
+            ? 'flex w-fit items-center gap-2 cursor-pointer bg-transparent border-0 rounded-sm h-7 px-2 lg:px-3 text-xs font-semibold text-ink whitespace-nowrap transition-colors hover:bg-accent/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-selected/20 disabled:opacity-40 disabled:pointer-events-none'
+            : 'flex items-center justify-between gap-2 cursor-pointer bg-surface2 border border-hairline rounded-lg pl-3 pr-2.5 py-1.5 text-sm text-ink shadow-depth-xs transition-shadow duration-150 focus:outline-none focus:border-selected/50 focus:shadow-focus-ring disabled:opacity-40 disabled:pointer-events-none',
+          className
+        )}
+      >
+        <span className={cx('flex items-center gap-2 min-w-0 truncate', !current && 'text-muted')}>
+          {current && renderIcon?.(current.value)}
+          <span className="truncate">{current ? current.label : placeholder}</span>
+        </span>
+        {variant === 'ghost' ? (
+          <svg
+            viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"
+            strokeLinecap="round" strokeLinejoin="round"
+            className={cx('shrink-0 opacity-50 transition-transform duration-150', open && 'rotate-180')}
+          >
+            <path d="m6 9 6 6 6-6" />
           </svg>
-        </button>
-      ) : (
-        <button
-          type="button"
-          ref={triggerRef}
-          disabled={disabled}
-          onClick={toggleOpen}
-          aria-expanded={open}
-          className={cx(
-            variant === 'ghost'
-              ? 'flex w-fit items-center gap-2 cursor-pointer bg-transparent border-0 rounded-sm h-7 px-2 lg:px-3 text-xs font-semibold text-ink whitespace-nowrap transition-colors hover:bg-accent/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-selected/20 disabled:opacity-40 disabled:pointer-events-none'
-              : 'flex items-center justify-between gap-2 cursor-pointer bg-surface2 border border-hairline rounded-lg pl-3 pr-2.5 py-1.5 text-sm text-ink shadow-depth-xs transition-shadow duration-150 focus:outline-none focus:border-selected/50 focus:shadow-focus-ring disabled:opacity-40 disabled:pointer-events-none',
-            className
-          )}
-        >
-          <span className={cx('flex items-center gap-2 min-w-0 truncate', !current && 'text-muted')}>
-            {current && renderIcon?.(current.value)}
-            <span className="truncate">{current ? current.label : placeholder}</span>
-          </span>
-          {variant === 'ghost' ? (
-            <svg
-              viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"
-              strokeLinecap="round" strokeLinejoin="round"
-              className={cx('shrink-0 opacity-50 transition-transform duration-150', open && 'rotate-180')}
-            >
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-          ) : (
-            <svg
-              viewBox="0 0 16 16" width="12" height="12" fill="none"
-              className={cx('shrink-0 text-muted opacity-70 transition-transform duration-150', open && 'rotate-180')}
-            >
-              <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
-        </button>
-      )}
+        ) : (
+          <svg
+            viewBox="0 0 16 16" width="12" height="12" fill="none"
+            className={cx('shrink-0 text-muted opacity-70 transition-transform duration-150', open && 'rotate-180')}
+          >
+            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </button>
 
       {open && pos && createPortal(
         <div

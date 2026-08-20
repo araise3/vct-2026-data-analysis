@@ -206,11 +206,17 @@ export default function Ratings() {
     return out.slice(0, MAX_SERIES)
   }, [run, rows, searchParams, scopedEvent])
 
+  // region/rating ride along for TeamPickerModal's own region-grouped,
+  // rating-sorted layout -- straight off `run.table`'s own per-team row,
+  // not a second lookup. Order here doesn't matter to the modal (it
+  // re-groups/re-sorts its own copy), so this stays alphabetical, which is
+  // what a raw, un-grouped consumer (there isn't one today, but a future
+  // one) would expect from a plain options list.
   const teamOptions = useMemo(() => {
     if (!run) return []
     return [...run.table]
       .sort((a, b) => a.team.localeCompare(b.team))
-      .map((t) => ({ value: t.team, label: t.team }))
+      .map((t) => ({ value: t.team, label: t.team, region: t.region, rating: t.rating }))
   }, [run])
 
   // Recomputed lazily, only while an event is actually scoped -- see

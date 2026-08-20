@@ -4,7 +4,7 @@ import { area, curveMonotoneX, line } from 'd3-shape'
 import { num, shortDate } from '../lib/format'
 import { RC } from '../lib/ratingTheme'
 import TeamLogo from './TeamLogo'
-import Select from './ui/Select'
+import TeamPickerModal from './TeamPickerModal'
 
 /**
  * Interactive rating-trajectory chart for the Glicko-2 ratings.
@@ -170,6 +170,7 @@ export default function RatingChart({
   const [hover, setHover] = useState(null)
   const [hidden, setHidden] = useState(() => new Set())
   const [W, setW] = useState(W_WIDE)
+  const [pickerOpen, setPickerOpen] = useState(false)
 
   useEffect(() => {
     const el = wrapRef.current
@@ -495,23 +496,36 @@ export default function RatingChart({
               affects, rather than as a separate labelled dropdown up in the
               header -- picking a team reads as "add one more chip" right
               where the chips already are, instead of a control the reader
-              has to first connect back to this legend. Select's `icon`
-              variant supplies just the round "+" trigger; the panel/search/
-              positioning underneath it is the exact same code every other
-              Select on the site uses. */}
+              has to first connect back to this legend. The trigger itself
+              is just a round "+"; the actual picker is a full modal (see
+              TeamPickerModal) rather than a floating dropdown, since it
+              stays open across several picks instead of closing after one. */}
           {onAddTeam && (
-            <Select
-              variant="icon"
-              value={null}
-              onChange={onAddTeam}
-              options={addTeamOptions || []}
-              placeholder="Add a team…"
-              renderIcon={(v) => <TeamLogo team={v} size={16} showName={false} />}
-              searchable
+            <button
+              type="button"
+              onClick={() => setPickerOpen(true)}
               disabled={addTeamDisabled}
-            />
+              aria-label="Add a team"
+              title="Add a team"
+              className="flex items-center justify-center shrink-0 w-6 h-6 rounded-full border border-dashed border-hairline text-muted cursor-pointer transition-colors hover:border-solid hover:border-selected/50 hover:text-ink hover:bg-surface2 focus:outline-none focus-visible:ring-2 focus-visible:ring-selected/20 disabled:opacity-40 disabled:pointer-events-none"
+            >
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </button>
           )}
         </div>
+      )}
+
+      {onAddTeam && (
+        <TeamPickerModal
+          open={pickerOpen}
+          onClose={() => setPickerOpen(false)}
+          teams={addTeamOptions || []}
+          onAdd={(team) => onAddTeam(team)}
+          selectedCount={series.length}
+          maxSeries={MAX_SERIES}
+        />
       )}
 
       {geom?.bands.length > 0 && (

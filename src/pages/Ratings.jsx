@@ -54,6 +54,15 @@ const REGION_ORDER = ['Americas', 'EMEA', 'Pacific', 'China']
 // inside the same 200-point band the top of a season lives in.
 const DEFAULT_CHART_TEAMS = 5
 
+// PCIFIC Esports sit at RD 153.5 in 2026 -- barely over the 150 "settled"
+// cutoff despite a full 17-series season, because their matches land in
+// widely spaced clusters (Jan / Apr / May / Jul-Aug) and the inactivity
+// decay between those gaps keeps nudging RD back past the line. Requested
+// as a standing exception: always shown, "prov" badge and all, rather than
+// waiting on the general threshold (see PROVISIONAL_RD's comment in
+// teamRatings.js) to happen to catch up.
+const ALWAYS_SHOWN = new Set(['PCIFIC Esports'])
+
 /**
  * One region's standings. A hand-rolled compact table rather than a
  * DataTable: four of those side by side would each carry their own sort
@@ -63,7 +72,7 @@ const DEFAULT_CHART_TEAMS = 5
  * tables. These are read as standings, not sorted.
  */
 function RegionTable({ region, rows, showProvisional }) {
-  const visible = showProvisional ? rows : rows.filter((r) => !r.provisional)
+  const visible = showProvisional ? rows : rows.filter((r) => !r.provisional || ALWAYS_SHOWN.has(r.team))
   return (
     <Card className="p-4 flex flex-col gap-2 min-w-0">
       <div className="flex items-baseline justify-between gap-2">
@@ -123,7 +132,9 @@ export default function Ratings() {
 
   const rows = useMemo(() => {
     if (!run) return []
-    const visible = showProvisional ? run.table : run.table.filter((t) => !t.provisional)
+    const visible = showProvisional
+      ? run.table
+      : run.table.filter((t) => !t.provisional || ALWAYS_SHOWN.has(t.team))
     return visible.map((t, i) => ({ ...t, rank: i + 1 }))
   }, [run, showProvisional])
 

@@ -115,8 +115,10 @@ function RegionTable({ region, rows, showProvisional }) {
                 <td className="py-1.5 pr-2 text-right text-[11px] text-muted tabular-nums whitespace-nowrap">
                   ±{num(2 * r.rd)}
                 </td>
-                <td className="py-1.5 text-right text-[11px] text-muted tabular-nums whitespace-nowrap">
-                  {r.seriesWins}–{r.seriesLosses}
+                <td className="py-1.5 text-right text-[11px] tabular-nums whitespace-nowrap">
+                  <span className="text-good">{r.seriesWins}</span>
+                  <span className="text-muted">–</span>
+                  <span className="text-bad">{r.seriesLosses}</span>
                 </td>
               </tr>
             ))}
@@ -595,7 +597,10 @@ export default function Ratings() {
           every team is rated in one pool, and the international events are what tie the regions
           to each other.
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        {/* 2x2 by default rather than widening to a 4-across row at xl --
+            four tables that narrow stay easier to scan down than a single
+            row that keeps stretching with the viewport. */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {REGION_ORDER.map((region) => (
             <RegionTable
               key={region}

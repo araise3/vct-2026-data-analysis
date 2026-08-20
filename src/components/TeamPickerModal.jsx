@@ -123,7 +123,7 @@ export default function TeamPickerModal({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search teams…"
-            className="w-full bg-surface2 border border-hairline rounded-lg px-3 py-2 text-sm text-ink placeholder:text-muted shadow-depth-xs transition-shadow duration-150 focus:outline-none focus:border-selected/50 focus:shadow-focus-ring"
+            className="w-full bg-surface2 border border-hairline rounded-lg px-3 py-2 text-sm text-ink placeholder:text-muted shadow-depth-xs focus:outline-none"
           />
         </div>
 

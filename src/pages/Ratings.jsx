@@ -64,14 +64,26 @@ const DEFAULT_CHART_TEAMS = 5
 // field" behavior.
 const MAX_EVENT_TEAMS = 16
 
-// PCIFIC Esports sit at RD 153.5 in 2026 -- barely over the 150 "settled"
-// cutoff despite a full 17-series season, because their matches land in
-// widely spaced clusters (Jan / Apr / May / Jul-Aug) and the inactivity
-// decay between those gaps keeps nudging RD back past the line. Requested
-// as a standing exception: always shown, "prov" badge and all, rather than
-// waiting on the general threshold (see PROVISIONAL_RD's comment in
-// teamRatings.js) to happen to catch up.
-const ALWAYS_SHOWN = new Set(['PCIFIC Esports'])
+// Teams whose rating sits just past the 150 "settled" RD cutoff for a
+// schedule reason rather than a real shortage of evidence -- e.g. PCIFIC
+// Esports sit at RD 153.5 in 2026 despite a full 17-series season, because
+// their matches land in widely spaced clusters (Jan / Apr / May / Jul-Aug)
+// and the inactivity decay between those gaps keeps nudging RD back past
+// the line (see PROVISIONAL_RD's own comment in teamRatings.js). Requested
+// as standing exceptions, each scoped to the specific year it applies to
+// (the same team can be genuinely provisional in a different year) --
+// treated as fully settled everywhere `provisional` is read, not just
+// exempted from the "hide provisional teams" filter: no grey rank number,
+// no "prov" badge, counted in the rated/median-RD summary stats. Applied
+// once, in `table` below, rather than threaded through every consumer
+// individually -- that's what let the rank-number greying slip through
+// uncaught the first time this was scoped to just the visibility filter.
+const ALWAYS_SETTLED = new Set([
+  'PCIFIC Esports|2026',
+  'Apeks|2025',
+  'BLEED|2024', // canonical name is bare "BLEED", not "Bleed Esports"
+  'FURIA|2024',
+])
 
 /**
  * One region's standings. A hand-rolled compact table rather than a
@@ -82,7 +94,10 @@ const ALWAYS_SHOWN = new Set(['PCIFIC Esports'])
  * tables. These are read as standings, not sorted.
  */
 function RegionTable({ region, rows, showProvisional }) {
-  const visible = showProvisional ? rows : rows.filter((r) => !r.provisional || ALWAYS_SHOWN.has(r.team))
+  // No ALWAYS_SETTLED check needed here -- `byRegion` (Ratings.jsx) already
+  // groups from `table`, the ALWAYS_SETTLED-adjusted rows, so `.provisional`
+  // is already correctly false for those teams by the time they arrive here.
+  const visible = showProvisional ? rows : rows.filter((r) => !r.provisional)
   return (
     <Card className="p-4 flex flex-col gap-2 min-w-0">
       <div className="flex items-baseline justify-between gap-2">
@@ -147,6 +162,17 @@ export default function Ratings() {
   const year = years.includes(yearParam) ? yearParam : years[0]
   const run = runs.get(year)
 
+  // `run.table` with ALWAYS_SETTLED's exceptions applied -- every other
+  // derived value below (rows, byRegion, summary) reads FROM this instead
+  // of `run.table` directly, so the override only has to happen once.
+  const table = useMemo(() => {
+    if (!run) return []
+    if (!run.table.some((t) => ALWAYS_SETTLED.has(`${t.team}|${year}`))) return run.table
+    return run.table.map((t) => (
+      ALWAYS_SETTLED.has(`${t.team}|${year}`) ? { ...t, provisional: false } : t
+    ))
+  }, [run, year])
+
   function setParam(key, value) {
     const next = new URLSearchParams(searchParams)
     if (value == null) next.delete(key)
@@ -156,11 +182,9 @@ export default function Ratings() {
 
   const rows = useMemo(() => {
     if (!run) return []
-    const visible = showProvisional
-      ? run.table
-      : run.table.filter((t) => !t.provisional || ALWAYS_SHOWN.has(t.team))
+    const visible = showProvisional ? table : table.filter((t) => !t.provisional)
     return visible.map((t, i) => ({ ...t, rank: i + 1 }))
-  }, [run, showProvisional])
+  }, [run, table, showProvisional])
 
   const eventBands = useMemo(
     () => internationalEventWindows(run, data?.events),
@@ -339,23 +363,23 @@ export default function Ratings() {
     setSearchParams(next, { replace: true })
   }
 
-  // Grouped from the full table, not from `rows` -- the region tables run
-  // their own provisional filter so that toggling it doesn't have to
-  // re-derive the grouping.
+  // Grouped from `table` (ALWAYS_SETTLED-adjusted), not from `rows` -- the
+  // region tables run their own provisional filter so that toggling it
+  // doesn't have to re-derive the grouping.
   const byRegion = useMemo(() => {
     const out = new Map()
-    for (const t of run?.table || []) {
+    for (const t of table) {
       if (!out.has(t.region)) out.set(t.region, [])
       out.get(t.region).push(t)
     }
     return out
-  }, [run])
+  }, [table])
 
   const summary = useMemo(() => {
     if (!run) return null
-    const rated = run.table.filter((t) => !t.provisional)
+    const rated = table.filter((t) => !t.provisional)
     return {
-      teams: run.table.length,
+      teams: table.length,
       rated: rated.length,
       series: run.matches.length,
       periods: run.periods.length,
@@ -363,7 +387,7 @@ export default function Ratings() {
         ? [...rated].sort((a, b) => a.rd - b.rd)[Math.floor(rated.length / 2)].rd
         : null,
     }
-  }, [run])
+  }, [run, table])
 
   const columns = useMemo(() => [
     {
@@ -383,7 +407,7 @@ export default function Ratings() {
           {/* TeamLogo renders the name itself (showName defaults on), same
               as every other team column on the site -- don't add another. */}
           <TeamLogo team={v} size={22} />
-          {row.provisional && !ALWAYS_SHOWN.has(row.team) && (
+          {row.provisional && (
             <span
               className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-md text-muted bg-surface2 shrink-0"
               title={`Rating deviation above ${PROVISIONAL_RD} — too few recent series for the rating to have settled.`}

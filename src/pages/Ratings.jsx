@@ -90,9 +90,15 @@ function RegionTable({ region, rows, showProvisional }) {
                 <td className="py-1.5 pr-2 min-w-0">
                   <Link
                     to={`/teams/${encodeURIComponent(r.team)}`}
-                    className="text-xs font-medium hover:text-accent-bright transition-colors"
+                    className="flex items-center gap-2 text-xs font-medium hover:text-accent-bright transition-colors"
                   >
-                    <TeamLogo team={r.team} size={18} />
+                    {/* showName off, name rendered here instead: TeamLogo's
+                        own name span truncates with an ellipsis, which cut
+                        off longer names ("Nongshim RedForce", "DetonatioN
+                        FocusMe") at four cards across. Wrapping to a second
+                        line loses nothing instead. */}
+                    <TeamLogo team={r.team} size={18} showName={false} />
+                    <span>{r.team}</span>
                   </Link>
                 </td>
                 <td className="py-1.5 pr-1 text-right text-xs text-ink tabular-nums">{num(r.rating)}</td>

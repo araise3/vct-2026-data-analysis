@@ -414,33 +414,6 @@ export default function RatingChart({
   const displayRows = hover ? hover.rows : latestRows
   const displayDate = hover ? hover.date : geom?.lastDate
 
-  // The side table sits alongside the WHOLE left column now -- the team
-  // toggles, the band legend, and the chart, not just the chart's own plot
-  // area -- so it stretches to match that column's natural height (CSS
-  // `align-items: stretch`, the row's default) rather than anything measured
-  // here. minHeight is the one thing still computed: enough for up to 16
-  // rows so an 8-16 team Masters/Champions field reads at a glance instead
-  // of through a scrollbar, for whichever of "stretch to the column" or
-  // "fit 16 rows" turns out taller. A field past 16 (Lock-In's 30, capped to
-  // 16 anyway by Ratings.jsx) still scrolls past that point.
-  //
-  // Sized off `visible.length` -- the full set of series this chart was
-  // given, muted ones included -- rather than `displayRows.length`. That one
-  // carries the hover/no-hover distinction (a hovered date can have fewer
-  // rows than the full field, if a team hadn't debuted yet), and sizing off
-  // it would make the box grow and shrink as the cursor moves. The box's
-  // size is a property of what chart this is, not of whatever moment it's
-  // currently showing.
-  //
-  // ROW_H/CHROME_H are measured off the row markup below (text-xs row +
-  // gap-1.5, the date header, and the container's own padding/gaps), not
-  // exact to the pixel, but this is a box height, not layout math anything
-  // else depends on.
-  const ROW_H = 24
-  const CHROME_H = 40
-  const contentRows = Math.min(visible.length, 16)
-  const tableMinHeight = CHROME_H + contentRows * ROW_H
-
   return (
     <div className="flex flex-col gap-3">
       {(title || controls) && (
@@ -460,13 +433,13 @@ export default function RatingChart({
 
       {/* Team toggles, band legend, and the chart itself share one column
           now, sized against the side table next to it. `items-start` rather
-          than stretch -- the table sizes to its OWN content (floored at
-          tableMinHeight, see its comment) instead of being forced to match
-          this column's height exactly, which on a wrapped 12-16-chip legend
-          could be taller than 16 rows actually need and left a dead gap
-          under the last one. Short tags rather than full names (TeamLogo's
-          showTag) keep that legend wrapping to two or three lines instead
-          of six or seven -- every team in teamLogos.json carries one. */}
+          than stretch -- the table sizes to its own content (see its own
+          comment) instead of being forced to match this column's height
+          exactly, which on a wrapped 12-16-chip legend could be taller than
+          the table needs and leave a dead gap under its last row. Short
+          tags rather than full names (TeamLogo's showTag) keep that legend
+          wrapping to two or three lines instead of six or seven -- every
+          team in teamLogos.json carries one. */}
       <div className="flex flex-col lg:flex-row lg:items-start gap-4">
       <div className="flex-1 min-w-0 flex flex-col gap-3">
       {series.length > 1 && (
@@ -515,7 +488,7 @@ export default function RatingChart({
                 {style.label}
               </span>
             ))}
-          {onBandClick && (
+          {onBandClick && geom.bands.some((b) => b.stage !== 'LOCK//IN') && (
             <span className="text-[10px]" style={{ color: RC.textDim, opacity: 0.7 }}>
               — click a band for its field
             </span>
@@ -563,18 +536,24 @@ export default function RatingChart({
             {/* International-event bands, drawn first so gridlines, the
                 baseline, and every series render on top of the tint rather
                 than under it. */}
-            {geom.bands.map((b) => (
+            {geom.bands.map((b) => {
+              // Lock-In isn't zoomable -- a 30-team (16 once capped) field
+              // is chaotic even scoped down, so the click-to-zoom feature
+              // just doesn't apply to it. The band still shades and labels
+              // normally; it's only the click affordance that's dropped.
+              const clickable = onBandClick && b.stage !== 'LOCK//IN'
+              return (
               <g
                 key={b.id}
                 clipPath={`url(#${gradId}-clip)`}
-                onClick={onBandClick ? () => onBandClick(b) : undefined}
-                style={onBandClick ? { cursor: 'pointer' } : undefined}
+                onClick={clickable ? () => onBandClick(b) : undefined}
+                style={clickable ? { cursor: 'pointer' } : undefined}
               >
                 {/* A wider, invisible hit target under the visible tint --
                     the real band is often just a few days wide (a single
                     Bo1 bracket day floors to 3px), too thin to click
                     reliably otherwise. */}
-                {onBandClick && (
+                {clickable && (
                   <rect
                     x={Math.max(b.x1 - 4, PAD.l)} y={PAD.t}
                     width={Math.min(b.x2 + 4, W - PAD.r) - Math.max(b.x1 - 4, PAD.l)}
@@ -586,7 +565,7 @@ export default function RatingChart({
                   x={b.x1} y={PAD.t} width={b.x2 - b.x1} height={H - PAD.t - PAD.b}
                   fill={b.style.color} opacity="0.14"
                 />
-                {onBandClick && <title>{`${b.name} — click to scope the chart to its field`}</title>}
+                {clickable && <title>{`${b.name} — click to scope the chart to its field`}</title>}
                 {b.x2 - b.x1 > 34 && (
                   <text
                     x={(b.x1 + b.x2) / 2} y={PAD.t + 11} textAnchor="middle"
@@ -596,7 +575,8 @@ export default function RatingChart({
                   </text>
                 )}
               </g>
-            ))}
+              )
+            })}
 
             {/* Horizontal gridlines only -- no vertical rules. */}
             {geom.ticks.map((v) => (
@@ -731,18 +711,19 @@ export default function RatingChart({
           it stays put, updates with whatever's hovered, and falls back to
           latestRows (each series' own most recent point) so it's never
           blank. The vertical crosshair line inside the SVG above is still
-          what actually marks the hovered date; this just reads it. Sizes to
-          its own content, floored at tableMinHeight (up to 16 rows worth) --
-          see the row's own `items-start` comment on why that's a floor
-          rather than a stretch-to-match-the-column height. */}
+          what actually marks the hovered date; this just reads it. Sized to
+          its own content only -- no minHeight floor. One was tried (enough
+          for 16 rows, so a wrapped 12-16 team legend would never need to
+          scroll) but the row-height estimate it needed was inherently
+          approximate, and a box forced taller than its actual rows left a
+          dead gap under the last one. Ratings.jsx already caps an
+          event-scoped field at 16 teams, so there's nothing left for a
+          height floor to protect against -- overflow-y-auto stays purely as
+          a fallback for a future caller that doesn't cap its series count. */}
       {geom && (
         <div
           className="w-full lg:w-52 shrink-0 flex flex-col gap-1.5 px-3 py-2 rounded-xl overflow-y-auto"
-          style={{
-            background: 'rgba(23,27,36,0.5)',
-            border: `1px solid ${RC.border}`,
-            minHeight: tableMinHeight,
-          }}
+          style={{ background: 'rgba(23,27,36,0.5)', border: `1px solid ${RC.border}` }}
         >
           <div className="text-[10px] uppercase tracking-wide sticky top-0" style={{ color: RC.textDim }}>
             {shortDate(displayDate)}

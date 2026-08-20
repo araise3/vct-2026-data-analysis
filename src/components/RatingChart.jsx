@@ -4,6 +4,7 @@ import { area, curveMonotoneX, line } from 'd3-shape'
 import { num, shortDate } from '../lib/format'
 import { RC } from '../lib/ratingTheme'
 import TeamLogo from './TeamLogo'
+import Select from './ui/Select'
 
 /**
  * Interactive rating-trajectory chart for the Glicko-2 ratings.
@@ -108,6 +109,12 @@ const W_NARROW = 380
 const NARROW_BELOW = 520
 const PAD = { l: 46, r: 16, t: 26, b: 26 }
 
+// Matches Ratings.jsx's own MAX_EVENT_TEAMS -- the largest field the side
+// table is ever asked to show. Padding it out to this height unconditionally
+// keeps the table a stable size across every chart on the page rather than
+// jumping taller/shorter as the team count changes.
+const SIDE_TABLE_ROWS = 16
+
 /**
  * Up to three moments worth calling out, in priority order. Each is a real
  * feature of the series rather than a fixed set of labels: a team that never
@@ -155,7 +162,7 @@ function findAnnotations(coords) {
 
 export default function RatingChart({
   series, height = 300, baseline = 1500, title, subtitle, controls, eventBands = [], onBandClick,
-  accentColor, xDomain,
+  accentColor, xDomain, onAddTeam, addTeamOptions, addTeamDisabled,
 }) {
   const wrapRef = useRef(null)
   const svgRef = useRef(null)
@@ -442,9 +449,9 @@ export default function RatingChart({
           team in teamLogos.json carries one. */}
       <div className="flex flex-col lg:flex-row lg:items-start gap-4">
       <div className="flex-1 min-w-0 flex flex-col gap-3">
-      {series.length > 1 && (
+      {(series.length > 1 || onAddTeam) && (
         <div className="flex flex-wrap items-center gap-1.5">
-          {series.map((s, i) => {
+          {series.length > 1 && series.map((s, i) => {
             const color = s.color || SERIES_COLORS[i % SERIES_COLORS.length]
             const off = hidden.has(s.key)
             return (
@@ -475,6 +482,26 @@ export default function RatingChart({
               </button>
             )
           })}
+          {/* Add-a-team lives inline at the end of the same chip row it
+              affects, rather than as a separate labelled dropdown up in the
+              header -- picking a team reads as "add one more chip" right
+              where the chips already are, instead of a control the reader
+              has to first connect back to this legend. Select's `icon`
+              variant supplies just the round "+" trigger; the panel/search/
+              positioning underneath it is the exact same code every other
+              Select on the site uses. */}
+          {onAddTeam && (
+            <Select
+              variant="icon"
+              value={null}
+              onChange={onAddTeam}
+              options={addTeamOptions || []}
+              placeholder="Add a team…"
+              renderIcon={(v) => <TeamLogo team={v} size={16} showName={false} />}
+              searchable
+              disabled={addTeamDisabled}
+            />
+          )}
         </div>
       )}
 
@@ -711,15 +738,16 @@ export default function RatingChart({
           it stays put, updates with whatever's hovered, and falls back to
           latestRows (each series' own most recent point) so it's never
           blank. The vertical crosshair line inside the SVG above is still
-          what actually marks the hovered date; this just reads it. Sized to
-          its own content only -- no minHeight floor. One was tried (enough
-          for 16 rows, so a wrapped 12-16 team legend would never need to
-          scroll) but the row-height estimate it needed was inherently
-          approximate, and a box forced taller than its actual rows left a
-          dead gap under the last one. Ratings.jsx already caps an
-          event-scoped field at 16 teams, so there's nothing left for a
-          height floor to protect against -- overflow-y-auto stays purely as
-          a fallback for a future caller that doesn't cap its series count. */}
+          what actually marks the hovered date; this just reads it.
+
+          Always reserves the height of a full MAX_EVENT_TEAMS (16, matching
+          Ratings.jsx's own event-field cap) row count, regardless of how
+          many series are actually plotted -- via real, invisible padding
+          rows rather than a computed minHeight. A pixel minHeight was tried
+          here once before and reverted for needing an approximate row-height
+          guess; invisible rows sized by the exact same markup/classes as a
+          real row can't drift out of sync with it, since it's the same DOM
+          shape rather than a separately-maintained number. */}
       {geom && (
         <div
           className="w-full lg:w-44 shrink-0 flex flex-col gap-1.5 px-3 py-2 rounded-xl overflow-y-auto"
@@ -739,20 +767,6 @@ export default function RatingChart({
                     <span className="font-semibold tabular-nums" style={{ color: RC.text }}>
                       {num(point.rating)}
                     </span>
-                    {/* Hover-only: a team's LATEST point always carries its
-                        own last change (that's just what the number is),
-                        so showing it in the unhovered default state reads
-                        as a badge appearing out of nowhere -- "since when?"
-                        has no answer until a specific point is what's being
-                        looked at. */}
-                    {hover && point.change != null && point.games > 0 && (
-                      <span
-                        className="tabular-nums text-[11px] font-medium"
-                        style={{ color: point.change >= 0 ? RC.positive : RC.accent }}
-                      >
-                        {point.change >= 0 ? '+' : ''}{num(point.change)}
-                      </span>
-                    )}
                     {series.length > 1 && (
                       // Icon + short tag rather than the full name: the row
                       // already spends width on the rating and (while
@@ -764,8 +778,41 @@ export default function RatingChart({
                         <TeamLogo team={s.label} size={14} showName={false} showTag />
                       </span>
                     )}
+                    {/* Hover-only: a team's LATEST point always carries its
+                        own last change (that's just what the number is),
+                        so showing it in the unhovered default state reads
+                        as a badge appearing out of nowhere -- "since when?"
+                        has no answer until a specific point is what's being
+                        looked at.
+
+                        Placed AFTER the logo, not between the rating and
+                        it -- when it sat there, a team that didn't play the
+                        hovered date skipped the badge entirely while a team
+                        that did play got one, so the logo column started at
+                        a different x per row depending on which teams had a
+                        change that date. As the trailing element nothing
+                        after it needs to line up, so its variable width (or
+                        outright absence) can no longer shift anything. */}
+                    {hover && point.change != null && point.games > 0 && (
+                      <span
+                        className="tabular-nums text-[11px] font-medium"
+                        style={{ color: point.change >= 0 ? RC.positive : RC.accent }}
+                      >
+                        {point.change >= 0 ? '+' : ''}{num(point.change)}
+                      </span>
+                    )}
                   </div>
-                  {displayRows.length === 1 && point.results?.length > 0 && (
+                  {/* Gated on `detailed` (exactly one series overall), not
+                      displayRows.length === 1 -- the latter can be
+                      coincidentally true in a multi-team comparison at an
+                      early hovered date where every other team hasn't
+                      debuted yet, which briefly showed this results block
+                      (and its extra height) on a row that isn't really a
+                      solo view, then hid it again a week later once a
+                      second team's line started -- the card visibly
+                      shrank and its bottom edge jumped up switching between
+                      those two hover dates. */}
+                  {detailed && point.results?.length > 0 && (
                     <div className="flex flex-col gap-1 pl-4 mt-0.5">
                       {point.results.slice(0, 3).map((r, i) => (
                         <div key={i} className="text-[11px] leading-tight">
@@ -788,8 +835,21 @@ export default function RatingChart({
                   )}
                 </div>
               ))}
+            {/* Invisible padding rows, same markup as a real one, so the
+                box always stands as tall as a full 16-team field even when
+                far fewer series are actually plotted -- see the container's
+                own comment above for why this beats a computed minHeight. */}
+            {Array.from({ length: Math.max(0, SIDE_TABLE_ROWS - displayRows.length) }).map((_, i) => (
+              <div key={`pad-${i}`} className="flex flex-col gap-0.5 invisible" aria-hidden="true">
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="w-2 h-2 rounded-full shrink-0" />
+                  <span className="font-semibold tabular-nums">0</span>
+                  <span className="text-[11px] shrink-0">0</span>
+                </div>
+              </div>
+            ))}
           </div>
-          {displayRows.length === 1 && !displayRows[0].point.games && !displayRows[0].point.synthetic && (
+          {detailed && displayRows.length === 1 && !displayRows[0].point.games && !displayRows[0].point.synthetic && (
             <div className="text-[10px] mt-1" style={{ color: RC.textDim }}>
               No games — deviation widening
             </div>

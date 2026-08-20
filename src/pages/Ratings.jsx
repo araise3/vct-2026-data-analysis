@@ -9,8 +9,8 @@ import DataTable from '../components/DataTable'
 import TeamLogo from '../components/TeamLogo'
 import RatingChart, { MAX_SERIES, seriesColor, STAGE_STYLE } from '../components/RatingChart'
 import Card from '../components/ui/Card'
+import Button from '../components/ui/Button'
 import { RC, PANEL_STYLE, pillStyle } from '../lib/ratingTheme'
-import Select from '../components/ui/Select'
 import { num, pct, regionAbbr, shortDate } from '../lib/format'
 
 /**
@@ -133,7 +133,13 @@ export default function Ratings() {
   const [showProvisional, setShowProvisional] = useState(false)
 
   const runs = useMemo(() => (data ? buildRatings(data) : new Map()), [data])
+  // buildRatings() keys `runs` newest-first (see its own comment) so the
+  // default-selection logic below can keep picking years[0] -- the pill
+  // row wants the opposite reading order, oldest-to-newest, so it sorts its
+  // own copy rather than reversing `years` itself and quietly flipping the
+  // default year too.
   const years = useMemo(() => [...runs.keys()], [runs])
+  const yearPills = useMemo(() => [...years].sort((a, b) => a - b), [years])
 
   const yearParam = Number(searchParams.get('year'))
   const year = years.includes(yearParam) ? yearParam : years[0]
@@ -456,7 +462,7 @@ export default function Ratings() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {years.map((y) => (
+          {yearPills.map((y) => (
             <button
               key={y}
               type="button"
@@ -508,6 +514,13 @@ export default function Ratings() {
             // to say about a single event's own window, so it's dropped in
             // event scope rather than drawn against dates it doesn't apply to.
             baseline={scopedEvent ? null : 1500}
+            // Lives inline in RatingChart's own team-toggle row as a "+"
+            // rather than a separate dropdown up here -- omitted entirely
+            // in event scope, same as the dropdown it replaces (that field
+            // is derived from the event itself, not a hand-built pick list).
+            onAddTeam={scopedEvent ? undefined : addChartTeam}
+            addTeamOptions={scopedEvent ? undefined : teamOptions.filter((o) => !chartTeams.includes(o.value))}
+            addTeamDisabled={chartTeams.length >= MAX_SERIES}
             height={300}
             title={scopedEvent
               ? scopedEvent.name
@@ -522,30 +535,15 @@ export default function Ratings() {
                 ? 'Hover any week for the results that moved it. ± in the tooltip is the 95% interval.'
                 : 'Click a team below to mute it. Drop to one team for markers and annotations.')}
             controls={(
-              <>
-                {!scopedEvent && (
-                  <div className="w-44">
-                    <Select
-                      value={null}
-                      onChange={addChartTeam}
-                      options={teamOptions.filter((o) => !chartTeams.includes(o.value))}
-                      placeholder="Add a team…"
-                      renderIcon={(v) => <TeamLogo team={v} size={16} showName={false} />}
-                      searchable
-                      disabled={chartTeams.length >= MAX_SERIES}
-                    />
-                  </div>
-                )}
-                <button
-                  type="button"
-                  onClick={resetChart}
-                  className="text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-md transition-colors"
-                  style={pillStyle(false)}
-                  title={scopedEvent ? 'Back to this season\'s top teams' : `Back to this season's top ${DEFAULT_CHART_TEAMS}`}
-                >
-                  {scopedEvent ? 'Exit event view' : 'Reset'}
-                </button>
-              </>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetChart}
+                className="hover:border-accent-bright/40 hover:text-accent-bright"
+                title={scopedEvent ? 'Back to this season\'s top teams' : `Back to this season's top ${DEFAULT_CHART_TEAMS}`}
+              >
+                {scopedEvent ? 'Exit event view' : 'Reset'}
+              </Button>
             )}
           />
         ) : (

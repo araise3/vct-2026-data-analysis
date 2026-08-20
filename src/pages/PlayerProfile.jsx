@@ -116,8 +116,13 @@ export default function PlayerProfile() {
     }
     // Closes on scroll/resize rather than re-tracking position -- the menu
     // is short-lived (pick an account, it closes itself) so a live-follow
-    // wasn't worth the extra scroll-listener churn.
-    function onScrollOrResize() {
+    // wasn't worth the extra scroll-listener churn. Scrolling INSIDE the
+    // menu itself must not count, though -- `scroll` doesn't bubble, but a
+    // capture-phase window listener still sees it regardless of source, so
+    // without this guard a long account list would close on its own scroll
+    // (same bug fixed in Select.jsx's identical listener).
+    function onScrollOrResize(e) {
+      if (trackerMenuRef.current && e.target instanceof Node && trackerMenuRef.current.contains(e.target)) return
       setTrackerMenuOpen(false)
     }
     document.addEventListener('mousedown', onDocMouseDown)

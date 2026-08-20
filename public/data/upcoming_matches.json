@@ -3,35 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-20T13:29:49Z"
+    "fetchedAt": "2026-08-20T16:02:56Z"
   },
   "matches": [
-    {
-      "key": "1786694400|nova-esports|jdg-esports",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786694400,
-      "bestOf": 3,
-      "team1": "Nova Esports",
-      "team2": "JDG Esports",
-      "score1": 0,
-      "score2": 2,
-      "started": true
-    },
-    {
-      "key": "1786703400|tyloo|titan-esports-club",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786703400,
-      "bestOf": 3,
-      "team1": "TYLOO",
-      "team2": "Titan Esports Club",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
     {
       "key": "1786704000|team-secret|xipto-esports",
       "event": "Vct 2026 Pacific Stage 2",
@@ -419,7 +393,7 @@
       "team1": "Xi Lai Gaming",
       "team2": "Nova Esports",
       "score1": 1,
-      "score2": 1,
+      "score2": 2,
       "started": true
     },
     {
@@ -431,7 +405,7 @@
       "bestOf": 3,
       "team1": "ZETA DIVISION",
       "team2": "Xipto Esports",
-      "score1": 1,
+      "score1": 2,
       "score2": 1,
       "started": true
     },
@@ -444,9 +418,9 @@
       "bestOf": 3,
       "team1": "Team Vitality",
       "team2": "Enterprise Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1787248800|team-liquid|fut-esports",
@@ -514,13 +488,13 @@
       "started": false
     },
     {
-      "key": "1787306400|tbd|tyloo",
+      "key": "1787306400|nova-esports|tyloo",
       "event": "Vct 2026 China Stage 2",
       "liquipediaPage": "VCT/2026/China League/Stage 2",
       "phase": null,
       "timestamp": 1787306400,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Nova Esports",
       "team2": "TYLOO",
       "score1": null,
       "score2": null,
@@ -618,14 +592,14 @@
       "started": false
     },
     {
-      "key": "1787396400|detonation-focusme|tbd",
+      "key": "1787396400|detonation-focusme|zeta-division",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787396400,
       "bestOf": 3,
       "team1": "DetonatioN FocusMe",
-      "team2": null,
+      "team2": "ZETA DIVISION",
       "score1": null,
       "score2": null,
       "started": false
@@ -987,6 +961,32 @@
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1788048000,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1788102000|tbd|tbd",
+      "event": "Vct 2026 Emea Stage 2",
+      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
+      "phase": null,
+      "timestamp": 1788102000,
+      "bestOf": 5,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1788123600|tbd|tbd",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1788123600,
       "bestOf": 3,
       "team1": null,
       "team2": null,

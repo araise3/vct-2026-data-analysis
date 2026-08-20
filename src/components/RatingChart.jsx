@@ -423,19 +423,27 @@ export default function RatingChart({
 
   return (
     <div className="flex flex-col gap-3">
-      {/* `controls` (Reset / Exit event view) no longer renders here --
-          it's right-aligned above the side table instead, in the same
-          column at the same width, so it reads as "reset THIS table" sitting
-          next to what it resets rather than a disconnected header action
-          floating above the whole card. See the side table's own wrapper
-          below. */}
-      {title && (
-        <div className="flex flex-col gap-0.5 min-w-0">
-          <h3 className="font-display text-sm font-semibold flex items-center gap-2" style={{ color: RC.text }}>
-            {accentColor && <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: accentColor }} />}
-            {title}
-          </h3>
-          {subtitle && <p className="text-[11px]" style={{ color: RC.textDim }}>{subtitle}</p>}
+      {/* `items-end`, not `items-start` -- bottom-aligns `controls` against
+          the title+subtitle column instead of top-aligning it against the
+          title. The title/subtitle stack is taller than a lone title, so
+          this lands Reset/Exit roughly level with the subtitle's own line
+          rather than the bigger title text above it, without needing to
+          move the side table (an earlier attempt moved controls down INTO
+          the table's own column, which pushed the table's top edge down by
+          a whole row -- reverted; the table stays at its original position,
+          top-aligned with the chart below). */}
+      {(title || controls) && (
+        <div className="flex items-end justify-between gap-4 flex-wrap">
+          <div className="flex flex-col gap-0.5 min-w-0">
+            {title && (
+              <h3 className="font-display text-sm font-semibold flex items-center gap-2" style={{ color: RC.text }}>
+                {accentColor && <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: accentColor }} />}
+                {title}
+              </h3>
+            )}
+            {subtitle && <p className="text-[11px]" style={{ color: RC.textDim }}>{subtitle}</p>}
+          </div>
+          {controls && <div className="flex items-center gap-2 shrink-0">{controls}</div>}
         </div>
       )}
 
@@ -735,33 +743,23 @@ export default function RatingChart({
       </div>
       </div>
 
-      {/* controls (Reset / Exit event view) sits right above the side table,
-          in the same fixed-width column and right-aligned to its edge --
-          reads as "reset THIS table" next to what it resets, rather than a
-          disconnected header action floating above the whole card. */}
-      {(geom || controls) && (
-        <div className="w-full lg:w-44 shrink-0 flex flex-col gap-1.5">
-          {controls && <div className="flex items-center justify-end gap-2">{controls}</div>}
+      {/* A fixed side table rather than a tooltip that follows the cursor --
+          it stays put, updates with whatever's hovered, and falls back to
+          latestRows (each series' own most recent point) so it's never
+          blank. The vertical crosshair line inside the SVG above is still
+          what actually marks the hovered date; this just reads it.
 
-          {/* A fixed side table rather than a tooltip that follows the
-              cursor -- it stays put, updates with whatever's hovered, and
-              falls back to latestRows (each series' own most recent point)
-              so it's never blank. The vertical crosshair line inside the
-              SVG above is still what actually marks the hovered date; this
-              just reads it.
-
-              Always reserves the height of a full MAX_EVENT_TEAMS (16,
-              matching Ratings.jsx's own event-field cap) row count,
-              regardless of how many series are actually plotted -- via
-              real, invisible padding rows rather than a computed minHeight.
-              A pixel minHeight was tried here once before and reverted for
-              needing an approximate row-height guess; invisible rows sized
-              by the exact same markup/classes as a real row can't drift out
-              of sync with it, since it's the same DOM shape rather than a
-              separately-maintained number. */}
-          {geom && (
+          Always reserves the height of a full MAX_EVENT_TEAMS (16, matching
+          Ratings.jsx's own event-field cap) row count, regardless of how
+          many series are actually plotted -- via real, invisible padding
+          rows rather than a computed minHeight. A pixel minHeight was tried
+          here once before and reverted for needing an approximate row-height
+          guess; invisible rows sized by the exact same markup/classes as a
+          real row can't drift out of sync with it, since it's the same DOM
+          shape rather than a separately-maintained number. */}
+      {geom && (
         <div
-          className="flex flex-col gap-1.5 px-3 py-2 rounded-xl overflow-y-auto"
+          className="w-full lg:w-44 shrink-0 flex flex-col gap-1.5 px-3 py-2 rounded-xl overflow-y-auto"
           style={{ background: 'rgba(23,27,36,0.5)', border: `1px solid ${RC.border}` }}
         >
           <div className="text-[10px] uppercase tracking-wide sticky top-0" style={{ color: RC.textDim }}>
@@ -864,8 +862,6 @@ export default function RatingChart({
             <div className="text-[10px] mt-1" style={{ color: RC.textDim }}>
               No games — deviation widening
             </div>
-          )}
-        </div>
           )}
         </div>
       )}

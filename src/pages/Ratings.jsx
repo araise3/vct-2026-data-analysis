@@ -57,6 +57,13 @@ const REGION_ORDER = ['Americas', 'EMEA', 'Pacific', 'China']
 // inside the same 200-point band the top of a season lives in.
 const DEFAULT_CHART_TEAMS = 5
 
+// Event scope shows every team that played, but Lock-In's 30-team field
+// on one chart is unreadable regardless of how many colors it has --
+// capped at the strongest 16 (rows is already rating-sorted) rather than
+// leaving it fully uncapped like the rest of event scope's "show the whole
+// field" behavior.
+const MAX_EVENT_TEAMS = 16
+
 // PCIFIC Esports sit at RD 153.5 in 2026 -- barely over the 150 "settled"
 // cutoff despite a full 17-series season, because their matches land in
 // widely spaced clusters (Jan / Apr / May / Jul-Aug) and the inactivity
@@ -170,14 +177,15 @@ export default function Ratings() {
   // in that run. Whatever survives is topped up from the leaderboard, so
   // the chart is never empty and never needs an "add a team" empty state.
   //
-  // Event scope overrides all of that: every team in the field, uncapped --
-  // MAX_SERIES exists to keep a hand-built comparison legible, not to
-  // truncate "who played Champions" down to six of twelve entrants.
+  // Event scope overrides all of that: every team in the field (up to
+  // MAX_EVENT_TEAMS -- see its own comment) rather than MAX_SERIES, which
+  // exists to keep a hand-built comparison legible, not to truncate "who
+  // played Champions" down to six of twelve entrants.
   const chartTeams = useMemo(() => {
     if (!run) return []
     if (scopedEvent) {
       const field = new Set(scopedEvent.teams)
-      return rows.filter((r) => field.has(r.team)).map((r) => r.team)
+      return rows.filter((r) => field.has(r.team)).map((r) => r.team).slice(0, MAX_EVENT_TEAMS)
     }
     const requested = (searchParams.get('teams') || '')
       .split(',')
@@ -495,12 +503,20 @@ export default function Ratings() {
             xDomain={scopedEvent
               ? { start: dayBefore(scopedEvent.start), end: scopedEvent.end }
               : undefined}
+            // The dashed "unrated 1500" reference line is a season-long
+            // landmark -- where a team started the year -- and has nothing
+            // to say about a single event's own window, so it's dropped in
+            // event scope rather than drawn against dates it doesn't apply to.
+            baseline={scopedEvent ? null : 1500}
             height={300}
             title={scopedEvent
               ? scopedEvent.name
               : (chartSeries.length === 1 ? 'Rating over the season' : `${year} title race`)}
             subtitle={scopedEvent
-              ? `Every team that played, ${shortDate(scopedEvent.start)}–${shortDate(scopedEvent.end)}. `
+              ? (scopedEvent.teams.length > MAX_EVENT_TEAMS
+                  ? `Top ${MAX_EVENT_TEAMS} of ${scopedEvent.teams.length} teams by rating, `
+                  : 'Every team that played, ')
+                + `${shortDate(scopedEvent.start)}–${shortDate(scopedEvent.end)}. `
                 + 'Recomputed daily for this view, so ratings here can drift slightly from the season table.'
               : (chartSeries.length === 1
                 ? 'Hover any week for the results that moved it. ± in the tooltip is the 95% interval.'

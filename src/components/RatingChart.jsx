@@ -376,12 +376,10 @@ export default function RatingChart({
       .map((s) => ({ series: s, point: s.coords.find((c) => c.date === bestDate) }))
       .filter((r) => r.point)
     if (!rows.length) return
-    const wrapRect = wrapRef.current.getBoundingClientRect()
     setHover({
       date: bestDate,
       rows,
       cx: rows[0].point.cx,
-      px: e.clientX - wrapRect.left,
     })
   }
 
@@ -400,6 +398,49 @@ export default function RatingChart({
   const gradId = useMemo(() => `rc-${Math.random().toString(36).slice(2, 8)}`, [])
   const axisText = { fontSize: 9, fill: RC.textDim, opacity: 0.75 }
 
+  // The side table's un-hovered default: each series' own most recent
+  // point, rather than one shared date the way a hover match does. An
+  // eliminated team's most recent point IS its elimination -- there's
+  // nothing after it to share a date with the teams still going, so this
+  // reads naturally as "where everyone last stood" without needing every
+  // row to agree on when that was.
+  const latestRows = useMemo(() => {
+    if (!geom) return []
+    return geom.shaped
+      .map((s) => ({ series: s, point: s.coords[s.coords.length - 1] }))
+      .filter((r) => r.point)
+  }, [geom])
+
+  const displayRows = hover ? hover.rows : latestRows
+  const displayDate = hover ? hover.date : geom?.lastDate
+
+  // The side table sits alongside the WHOLE left column now -- the team
+  // toggles, the band legend, and the chart, not just the chart's own plot
+  // area -- so it stretches to match that column's natural height (CSS
+  // `align-items: stretch`, the row's default) rather than anything measured
+  // here. minHeight is the one thing still computed: enough for up to 16
+  // rows so an 8-16 team Masters/Champions field reads at a glance instead
+  // of through a scrollbar, for whichever of "stretch to the column" or
+  // "fit 16 rows" turns out taller. A field past 16 (Lock-In's 30, capped to
+  // 16 anyway by Ratings.jsx) still scrolls past that point.
+  //
+  // Sized off `visible.length` -- the full set of series this chart was
+  // given, muted ones included -- rather than `displayRows.length`. That one
+  // carries the hover/no-hover distinction (a hovered date can have fewer
+  // rows than the full field, if a team hadn't debuted yet), and sizing off
+  // it would make the box grow and shrink as the cursor moves. The box's
+  // size is a property of what chart this is, not of whatever moment it's
+  // currently showing.
+  //
+  // ROW_H/CHROME_H are measured off the row markup below (text-xs row +
+  // gap-1.5, the date header, and the container's own padding/gaps), not
+  // exact to the pixel, but this is a box height, not layout math anything
+  // else depends on.
+  const ROW_H = 24
+  const CHROME_H = 40
+  const contentRows = Math.min(visible.length, 16)
+  const tableMinHeight = CHROME_H + contentRows * ROW_H
+
   return (
     <div className="flex flex-col gap-3">
       {(title || controls) && (
@@ -417,6 +458,17 @@ export default function RatingChart({
         </div>
       )}
 
+      {/* Team toggles, band legend, and the chart itself share one column
+          now, sized against the side table next to it. `items-start` rather
+          than stretch -- the table sizes to its OWN content (floored at
+          tableMinHeight, see its comment) instead of being forced to match
+          this column's height exactly, which on a wrapped 12-16-chip legend
+          could be taller than 16 rows actually need and left a dead gap
+          under the last one. Short tags rather than full names (TeamLogo's
+          showTag) keep that legend wrapping to two or three lines instead
+          of six or seven -- every team in teamLogos.json carries one. */}
+      <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+      <div className="flex-1 min-w-0 flex flex-col gap-3">
       {series.length > 1 && (
         <div className="flex flex-wrap items-center gap-1.5">
           {series.map((s, i) => {
@@ -439,8 +491,14 @@ export default function RatingChart({
                   className="w-2.5 h-2.5 rounded-full shrink-0"
                   style={{ background: color, opacity: off ? 0.3 : 1 }}
                 />
-                <TeamLogo team={s.label} size={14} showName={false} />
-                <span className={off ? 'line-through decoration-1' : undefined}>{s.label}</span>
+                {/* Dimmed as one unit rather than struck through -- there's
+                    no text span of our own left to put a line through once
+                    the label is TeamLogo's icon+tag, and the muted color/
+                    opacity here plus the dot's above already read clearly
+                    as "off". */}
+                <span style={{ opacity: off ? 0.5 : 1 }}>
+                  <TeamLogo team={s.label} size={14} showName={false} showTag />
+                </span>
               </button>
             )
           })}
@@ -666,85 +724,97 @@ export default function RatingChart({
           </div>
         )}
 
-        {/* Tooltip as positioned HTML rather than SVG <text>: it needs to
-            wrap, carry a backdrop blur and a real background, and stay
-            legible at whatever width the SVG has been scaled to -- SVG text
-            would scale with the viewBox and go blurry-small on a phone. */}
-        {hover && (
-          <div
-            className="absolute top-1 pointer-events-none z-10 min-w-[11rem] max-w-[15rem] px-3 py-2"
-            style={{
-              left: Math.min(
-                Math.max(hover.px + 16, 0),
-                Math.max((wrapRef.current?.clientWidth || 0) - 230, 0)
-              ),
-              background: 'rgba(23,27,36,0.82)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              border: `1px solid ${RC.border}`,
-              borderRadius: 12,
-              boxShadow: '0 12px 32px rgba(0,0,0,0.4)',
-            }}
-          >
-            <div className="text-[10px] uppercase tracking-wide mb-1.5" style={{ color: RC.textDim }}>
-              {shortDate(hover.date)}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              {hover.rows
-                .slice()
-                .sort((a, b) => b.point.rating - a.point.rating)
-                .map(({ series: s, point }) => (
-                  <div key={s.key} className="flex flex-col gap-0.5">
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: s.color }} />
-                      <span className="font-semibold tabular-nums" style={{ color: RC.text }}>
-                        {num(point.rating)}
+      </div>
+      </div>
+
+      {/* A fixed side table rather than a tooltip that follows the cursor --
+          it stays put, updates with whatever's hovered, and falls back to
+          latestRows (each series' own most recent point) so it's never
+          blank. The vertical crosshair line inside the SVG above is still
+          what actually marks the hovered date; this just reads it. Sizes to
+          its own content, floored at tableMinHeight (up to 16 rows worth) --
+          see the row's own `items-start` comment on why that's a floor
+          rather than a stretch-to-match-the-column height. */}
+      {geom && (
+        <div
+          className="w-full lg:w-52 shrink-0 flex flex-col gap-1.5 px-3 py-2 rounded-xl overflow-y-auto"
+          style={{
+            background: 'rgba(23,27,36,0.5)',
+            border: `1px solid ${RC.border}`,
+            minHeight: tableMinHeight,
+          }}
+        >
+          <div className="text-[10px] uppercase tracking-wide sticky top-0" style={{ color: RC.textDim }}>
+            {shortDate(displayDate)}
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {displayRows
+              .slice()
+              .sort((a, b) => b.point.rating - a.point.rating)
+              .map(({ series: s, point }) => (
+                <div key={s.key} className="flex flex-col gap-0.5">
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: s.color }} />
+                    <span className="font-semibold tabular-nums" style={{ color: RC.text }}>
+                      {num(point.rating)}
+                    </span>
+                    {/* Hover-only: a team's LATEST point always carries its
+                        own last change (that's just what the number is),
+                        so showing it in the unhovered default state reads
+                        as a badge appearing out of nowhere -- "since when?"
+                        has no answer until a specific point is what's being
+                        looked at. */}
+                    {hover && point.change != null && point.games > 0 && (
+                      <span
+                        className="tabular-nums text-[11px] font-medium"
+                        style={{ color: point.change >= 0 ? RC.positive : RC.accent }}
+                      >
+                        {point.change >= 0 ? '+' : ''}{num(point.change)}
                       </span>
-                      {point.change != null && point.games > 0 && (
-                        <span
-                          className="tabular-nums text-[11px] font-medium"
-                          style={{ color: point.change >= 0 ? RC.positive : RC.accent }}
-                        >
-                          {point.change >= 0 ? '+' : ''}{num(point.change)}
-                        </span>
-                      )}
-                      {series.length > 1 && (
-                        <span className="truncate text-[11px]" style={{ color: RC.textDim }}>
-                          {s.label}
-                        </span>
-                      )}
-                    </div>
-                    {hover.rows.length === 1 && point.results?.length > 0 && (
-                      <div className="flex flex-col gap-1 pl-4 mt-0.5">
-                        {point.results.slice(0, 3).map((r, i) => (
-                          <div key={i} className="text-[11px] leading-tight">
-                            <span style={{ color: RC.textDim }}>vs </span>
-                            <span style={{ color: RC.text }}>{r.opponent}</span>{' '}
-                            <span
-                              className="tabular-nums font-medium"
-                              style={{ color: r.won ? RC.positive : RC.accent }}
-                            >
-                              {r.score}
-                            </span>
-                            {r.event && (
-                              <div className="truncate" style={{ color: RC.textDim, opacity: 0.75 }}>
-                                {r.event}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                    )}
+                    {series.length > 1 && (
+                      // Icon + short tag rather than the full name: the row
+                      // already spends width on the rating and (while
+                      // hovering) a change badge, and a 20+ character name
+                      // like "Nongshim RedForce" or "DetonatioN FocusMe"
+                      // would either force a wrap or get clipped anyway.
+                      // Every team in teamLogos.json carries a tag.
+                      <span className="text-[11px] shrink-0" style={{ color: RC.textDim }}>
+                        <TeamLogo team={s.label} size={14} showName={false} showTag />
+                      </span>
                     )}
                   </div>
-                ))}
-            </div>
-            {hover.rows.length === 1 && !hover.rows[0].point.games && !hover.rows[0].point.synthetic && (
-              <div className="text-[10px] mt-1" style={{ color: RC.textDim }}>
-                No games — deviation widening
-              </div>
-            )}
+                  {displayRows.length === 1 && point.results?.length > 0 && (
+                    <div className="flex flex-col gap-1 pl-4 mt-0.5">
+                      {point.results.slice(0, 3).map((r, i) => (
+                        <div key={i} className="text-[11px] leading-tight">
+                          <span style={{ color: RC.textDim }}>vs </span>
+                          <span style={{ color: RC.text }}>{r.opponent}</span>{' '}
+                          <span
+                            className="tabular-nums font-medium"
+                            style={{ color: r.won ? RC.positive : RC.accent }}
+                          >
+                            {r.score}
+                          </span>
+                          {r.event && (
+                            <div className="truncate" style={{ color: RC.textDim, opacity: 0.75 }}>
+                              {r.event}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
           </div>
-        )}
+          {displayRows.length === 1 && !displayRows[0].point.games && !displayRows[0].point.synthetic && (
+            <div className="text-[10px] mt-1" style={{ color: RC.textDim }}>
+              No games — deviation widening
+            </div>
+          )}
+        </div>
+      )}
       </div>
     </div>
   )

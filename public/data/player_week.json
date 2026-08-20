@@ -1,23 +1,23 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-08-20T18:52:58Z",
-    "playersConsidered": 205,
-    "poolMeanRating": 0.999,
+    "generatedAt": "2026-08-20T21:46:57Z",
+    "playersConsidered": 210,
+    "poolMeanRating": 0.998,
     "selection": "round-weighted (shrunk toward pool mean, m=20 rounds, no eligibility gate; see build_player_week.py)"
   },
   "weekStart": "2026-08-14",
   "weekEnd": "2026-08-20",
-  "player": "xeus",
-  "team": "FUT Esports",
-  "countryCode": "tr",
-  "countryName": "Türkiye",
-  "rating": 1.45,
-  "acs": 287.0,
-  "kd": 1.44,
-  "kast": 0.8604,
-  "adr": 185.0,
-  "hs": 0.4584,
-  "maps": 2,
-  "rounds": 50
+  "player": "basic",
+  "team": "FURIA",
+  "countryCode": "br",
+  "countryName": "Brazil",
+  "rating": 1.33,
+  "acs": 242.0,
+  "kd": 1.51,
+  "kast": 0.8029,
+  "adr": 158.0,
+  "hs": 0.2497,
+  "maps": 6,
+  "rounds": 138
 }

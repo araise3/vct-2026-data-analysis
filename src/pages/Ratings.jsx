@@ -232,7 +232,7 @@ export default function Ratings() {
           {/* TeamLogo renders the name itself (showName defaults on), same
               as every other team column on the site -- don't add another. */}
           <TeamLogo team={v} size={22} />
-          {row.provisional && (
+          {row.provisional && !ALWAYS_SHOWN.has(row.team) && (
             <span
               className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-md text-muted bg-surface2 shrink-0"
               title={`Rating deviation above ${PROVISIONAL_RD} — too few recent series for the rating to have settled.`}

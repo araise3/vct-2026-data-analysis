@@ -722,7 +722,7 @@ export default function RatingChart({
           a fallback for a future caller that doesn't cap its series count. */}
       {geom && (
         <div
-          className="w-full lg:w-52 shrink-0 flex flex-col gap-1.5 px-3 py-2 rounded-xl overflow-y-auto"
+          className="w-full lg:w-44 shrink-0 flex flex-col gap-1.5 px-3 py-2 rounded-xl overflow-y-auto"
           style={{ background: 'rgba(23,27,36,0.5)', border: `1px solid ${RC.border}` }}
         >
           <div className="text-[10px] uppercase tracking-wide sticky top-0" style={{ color: RC.textDim }}>

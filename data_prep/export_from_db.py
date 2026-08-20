@@ -62,6 +62,10 @@ CANONICAL_OVERRIDES = {
     # same opponents, same week cadence, immediately before/after matches
     # under "JDG Esports" for the same roster.
     "JD Gaming": "JDG Esports",
+    # Same "JD Gaming" mis-scrape as above, but combined with the
+    # sponsor-prefixed long name instead of standing alone -- parenthetical
+    # says "(JD Gaming)" rather than "(JDG Esports)". Same org either way.
+    "JD Mall JDG Esports (JD Gaming)": "JDG Esports",
     "Wuxi Titan Esports Club (Titan Esports Club)": "Titan Esports Club",
     "AG.AL (All Gamers)": "All Gamers",
     "MIBR.LOS (MIBR)": "MIBR",

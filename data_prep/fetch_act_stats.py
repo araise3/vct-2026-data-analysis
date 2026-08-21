@@ -407,20 +407,34 @@ def _round_kast_participants(match, puuid, trade_window_ms=TRADE_WINDOW_MS):
     for a match whose official total (`rounds.won + rounds.lost`) is only
     13 -- each with a real per-player stats row (so they pass the
     total_round_ids filter below) but ZERO kill events anywhere in the
-    match for that round number, for either team. A round with no kill
-    events for anyone is exactly what "no death recorded -- survived"
-    means for a round that WAS played, which is why these phantom rounds
-    were previously being counted as free qualifying (S) rounds instead
-    of not being counted at all. Round ids in this schema are confirmed
-    (checked across every round of every match in that same audit) to be
-    plain 0-indexed integers matching real round sequence, so `id <
+    match for that round number, for either team. Confirmed (direct
+    product knowledge, not just inferred from the data) as a FORFEIT
+    artifact: when a match ends by forfeit rather than being played out,
+    HenrikDev/Riot's API leaves round records behind for whichever rounds
+    the match would still have needed to reach its real end state, none
+    of which were actually played -- so they carry a stats row (the
+    player "exists" in a round slot that was allocated) but no kill
+    events (nothing happened in it). A round with no kill events for
+    anyone is exactly what "no death recorded -- survived" means for a
+    round that WAS played, which is why these phantom rounds were
+    previously being counted as free qualifying (S) rounds instead of not
+    being counted at all. Round ids in this schema are confirmed (checked
+    across every round of every match in that same audit) to be plain
+    0-indexed integers matching real round sequence, so `id <
     official_rounds` is exactly "did this round actually happen" -- not a
-    count heuristic, an exact per-round filter. Verified against the full
-    audit: filtering match de5c72c8 down to its real 13 rounds (excluding
-    ids 13-16) and re-summing across all 4 of xeus's matches for the Act
-    lands on 54/66 = 81.82%, matching tracker.gg's real 81.8% almost
-    exactly -- where the count-clamp version read 86.36% and the fully
-    unfiltered version read 82.86%.
+    count heuristic, an exact per-round filter, and it needs no explicit
+    forfeit flag from the API to work (this schema doesn't expose one).
+
+    Verified against the full audit: filtering match de5c72c8 down to its
+    real 13 rounds (excluding ids 13-16) and re-summing across all 4 of
+    xeus's matches for the Act lands on 54/66 = 81.82%, matching
+    tracker.gg's real 81.8% almost exactly -- where the count-clamp
+    version read 86.36% and the fully unfiltered version read 82.86%.
+    Confirmed NOT a one-off: a --dump-round-anomalies sweep of 21 other
+    linked players' real match histories found 5 more forfeited matches
+    (2-8 phantom rounds each) touching 9 of those 21 players -- every one
+    already resolves cleanly under this same id-based filter, no
+    per-match special-casing needed.
     """
     rounds = match.get("rounds") or []
     kills = match.get("kills") or []

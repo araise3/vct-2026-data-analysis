@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated": "2026-08-21T06:17:31Z",
+    "generated": "2026-08-21T16:17:28Z",
     "note": "Personal competitive ladder stats for the player's CURRENT Act, from their linked Riot account -- a different population from this site's pro-match stats and not comparable with them.",
     "source": "HenrikDev API (api.henrikdev.xyz), unofficial VALORANT API over Riot's own"
   },
@@ -9662,7 +9662,7 @@
       "matches": 6,
       "newestMatchId": "b687be92-3080-4730-8540-3f87780202db",
       "rank": {
-        "leaderboardRank": 1390,
+        "leaderboardRank": 1586,
         "rr": 160,
         "tier": "Immortal 2"
       },
@@ -9672,7 +9672,7 @@
       "rounds": 127,
       "roundsWon": 70,
       "score": 25702,
-      "updatedAt": "2026-08-21T06:05:47Z",
+      "updatedAt": "2026-08-21T16:17:28Z",
       "winPct": 0.6666666666666666,
       "wins": 4
     },

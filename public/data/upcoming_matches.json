@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-20T19:15:52Z"
+    "fetchedAt": "2026-08-21T02:10:51Z"
   },
   "matches": [
-    {
-      "key": "1786719600|eintracht-frankfurt|team-heretics",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1786719600,
-      "bestOf": 3,
-      "team1": "Eintracht Frankfurt",
-      "team2": "Team Heretics",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
     {
       "key": "1786728600|joblife|fnatic",
       "event": "Vct 2026 Emea Stage 2",
@@ -419,7 +406,7 @@
       "team1": "Team Liquid",
       "team2": "FUT Esports",
       "score1": 0,
-      "score2": 0,
+      "score2": 2,
       "started": true
     },
     {
@@ -431,22 +418,22 @@
       "bestOf": 3,
       "team1": "Sentinels",
       "team2": "2GAME Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 0,
+      "started": true
     },
     {
-      "key": "1787270400|kr-esports|fluxo-w7m",
+      "key": "1787268000|kr-esports|fluxo-w7m",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
-      "timestamp": 1787270400,
+      "timestamp": 1787268000,
       "bestOf": 3,
       "team1": "KRÜ Esports",
       "team2": "Fluxo W7M",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1787299200|jdg-esports|bilibili-gaming",
@@ -514,14 +501,14 @@
       "started": false
     },
     {
-      "key": "1787335200|bbl-esports|tbd",
+      "key": "1787335200|bbl-esports|fut-esports",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1787335200,
       "bestOf": 3,
       "team1": "BBL Esports",
-      "team2": null,
+      "team2": "FUT Esports",
       "score1": null,
       "score2": null,
       "started": false
@@ -592,13 +579,13 @@
       "started": false
     },
     {
-      "key": "1787407200|tbd|eintracht-frankfurt",
+      "key": "1787407200|team-liquid|eintracht-frankfurt",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1787407200,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Team Liquid",
       "team2": "Eintracht Frankfurt",
       "score1": null,
       "score2": null,
@@ -631,13 +618,13 @@
       "started": false
     },
     {
-      "key": "1787443200|tbd|tbd",
+      "key": "1787443200|sentinels|tbd",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787443200,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Sentinels",
       "team2": null,
       "score1": null,
       "score2": null,

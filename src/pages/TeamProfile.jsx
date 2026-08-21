@@ -11,6 +11,7 @@ import EventPicker from '../components/EventPicker'
 import KpiCard from '../components/KpiCard'
 import MatchHistory from '../components/MatchHistory'
 import TeamLogo from '../components/TeamLogo'
+import TrophyCase from '../components/TrophyCase'
 import RosterTable from '../components/RosterTable'
 import RosterTimeline from '../components/RosterTimeline'
 import TeamRatingSection from '../components/TeamRatingSection'
@@ -21,7 +22,9 @@ import Button from '../components/ui/Button'
 import Select from '../components/ui/Select'
 import { buildTeamMapRows, aggregateCompositions, aggregateCompositionPlayers } from '../lib/compositions'
 import { aggregateTeamVetoStats } from '../lib/vetoStats'
+import { buildTrophyWinners } from '../lib/trophies'
 import mapIcons from '../lib/mapIcons.json'
+import teamLogos from '../lib/teamLogos.json'
 import { rating, pct, num, eventLabel } from '../lib/format'
 import { buildEventDateOrder } from '../lib/rosterTimeline'
 import { coachAt } from '../lib/coaches'
@@ -30,6 +33,34 @@ import { coachAt } from '../lib/coaches'
 // filename (elim.webp -> "elim", etc.) -- labeled/ordered for display.
 const WIN_CONDITION_ORDER = ['elim', 'defuse', 'boom', 'time']
 const WIN_CONDITION_LABELS = { elim: 'Elimination', defuse: 'Defuse', boom: 'Spike detonated', time: 'Time expired' }
+
+// Mirrors PlayerProfile's own tab row (Overview/Matches/Agents), split
+// wider to cover what a TEAM page actually has instead of forcing all of
+// it under one "Overview": Map Stats + Map Picks & Bans get their own
+// "Maps" tab and Compositions gets "Agents" (a team's compositions ARE its
+// agent picks) rather than piling five sections into a single scrolling
+// tab the way this page used to.
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'matches', label: 'Matches' },
+  { id: 'maps', label: 'Maps' },
+  { id: 'agents', label: 'Agents' },
+  { id: 'roster', label: 'Roster' },
+]
+
+// Shared fallback for the four tabs whose content depends on `stats`
+// (everything except Roster, which reads Liquipedia's own always-current
+// roster snapshot instead -- see the comment above RosterTable below).
+function ScopeEmptyState({ scopeLabel, onReset }) {
+  return (
+    <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-8 text-center">
+      <p className="text-muted text-sm">No maps for {scopeLabel}.</p>
+      <button onClick={onReset} className="text-accent-bright text-sm hover:underline mt-2">
+        Reset scope
+      </button>
+    </div>
+  )
+}
 
 export default function TeamProfile() {
   const { name } = useParams()
@@ -121,6 +152,14 @@ export default function TeamProfile() {
   useEffect(() => {
     setYear(null)
     setEventOverrides([])
+  }, [decodedName])
+
+  // Header tab row (TABS above) -- resets to Overview on team switch, same
+  // as every other per-team UI state on this page (year/eventOverrides
+  // above, matchLimit/selectedCompMap below).
+  const [activeTab, setActiveTab] = useState('overview')
+  useEffect(() => {
+    setActiveTab('overview')
   }, [decodedName])
 
   const yearOptions = useMemo(
@@ -563,158 +602,286 @@ export default function TeamProfile() {
     )
   }
 
+  // Header card's TrophyCase, mirroring PlayerProfile's own
+  // (buildTrophyWinners + a narrowing step) -- teams need no narrowing
+  // step, since trophies.js already keys each entry by the champion TEAM
+  // directly. Career-wide (every year this team has ever won, unfiltered by
+  // the page's active scope), same as PlayerProfile's trophy case.
+  const allTrophies = buildTrophyWinners(matchData)
+  const myTrophies = allTrophies.filter((t) => t.team === decodedName)
+  const hasLogo = !!teamLogos[decodedName]?.logo
+
   return (
     <div className="flex flex-col gap-6">
       <Link to="/teams" className="text-sm text-muted hover:text-ink w-fit">← Back to Teams</Link>
 
-      <div className="flex items-stretch gap-4">
-        <div className="w-16 rounded-xl bg-surface2 border border-hairline flex items-center justify-center shrink-0">
-          <TeamLogo team={decodedName} size={44} showName={false} />
+      {/* One merged card for the header info AND the scope-control row below
+          it -- a literal structural copy of PlayerProfile's own header card
+          (info block, hairline divider, then a controls row, all inside one
+          `rounded-2xl bg-grad-surface border overflow-hidden` box), with
+          each piece mapped onto what a TEAM has rather than a player:
+          logo instead of photo, region instead of flag/realname/role/
+          birthdate, no right-side action row (no team-compare page or
+          external tracker-style profile link exists to put there), and the
+          same TrophyCase strip -- trophies.js's `team` field already names
+          the champion team directly, so this needs no player-roster
+          narrowing step the way PlayerProfile's `playerTrophies` does. */}
+      <div className="relative flex flex-col bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-hidden">
+        <div className="flex flex-col gap-4 px-4 py-4 sm:px-6">
+        <div className="flex items-center gap-4 sm:gap-6 min-w-0">
+          {/* Same halo treatment as PlayerProfile's photo frame, and the
+              same reason it's conditional: bg-accent/25 blur-2xl reads as a
+              nice glow behind an EMPTY placeholder box but as a red glare
+              bleeding past the frame's edges behind a real image. Every team
+              this page can render already has real logo art in
+              teamLogos.json (it's committed lookup data, not a scraper
+              manifest that can come up empty for who's currently on
+              screen), so `hasLogo` only ever turns the halo off in practice
+              -- kept conditional anyway rather than deleted outright, same
+              as PlayerProfile keeps its own check despite most players
+              having a photo, so a future team missing from that file still
+              gets the placeholder treatment instead of a bare glow-less box. */}
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0">
+            {!hasLogo && (
+              <div className="absolute inset-0 rounded-xl bg-accent/25 blur-2xl" aria-hidden="true" />
+            )}
+            <div className="relative w-full h-full rounded-xl bg-surface2 border border-hairline flex items-center justify-center overflow-hidden">
+              <TeamLogo team={decodedName} size={56} showName={false} />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5 min-w-0">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <h1 className="font-display text-xl sm:text-2xl font-semibold text-ink truncate">{decodedName}</h1>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap text-muted text-sm">
+              <span>{meta.region}</span>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col justify-center">
-          <h1 className="font-display text-2xl font-semibold text-ink">{decodedName}</h1>
-          <p className="text-muted text-sm">{meta.region}</p>
+
+        <TrophyCase trophies={myTrophies} />
+        </div>
+
+        {/* Divider -- flush against the card's own edges, same as
+            PlayerProfile's bare `border-t` between its header block and its
+            tab row. */}
+        <div className="border-t border-hairline" />
+
+        {/* Tab row + scope controls, INSIDE the same card as the header
+            above -- byte-for-byte the same row PlayerProfile uses (tabs
+            left, Select pair right, `flex-col-reverse` on mobile so the
+            controls sit above the tab strip on narrow widths). The scope
+            control itself is still a Year (or "All") replaced entirely by
+            hand-picked Events the moment any are added -- see the comment
+            on `inScope` above for why -- just positioned where
+            PlayerProfile's own Select pair sits rather than left-aligned
+            with nothing to its left. */}
+        <div className="flex flex-col-reverse items-center md:flex-row md:justify-between gap-2 sm:gap-4 px-3 sm:px-6 pt-1 pb-2 sm:pb-0">
+          <div className="flex items-center gap-1 max-w-full overflow-x-auto">
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setActiveTab(t.id)}
+                className={`shrink-0 px-3 pt-2 pb-3 text-xs font-semibold border-0 border-b-2 transition-colors ${
+                  activeTab === t.id
+                    ? 'text-ink border-accent-bright'
+                    : 'text-muted border-transparent hover:text-ink'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
+            {eventOverrides.length === 0 && (
+              <Select variant="ghost" options={['All', ...yearOptions]} value={effectiveYear} onChange={setYear} />
+            )}
+            <EventPicker
+              options={eventOptions}
+              selected={eventOverrides}
+              onAdd={addEvent}
+              onRemove={removeEvent}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Whole-page scope control: a Year (or "All"), replaced entirely by
-          hand-picked Events the moment any are added -- see the comment on
-          `inScope` above for why. Replaces the old multi-facet FilterPanel
-          (Competition/Region/Split/Phase-Week/date-range) sitewide-style
-          control with the simpler model PlayerProfile's Agent table already
-          uses, per direct request. */}
-      <div className="flex items-center gap-2 flex-wrap">
-        {eventOverrides.length === 0 && (
-          <Select variant="ghost" options={['All', ...yearOptions]} value={effectiveYear} onChange={setYear} />
+      {activeTab === 'overview' && <>
+        {/* Glicko-2 season rating. Sits outside the `stats.mapsPlayed` gate
+            below on purpose: it reads match_results, not the team_buckets
+            this page's other stats aggregate, so it still has something to
+            say for a scope those come up empty for -- and it renders nothing
+            at all when the team has no rated season, so an empty gap isn't a
+            risk. Passed the year only, never eventOverrides: see the
+            component's own comment on why a Glicko rating can't be scoped
+            narrower than a whole run. */}
+        {matchData && (
+          <TeamRatingSection
+            matchData={matchData}
+            team={decodedName}
+            year={typeof effectiveYear === 'number' ? effectiveYear : null}
+          />
         )}
-        <EventPicker
-          options={eventOptions}
-          selected={eventOverrides}
-          onAdd={addEvent}
-          onRemove={removeEvent}
-        />
-      </div>
 
-      {/* Glicko-2 season rating. Sits outside the `stats.mapsPlayed` gate
-          below on purpose: it reads match_results, not the team_buckets
-          this page's other stats aggregate, so it still has something to
-          say for a scope those come up empty for -- and it renders nothing
-          at all when the team has no rated season, so an empty gap isn't a
-          risk. Passed the year only, never eventOverrides: see the
-          component's own comment on why a Glicko rating can't be scoped
-          narrower than a whole run. */}
-      {matchData && (
-        <TeamRatingSection
-          matchData={matchData}
-          team={decodedName}
-          year={typeof effectiveYear === 'number' ? effectiveYear : null}
-        />
+        {!stats || !stats.mapsPlayed ? (
+          <ScopeEmptyState scopeLabel={scopeLabel} onReset={resetScope} />
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <KpiCard
+                label="Matches"
+                value={`${stats.matchesWon}–${stats.matchesPlayed - stats.matchesWon}`}
+                sub={pct(stats.matchWinPct)}
+              />
+              <KpiCard label="Avg Player Rating" value={rating(stats.avgRating)} />
+              <KpiCard
+                label="Pistol Win%"
+                value={stats.pistolWon ? pct(stats.pistolWinPct) : '—'}
+                sub={stats.pistolWon ? `${stats.pistolWon}/${stats.pistolPlayed}` : 'No economy data (China)'}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <KpiCard
+                label="Comebacks"
+                value={stats.comebackMaps ? `${stats.comebackWon}/${stats.comebackMaps}` : '—'}
+                sub="Won after facing a 3+ round deficit"
+              />
+              <KpiCard
+                label="Post-Pistol Anti-Eco"
+                value={stats.postPistolAntiEcoRounds ? pct(stats.postPistolAntiEcoWinPct) : '—'}
+                sub="Rounds 2 & 14, after winning the pistol"
+              />
+              <KpiCard
+                label="Bonus Round"
+                value={stats.bonusRounds ? pct(stats.bonusWinPct) : '—'}
+                sub="Rounds 3 & 15, after winning the pistol AND round 2/14"
+              />
+              <KpiCard
+                label="Anti-Eco Win%"
+                value={stats.antiEcoRounds ? pct(stats.antiEcoWinPct) : '—'}
+                sub={stats.antiEcoRounds ? `${stats.antiEcoRounds} rounds` : 'No economy data'}
+              />
+            </div>
+
+            {Object.keys(stats.winConditions || {}).length > 0 && (
+              <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5">
+                <h3 className="font-display text-sm font-semibold text-ink mb-1">
+                  How this team closes out rounds
+                </h3>
+                <p className="text-muted text-xs mb-4">
+                  Share of this team's round wins by how the round ended.
+                </p>
+                <div className="flex gap-4 flex-wrap">
+                  {WIN_CONDITION_ORDER.filter((k) => stats.winConditions[k]).map((k) => {
+                    const n = stats.winConditions[k]
+                    const total = Object.values(stats.winConditions).reduce((a, b) => a + b, 0)
+                    return (
+                      <div key={k} className="flex flex-col items-center gap-1 min-w-[80px]">
+                        <div className="text-2xl font-display font-semibold text-ink">
+                          {Math.round((n / total) * 100)}%
+                        </div>
+                        <div className="text-muted text-xs capitalize">{WIN_CONDITION_LABELS[k] || k}</div>
+                        <div className="text-muted/70 text-[11px]">{n} rounds</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </>}
+
+      {activeTab === 'matches' && (
+        !stats || !stats.mapsPlayed ? (
+          <ScopeEmptyState scopeLabel={scopeLabel} onReset={resetScope} />
+        ) : (
+          <div className="flex flex-col gap-2">
+            <h3 className="font-display text-sm font-semibold text-ink">Match history</h3>
+            <p className="text-muted text-xs">
+              Every {decodedName} match in scope — click a row for map scores and the full scoreboard.
+            </p>
+            <MatchHistory
+              matches={visibleMatchRows}
+              perspective={{ type: 'team', name: decodedName }}
+            />
+            {matchLimit < sortedMatchRows.length && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setMatchLimit((l) => Math.min(l + 30, sortedMatchRows.length))}
+                className="self-center hover:border-accent-bright/40 hover:text-accent-bright"
+              >
+                Load more ({sortedMatchRows.length - matchLimit} more)
+              </Button>
+            )}
+          </div>
+        )
       )}
 
-      {/* Match-stat sections (KPIs/Map Stats/round curve/win conditions/
-          rating trend/match history) stay gated on `stats.mapsPlayed` --
-          Roster identity (Coaching Staff + Players, below) and its timeline
-          deliberately are NOT: Coaching Staff comes from Liquipedia's
-          always-current snapshot (unrelated to whatever scope is selected)
-          and RosterTimeline already reads the team's full, unfiltered
-          history on its own (see its own comment on why it isn't scoped at
-          all). Both used to sit inside this same gate, so picking a scope
-          with zero matches for this team hid the coach and roster too, even
-          though neither one actually depends on this scope being non-empty. */}
-      {!stats || !stats.mapsPlayed ? (
-        <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-8 text-center">
-          <p className="text-muted text-sm">No maps for {scopeLabel}.</p>
-          <button onClick={resetScope} className="text-accent-bright text-sm hover:underline mt-2">
-            Reset scope
-          </button>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <KpiCard
-              label="Matches"
-              value={`${stats.matchesWon}–${stats.matchesPlayed - stats.matchesWon}`}
-              sub={pct(stats.matchWinPct)}
-            />
-            <KpiCard label="Avg Player Rating" value={rating(stats.avgRating)} />
-            <KpiCard
-              label="Pistol Win%"
-              value={stats.pistolWon ? pct(stats.pistolWinPct) : '—'}
-              sub={stats.pistolWon ? `${stats.pistolWon}/${stats.pistolPlayed}` : 'No economy data (China)'}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KpiCard
-              label="Comebacks"
-              value={stats.comebackMaps ? `${stats.comebackWon}/${stats.comebackMaps}` : '—'}
-              sub="Won after facing a 3+ round deficit"
-            />
-            <KpiCard
-              label="Post-Pistol Anti-Eco"
-              value={stats.postPistolAntiEcoRounds ? pct(stats.postPistolAntiEcoWinPct) : '—'}
-              sub="Rounds 2 & 14, after winning the pistol"
-            />
-            <KpiCard
-              label="Bonus Round"
-              value={stats.bonusRounds ? pct(stats.bonusWinPct) : '—'}
-              sub="Rounds 3 & 15, after winning the pistol AND round 2/14"
-            />
-            <KpiCard
-              label="Anti-Eco Win%"
-              value={stats.antiEcoRounds ? pct(stats.antiEcoWinPct) : '—'}
-              sub={stats.antiEcoRounds ? `${stats.antiEcoRounds} rounds` : 'No economy data'}
-            />
-          </div>
-
-          {mapStats.length > 0 && (
-            <div className="flex flex-col gap-2">
-              <h3 className="font-display text-sm font-semibold text-ink">Map Stats</h3>
-              <p className="text-muted text-xs">
-                {decodedName}'s record on every map played in scope.
-              </p>
-              <DataTable
-                columns={mapStatsColumns}
-                rows={mapStats}
-                summaryRow={mapStatsOverall}
-                defaultSortKey="winPct"
-              />
-            </div>
-          )}
-
-          {vetoStats.matchesWithVeto > 0 && (
-            <div className="flex flex-col gap-2">
-              <h3 className="font-display text-sm font-semibold text-ink">Map Picks & Bans</h3>
-              <p className="text-muted text-xs">
-                {decodedName}'s veto record across {vetoStats.matchesWithVeto} of {matchRows.length} match
-                {matchRows.length === 1 ? '' : 'es'} in scope with pick/ban data.
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <KpiCard
-                  label="Own Picks Win%"
-                  value={vetoStats.ownPick.maps ? pct(vetoStats.ownPick.winPct) : '—'}
-                  sub={vetoStats.ownPick.maps ? `${vetoStats.ownPick.wins}–${vetoStats.ownPick.maps - vetoStats.ownPick.wins} maps` : 'No own picks played'}
-                />
-                <KpiCard
-                  label="Opponent Picks Win%"
-                  value={vetoStats.oppPick.maps ? pct(vetoStats.oppPick.winPct) : '—'}
-                  sub={vetoStats.oppPick.maps ? `${vetoStats.oppPick.wins}–${vetoStats.oppPick.maps - vetoStats.oppPick.wins} maps` : 'No opponent picks played'}
-                />
-                <KpiCard
-                  label="Decider Win%"
-                  value={vetoStats.decider.maps ? pct(vetoStats.decider.winPct) : '—'}
-                  sub={vetoStats.decider.maps ? `${vetoStats.decider.wins}–${vetoStats.decider.maps - vetoStats.decider.wins} maps` : 'No deciders played'}
+      {activeTab === 'maps' && (
+        !stats || !stats.mapsPlayed ? (
+          <ScopeEmptyState scopeLabel={scopeLabel} onReset={resetScope} />
+        ) : (
+          <>
+            {mapStats.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <h3 className="font-display text-sm font-semibold text-ink">Map Stats</h3>
+                <p className="text-muted text-xs">
+                  {decodedName}'s record on every map played in scope.
+                </p>
+                <DataTable
+                  columns={mapStatsColumns}
+                  rows={mapStats}
+                  summaryRow={mapStatsOverall}
+                  defaultSortKey="winPct"
                 />
               </div>
-              <DataTable
-                columns={vetoColumns}
-                rows={vetoStats.byMap}
-                defaultSortKey="picked"
-              />
-            </div>
-          )}
+            )}
 
-          {matchPlayerData && compMapsInScope.length > 0 && (
+            {vetoStats.matchesWithVeto > 0 && (
+              <div className="flex flex-col gap-2">
+                <h3 className="font-display text-sm font-semibold text-ink">Map Picks & Bans</h3>
+                <p className="text-muted text-xs">
+                  {decodedName}'s veto record across {vetoStats.matchesWithVeto} of {matchRows.length} match
+                  {matchRows.length === 1 ? '' : 'es'} in scope with pick/ban data.
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <KpiCard
+                    label="Own Picks Win%"
+                    value={vetoStats.ownPick.maps ? pct(vetoStats.ownPick.winPct) : '—'}
+                    sub={vetoStats.ownPick.maps ? `${vetoStats.ownPick.wins}–${vetoStats.ownPick.maps - vetoStats.ownPick.wins} maps` : 'No own picks played'}
+                  />
+                  <KpiCard
+                    label="Opponent Picks Win%"
+                    value={vetoStats.oppPick.maps ? pct(vetoStats.oppPick.winPct) : '—'}
+                    sub={vetoStats.oppPick.maps ? `${vetoStats.oppPick.wins}–${vetoStats.oppPick.maps - vetoStats.oppPick.wins} maps` : 'No opponent picks played'}
+                  />
+                  <KpiCard
+                    label="Decider Win%"
+                    value={vetoStats.decider.maps ? pct(vetoStats.decider.winPct) : '—'}
+                    sub={vetoStats.decider.maps ? `${vetoStats.decider.wins}–${vetoStats.decider.maps - vetoStats.decider.wins} maps` : 'No deciders played'}
+                  />
+                </div>
+                <DataTable
+                  columns={vetoColumns}
+                  rows={vetoStats.byMap}
+                  defaultSortKey="picked"
+                />
+              </div>
+            )}
+          </>
+        )
+      )}
+
+      {activeTab === 'agents' && (
+        !stats || !stats.mapsPlayed ? (
+          <ScopeEmptyState scopeLabel={scopeLabel} onReset={resetScope} />
+        ) : (
+          matchPlayerData && compMapsInScope.length > 0 && (
             <div className="flex flex-col gap-2">
               <h3 className="font-display text-sm font-semibold text-ink">Compositions</h3>
               <p className="text-muted text-xs">
@@ -737,83 +904,40 @@ export default function TeamProfile() {
                 renderExpanded={renderCompositionPlayers}
               />
             </div>
-          )}
-        </>
+          )
+        )
       )}
 
-      <RosterTable
-        team={decodedName}
-        rows={roster}
-        liquipedia={liquipediaData?.teams?.[decodedName]}
-        matches={matchRows}
-        coaches={coachesInScope}
-        asOfDate={asOfDate}
-        rosterIsCurrent={rosterIsCurrent}
-      />
+      {/* Roster identity (Coaching Staff + Players) and its timeline
+          deliberately are NOT gated on `stats.mapsPlayed` the way the tabs
+          above are: Coaching Staff comes from Liquipedia's always-current
+          snapshot (unrelated to whatever scope is selected) and
+          RosterTimeline already reads the team's full, unfiltered history
+          on its own (see its own comment on why it isn't scoped at all). */}
+      {activeTab === 'roster' && <>
+        <RosterTable
+          team={decodedName}
+          rows={roster}
+          liquipedia={liquipediaData?.teams?.[decodedName]}
+          matches={matchRows}
+          coaches={coachesInScope}
+          asOfDate={asOfDate}
+          rosterIsCurrent={rosterIsCurrent}
+        />
 
-      {playerData && (
-        <div className="flex flex-col gap-2">
-          <h2 className="font-display text-sm font-semibold text-ink">Roster timeline of {decodedName}</h2>
-          <RosterTimeline
-            playerBuckets={playerData}
-            team={decodedName}
-            matchResultsRows={matchData?.rows}
-            matchPlayersRows={matchPlayerData?.rows}
-            headCoaches={headCoaches}
-          />
-        </div>
-      )}
-
-      {stats && stats.mapsPlayed > 0 && (
-        <>
-          {Object.keys(stats.winConditions || {}).length > 0 && (
-            <div className="bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm p-5">
-              <h3 className="font-display text-sm font-semibold text-ink mb-1">
-                How this team closes out rounds
-              </h3>
-              <p className="text-muted text-xs mb-4">
-                Share of this team's round wins by how the round ended.
-              </p>
-              <div className="flex gap-4 flex-wrap">
-                {WIN_CONDITION_ORDER.filter((k) => stats.winConditions[k]).map((k) => {
-                  const n = stats.winConditions[k]
-                  const total = Object.values(stats.winConditions).reduce((a, b) => a + b, 0)
-                  return (
-                    <div key={k} className="flex flex-col items-center gap-1 min-w-[80px]">
-                      <div className="text-2xl font-display font-semibold text-ink">
-                        {Math.round((n / total) * 100)}%
-                      </div>
-                      <div className="text-muted text-xs capitalize">{WIN_CONDITION_LABELS[k] || k}</div>
-                      <div className="text-muted/70 text-[11px]">{n} rounds</div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
+        {playerData && (
           <div className="flex flex-col gap-2">
-            <h3 className="font-display text-sm font-semibold text-ink">Match history</h3>
-            <p className="text-muted text-xs">
-              Every {decodedName} match in scope — click a row for map scores and the full scoreboard.
-            </p>
-            <MatchHistory
-              matches={visibleMatchRows}
-              perspective={{ type: 'team', name: decodedName }}
+            <h2 className="font-display text-sm font-semibold text-ink">Roster timeline of {decodedName}</h2>
+            <RosterTimeline
+              playerBuckets={playerData}
+              team={decodedName}
+              matchResultsRows={matchData?.rows}
+              matchPlayersRows={matchPlayerData?.rows}
+              headCoaches={headCoaches}
             />
-            {matchLimit < sortedMatchRows.length && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setMatchLimit((l) => Math.min(l + 30, sortedMatchRows.length))}
-                className="self-center hover:border-accent-bright/40 hover:text-accent-bright"
-              >
-                Load more ({sortedMatchRows.length - matchLimit} more)
-              </Button>
-            )}
           </div>
-        </>
-      )}
+        )}
+      </>}
     </div>
   )
 }

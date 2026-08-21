@@ -31,7 +31,21 @@ export default function EventRow({ event }) {
   return (
     <Link
       to={`/tournaments/${encodeURIComponent(event.name)}`}
-      className="group flex items-center gap-3 rounded-2xl border border-hairline bg-surface2 px-3 py-3 shadow-depth-xs transition-all duration-150 hover:-translate-y-0.5 hover:border-muted hover:shadow-depth-sm"
+      // will-change-transform: without it, the hover lift and the
+      // hover:border-muted/shadow-depth-sm repaint it shares a transition
+      // with visibly desync mid-animation -- Chromium repaints the row's
+      // text at its CSS layout position on some frames while the transform
+      // composites on top on others, so the date line (a separate text
+      // node one line below the title) reads as drifting independently
+      // instead of translating as one rigid unit with the rest of the row.
+      // Pre-promoting the row to its own layer makes the whole box (border,
+      // shadow and text alike) move as a single bitmap for every frame of
+      // the transition. Reported specifically on this row; the same
+      // transition-all+hover:-translate-y-0.5 pattern repeats elsewhere on
+      // the site (CircuitList, RailMatch, FilterChips, ui/Chip) but wasn't
+      // flagged there, so this fix stays scoped to here rather than applied
+      // everywhere speculatively.
+      className="group flex items-center gap-3 rounded-2xl border border-hairline bg-surface2 px-3 py-3 shadow-depth-xs transition-all duration-150 will-change-transform hover:-translate-y-0.5 hover:border-muted hover:shadow-depth-sm"
     >
       <div className="hidden w-12 shrink-0 text-center sm:block">
         {cd && (

@@ -4,11 +4,13 @@ import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import { expandMatchRows, expandBuckets, aggregateOverview } from '../lib/entityBuckets'
 import { buildEventList, splitByStatus, groupByMonth, currentCircuits } from '../lib/eventMeta'
 import { recentResults } from '../lib/schedule'
+import { buildRatings } from '../lib/teamRatings'
 import EventRow from '../components/EventRow'
 import FilterChips from '../components/FilterChips'
 import { ResultsRail } from '../components/MatchRail'
 import CircuitList from '../components/CircuitList'
 import PlayerOfWeekCard from '../components/PlayerOfWeekCard'
+import TopRatedTeamsCard from '../components/TopRatedTeamsCard'
 import { FACETS } from '../components/FilterPanel'
 import Card from '../components/ui/Card'
 import { monthLabel, num } from '../lib/format'
@@ -55,6 +57,12 @@ export default function Tournaments() {
   const { data: eventMetaData } = useData('event_meta')
   const { data: upcomingData } = useData('upcoming_matches')
   const { data: playerWeekData } = useData('player_week')
+  // scraper/vlr_player_photos_scraper.py's manifest -- same source
+  // PlayerProfile's header photo reads from -- passed straight through to
+  // PlayerOfWeekCard rather than resolving the one path needed here, so the
+  // card owns its own hasPhoto/onError fallback logic exactly like
+  // PlayerProfile's does.
+  const { data: photosData } = useData('player_photos')
   const { data: pData, loading: pLoading } = useData('player_buckets')
   const { data: tData, loading: tLoading } = useData('team_buckets')
 
@@ -84,6 +92,22 @@ export default function Tournaments() {
   const recent = useMemo(() => recentResults(records, 8), [records])
   const circuits = useMemo(() => currentCircuits(events), [events])
 
+  // Reuses matchData (already fetched above) rather than a second request --
+  // Ratings.jsx's own comment notes the whole multi-year Glicko-2 build costs
+  // ~23ms, so recomputing it here for a five-row rail card is cheap. Only the
+  // newest year's table is needed, and only non-provisional teams (RD above
+  // PROVISIONAL_RD is "too few series to trust yet" -- not what a front-page
+  // summary should lead with). Unlike Ratings.jsx's own ALWAYS_SETTLED list,
+  // this doesn't re-apply per-team/year exceptions -- a small home-page top-5
+  // isn't worth duplicating that table for.
+  const ratingRuns = useMemo(() => (matchData ? buildRatings(matchData) : new Map()), [matchData])
+  const ratingYear = [...ratingRuns.keys()][0]
+  const topRatedTeams = useMemo(() => {
+    const run = ratingRuns.get(ratingYear)
+    if (!run) return []
+    return run.table.filter((t) => !t.provisional).slice(0, 5)
+  }, [ratingRuns, ratingYear])
+
   // Deduped so the two Liquipedia files don't repeat the same licence line if
   // their wording ever converges.
   const attribution = useMemo(() => [...new Set(
@@ -97,11 +121,13 @@ export default function Tournaments() {
   const teamRecords = useMemo(() => (tData ? expandBuckets(tData, 't') : []), [tData])
   const playerRecords = useMemo(() => (pData ? expandBuckets(pData, 'p') : []), [pData])
 
-  // Fixed to the current VCT season -- no user-facing filter control for
-  // this any more, so the scope is just whatever a visitor would expect
-  // "this season" to mean by default.
+  // Unscoped -- an empty `initial` means every dimension defaults to "no
+  // filter" (see useFacetedFilter's own comment), so these KPIs now cover
+  // the site's whole history rather than just the current VCT season. This
+  // is also what the removed "N events · N matches" subtitle used to state
+  // (see the Events header below) -- these tiles are its replacement.
   const { selections, filtered: filteredTeams, dateRange, includeHiddenEvents } =
-    useFacetedFilter(teamRecords, FACETS, { competition: ['VCT'], year: [2026] })
+    useFacetedFilter(teamRecords, FACETS, {})
 
   const filteredPlayers = useMemo(
     () =>
@@ -140,17 +166,12 @@ export default function Tournaments() {
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)_220px]">
         <aside className="hidden lg:flex lg:flex-col lg:gap-4">
           <CircuitList circuits={circuits} />
-          <PlayerOfWeekCard data={playerWeekData} />
+          <TopRatedTeamsCard year={ratingYear} rows={topRatedTeams} />
         </aside>
 
         <div className="flex min-w-0 flex-col gap-4">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h1 className="font-display text-2xl font-semibold text-ink">Events</h1>
-              <p className="mt-1 text-sm text-muted">
-                {events.length} events · {num(records.length)} matches
-              </p>
-            </div>
+            <h1 className="font-display text-2xl font-semibold text-ink">Events</h1>
             <FilterChips options={TABS} value={activeTab} onChange={setTab} />
           </div>
 
@@ -185,6 +206,12 @@ export default function Tournaments() {
               ))
             )}
           </div>
+
+          {/* Full-width banner variant (see PlayerOfWeekCard's own comment
+              on `wide`) -- moved out of the 220px left rail, where a real
+              photo plus a 6-stat grid read as cramped, and placed here
+              instead since nothing about this card needs rail width. */}
+          <PlayerOfWeekCard data={playerWeekData} photosData={photosData} wide />
 
           {/* CC-BY-SA 3.0 requires attribution wherever Liquipedia content is
               displayed -- every scraper here asserts this in its docstring, but

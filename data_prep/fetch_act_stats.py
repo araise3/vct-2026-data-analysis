@@ -541,24 +541,29 @@ def accumulate(counters, match, puuid):
 
     kast_rounds, kast_eligible = _round_kast_participants(match, puuid)
     if kast_rounds is not None:
-        # Clamped to this match's own official round count, same reasoning
-        # and same fix shape as the enemyCombatRounds clamp below --
-        # confirmed via --dump-round-anomalies against real match data (not
-        # guessed): a small number of matches (2 of 258 for one spot-checked
-        # account) have MORE entries in match['rounds'] than the team's real
-        # round total, with no duplicate round ids involved (17 real,
-        # distinct ids vs a team total of 14; 13 vs 5 on the other) -- most
-        # likely a remake/restart leaving extra round records behind. Total
-        # eligible-round inflation from just those 2 matches (+3, +8 = +11)
-        # exactly matched that account's whole-Act denominator excess found
-        # earlier, confirming this -- not the trade window -- as the real
-        # source of the small KAST gap against tracker.gg's real numbers.
-        # `kast_rounds` (qualifying) is clamped the same way it's bounded by
-        # construction (a subset of kast_eligible) rather than separately
-        # attributing which specific extra rounds were phantom.
-        eligible_n = min(len(kast_eligible), rounds) if rounds else len(kast_eligible)
-        counters["kastEligibleRounds"] += eligible_n
-        counters["kastRounds"] += min(len(kast_rounds), eligible_n)
+        # NOT clamped to `rounds` (this match's official won+lost total) --
+        # a clamp here was tried and reverted. It assumed any excess of
+        # match['rounds'] entries over the team's official round count was
+        # phantom/duplicate data and should be trimmed from the denominator.
+        # That assumption is disproved by --dump-round-anomalies against a
+        # real flagged case (xeus, match de5c72c8...): 17 round entries, all
+        # with DISTINCT ids (duplicate_ids=[]) and real per-player stats/
+        # enemy-damage data for every one of them (kast_eligible=17,
+        # enemy_combat_rounds=17 too, from an independently-written
+        # function) -- these are real, fully-played rounds, not leftover
+        # remake ghosts. The official round total (13) is what's short here,
+        # almost certainly missing overtime rounds from its own won+lost
+        # tally while match['rounds'] stays complete. Clamping the
+        # denominator down to that short total while leaving the numerator
+        # (kast_rounds) alone can only ever push KAST UP, never down --
+        # proved algebraically (min(Q,13)/min(17,13) >= Q/17 for every
+        # Q in [0,17]) and confirmed live: this clamp inflated xeus's whole-
+        # Act KAST from a raw 82.86% to a displayed 86.36%, against a real
+        # tracker.gg value of 81.8% -- moving it AWAY from the truth, not
+        # toward it, exactly the wrong direction for a fix meant to correct
+        # an already-too-high number. Using the raw counts directly instead.
+        counters["kastEligibleRounds"] += len(kast_eligible)
+        counters["kastRounds"] += len(kast_rounds)
 
     enemy_dealt, enemy_received, enemy_rounds = _round_enemy_combat(match, puuid)
     if enemy_dealt is not None:

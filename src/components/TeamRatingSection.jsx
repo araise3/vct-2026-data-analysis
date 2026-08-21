@@ -173,7 +173,9 @@ export default function TeamRatingSection({ matchData, team, year }) {
             series={[{ key: team, label: team, points }]}
             height={300}
             title="Rating trajectory"
-            subtitle="Hover any week for the results that moved it. ± in the tooltip is the 95% interval."
+            subtitle="One point per week the team played. Flat stretches are weeks off — the rating holds, but its deviation widens."
+            showAnnotations={false}
+            showSidePanel={false}
           />
         ) : (
           <p className="text-xs" style={{ color: RC.textDim }}>

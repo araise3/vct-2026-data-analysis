@@ -31,15 +31,28 @@ import { cx } from '../../lib/cx'
  * matched against a event-name string).
  *
  * `variant="ghost"`: a borderless, transparent-background trigger (text +
- * chevron only, hover:bg-accent/5) instead of the default bordered/shadowed
+ * chevron only, hover:bg-surface2) instead of the default bordered/shadowed
  * box -- for a lightweight scope control that sits inline next to other
  * controls (e.g. a season/event picker next to a page's tab row) rather
  * than reading as its own form field. A literal copy of rft.gg's own real
  * `data-slot="select-trigger"` markup/classes (saved "Webpage, Complete"
- * copy of a player page, not a guess) -- `rounded-sm`, fixed `h-7`,
- * `px-2 lg:px-3`, `hover:bg-primary/4` (this site's `accent` token stands
- * in for their `primary`), and the real lucide chevron-down icon at
- * size-4/opacity-50. The dropdown PANEL uses this site's own floating-
+ * copy of a player page, not a guess) -- fixed `h-7`, `px-2 lg:px-3`, and
+ * the real lucide chevron-down icon at size-4/opacity-50 -- except two
+ * details that departed from that literal copy after being reported as
+ * looking wrong in THIS site's context (rft.gg's own page doesn't sit this
+ * trigger directly beside a fully-rounded pill the way TeamProfile's year
+ * picker sits beside EventPicker's "Add an event…" input):
+ *  - Corners: rft.gg's own `rounded-sm` (2px) reads as a plain square next
+ *    to that pill, so this uses `rounded-2xl` instead, matching
+ *    EventPicker/FilterChips' own radius.
+ *  - Hover fill: rft.gg's own `hover:bg-primary/4` (this site's `accent`
+ *    token stands in for their `primary`) is Valorant brand red here (see
+ *    tailwind.config.js), which combined with the square corners above read
+ *    as a red "error" glow. `surface2`, this codebase's own neutral hover
+ *    fill for every other borderless/ghost control (Button's ghost variant,
+ *    TeamPickerModal, RatingChart's info button), reads as a normal hover
+ *    state instead.
+ * The dropdown PANEL uses this site's own floating-
  * surface styling either way (rft.gg's own panel markup isn't recoverable
  * from a saved page -- Radix unmounts a closed popup's content entirely,
  * so it's simply not present in the DOM to copy from), but each option row
@@ -131,7 +144,7 @@ export default function Select({
         aria-expanded={open}
         className={cx(
           variant === 'ghost'
-            ? 'flex w-fit items-center gap-2 cursor-pointer bg-transparent border-0 rounded-sm h-7 px-2 lg:px-3 text-xs font-semibold text-ink whitespace-nowrap transition-colors hover:bg-accent/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-selected/20 disabled:opacity-40 disabled:pointer-events-none'
+            ? 'flex w-fit items-center gap-2 cursor-pointer bg-transparent border-0 rounded-2xl h-7 px-2 lg:px-3 text-xs font-semibold text-ink whitespace-nowrap transition-colors hover:bg-surface2 focus:outline-none focus-visible:ring-2 focus-visible:ring-selected/20 disabled:opacity-40 disabled:pointer-events-none'
             : 'flex items-center justify-between gap-2 cursor-pointer bg-surface2 border border-hairline rounded-lg pl-3 pr-2.5 py-1.5 text-sm text-ink shadow-depth-xs transition-shadow duration-150 focus:outline-none focus:border-selected/50 focus:shadow-focus-ring disabled:opacity-40 disabled:pointer-events-none',
           className
         )}

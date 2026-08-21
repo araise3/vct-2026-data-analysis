@@ -170,6 +170,13 @@ function findAnnotations(coords) {
 export default function RatingChart({
   series, height = 300, baseline = 1500, title, subtitle, controls, eventBands = [], onBandClick,
   accentColor, xDomain, onAddTeam, addTeamOptions, addTeamDisabled,
+  // Both default on (Ratings.jsx's own comparison/single-team charts rely
+  // on them). TeamRatingSection turns both off for the team-profile chart,
+  // per direct request: the "Peak"/"Recovered" callouts sat next to a
+  // "Peak" stat the profile already shows outside the chart, and the side
+  // panel duplicated the match-by-match detail MatchHistory.jsx already
+  // covers further down that same page.
+  showAnnotations = true, showSidePanel = true,
 }) {
   const wrapRef = useRef(null)
   const svgRef = useRef(null)
@@ -310,9 +317,9 @@ export default function RatingChart({
       // anchor point's real date) while the axis itself starts at Feb 28.
       firstDate: xDomain ? xDomain.start : dates[0],
       lastDate: xDomain ? xDomain.end : dates[dates.length - 1],
-      annotations: detailed && shaped[0] ? findAnnotations(shaped[0].coords) : [],
+      annotations: showAnnotations && detailed && shaped[0] ? findAnnotations(shaped[0].coords) : [],
     }
-  }, [visible, detailed, baseline, H, W, eventBands, xDomain])
+  }, [visible, detailed, baseline, H, W, eventBands, xDomain, showAnnotations])
 
   // Draw-in: measure each path once it exists, then release the dash offset
   // on the next frame so the transition has something to move from. Re-runs
@@ -778,7 +785,7 @@ export default function RatingChart({
           guess; invisible rows sized by the exact same markup/classes as a
           real row can't drift out of sync with it, since it's the same DOM
           shape rather than a separately-maintained number. */}
-      {geom && (
+      {showSidePanel && geom && (
         <div
           className="w-full lg:w-44 shrink-0 flex flex-col gap-1.5 px-3 py-2 rounded-xl overflow-y-auto"
           style={{ background: 'rgba(23,27,36,0.5)', border: `1px solid ${RC.border}` }}

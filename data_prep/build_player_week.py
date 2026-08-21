@@ -43,22 +43,45 @@ across every bucket in scope and divide ONCE at the end -- never average
 per-bucket averages, which would weight a 12-round map the same as a
 30-round one.
 
-SELECTION IS ROUND-WEIGHTED, WITH NO ELIGIBILITY GATE
--------------------------------------------------------
+SELECTION IS A WILSON-LOWER-BOUND CONFIDENCE SCORE, WITH NO ELIGIBILITY GATE
+------------------------------------------------------------------------------
 Every player with any rated rounds in the window is a candidate -- there is
 no minimum-rounds cutoff. An earlier version had one (first a fixed floor,
-then a dynamic leader-relative one); removed by direct request. Instead the
-IMDB-style weighted rating below does ALL the work of tempering a small
-sample on its own: `weighted = v/(v+m) * R + m/(v+m) * C`, where R is the
-player's own average rating, v is their rounds played this week, m is a
-FIXED shrinkage strength (SHRINKAGE_ROUNDS, roughly one map's worth of
-rounds -- the smallest unit of real signal this game has), and C is the
-whole week's round-weighted mean rating. A player with only a handful of
-rounds is pulled hard toward the week's mean; a player with several maps'
-worth is barely shrunk at all -- continuous, so nobody is excluded outright
-the way a hard gate did, but a one-round cameo still can't win on a fluke.
-The displayed `rating` field is still the player's own real (unshrunk)
-average -- only the ranking used to pick the winner is adjusted.
+then a dynamic leader-relative one); removed by direct request.
+
+The ranking is the same technique src/lib/playerDuels.js's
+aggregateKdByCountry() uses to rank a country's K/D by confidence rather
+than raw value: the Wilson score interval LOWER BOUND, computed on the
+player's rating rescaled into a [0, 1] "share of RATING_CEILING" proportion
+and treating maps played this week as the trial count `n` (maps, not
+rounds or kills -- a whole map is one bounded competitive trial, same
+volume unit that file's own comment picks for the same reason: it can't be
+inflated by one hot round the way a raw stat can).
+
+This replaces an earlier IMDB-style LINEAR shrinkage (`v/(v+m)*R +
+m/(v+m)*C`), which playerDuels.js's own comment proves algebraically is
+mathematically incapable of the thing this exists to do: for a genuinely
+extreme case (1 map at a hot 2.5 rating vs. 10 maps at a modest, steady
+1.3), no shrinkage strength flips the order, because a linear blend can
+never fully close the gap on the tiny sample's raw excess over the mean.
+Confirmed here with the equivalent player-week numbers -- the linear
+version this file used to run picked the 1-map fluke every time. Wilson's
+lower bound fixes it because it's NONLINEAR: a small `n` blows up the
+interval's width term (proportional to 1/n and 1/sqrt(n)) far more
+aggressively than a fixed linear blend ever could, so the 1-map score comes
+in well below the 10-map score once n=1 is that punishing.
+
+RATING_CEILING=3.0 is the rescale target, chosen comfortably above any
+realistic single-map rating (elite maps top out around 2.0-2.5) so `phat`
+never gets close enough to 1.0 to hit Wilson's own known edge case there
+(the `phat*(1-phat)` variance term collapsing and artificially inflating
+confidence near the bounds). SORT_Z=2.0 matches playerDuels.js's own
+SORT_Z exactly -- same standard "2-sigma" confidence level, not a separate
+tuning knob for this file to drift out of sync with that one.
+
+The displayed `rating` field is still the player's own real, un-rescaled,
+un-shrunk average either way -- only the score used to PICK the winner is
+adjusted; nothing about what's shown for them changes.
 
 USAGE
 -----
@@ -68,6 +91,7 @@ USAGE
 
 import argparse
 import json
+import math
 import os
 from datetime import datetime, timedelta, timezone
 
@@ -76,14 +100,25 @@ DATA_DIR = os.environ.get("VLR_OUT", os.path.join(_REPO_ROOT, "public", "data"))
 
 WINDOW_DAYS = 7
 
-# Shrinkage strength for the weighted-rating selection below -- roughly one
-# map's worth of rounds. No longer doubles as an eligibility gate the way a
-# prior version's qualification bar did; see the module docstring.
-SHRINKAGE_ROUNDS = 20
+# Wilson-lower-bound selection, matching src/lib/playerDuels.js's
+# aggregateKdByCountry() exactly (same SORT_Z, same "maps are the trial
+# count" choice) -- see the module docstring for why this replaced an
+# earlier linear-shrinkage version and what RATING_CEILING/SORT_Z do.
+RATING_CEILING = 3.0
+SORT_Z = 2.0
 
 
 def div(a, b):
     return (a / b) if b else None
+
+
+def wilson_lower_bound(phat, n, z):
+    if not n:
+        return None
+    denom = 1 + (z * z) / n
+    center = phat + (z * z) / (2 * n)
+    adj = z * math.sqrt((phat * (1 - phat) + (z * z) / (4 * n)) / n)
+    return (center - adj) / denom
 
 
 def build(data):
@@ -115,17 +150,19 @@ def build(data):
         return None
 
     # Round-weighted mean rating across every candidate this week (sum-first,
-    # same rule as every other bucket aggregate) -- the shrinkage target `C`.
+    # same rule as every other bucket aggregate) -- reported in `_meta` only
+    # now (no longer a shrinkage target), for the same "what was the bar"
+    # context it always gave.
     pool_rat_s = sum(t["ratS"] for _, t in candidates)
     pool_rat_r = sum(t["ratR"] for _, t in candidates)
     pool_mean = pool_rat_s / pool_rat_r
 
-    def weighted_rating(t):
-        v = t["ratR"]
-        r = t["ratS"] / v
-        return (v / (v + SHRINKAGE_ROUNDS)) * r + (SHRINKAGE_ROUNDS / (v + SHRINKAGE_ROUNDS)) * pool_mean
+    def selection_score(t):
+        r = t["ratS"] / t["ratR"]
+        phat = min(max(r / RATING_CEILING, 0.0), 1.0)
+        return wilson_lower_bound(phat, t["maps"], SORT_Z)
 
-    name, t = max(candidates, key=lambda kv: weighted_rating(kv[1]))
+    name, t = max(candidates, key=lambda kv: selection_score(kv[1]))
     meta = (data.get("meta") or {}).get(name, {})
 
     return {
@@ -134,7 +171,11 @@ def build(data):
             "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "playersConsidered": len(candidates),
             "poolMeanRating": round(pool_mean, 3),
-            "selection": f"round-weighted (shrunk toward pool mean, m={SHRINKAGE_ROUNDS} rounds, no eligibility gate; see build_player_week.py)",
+            "selection": (
+                f"Wilson lower-bound confidence score (rating/{RATING_CEILING} as phat, "
+                f"maps played as n, z={SORT_Z}; same technique as playerDuels.js's "
+                "aggregateKdByCountry; no eligibility gate; see build_player_week.py)"
+            ),
         },
         "weekStart": start,
         "weekEnd": end,

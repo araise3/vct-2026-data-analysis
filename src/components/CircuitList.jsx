@@ -25,7 +25,7 @@ export default function CircuitList({ circuits }) {
             <Link
               key={e.name}
               to={`/tournaments/${encodeURIComponent(e.name)}`}
-              className="flex items-center gap-2 rounded-2xl border border-hairline bg-surface2 px-3 py-1.5 shadow-depth-xs transition-all duration-150 hover:-translate-y-0.5 hover:border-muted hover:shadow-depth-sm"
+              className="flex items-center gap-2 rounded-lg border border-hairline bg-surface2 px-3 py-1.5 shadow-depth-xs transition-all duration-150 hover:-translate-y-0.5 hover:border-muted hover:shadow-depth-sm"
             >
               <EventLogo event={e.name} size={18} />
               <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-ink">

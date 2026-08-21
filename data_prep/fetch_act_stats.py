@@ -1173,6 +1173,77 @@ def diagnose_kast_rounds(client, handle, riot_id, puuid):
             break
 
 
+def diagnose_match_count(client, handle, riot_id, puuid):
+    """One-off, non-persisting diagnostic: pages a player's whole current-Act
+    match history and reports exactly WHY the walk stopped -- an empty page
+    (nothing more that HenrikDev has indexed for this puuid), a genuine Act
+    boundary (metadata.season.id changed), or MAX_PAGES_PER_PLAYER -- plus a
+    per-page raw/deduped row count. Built to attribute a match-count gap
+    against tracker.gg's own displayed total (which reads a different,
+    Riot-client-backed source) to one specific cause instead of guessing:
+    if this stops on an empty page with real matches still missing, that's a
+    HenrikDev indexing gap, not a bug in this script's own pagination logic.
+    Deliberately does NOT contain fetch_player's `len(matches) < PAGE_SIZE`
+    early-stop shortcut, so it also tests whether that heuristic itself ever
+    stops earlier than a genuine empty page would. Never writes to
+    player_act_stats.json.
+    """
+    region = fetch_region(client, puuid)
+    if not region:
+        print(f"  [skip] {handle}: no region")
+        return
+
+    act_id = None
+    act_short = None
+    seen_match_ids = set()
+    total = 0
+    dupes = 0
+    short_page_would_have_stopped_at = None
+    stop_reason = f"hit MAX_PAGES_PER_PLAYER ({MAX_PAGES_PER_PLAYER} pages)"
+
+    for page in range(MAX_PAGES_PER_PLAYER):
+        resp = client.get(
+            f"/v4/by-puuid/matches/{region}/{PLATFORM}/{puuid}",
+            {"mode": QUEUE_MODE, "size": PAGE_SIZE, "start": page * PAGE_SIZE},
+        )
+        matches = (resp or {}).get("data") or []
+        print(f"    page {page} (start={page * PAGE_SIZE}): {len(matches)} raw row(s)")
+        if not matches:
+            stop_reason = f"empty page at start={page * PAGE_SIZE}"
+            break
+        if len(matches) < PAGE_SIZE and short_page_would_have_stopped_at is None:
+            short_page_would_have_stopped_at = f"start={page * PAGE_SIZE} ({len(matches)} rows)"
+
+        stop = False
+        for match in matches:
+            meta = match.get("metadata") or {}
+            season = meta.get("season") or {}
+            sid = season.get("id")
+            match_id = meta.get("match_id")
+            if match_id and match_id in seen_match_ids:
+                dupes += 1
+                continue
+            if match_id:
+                seen_match_ids.add(match_id)
+            if act_id is None and sid:
+                act_id, act_short = sid, season.get("short")
+            if sid and act_id and sid != act_id:
+                stop_reason = (f"act boundary: match {match_id} season={sid} "
+                                f"({season.get('short')}) != {act_id} ({act_short})")
+                stop = True
+                break
+            total += 1
+        if stop:
+            break
+
+    print(f"  {handle} ({riot_id}, {region}): {total} matches counted (act={act_short}, "
+          f"{dupes} cross-page dupe(s) skipped), stopped because: {stop_reason}")
+    if short_page_would_have_stopped_at:
+        print(f"    note: the FIRST short page (fetch_player's own early-stop signal) was at "
+              f"{short_page_would_have_stopped_at} -- compare against the real stop point above "
+              f"to see whether fetch_player's shortcut cuts off history early.")
+
+
 def fetch_player(client, handle, riot_id, puuid, prev, full):
     """Aggregates one account's current-Act competitive stats.
 
@@ -1333,6 +1404,11 @@ def main():
                          "classification for every round of every match, plus a round-id-space sanity "
                          "check between kills[].round and rounds[].id -- for a full manual audit on a "
                          "small-sample account. No write.")
+    ap.add_argument("--dump-match-count", action="store_true",
+                    help="Diagnostic only, requires --inspect: pages a player's whole current-Act "
+                         "match history and reports exactly why the walk stopped (empty page vs Act "
+                         "boundary vs page cap), plus per-page raw row counts -- for a match-count gap "
+                         "against tracker.gg's own displayed total. No write.")
     args = ap.parse_args()
 
     api_key = os.environ.get("HENRIKDEV_API_KEY")
@@ -1403,6 +1479,14 @@ def main():
             return 1
         for handle, riot_id, puuid in targets:
             diagnose_kast_rounds(client, handle, riot_id, puuid)
+        return 0
+
+    if args.dump_match_count:
+        if not args.inspect:
+            print("[FATAL] --dump-match-count requires --inspect.", file=sys.stderr)
+            return 1
+        for handle, riot_id, puuid in targets:
+            diagnose_match_count(client, handle, riot_id, puuid)
         return 0
 
     print(f"Fetching current-Act stats for {len(targets)} linked account(s).")

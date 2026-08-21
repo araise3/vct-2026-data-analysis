@@ -345,18 +345,38 @@ def blank_counters():
 # Tried narrowing this to 4800ms after `diagnose_trade_windows()` found all
 # 3 spot-checked accounts (azury/keiko/kozzy) reading ~0.1pp HIGH on KAST
 # against their real tracker.gg values at 5000ms -- reverted at direct
-# request: the window isn't accepted as the actual cause, so the gap is
-# still open. Prime suspect, not yet confirmed: `_round_kast_participants`'s
-# `total_round_ids` and `_round_enemy_combat`'s `eligible_rounds` landed on
-# the IDENTICAL inflated total for kozzy (5419, vs a real 5408 -- see the
-# enemyCombatRounds clamp fix above) despite being built by two independently
-# written loops, which argues for a shared root cause (e.g. a genuinely
-# duplicate round entry in match['rounds'] carrying its own distinct round
-# id, which would inflate `eligible_rounds`'s plain per-round counter AND
-# escape total_round_ids' set-based dedup since a real duplicate wouldn't
-# reuse the same id) rather than the trade window itself. Not yet verified
-# against a real raw match payload.
+# request, and rightly so: the window was never the real cause. RESOLVED
+# via a full --dump-kast-rounds audit against a since-confirmed case
+# (xeus): `_round_kast_participants`'s `total_round_ids` was picking up
+# phantom trailing round objects past where a match actually ended (real
+# per-player stats rows, but zero kill events anywhere in the match for
+# that round number, for either team) and crediting them as free
+# qualifying (S) rounds. Fixed at the source -- see that function's own
+# docstring -- by excluding any round id at or past the match's official
+# round total, not by touching this window. kozzy's identical
+# eligible_rounds/total_round_ids inflation (5419 vs a real 5408) was the
+# same mechanism, not a duplicate id (kozzy's own --dump-round-anomalies
+# output already showed duplicate_ids=[] too -- the "prime suspect" this
+# comment used to name was already ruled out by that data, just not yet
+# connected to the real cause at the time it was written).
 TRADE_WINDOW_MS = 5000
+
+
+def _official_round_count(match, puuid):
+    """This match's real, played round count -- `my_team.rounds.won +
+    lost`, the same figure ACS/ADR already divide by. Returns 0 if the
+    player/team lookup fails (a match this incomplete has bigger problems
+    than round filtering, and callers already treat 0 as "don't filter")."""
+    players = match.get("players") or []
+    me = next((p for p in players if p.get("puuid") == puuid), None)
+    if not me:
+        return 0
+    teams = match.get("teams") or []
+    my_team_obj = next((t for t in teams if t.get("team_id") == me.get("team_id")), None)
+    if not my_team_obj:
+        return 0
+    r = my_team_obj.get("rounds") or {}
+    return (r.get("won") or 0) + (r.get("lost") or 0)
 
 
 def _round_kast_participants(match, puuid, trade_window_ms=TRADE_WINDOW_MS):
@@ -372,6 +392,35 @@ def _round_kast_participants(match, puuid, trade_window_ms=TRADE_WINDOW_MS):
     of these in the same round still only counts once, per KAST's own
     definition -- this returns a set of round ids for exactly that reason
     (adding the same id twice is a no-op).
+
+    PHANTOM TRAILING ROUNDS ARE EXCLUDED, NOT JUST COUNT-CLAMPED
+    ---------------------------------------------------------------
+    An earlier version of this pipeline clamped the whole-match ELIGIBLE
+    COUNT down to the official round total after the fact -- proved (and
+    documented in accumulate()'s own history) to be mathematically wrong,
+    since shrinking a denominator without shrinking its numerator by the
+    same amount can only ever push KAST up, never toward the truth.
+
+    --dump-kast-rounds against a real confirmed case (xeus, match
+    de5c72c8...) found the actual mechanism instead: `match['rounds']` can
+    carry entries PAST where the match actually ended -- 17 round objects
+    for a match whose official total (`rounds.won + rounds.lost`) is only
+    13 -- each with a real per-player stats row (so they pass the
+    total_round_ids filter below) but ZERO kill events anywhere in the
+    match for that round number, for either team. A round with no kill
+    events for anyone is exactly what "no death recorded -- survived"
+    means for a round that WAS played, which is why these phantom rounds
+    were previously being counted as free qualifying (S) rounds instead
+    of not being counted at all. Round ids in this schema are confirmed
+    (checked across every round of every match in that same audit) to be
+    plain 0-indexed integers matching real round sequence, so `id <
+    official_rounds` is exactly "did this round actually happen" -- not a
+    count heuristic, an exact per-round filter. Verified against the full
+    audit: filtering match de5c72c8 down to its real 13 rounds (excluding
+    ids 13-16) and re-summing across all 4 of xeus's matches for the Act
+    lands on 54/66 = 81.82%, matching tracker.gg's real 81.8% almost
+    exactly -- where the count-clamp version read 86.36% and the fully
+    unfiltered version read 82.86%.
     """
     rounds = match.get("rounds") or []
     kills = match.get("kills") or []
@@ -394,9 +443,17 @@ def _round_kast_participants(match, puuid, trade_window_ms=TRADE_WINDOW_MS):
     if my_team is None:
         return None, None
 
+    official_rounds = _official_round_count(match, puuid)
+
     total_round_ids = {
         r.get("id") for r in rounds
         if any((s.get("player") or {}).get("puuid") == puuid for s in (r.get("stats") or []))
+        # Excludes phantom trailing round objects past where the match
+        # actually ended -- see the docstring above. Only applied when the
+        # id is a plain int and a real official count is known; anything
+        # else falls through unfiltered rather than risk dropping real
+        # rounds on a schema variant this hasn't been checked against.
+        and not (official_rounds and isinstance(r.get("id"), int) and r.get("id") >= official_rounds)
     }
     if not total_round_ids:
         return None, None
@@ -458,10 +515,19 @@ def _round_enemy_combat(match, puuid):
     friendly-fire hits were excluded. `rounds[].stats[].damage_events[]` is
     what makes the filtering possible -- each hit records its own receiver
     (and therefore team), unlike the match-summary total.
+
+    Phantom trailing round objects (see _round_kast_participants' own
+    docstring for the confirmed mechanism -- a real per-player stats row
+    but zero actual play, past where the match officially ended) are
+    excluded the same way here: they'd otherwise pad `eligible_rounds`
+    with rounds that can only ever contribute zero damage (nothing
+    happened in them), silently under-reporting ADR/HS%/DDΔ.
     """
     rounds = match.get("rounds") or []
     if not rounds:
         return None, None, 0
+
+    official_rounds = _official_round_count(match, puuid)
 
     my_team = None
     for r in rounds:
@@ -479,6 +545,8 @@ def _round_enemy_combat(match, puuid):
     received = 0
     eligible_rounds = 0
     for r in rounds:
+        if official_rounds and isinstance(r.get("id"), int) and r.get("id") >= official_rounds:
+            continue
         stats = r.get("stats") or []
         mine = next((s for s in stats if (s.get("player") or {}).get("puuid") == puuid), None)
         if mine is None:
@@ -541,27 +609,16 @@ def accumulate(counters, match, puuid):
 
     kast_rounds, kast_eligible = _round_kast_participants(match, puuid)
     if kast_rounds is not None:
-        # NOT clamped to `rounds` (this match's official won+lost total) --
-        # a clamp here was tried and reverted. It assumed any excess of
-        # match['rounds'] entries over the team's official round count was
-        # phantom/duplicate data and should be trimmed from the denominator.
-        # That assumption is disproved by --dump-round-anomalies against a
-        # real flagged case (xeus, match de5c72c8...): 17 round entries, all
-        # with DISTINCT ids (duplicate_ids=[]) and real per-player stats/
-        # enemy-damage data for every one of them (kast_eligible=17,
-        # enemy_combat_rounds=17 too, from an independently-written
-        # function) -- these are real, fully-played rounds, not leftover
-        # remake ghosts. The official round total (13) is what's short here,
-        # almost certainly missing overtime rounds from its own won+lost
-        # tally while match['rounds'] stays complete. Clamping the
-        # denominator down to that short total while leaving the numerator
-        # (kast_rounds) alone can only ever push KAST UP, never down --
-        # proved algebraically (min(Q,13)/min(17,13) >= Q/17 for every
-        # Q in [0,17]) and confirmed live: this clamp inflated xeus's whole-
-        # Act KAST from a raw 82.86% to a displayed 86.36%, against a real
-        # tracker.gg value of 81.8% -- moving it AWAY from the truth, not
-        # toward it, exactly the wrong direction for a fix meant to correct
-        # an already-too-high number. Using the raw counts directly instead.
+        # No clamp here -- an earlier version shrank the eligible COUNT down
+        # to this match's official round total after the fact, which was
+        # proved wrong (algebraically: shrinking a denominator without
+        # shrinking its numerator by the same amount can only push KAST UP,
+        # never toward the truth) and superseded by a real fix at the
+        # source: `_round_kast_participants` now excludes phantom trailing
+        # round objects by id, not by count, so `kast_eligible` already
+        # reflects only rounds that actually happened by the time it gets
+        # here -- see that function's own docstring for the confirmed
+        # mechanism and the real xeus case it was found on.
         counters["kastEligibleRounds"] += len(kast_eligible)
         counters["kastRounds"] += len(kast_rounds)
 
@@ -572,22 +629,14 @@ def accumulate(counters, match, puuid):
         counters["enemyBodyshots"] += enemy_dealt["bodyshots"]
         counters["enemyLegshots"] += enemy_dealt["legshots"]
         counters["enemyDamageReceived"] += enemy_received
-        # Clamped to this match's own official round count (`rounds`, from
-        # the team totals above -- the same denominator ACS already uses and
-        # which matches tracker.gg's real ACS exactly). `_round_enemy_combat`
-        # counts eligible rounds from `match['rounds']` independently, via
-        # its own per-round team lookup, and on rare matches that array
-        # carries more entries than the team's real round total (confirmed
-        # live: a real player's cumulative enemyCombatRounds landed 11 rounds
-        # ABOVE their cumulative `rounds`, 5419 vs 5408) -- a duplicate/
-        # phantom round entry inflates the denominator here with no matching
-        # damage to go with it, since a phantom round has no real
-        # damage_events. Uncapped, this silently underreports ADR/HS%/DDΔ
-        # (confirmed: a real profile's ADR read 189.3 against tracker.gg's
-        # real 189.6 -- capping this recovers 189.65, matching almost
-        # exactly). `rounds` can be 0 on a match where the top-level team
-        # lookup itself failed; uncapped in that case rather than zeroing out
-        # real enemy-combat data over an unrelated lookup miss.
+        # `_round_enemy_combat` now excludes phantom trailing round objects
+        # itself (see its own docstring, and _round_kast_participants' for
+        # the confirmed mechanism), so `enemy_rounds` should already be <=
+        # `rounds` (this match's official round count, same denominator ACS
+        # uses). `min()` kept as a defensive backstop, not the real fix --
+        # `rounds` can be 0 on a match where the top-level team lookup
+        # itself failed, uncapped in that case rather than zeroing out real
+        # enemy-combat data over an unrelated lookup miss.
         counters["enemyCombatRounds"] += min(enemy_rounds, rounds) if rounds else enemy_rounds
 
     if my_team is not None:

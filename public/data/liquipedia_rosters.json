@@ -3026,6 +3026,14 @@
           "flag": "cn",
           "captain": false,
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "stew",
+          "name": "Park Young-chan",
+          "joinDate": "2026-08-21",
+          "flag": "kr",
+          "captain": false,
+          "playerStatus": "STARTER"
         }
       ],
       "formerPlayers": [
@@ -9498,7 +9506,7 @@
           "name": "Park Young-chan",
           "joinDate": "2024-01-16",
           "leaveDate": "2026-06-22",
-          "newTeam": null,
+          "newTeam": "EDward Gaming",
           "flag": "kr",
           "playerStatus": "STARTER"
         },

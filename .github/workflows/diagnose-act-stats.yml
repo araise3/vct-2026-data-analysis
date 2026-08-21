@@ -27,6 +27,7 @@ on:
           - round-anomalies
           - kast-detail
           - assist-mismatch
+          - kast-rounds
           - normal
         default: trade-windows
       trade_windows:
@@ -61,6 +62,8 @@ jobs:
             python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }} --dump-kast-detail
           elif [ "${{ inputs.mode }}" = "assist-mismatch" ]; then
             python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }} --dump-assist-mismatch
+          elif [ "${{ inputs.mode }}" = "kast-rounds" ]; then
+            python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }} --dump-kast-rounds
           elif [ "${{ inputs.mode }}" = "normal" ]; then
             python data_prep/fetch_act_stats.py --inspect ${{ inputs.handles }}
           else

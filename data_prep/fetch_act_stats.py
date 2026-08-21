@@ -977,6 +977,139 @@ def diagnose_assist_mismatch(client, handle, riot_id, puuid):
           f"(diff={total_tagged - total_official:+d})")
 
 
+def diagnose_kast_rounds(client, handle, riot_id, puuid):
+    """One-off, non-persisting diagnostic: dumps EVERY round of EVERY match
+    for this player, not just aggregate totals or flagged outliers -- built
+    specifically for a small-sample account (a handful of matches) where a
+    full manual audit against a known-real tracker.gg KAST%% is actually
+    tractable round by round, rather than inferring the cause from totals
+    alone. Prints, per round: its classification (K/A/S/T/NONE) and, for a
+    Traded round, the exact death/trade timing that qualified it.
+
+    Also prints a same-match sanity check nothing else here does: whether
+    `kills[].round` (what qualification is actually grouped by) uses the
+    SAME id space as `rounds[].id` (what the eligible-round set is built
+    from). If a match's kill events use a different round-numbering
+    convention than its round objects, `kills_by_round.get(round_id, [])`
+    would silently return an empty list for every real round -- which
+    `_round_kast_participants` already treats as "no death event found ->
+    survived", so a numbering mismatch would inflate KAST exactly the way
+    an undercounted denominator does, just via a completely different
+    mechanism (a phantom S instead of a shrunk eligible count). Never
+    writes to player_act_stats.json.
+    """
+    region = fetch_region(client, puuid)
+    if not region:
+        print(f"  [skip] {handle}: no region")
+        return
+
+    act_id = None
+    seen_match_ids = set()
+
+    for page in range(MAX_PAGES_PER_PLAYER):
+        resp = client.get(
+            f"/v4/by-puuid/matches/{region}/{PLATFORM}/{puuid}",
+            {"mode": QUEUE_MODE, "size": PAGE_SIZE, "start": page * PAGE_SIZE},
+        )
+        matches = (resp or {}).get("data") or []
+        if not matches:
+            break
+        stop = False
+        for match in matches:
+            meta = match.get("metadata") or {}
+            season = meta.get("season") or {}
+            sid = season.get("id")
+            match_id = meta.get("match_id")
+            if match_id and match_id in seen_match_ids:
+                continue
+            if match_id:
+                seen_match_ids.add(match_id)
+            if act_id is None and sid:
+                act_id = sid
+            if sid and act_id and sid != act_id:
+                stop = True
+                break
+
+            rounds = match.get("rounds") or []
+            kills = match.get("kills") or []
+            round_ids = {r.get("id") for r in rounds}
+            kill_round_ids = {k.get("round") for k in kills}
+            orphan_kill_rounds = kill_round_ids - round_ids
+
+            my_team = None
+            for k in kills:
+                killer, victim = k.get("killer") or {}, k.get("victim") or {}
+                if killer.get("puuid") == puuid:
+                    my_team = killer.get("team")
+                    break
+                if victim.get("puuid") == puuid:
+                    my_team = victim.get("team")
+                    break
+
+            teams = match.get("teams") or []
+            me_row = next((p for p in (match.get("players") or []) if p.get("puuid") == puuid), None)
+            my_team_obj = next((t for t in teams if me_row and t.get("team_id") == me_row.get("team_id")), None)
+            team_rounds = 0
+            if my_team_obj:
+                r = my_team_obj.get("rounds") or {}
+                team_rounds = (r.get("won") or 0) + (r.get("lost") or 0)
+
+            print(f"  match {match_id}: team_rounds={team_rounds} raw_rounds={len(rounds)} "
+                  f"round_ids={sorted(round_ids, key=str)} "
+                  f"kill_round_ids={sorted(kill_round_ids, key=str)} "
+                  f"orphan_kill_rounds={sorted(orphan_kill_rounds, key=str)}")
+
+            kills_by_round = {}
+            for k in kills:
+                kills_by_round.setdefault(k.get("round"), []).append(k)
+
+            for round_id in sorted(round_ids, key=str):
+                events = kills_by_round.get(round_id, [])
+                tag = "NONE"
+                detail = ""
+                got_kill_or_assist = False
+                died_at = None
+                killer_puuid = None
+                for k in events:
+                    killer = k.get("killer") or {}
+                    victim = k.get("victim") or {}
+                    assistants = k.get("assistants") or []
+                    if killer.get("puuid") == puuid:
+                        got_kill_or_assist = True
+                        tag = "K"
+                        break
+                    if any(a.get("puuid") == puuid for a in assistants):
+                        got_kill_or_assist = True
+                        tag = "A"
+                        break
+                    if victim.get("puuid") == puuid:
+                        died_at = k.get("time_in_round_in_ms")
+                        killer_puuid = killer.get("puuid")
+
+                if not got_kill_or_assist:
+                    if died_at is None:
+                        tag = "S"
+                        detail = "(no death event this round -- has_stats_row unverified here)"
+                    else:
+                        tag = "DIED"
+                        for k2 in events:
+                            k2_killer = k2.get("killer") or {}
+                            k2_victim = k2.get("victim") or {}
+                            t2 = k2.get("time_in_round_in_ms")
+                            if (k2_victim.get("puuid") == killer_puuid
+                                    and k2_killer.get("team") == my_team
+                                    and t2 is not None and t2 >= died_at
+                                    and t2 - died_at <= TRADE_WINDOW_MS):
+                                tag = "T"
+                                detail = f"(died_at={died_at}ms, traded_at={t2}ms, gap={t2 - died_at}ms)"
+                                break
+                        if tag == "DIED":
+                            detail = f"(died_at={died_at}ms, no trade within {TRADE_WINDOW_MS}ms -- NOT qualifying)"
+                print(f"    round {round_id}: {tag} {detail}")
+        if stop:
+            break
+
+
 def fetch_player(client, handle, riot_id, puuid, prev, full):
     """Aggregates one account's current-Act competitive stats.
 
@@ -1132,6 +1265,11 @@ def main():
                          "A-criterion trusts) against `stats.assists` (Riot's own official per-match "
                          "assist total) -- tests whether the assistants array is the same signal as "
                          "a real assist credit. No write.")
+    ap.add_argument("--dump-kast-rounds", action="store_true",
+                    help="Diagnostic only, requires --inspect: full per-round K/A/S/T/NONE "
+                         "classification for every round of every match, plus a round-id-space sanity "
+                         "check between kills[].round and rounds[].id -- for a full manual audit on a "
+                         "small-sample account. No write.")
     args = ap.parse_args()
 
     api_key = os.environ.get("HENRIKDEV_API_KEY")
@@ -1194,6 +1332,14 @@ def main():
             return 1
         for handle, riot_id, puuid in targets:
             diagnose_assist_mismatch(client, handle, riot_id, puuid)
+        return 0
+
+    if args.dump_kast_rounds:
+        if not args.inspect:
+            print("[FATAL] --dump-kast-rounds requires --inspect.", file=sys.stderr)
+            return 1
+        for handle, riot_id, puuid in targets:
+            diagnose_kast_rounds(client, handle, riot_id, puuid)
         return 0
 
     print(f"Fetching current-Act stats for {len(targets)} linked account(s).")

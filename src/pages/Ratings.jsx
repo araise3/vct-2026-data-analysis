@@ -92,6 +92,21 @@ const ALWAYS_SETTLED = new Set([
   'DetonatioN FocusMe|2023',
 ])
 
+// Applies ALWAYS_SETTLED's exceptions to a raw `run.table`. Exported so
+// every consumer of a rating table -- not just this page's own `table`
+// useMemo below -- applies the same exceptions; Tournaments.jsx's homepage
+// region-table preview used to skip this (its own comment said a front-page
+// preview wasn't worth duplicating the list for), which meant a team like
+// PCIFIC Esports showed as provisional there while /ratings correctly
+// treated it as settled. One shared function instead of copy-pasting the
+// Set + map-over-table logic at each call site.
+export function applyAlwaysSettled(table, year) {
+  if (!table.some((t) => ALWAYS_SETTLED.has(`${t.team}|${year}`))) return table
+  return table.map((t) => (
+    ALWAYS_SETTLED.has(`${t.team}|${year}`) ? { ...t, provisional: false } : t
+  ))
+}
+
 /**
  * One region's standings. A hand-rolled compact table rather than a
  * DataTable: four of those side by side would each carry their own sort
@@ -105,17 +120,18 @@ const ALWAYS_SETTLED = new Set([
  * version -- per direct request (a rating-trajectory-chart version of that
  * preview was tried and rejected in favour of literally this).
  *
- * `showDeviation` (default on) toggles the "±" RD-based confidence-range
- * column -- off for Tournaments.jsx's homepage preview specifically, per
- * direct request ("remove sd from that chart"), leaving the full /ratings
- * page unaffected (its own call site doesn't pass this prop at all, so it
- * keeps the column).
+ * `limit` (default none) caps how many rows render -- the "N teams" count
+ * still reflects the full region though, so a capped preview doesn't read
+ * as if that were the whole field. Used by Tournaments.jsx's homepage
+ * preview (top 6) per direct request; /ratings' own call site doesn't pass
+ * it, so the full page keeps every settled team.
  */
-export function RegionTable({ region, rows, showProvisional, showDeviation = true }) {
+export function RegionTable({ region, rows, showProvisional, limit }) {
   // No ALWAYS_SETTLED check needed here -- `byRegion` (Ratings.jsx) already
   // groups from `table`, the ALWAYS_SETTLED-adjusted rows, so `.provisional`
   // is already correctly false for those teams by the time they arrive here.
   const visible = showProvisional ? rows : rows.filter((r) => !r.provisional)
+  const shown = limit ? visible.slice(0, limit) : visible
   return (
     <Card className="p-4 flex flex-col gap-2 min-w-0">
       <div className="flex items-baseline justify-between gap-2">
@@ -127,7 +143,7 @@ export function RegionTable({ region, rows, showProvisional, showDeviation = tru
       ) : (
         <table className="w-full">
           <tbody>
-            {visible.map((r, i) => (
+            {shown.map((r, i) => (
               <tr key={r.team} className="border-t border-hairline/50 first:border-t-0">
                 <td className="py-1.5 pr-2 text-muted text-xs tabular-nums w-6 text-right">{i + 1}</td>
                 <td className="py-1.5 pr-2 min-w-0">
@@ -144,16 +160,8 @@ export function RegionTable({ region, rows, showProvisional, showDeviation = tru
                     <span>{r.team}</span>
                   </Link>
                 </td>
-                <td className="py-1.5 pr-1 text-right text-xs text-ink tabular-nums">{num(r.rating)}</td>
-                {showDeviation && (
-                  <td className="py-1.5 pr-2 text-right text-[11px] text-muted tabular-nums whitespace-nowrap">
-                    ±{num(2 * r.rd)}
-                  </td>
-                )}
-                <td className="py-1.5 text-right text-[11px] tabular-nums whitespace-nowrap">
-                  <span className="text-good">{r.seriesWins}</span>
-                  <span className="text-muted">–</span>
-                  <span className="text-bad">{r.seriesLosses}</span>
+                <td className="py-1.5 text-right text-xs text-ink tabular-nums whitespace-nowrap">
+                  {num(r.rating)}
                 </td>
               </tr>
             ))}
@@ -185,13 +193,7 @@ export default function Ratings() {
   // `run.table` with ALWAYS_SETTLED's exceptions applied -- every other
   // derived value below (rows, byRegion, summary) reads FROM this instead
   // of `run.table` directly, so the override only has to happen once.
-  const table = useMemo(() => {
-    if (!run) return []
-    if (!run.table.some((t) => ALWAYS_SETTLED.has(`${t.team}|${year}`))) return run.table
-    return run.table.map((t) => (
-      ALWAYS_SETTLED.has(`${t.team}|${year}`) ? { ...t, provisional: false } : t
-    ))
-  }, [run, year])
+  const table = useMemo(() => (run ? applyAlwaysSettled(run.table, year) : []), [run, year])
 
   function setParam(key, value) {
     const next = new URLSearchParams(searchParams)

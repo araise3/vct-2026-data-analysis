@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import {
   buildRatings, buildTeamPoints, rankMovementFor, PROVISIONAL_RD,
 } from '../lib/teamRatings'
+import { applyAlwaysSettled } from '../pages/Ratings'
 import RatingChart from './RatingChart'
 import { RC, PANEL_STYLE } from '../lib/ratingTheme'
 import { num, shortDate } from '../lib/format'
@@ -97,13 +98,18 @@ export default function TeamRatingSection({ matchData, team, year }) {
   const view = useMemo(() => {
     if (resolvedYear == null) return null
     const run = runs.get(resolvedYear)
-    const row = run.table.find((t) => t.team === team)
+    // ALWAYS_SETTLED's per-team/year exceptions (see Ratings.jsx) applied
+    // here too -- otherwise a team like PCIFIC Esports would show as
+    // provisional on its own profile page while /ratings and the homepage
+    // preview both correctly treat it as settled.
+    const table = applyAlwaysSettled(run.table, resolvedYear)
+    const row = table.find((t) => t.team === team)
     if (!row) return null
 
     // Ranks are among settled ratings only. A provisional team sitting third
     // on raw rating after a 3-0 start would otherwise push everyone below it
     // down a place on their own profile pages.
-    const settled = run.table.filter((t) => !t.provisional)
+    const settled = table.filter((t) => !t.provisional)
     const overall = settled.findIndex((t) => t.team === team)
     const regional = settled.filter((t) => t.region === row.region)
     const regionRank = regional.findIndex((t) => t.team === team)

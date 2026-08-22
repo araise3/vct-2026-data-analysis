@@ -13,7 +13,7 @@ import PlayerOfWeekCard from '../components/PlayerOfWeekCard'
 import { FACETS } from '../components/FilterPanel'
 import Card from '../components/ui/Card'
 import { num } from '../lib/format'
-import { RegionTable, REGION_ORDER } from './Ratings'
+import { RegionTable, REGION_ORDER, applyAlwaysSettled } from './Ratings'
 
 /**
  * A compact restatement of the season-totals KPI strip that used to anchor
@@ -121,12 +121,16 @@ export default function Tournaments() {
   // why it's a hand-rolled table rather than four DataTables) -- a
   // rating-trajectory-chart version of this preview was tried and rejected
   // in favour of literally the same standings table the /ratings page
-  // shows, just four of them in a smaller column.
+  // shows, just four of them in a smaller column. `applyAlwaysSettled` is
+  // the same per-team/year exception list Ratings.jsx's own `table` uses --
+  // this preview used to skip it (see project-history), so a team like
+  // PCIFIC Esports showed as provisional here while /ratings correctly
+  // treated it as settled.
   const byRegionTable = useMemo(() => {
     const run = ratingRuns.get(ratingYear)
     const out = new Map()
     if (!run) return out
-    for (const t of run.table) {
+    for (const t of applyAlwaysSettled(run.table, ratingYear)) {
       if (!out.has(t.region)) out.set(t.region, [])
       out.get(t.region).push(t)
     }
@@ -248,7 +252,7 @@ export default function Tournaments() {
                   region={region}
                   rows={byRegionTable.get(region) || []}
                   showProvisional={false}
-                  showDeviation={false}
+                  limit={6}
                 />
               ))}
             </div>

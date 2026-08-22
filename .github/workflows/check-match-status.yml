@@ -1,0 +1,76 @@
+name: Check match completion status
+
+# Cheap, frequent poll of HenrikDev's VLR esports API (data_prep/check_match_status.py)
+# purely to answer "has a match finished since we last checked" -- it cannot supply the
+# site's real stats itself (see that script's own docstring / project-history), so this
+# never touches public/data. When it finds a newly-finished match in a currently-active
+# event, it dispatches update-data.yml immediately instead of waiting for that workflow's
+# own 3-hour cron -- the actual vlr.gg scrape is unchanged, only *when* it runs improves.
+#
+# Every 10 minutes: HenrikDev's own edge cache is 5 minutes (see project-history), so
+# polling faster than that buys nothing. Runs are seconds long and standard-library-only
+# (no pip install), so this is negligible Actions usage even at this cadence.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+# Independent of update-data.yml's own concurrency group -- this job never touches
+# public/data, so it must never be blocked behind (or block) a real scrape run.
+concurrency:
+  group: check-match-status
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  # Needed to dispatch update-data.yml via `gh workflow run` below.
+  actions: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      HENRIKDEV_API_KEY: ${{ secrets.HENRIKDEV_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # No pip install -- check_match_status.py is standard library only,
+      # same as resolve_tracker_puuids.py / fetch_act_stats.py.
+
+      # Keyed/restored the same "load newest, save updated" way update-data.yml
+      # caches its own scraper database -- a fixed key would restore the first
+      # run's state forever.
+      - name: Restore match-status state
+        uses: actions/cache/restore@v4
+        with:
+          path: data_cache/match_status_state.json
+          key: match-status-${{ github.run_id }}
+          restore-keys: match-status-
+
+      - name: Check match status
+        id: check
+        run: python data_prep/check_match_status.py
+
+      - name: Save match-status state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data_cache/match_status_state.json
+          key: match-status-${{ github.run_id }}
+
+      # Queues rather than races update-data.yml's own run: that workflow's
+      # concurrency group (cancel-in-progress: false) means a dispatch while
+      # one is already in flight just waits its turn instead of colliding.
+      - name: Trigger update-data.yml
+        if: steps.check.outputs.should_scrape == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run update-data.yml

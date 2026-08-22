@@ -129,57 +129,6 @@ export function buildEventList(matchData, records, eventMetaData, upcomingData, 
 }
 
 /**
- * Splits into the page's two tabs and orders each the way its tab implies:
- * Scheduled ascending (soonest first -- what a schedule is for), Finished
- * descending (most recent first).
- *
- * An event with no dates at all sorts to the TOP of Scheduled rather than
- * being dropped, so a newly-added event with no metadata yet is visible
- * instead of silently missing.
- */
-export function splitByStatus(events) {
-  const scheduled = events
-    .filter((e) => e.status !== 'finished')
-    .sort((a, b) => {
-      if (!a.startDate && !b.startDate) return a.name.localeCompare(b.name)
-      if (!a.startDate) return -1
-      if (!b.startDate) return 1
-      return a.startDate.localeCompare(b.startDate)
-    })
-  const finished = events
-    .filter((e) => e.status === 'finished')
-    .sort((a, b) => (b.endDate || '').localeCompare(a.endDate || ''))
-  return { scheduled, finished }
-}
-
-/**
- * Groups an ordered event list under month headers, preserving the order it
- * was given (so Scheduled reads forwards and Finished backwards) rather than
- * imposing one. Undated events collect under a "TBD" bucket.
- *
- * `pick` MUST return whichever date the caller sorted by. Grouping on a
- * different date than the sort produces non-consecutive repeats of the same
- * month -- caught live rather than reasoned about: the Finished tab is sorted
- * by end date, and grouping it by START date rendered "MAY 2026" and "APRIL
- * 2026" twice each (an event running Apr->May sorts among the May-enders but
- * opens an April group), which React also flagged as duplicate keys.
- */
-export function groupByMonth(events, pick = (e) => e.startDate) {
-  const groups = []
-  let current = null
-  for (const e of events) {
-    const date = pick(e)
-    const key = date ? date.slice(0, 7) : 'tbd'
-    if (!current || current.key !== key) {
-      current = { key, anchorDate: date, events: [] }
-      groups.push(current)
-    }
-    current.events.push(e)
-  }
-  return groups
-}
-
-/**
  * The left rail's circuit list: the current season's events, soonest-relevant
  * first. Live events lead (they're the reason to look), then upcoming by
  * start date, then the most recently finished.

@@ -102,7 +102,11 @@ const MAX_MAPS = 80
 // (best) through 6 (worst) here to match. Complete literal class strings
 // (not built via interpolation) since Tailwind's JIT scanner needs the
 // full class text present verbatim in source to generate it.
-const TIER_STYLES = {
+// Exported so PlayerOfWeekCard's own compact recent-maps strip (a mini
+// version of this same bar+badge treatment, embedded in the rail card
+// rather than a full standalone panel) can colour its bars identically
+// without duplicating the tier tables or cutoffs.
+export const TIER_STYLES = {
   1: { bg: 'bg-score-1', text: 'text-white', hex: '0, 51, 255' },
   2: { bg: 'bg-score-2', text: 'text-black', hex: '20, 184, 166' },
   3: { bg: 'bg-score-3', text: 'text-black', hex: '29, 210, 94' },
@@ -117,7 +121,7 @@ const NO_TIER = { bg: 'bg-surface2', text: 'text-muted', hex: null }
 // shown on this page's own "Avg Rating 2.0" card) instead of an even split
 // of its domain, since those boundaries are this site's real vocabulary
 // for "how good is this rating", not arbitrary.
-function ratingTierIndex(v) {
+export function ratingTierIndex(v) {
   if (v >= 1.25) return 1
   if (v >= 1.12) return 2
   if (v >= 1.02) return 3

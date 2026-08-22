@@ -50,7 +50,7 @@ function RatingRange({ row }) {
 // deliberately absent: teamRatings.js only assigns it to teams seen at no
 // domestic event at all, which is a handful of one-off EWC entrants, not a
 // league worth its own standings table.
-const REGION_ORDER = ['Americas', 'EMEA', 'Pacific', 'China']
+export const REGION_ORDER = ['Americas', 'EMEA', 'Pacific', 'China']
 
 // China had no developed VCT franchise league yet in 2023 -- the only
 // China-tagged event that year (match_results.json) is a one-off Champions
@@ -99,8 +99,19 @@ const ALWAYS_SETTLED = new Set([
  * the strongest team in the weakest region the same colour as the
  * strongest team overall -- actively misleading next to three other
  * tables. These are read as standings, not sorted.
+ *
+ * Exported so Tournaments.jsx's homepage can reuse this exact same table
+ * for its own 2x2 regional preview, rather than a second hand-rolled
+ * version -- per direct request (a rating-trajectory-chart version of that
+ * preview was tried and rejected in favour of literally this).
+ *
+ * `showDeviation` (default on) toggles the "±" RD-based confidence-range
+ * column -- off for Tournaments.jsx's homepage preview specifically, per
+ * direct request ("remove sd from that chart"), leaving the full /ratings
+ * page unaffected (its own call site doesn't pass this prop at all, so it
+ * keeps the column).
  */
-function RegionTable({ region, rows, showProvisional }) {
+export function RegionTable({ region, rows, showProvisional, showDeviation = true }) {
   // No ALWAYS_SETTLED check needed here -- `byRegion` (Ratings.jsx) already
   // groups from `table`, the ALWAYS_SETTLED-adjusted rows, so `.provisional`
   // is already correctly false for those teams by the time they arrive here.
@@ -134,9 +145,11 @@ function RegionTable({ region, rows, showProvisional }) {
                   </Link>
                 </td>
                 <td className="py-1.5 pr-1 text-right text-xs text-ink tabular-nums">{num(r.rating)}</td>
-                <td className="py-1.5 pr-2 text-right text-[11px] text-muted tabular-nums whitespace-nowrap">
-                  ±{num(2 * r.rd)}
-                </td>
+                {showDeviation && (
+                  <td className="py-1.5 pr-2 text-right text-[11px] text-muted tabular-nums whitespace-nowrap">
+                    ±{num(2 * r.rd)}
+                  </td>
+                )}
                 <td className="py-1.5 text-right text-[11px] tabular-nums whitespace-nowrap">
                   <span className="text-good">{r.seriesWins}</span>
                   <span className="text-muted">–</span>

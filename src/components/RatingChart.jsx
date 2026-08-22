@@ -177,6 +177,21 @@ export default function RatingChart({
   // panel duplicated the match-by-match detail MatchHistory.jsx already
   // covers further down that same page.
   showAnnotations = true, showSidePanel = true,
+  // Off for a small non-interactive placement (e.g. the homepage's compact
+  // ratings preview) that has no side panel or annotation room to hover
+  // *for* in the first place -- simply not wiring the pointer handlers means
+  // `hover` never leaves null, so the crosshair line never draws and every
+  // hover-gated bit of markup below falls back to its already-existing
+  // latestRows/no-hover default on its own, with no extra branching needed.
+  interactive = true,
+  // Stacks each series' current rating under its legend chip instead of the
+  // side table -- for a placement (the homepage) that dropped the table
+  // entirely (see showSidePanel above) but still wants the number visible
+  // permanently rather than only on hover. Off by default: Ratings.jsx's own
+  // multi-team legend can run to 16 chips, where a number under each adds a
+  // second text row to every one of them for a chart that already has the
+  // real numbers in its side table/DataTable underneath.
+  showLegendRating = false,
 }) {
   const wrapRef = useRef(null)
   const svgRef = useRef(null)
@@ -478,12 +493,22 @@ export default function RatingChart({
           {series.length > 1 && series.map((s, i) => {
             const color = s.color || SERIES_COLORS[i % SERIES_COLORS.length]
             const off = hidden.has(s.key)
+            // s.rating is the caller's own current-rating figure when it has
+            // one handy (Tournaments.jsx passes the same number its side
+            // rail's TopRatedTeamsCard used to show); falling back to the
+            // series' own last plotted point keeps this correct even for a
+            // caller that only ever built `points`.
+            const rating = s.rating ?? s.points?.[s.points.length - 1]?.rating
             return (
               <button
                 key={s.key}
                 type="button"
                 onClick={() => toggle(s.key)}
-                className="flex items-center gap-1.5 text-[11px] font-medium pl-1.5 pr-2 py-1 rounded-lg border transition-colors"
+                className={
+                  showLegendRating
+                    ? 'flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg border transition-colors'
+                    : 'flex items-center gap-1.5 pl-1.5 pr-2 py-1 rounded-lg border transition-colors'
+                }
                 style={{
                   background: off ? 'transparent' : RC.elevated,
                   borderColor: off ? RC.border : 'transparent',
@@ -491,18 +516,28 @@ export default function RatingChart({
                 }}
                 title={off ? `Show ${s.label}` : `Hide ${s.label}`}
               >
-                <span
-                  className="w-2.5 h-2.5 rounded-full shrink-0"
-                  style={{ background: color, opacity: off ? 0.3 : 1 }}
-                />
-                {/* Dimmed as one unit rather than struck through -- there's
-                    no text span of our own left to put a line through once
-                    the label is TeamLogo's icon+tag, and the muted color/
-                    opacity here plus the dot's above already read clearly
-                    as "off". */}
-                <span style={{ opacity: off ? 0.5 : 1 }}>
-                  <TeamLogo team={s.label} size={14} showName={false} showTag />
+                <span className="flex items-center gap-1.5 text-[11px] font-medium">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    style={{ background: color, opacity: off ? 0.3 : 1 }}
+                  />
+                  {/* Dimmed as one unit rather than struck through -- there's
+                      no text span of our own left to put a line through once
+                      the label is TeamLogo's icon+tag, and the muted color/
+                      opacity here plus the dot's above already read clearly
+                      as "off". */}
+                  <span style={{ opacity: off ? 0.5 : 1 }}>
+                    <TeamLogo team={s.label} size={14} showName={false} showTag />
+                  </span>
                 </span>
+                {showLegendRating && rating != null && (
+                  <span
+                    className="text-[10px] font-semibold tabular-nums"
+                    style={{ opacity: off ? 0.5 : 1 }}
+                  >
+                    {num(rating)}
+                  </span>
+                )}
               </button>
             )
           })}
@@ -567,8 +602,8 @@ export default function RatingChart({
             viewBox={`0 0 ${W} ${H}`}
             className="w-full select-none"
             style={{ height: 'auto' }}
-            onPointerMove={handleMove}
-            onPointerLeave={() => setHover(null)}
+            onPointerMove={interactive ? handleMove : undefined}
+            onPointerLeave={interactive ? () => setHover(null) : undefined}
             role="img"
             aria-label={`Rating over time for ${series.map((s) => s.label).join(', ')}`}
           >

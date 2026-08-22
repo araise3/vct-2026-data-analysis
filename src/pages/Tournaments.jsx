@@ -1,21 +1,19 @@
-import { useMemo, useState } from 'react'
-import { useData } from '../lib/useData'
+import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
+import { useData, useIdle } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import { expandMatchRows, expandBuckets, aggregateOverview } from '../lib/entityBuckets'
-import { buildEventList, splitByStatus, groupByMonth, currentCircuits } from '../lib/eventMeta'
+import { buildEventList, currentCircuits } from '../lib/eventMeta'
 import { recentResults } from '../lib/schedule'
 import { buildRatings } from '../lib/teamRatings'
-import EventRow from '../components/EventRow'
-import FilterChips from '../components/FilterChips'
+import { buildPlayerMapPerformance } from '../lib/playerMapPerformance'
 import { ResultsRail } from '../components/MatchRail'
 import CircuitList from '../components/CircuitList'
 import PlayerOfWeekCard from '../components/PlayerOfWeekCard'
-import TopRatedTeamsCard from '../components/TopRatedTeamsCard'
 import { FACETS } from '../components/FilterPanel'
 import Card from '../components/ui/Card'
-import { monthLabel, num } from '../lib/format'
-
-const TABS = ['Scheduled', 'Finished']
+import { num } from '../lib/format'
+import { RegionTable, REGION_ORDER } from './Ratings'
 
 /**
  * A compact restatement of the season-totals KPI strip that used to anchor
@@ -40,17 +38,43 @@ function KpiTile({ label, value }) {
 /**
  * Tournaments -- the site's landing page (`/`, also still reachable at
  * `/tournaments` for existing links/bookmarks -- TournamentDetail's "Back to
- * Tournaments" link and CircuitList/EventRow/MatchRail all point at
+ * Tournaments" link and CircuitList/MatchRail both point at
  * `/tournaments/{name}`, which stays untouched).
  *
- * The events/circuit-list section below is the original page, unchanged --
- * it's the main thing this route shows and loads first. A six-tile season
- * KPI strip (see KpiTile above) sits inline in its header row, fed by its
- * own data fetch/loading state so it doesn't hold up the events section
- * itself. That strip is what's left of a much bigger "Season stats" section
- * (KPIs, top players/teams, leader cards, faceted filters) that used to live
- * here (formerly its own Overview.jsx page at `/`) -- everything but the
- * KPIs themselves moved to Records.jsx.
+ * The centre column's events list (a browsable Scheduled/Finished month-by-
+ * month card) was replaced by the same four regional Glicko-2 standings
+ * tables /ratings shows (Americas/EMEA/Pacific/China) in a 2x2 grid --
+ * `RegionTable`/`REGION_ORDER` are imported straight from Ratings.jsx (both
+ * exported specifically for this reuse) rather than a second hand-rolled
+ * version. A rating-trajectory-LINE-CHART version of this preview was tried
+ * first and rejected per direct request in favour of literally this table.
+ * This is also what used to be the left rail's TopRatedTeamsCard list (one
+ * combined top-5 across every region), which is now gone entirely rather
+ * than showing an overlapping-but-different set of teams twice.
+ * `EventRow`/`splitByStatus`/`groupByMonth`/`monthLabel`/`TopRatedTeamsCard`
+ * were this column's or the rail's own rendering for what they replaced and
+ * had no other consumer, so they were deleted rather than left dead once
+ * nothing called them any more. `events`/`currentCircuits` are still needed
+ * for the left rail's CircuitList, which this change doesn't touch.
+ *
+ * Player of the Week now sits as a compact card in the left rail (its
+ * default narrow layout -- see PlayerOfWeekCard's own comment on why its
+ * once-separate `wide` banner variant was removed rather than kept unused),
+ * with a mini recent-form strip (a few small Rating 2.0 badges/bars, per
+ * direct request modelled on rft.gg's own "Player of the Month" widget)
+ * embedded directly in that same card instead of living as its own separate
+ * section. `mapPerformanceRows` -- built by `buildPlayerMapPerformance` from
+ * `records` + `match_players.json` + `team_map_detail.json` (the last one
+ * idle-loaded, matching PlayerProfile's own load timing for it) -- is what
+ * feeds that strip; it's the exact same per-map row shape PlayerProfile.jsx
+ * hands its own full-size PerformanceStrip, just passed to the card instead.
+ *
+ * A six-tile season KPI strip (see KpiTile above) sits inline in the header
+ * row above the chart, fed by its own data fetch/loading state so it doesn't
+ * hold up the rest of the column. That strip is what's left of a much bigger
+ * "Season stats" section (KPIs, top players/teams, leader cards, faceted
+ * filters) that used to live here (formerly its own Overview.jsx page at
+ * `/`) -- everything but the KPIs themselves moved to Records.jsx.
  */
 export default function Tournaments() {
   const { data: matchData, loading } = useData('match_results')
@@ -65,6 +89,13 @@ export default function Tournaments() {
   const { data: photosData } = useData('player_photos')
   const { data: pData, loading: pLoading } = useData('player_buckets')
   const { data: tData, loading: tLoading } = useData('team_buckets')
+  const { data: matchPlayerData } = useData('match_players')
+  // Same idle-load-then-join pattern PlayerProfile.jsx uses for its own
+  // Performances strip -- team_map_detail.json is comparable in size to
+  // match_players.json, so it waits for browser idle rather than competing
+  // with this page's own first paint.
+  const idle = useIdle()
+  const { data: teamMapDetailData } = useData(idle ? 'team_map_detail' : null)
 
   const records = useMemo(() => expandMatchRows(matchData), [matchData])
 
@@ -73,40 +104,49 @@ export default function Tournaments() {
     [matchData, records, eventMetaData, upcomingData]
   )
 
-  const { scheduled, finished } = useMemo(() => splitByStatus(events), [events])
-
-  // Scheduled leads, since a live season is what someone opening this page is
-  // most likely after -- but never land on a blank tab, so an off-season with
-  // nothing scheduled falls back to Finished.
-  const [tab, setTab] = useState(null)
-  const activeTab = tab ?? (scheduled.length > 0 ? 'Scheduled' : 'Finished')
-  const isScheduled = activeTab === 'Scheduled'
-  const shown = isScheduled ? scheduled : finished
-  // Group on whichever date the tab is sorted by, or the same month reappears
-  // further down the list (see groupByMonth's own note).
-  const months = useMemo(
-    () => groupByMonth(shown, isScheduled ? (e) => e.startDate : (e) => e.endDate),
-    [shown, isScheduled]
-  )
-
   const recent = useMemo(() => recentResults(records, 8), [records])
   const circuits = useMemo(() => currentCircuits(events), [events])
 
   // Reuses matchData (already fetched above) rather than a second request --
   // Ratings.jsx's own comment notes the whole multi-year Glicko-2 build costs
-  // ~23ms, so recomputing it here for a five-row rail card is cheap. Only the
-  // newest year's table is needed, and only non-provisional teams (RD above
-  // PROVISIONAL_RD is "too few series to trust yet" -- not what a front-page
-  // summary should lead with). Unlike Ratings.jsx's own ALWAYS_SETTLED list,
-  // this doesn't re-apply per-team/year exceptions -- a small home-page top-5
-  // isn't worth duplicating that table for.
+  // ~23ms, so recomputing it here for four region tables is cheap. Only the
+  // newest year's table is needed. Unlike Ratings.jsx's own ALWAYS_SETTLED
+  // list, this doesn't re-apply per-team/year exceptions -- a front-page
+  // preview isn't worth duplicating that table for.
   const ratingRuns = useMemo(() => (matchData ? buildRatings(matchData) : new Map()), [matchData])
   const ratingYear = [...ratingRuns.keys()][0]
-  const topRatedTeams = useMemo(() => {
+
+  // Same grouping Ratings.jsx's own `byRegion` builds, reused here via the
+  // exported RegionTable component itself (see that file's own comment on
+  // why it's a hand-rolled table rather than four DataTables) -- a
+  // rating-trajectory-chart version of this preview was tried and rejected
+  // in favour of literally the same standings table the /ratings page
+  // shows, just four of them in a smaller column.
+  const byRegionTable = useMemo(() => {
     const run = ratingRuns.get(ratingYear)
-    if (!run) return []
-    return run.table.filter((t) => !t.provisional).slice(0, 5)
+    const out = new Map()
+    if (!run) return out
+    for (const t of run.table) {
+      if (!out.has(t.region)) out.set(t.region, [])
+      out.get(t.region).push(t)
+    }
+    return out
   }, [ratingRuns, ratingYear])
+
+  // One row per MAP the Player of the Week actually played, across every
+  // match in `records` -- buildPlayerMapPerformance itself is what narrows
+  // that full list down to just this one player's own matches (see its own
+  // comment). Fed to PlayerOfWeekCard's own mini strip (its `mapRows` prop),
+  // which slices off just the last few maps itself -- passed in full here
+  // rather than pre-sliced so it stays the same shape PlayerProfile.jsx's
+  // full-size PerformanceStrip expects, in case a future change wants both.
+  // Empty (and the card renders its stat grid with no strip below it) until
+  // teamMapDetailData lands (idle-loaded above) or before player_week.json
+  // has picked a winner.
+  const mapPerformanceRows = useMemo(
+    () => buildPlayerMapPerformance(records, matchPlayerData, teamMapDetailData, playerWeekData?.player),
+    [records, matchPlayerData, teamMapDetailData, playerWeekData]
+  )
 
   // Deduped so the two Liquipedia files don't repeat the same licence line if
   // their wording ever converges.
@@ -125,7 +165,8 @@ export default function Tournaments() {
   // filter" (see useFacetedFilter's own comment), so these KPIs now cover
   // the site's whole history rather than just the current VCT season. This
   // is also what the removed "N events · N matches" subtitle used to state
-  // (see the Events header below) -- these tiles are its replacement.
+  // (this section's old header, before it became the rating chart below) --
+  // these tiles are its replacement.
   const { selections, filtered: filteredTeams, dateRange, includeHiddenEvents } =
     useFacetedFilter(teamRecords, FACETS, {})
 
@@ -163,16 +204,25 @@ export default function Tournaments() {
           on mobile later is a CSS `order` swap rather than a second instance --
           rendering either aside twice would fork the day-strip and compare-box
           state. */}
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)_220px]">
+      {/* Left rail widened from the original 220px to 280px (PlayerOfWeekCard's
+          mini strip needs the room for its taller bar columns -- see its own
+          MINI_BAR_MAX_PX comment) and the right rail narrowed to 180px to give
+          it back, per direct request. Both are otherwise unrelated to the
+          1104/1202px `max-w-content` figures the comment above this section
+          still describes -- that's the section's own OUTER width, unaffected
+          by how these two numbers split it internally. */}
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)_180px]">
         <aside className="hidden lg:flex lg:flex-col lg:gap-4">
           <CircuitList circuits={circuits} />
-          <TopRatedTeamsCard year={ratingYear} rows={topRatedTeams} />
+          <PlayerOfWeekCard data={playerWeekData} photosData={photosData} mapRows={mapPerformanceRows} />
         </aside>
 
         <div className="flex min-w-0 flex-col gap-4">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h1 className="font-display text-2xl font-semibold text-ink">Events</h1>
-            <FilterChips options={TABS} value={activeTab} onChange={setTab} />
+            <h1 className="font-display text-2xl font-semibold text-ink">Overview</h1>
+            <Link to="/ratings" className="text-xs text-muted transition-colors hover:text-ink">
+              Full ratings →
+            </Link>
           </div>
 
           {!statsLoading && (
@@ -186,32 +236,23 @@ export default function Tournaments() {
             </div>
           )}
 
-          <div className="overflow-hidden rounded-2xl border border-hairline bg-surface">
-            {shown.length === 0 ? (
-              <p className="px-5 py-8 text-center text-sm text-muted">
-                No {activeTab.toLowerCase()} events.
-              </p>
-            ) : (
-              months.map((g) => (
-                <div key={g.key}>
-                  <div className="border-b border-hairline bg-surface2/40 px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted">
-                    {g.anchorDate ? monthLabel(g.anchorDate) : 'Dates TBD'}
-                  </div>
-                  <div className="flex flex-col gap-2 p-2">
-                    {g.events.map((e) => (
-                      <EventRow key={e.name} event={e} />
-                    ))}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          {/* Full-width banner variant (see PlayerOfWeekCard's own comment
-              on `wide`) -- moved out of the 220px left rail, where a real
-              photo plus a 6-stat grid read as cramped, and placed here
-              instead since nothing about this card needs rail width. */}
-          <PlayerOfWeekCard data={playerWeekData} photosData={photosData} wide />
+          {byRegionTable.size > 0 && (
+            // Same "2x2, 1 column below a breakpoint" shape Ratings.jsx uses
+            // for these same four tables (there at `md`, here at `sm` --
+            // this column is narrower than that page's full-width one, so
+            // it needs to drop to a single column sooner).
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {REGION_ORDER.map((region) => (
+                <RegionTable
+                  key={region}
+                  region={region}
+                  rows={byRegionTable.get(region) || []}
+                  showProvisional={false}
+                  showDeviation={false}
+                />
+              ))}
+            </div>
+          )}
 
           {/* CC-BY-SA 3.0 requires attribution wherever Liquipedia content is
               displayed -- every scraper here asserts this in its docstring, but

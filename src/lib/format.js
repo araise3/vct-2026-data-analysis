@@ -227,10 +227,6 @@ export function compact(v) {
 // ---------------------------------------------------------------------------
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-const MONTHS_FULL = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-]
 
 /** "2026-08-06" -> "Aug 6". Null-safe (returns null, not "—", so callers can
  * decide their own placeholder -- RosterTable's activeRange relies on this). */
@@ -263,13 +259,6 @@ export function birthDateLabel(iso) {
     (now.getMonth() === birth.getMonth() && now.getDate() >= birth.getDate())
   if (!hadBirthdayThisYear) age -= 1
   return `${longDate(iso)} (${age})`
-}
-
-/** "2026-08-06" -> "AUGUST 2026", for the centre column's month group headers. */
-export function monthLabel(iso) {
-  if (!iso) return ''
-  const [y, m] = iso.split('-').map(Number)
-  return `${MONTHS_FULL[m - 1]} ${y}`.toUpperCase()
 }
 
 /** "2026-07-16" + "2026-09-06" -> "Jul 16 – Sep 6"; collapses to one date

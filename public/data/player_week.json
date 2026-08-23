@@ -1,23 +1,23 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-08-23T11:32:43Z",
+    "generatedAt": "2026-08-23T12:51:02Z",
     "playersConsidered": 190,
-    "poolMeanRating": 0.996,
+    "poolMeanRating": 0.997,
     "selection": "Wilson lower-bound confidence score (rating/3.0 as phat, maps played as n, z=2.0; same technique as playerDuels.js's aggregateKdByCountry; no eligibility gate; see build_player_week.py)"
   },
   "weekStart": "2026-08-17",
   "weekEnd": "2026-08-23",
-  "player": "Meiy",
-  "team": "DetonatioN FocusMe",
-  "countryCode": "jp",
-  "countryName": "Japan",
-  "rating": 1.57,
-  "acs": 329.0,
-  "kd": 1.89,
-  "kast": 0.8119,
-  "adr": 202.0,
-  "hs": 0.2836,
-  "maps": 5,
-  "rounds": 101
+  "player": "splash",
+  "team": "TYLOO",
+  "countryCode": "id",
+  "countryName": "Indonesia",
+  "rating": 1.2,
+  "acs": 246.0,
+  "kd": 1.25,
+  "kast": 0.751,
+  "adr": 157.0,
+  "hs": 0.301,
+  "maps": 14,
+  "rounds": 310
 }

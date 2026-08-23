@@ -5073,14 +5073,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "Crws",
-          "name": "Thanamethk Mahatthananuyut",
-          "joinDate": "2026-04-03",
-          "flag": "th",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "seph1roth",
           "name": "Chinnakrit Phoojaroen",
           "joinDate": "2026-07-03",
@@ -5427,6 +5419,15 @@
           "joinDate": "2023-10-14",
           "leaveDate": "2025-01-10",
           "newTeam": "Motiv Esports",
+          "flag": "th",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Crws",
+          "name": "Thanamethk Mahatthananuyut",
+          "joinDate": "2026-04-03",
+          "leaveDate": "2026-08-22",
+          "newTeam": "Retired",
           "flag": "th",
           "playerStatus": "STARTER"
         },

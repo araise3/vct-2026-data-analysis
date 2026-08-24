@@ -3,74 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-24T04:25:10Z"
+    "fetchedAt": "2026-08-24T07:42:02Z"
   },
   "matches": [
-    {
-      "key": "1786873800|nongshim-redforce|team-secret",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
-      "phase": null,
-      "timestamp": 1786873800,
-      "bestOf": 3,
-      "team1": "Nongshim RedForce",
-      "team2": "Team Secret",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
-    {
-      "key": "1786876200|trace-esports|all-gamers",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1786876200,
-      "bestOf": 3,
-      "team1": "Trace Esports",
-      "team2": "All Gamers",
-      "score1": 1,
-      "score2": 2,
-      "started": true
-    },
-    {
-      "key": "1786885200|eternal-fire|eintracht-frankfurt",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1786885200,
-      "bestOf": 3,
-      "team1": "Eternal Fire",
-      "team2": "Eintracht Frankfurt",
-      "score1": 0,
-      "score2": 2,
-      "started": true
-    },
-    {
-      "key": "1786893000|fire-flux-esports|joblife",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1786893000,
-      "bestOf": 3,
-      "team1": "Fire Flux Esports",
-      "team2": "Joblife",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
-    {
-      "key": "1786914000|g2-esports|furia",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
-      "phase": null,
-      "timestamp": 1786914000,
-      "bestOf": 3,
-      "team1": "G2 Esports",
-      "team2": "FURIA",
-      "score1": 1,
-      "score2": 2,
-      "started": true
-    },
     {
       "key": "1786927200|evil-geniuses|cloud9",
       "event": "Vct 2026 Americas Stage 2",
@@ -462,19 +397,6 @@
       "started": true
     },
     {
-      "key": "1787472000|jdg-esports|tyloo",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1787472000,
-      "bestOf": 5,
-      "team1": "JDG Esports",
-      "team2": "TYLOO",
-      "score1": null,
-      "score2": null,
-      "started": false
-    },
-    {
       "key": "1787472000|sharper-esports|onside-gaming",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
@@ -483,9 +405,22 @@
       "bestOf": 3,
       "team1": "Sharper Esports",
       "team2": "ONSIDE GAMING",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 2,
+      "started": true
+    },
+    {
+      "key": "1787473200|jdg-esports|tyloo",
+      "event": "Vct 2026 China Stage 2",
+      "liquipediaPage": "VCT/2026/China League/Stage 2",
+      "phase": null,
+      "timestamp": 1787473200,
+      "bestOf": 5,
+      "team1": "JDG Esports",
+      "team2": "TYLOO",
+      "score1": 1,
+      "score2": 3,
+      "started": true
     },
     {
       "key": "1787482800|t1|detonation-focusme",
@@ -496,9 +431,9 @@
       "bestOf": 3,
       "team1": "T1",
       "team2": "DetonatioN FocusMe",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 0,
+      "started": true
     },
     {
       "key": "1787493600|enterprise-esports|team-liquid",
@@ -509,22 +444,22 @@
       "bestOf": 3,
       "team1": "Enterprise Esports",
       "team2": "Team Liquid",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 2,
+      "started": true
     },
     {
-      "key": "1787504400|bbl-esports|fire-flux-esports",
+      "key": "1787501700|bbl-esports|fire-flux-esports",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
-      "timestamp": 1787504400,
+      "timestamp": 1787501700,
       "bestOf": 3,
       "team1": "BBL Esports",
       "team2": "Fire Flux Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 2,
+      "started": true
     },
     {
       "key": "1787518800|envy|g2-esports",
@@ -535,45 +470,45 @@
       "bestOf": 3,
       "team1": "ENVY",
       "team2": "G2 Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 2,
+      "started": true
     },
     {
-      "key": "1787529600|evil-geniuses|kr-esports",
+      "key": "1787530800|evil-geniuses|kr-esports",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
-      "timestamp": 1787529600,
+      "timestamp": 1787530800,
       "bestOf": 3,
       "team1": "Evil Geniuses",
       "team2": "KRÜ Esports",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 1,
+      "started": true
     },
     {
-      "key": "1787731200|paper-rex|tbd",
+      "key": "1787731200|paper-rex|nongshim-redforce",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787731200,
       "bestOf": 3,
       "team1": "Paper Rex",
-      "team2": null,
+      "team2": "Nongshim RedForce",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1787742000|global-esports|tbd",
+      "key": "1787742000|global-esports|kiwoom-drx",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787742000,
       "bestOf": 3,
       "team1": "Global Esports",
-      "team2": null,
+      "team2": "KIWOOM DRX",
       "score1": null,
       "score2": null,
       "started": false
@@ -605,53 +540,53 @@
       "started": false
     },
     {
-      "key": "1787864400|loud|tbd",
+      "key": "1787864400|loud|furia",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787864400,
       "bestOf": 3,
       "team1": "LOUD",
-      "team2": null,
+      "team2": "FURIA",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1787875200|leviat-n|tbd",
+      "key": "1787875200|leviat-n|mibr",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1787875200,
       "bestOf": 3,
       "team1": "LEVIATÁN",
-      "team2": null,
+      "team2": "MIBR",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1787904000|tbd|tbd",
+      "key": "1787904000|tbd|onside-gaming",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787904000,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "ONSIDE GAMING",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1787914800|tbd|tbd",
+      "key": "1787914800|tbd|t1",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787914800,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "T1",
       "score1": null,
       "score2": null,
       "started": false
@@ -670,14 +605,14 @@
       "started": false
     },
     {
-      "key": "1787936400|tbd|tbd",
+      "key": "1787936400|team-liquid|fire-flux-esports",
       "event": "Vct 2026 Emea Stage 2",
       "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
       "phase": null,
       "timestamp": 1787936400,
       "bestOf": 3,
-      "team1": null,
-      "team2": null,
+      "team1": "Team Liquid",
+      "team2": "Fire Flux Esports",
       "score1": null,
       "score2": null,
       "started": false
@@ -748,27 +683,27 @@
       "started": false
     },
     {
-      "key": "1788037200|tbd|tbd",
+      "key": "1788037200|tbd|g2-esports",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1788037200,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "G2 Esports",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1788048000|tbd|tbd",
+      "key": "1788048000|tbd|evil-geniuses",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1788048000,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "Evil Geniuses",
       "score1": null,
       "score2": null,
       "started": false

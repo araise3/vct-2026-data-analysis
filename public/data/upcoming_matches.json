@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-24T21:57:14Z"
+    "fetchedAt": "2026-08-25T02:05:54Z"
   },
   "matches": [
-    {
-      "key": "1786927200|evil-geniuses|cloud9",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
-      "phase": null,
-      "timestamp": 1786927200,
-      "bestOf": 3,
-      "team1": "Evil Geniuses",
-      "team2": "Cloud9",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1787126400|jdg-esports|tyloo",
       "event": "Vct 2026 China Stage 2",

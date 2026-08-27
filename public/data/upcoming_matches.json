@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-27T01:01:46Z"
+    "fetchedAt": "2026-08-27T14:34:57Z"
   },
   "matches": [
     {
@@ -17,19 +17,6 @@
       "team2": "TYLOO",
       "score1": 2,
       "score2": 1,
-      "started": true
-    },
-    {
-      "key": "1787126400|team-secret|onside-gaming",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
-      "phase": null,
-      "timestamp": 1787126400,
-      "bestOf": 3,
-      "team1": "Team Secret",
-      "team2": "ONSIDE GAMING",
-      "score1": 0,
-      "score2": 2,
       "started": true
     },
     {
@@ -483,48 +470,48 @@
       "bestOf": 3,
       "team1": "Paper Rex",
       "team2": "Nongshim RedForce",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 2,
+      "started": true
     },
     {
-      "key": "1787742000|global-esports|kiwoom-drx",
+      "key": "1787739000|global-esports|kiwoom-drx",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
-      "timestamp": 1787742000,
+      "timestamp": 1787739000,
       "bestOf": 3,
       "team1": "Global Esports",
       "team2": "KIWOOM DRX",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 1,
+      "started": true
     },
     {
-      "key": "1787817600|gen-g|tbd",
+      "key": "1787817600|gen-g|nongshim-redforce",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787817600,
       "bestOf": 3,
       "team1": "Gen.G",
-      "team2": null,
-      "score1": null,
-      "score2": null,
-      "started": false
+      "team2": "Nongshim RedForce",
+      "score1": 1,
+      "score2": 2,
+      "started": true
     },
     {
-      "key": "1787828400|varrel|tbd",
+      "key": "1787829000|varrel|global-esports",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
-      "timestamp": 1787828400,
+      "timestamp": 1787829000,
       "bestOf": 3,
       "team1": "VARREL",
-      "team2": null,
-      "score1": null,
-      "score2": null,
-      "started": false
+      "team2": "Global Esports",
+      "score1": 0,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1787864400|loud|furia",
@@ -553,26 +540,26 @@
       "started": false
     },
     {
-      "key": "1787904000|tbd|onside-gaming",
+      "key": "1787904000|paper-rex|onside-gaming",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787904000,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Paper Rex",
       "team2": "ONSIDE GAMING",
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1787914800|tbd|t1",
+      "key": "1787914800|kiwoom-drx|t1",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1787914800,
       "bestOf": 3,
-      "team1": null,
+      "team1": "KIWOOM DRX",
       "team2": "T1",
       "score1": null,
       "score2": null,
@@ -644,13 +631,13 @@
       "started": false
     },
     {
-      "key": "1788001200|tbd|tbd",
+      "key": "1788001200|gen-g|tbd",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1788001200,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Gen.G",
       "team2": null,
       "score1": null,
       "score2": null,
@@ -735,13 +722,13 @@
       "started": false
     },
     {
-      "key": "1788508800|tbd|tbd",
+      "key": "1788508800|nongshim-redforce|tbd",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1788508800,
       "bestOf": 3,
-      "team1": null,
+      "team1": "Nongshim RedForce",
       "team2": null,
       "score1": null,
       "score2": null,

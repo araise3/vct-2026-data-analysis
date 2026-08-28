@@ -6746,14 +6746,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "kovaQ",
-          "name": "Blendi Kovaci",
-          "joinDate": "2026-03-12",
-          "flag": "ch",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "coconut",
           "name": "Colin Patrick Chung",
           "joinDate": "2026-06-25",
@@ -6994,6 +6986,15 @@
           "leaveDate": "2025-03-04",
           "newTeam": "FunPlus Phoenix",
           "flag": "tw",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "kovaQ",
+          "name": "Blendi Kovaci",
+          "joinDate": "2026-03-12",
+          "leaveDate": "2026-08-28",
+          "newTeam": null,
+          "flag": "ch",
           "playerStatus": "STARTER"
         },
         {

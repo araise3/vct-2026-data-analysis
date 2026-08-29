@@ -1,23 +1,23 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-08-29T16:54:01Z",
+    "generatedAt": "2026-08-29T20:44:49Z",
     "playersConsidered": 141,
     "poolMeanRating": 0.99,
     "selection": "Wilson lower-bound confidence score (rating/3.0 as phat, maps played as n, z=2.0; same technique as playerDuels.js's aggregateKdByCountry; no eligibility gate; see build_player_week.py)"
   },
   "weekStart": "2026-08-23",
   "weekEnd": "2026-08-29",
-  "player": "BuZz",
-  "team": "T1",
-  "countryCode": "kr",
-  "countryName": "Korea, Republic of",
-  "rating": 1.27,
-  "acs": 281.0,
-  "kd": 1.44,
-  "kast": 0.7477,
-  "adr": 178.0,
-  "hs": 0.2422,
-  "maps": 6,
-  "rounds": 126
+  "player": "nAts",
+  "team": "Team Liquid",
+  "countryCode": "ru",
+  "countryName": "Russian Federation",
+  "rating": 1.26,
+  "acs": 229.0,
+  "kd": 1.46,
+  "kast": 0.767,
+  "adr": 151.0,
+  "hs": 0.2617,
+  "maps": 7,
+  "rounds": 151
 }

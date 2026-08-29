@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-29T07:19:32Z"
+    "fetchedAt": "2026-08-29T14:40:41Z"
   },
   "matches": [
-    {
-      "key": "1787224200|zeta-division|xipto-esports",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
-      "phase": null,
-      "timestamp": 1787224200,
-      "bestOf": 3,
-      "team1": "ZETA DIVISION",
-      "team2": "Xipto Esports",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1787238000|team-vitality|enterprise-esports",
       "event": "Vct 2026 Emea Stage 2",
@@ -522,22 +509,22 @@
       "bestOf": 3,
       "team1": "VARREL",
       "team2": "Paper Rex",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 1,
+      "started": true
     },
     {
-      "key": "1788001200|gen-g|t1",
+      "key": "1788002400|gen-g|t1",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
-      "timestamp": 1788001200,
+      "timestamp": 1788002400,
       "bestOf": 3,
       "team1": "Gen.G",
       "team2": "T1",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1788015600|fut-esports|team-liquid",
@@ -592,13 +579,13 @@
       "started": false
     },
     {
-      "key": "1788123600|tbd|tbd",
+      "key": "1788123600|leviat-n|tbd",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1788123600,
       "bestOf": 3,
-      "team1": null,
+      "team1": "LEVIATÁN",
       "team2": null,
       "score1": null,
       "score2": null,
@@ -631,27 +618,27 @@
       "started": false
     },
     {
-      "key": "1788519600|tbd|tbd",
+      "key": "1788519600|varrel|tbd",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1788519600,
       "bestOf": 3,
-      "team1": null,
+      "team1": "VARREL",
       "team2": null,
       "score1": null,
       "score2": null,
       "started": false
     },
     {
-      "key": "1788541200|nrg|tbd",
+      "key": "1788541200|nrg|100-thieves",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1788541200,
       "bestOf": 3,
       "team1": "NRG",
-      "team2": null,
+      "team2": "100 Thieves",
       "score1": null,
       "score2": null,
       "started": false

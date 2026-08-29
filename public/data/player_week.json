@@ -1,23 +1,23 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-08-28T17:39:40Z",
-    "playersConsidered": 165,
-    "poolMeanRating": 0.994,
+    "generatedAt": "2026-08-29T01:17:50Z",
+    "playersConsidered": 170,
+    "poolMeanRating": 0.993,
     "selection": "Wilson lower-bound confidence score (rating/3.0 as phat, maps played as n, z=2.0; same technique as playerDuels.js's aggregateKdByCountry; no eligibility gate; see build_player_week.py)"
   },
   "weekStart": "2026-08-22",
   "weekEnd": "2026-08-28",
-  "player": "Meiy",
-  "team": "DetonatioN FocusMe",
-  "countryCode": "jp",
-  "countryName": "Japan",
-  "rating": 1.6,
-  "acs": 337.0,
-  "kd": 1.82,
-  "kast": 0.7305,
-  "adr": 203.0,
-  "hs": 0.267,
-  "maps": 4,
-  "rounds": 74
+  "player": "nAts",
+  "team": "Team Liquid",
+  "countryCode": "ru",
+  "countryName": "Russian Federation",
+  "rating": 1.36,
+  "acs": 257.0,
+  "kd": 1.58,
+  "kast": 0.7872,
+  "adr": 163.0,
+  "hs": 0.2327,
+  "maps": 7,
+  "rounds": 136
 }

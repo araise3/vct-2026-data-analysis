@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-31T06:02:02Z"
+    "fetchedAt": "2026-08-31T14:21:58Z"
   },
   "matches": [
-    {
-      "key": "1787324400|karmine-corp|enterprise-esports",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1787324400,
-      "bestOf": 3,
-      "team1": "Karmine Corp",
-      "team2": "Enterprise Esports",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1787335800|bbl-esports|fut-esports",
       "event": "Vct 2026 Emea Stage 2",
@@ -509,7 +496,7 @@
       "bestOf": 3,
       "team1": "LOUD",
       "team2": "MIBR",
-      "score1": 1,
+      "score1": 2,
       "score2": 0,
       "started": true
     },
@@ -553,14 +540,14 @@
       "started": false
     },
     {
-      "key": "1788552000|g2-esports|tbd",
+      "key": "1788552000|g2-esports|loud",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1788552000,
       "bestOf": 3,
       "team1": "G2 Esports",
-      "team2": null,
+      "team2": "LOUD",
       "score1": null,
       "score2": null,
       "started": false

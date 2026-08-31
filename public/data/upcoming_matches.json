@@ -3,48 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-08-31T14:21:58Z"
+    "fetchedAt": "2026-08-31T21:02:48Z"
   },
   "matches": [
-    {
-      "key": "1787335800|bbl-esports|fut-esports",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1787335800,
-      "bestOf": 3,
-      "team1": "BBL Esports",
-      "team2": "FUT Esports",
-      "score1": 1,
-      "score2": 2,
-      "started": true
-    },
-    {
-      "key": "1787346000|mibr|envy",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
-      "phase": null,
-      "timestamp": 1787346000,
-      "bestOf": 3,
-      "team1": "MIBR",
-      "team2": "ENVY",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
-    {
-      "key": "1787356500|furia|evil-geniuses",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
-      "phase": null,
-      "timestamp": 1787356500,
-      "bestOf": 3,
-      "team1": "FURIA",
-      "team2": "Evil Geniuses",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1787385600|bilibili-gaming|tyloo",
       "event": "Vct 2026 China Stage 2",
@@ -56,19 +17,6 @@
       "team2": "TYLOO",
       "score1": 0,
       "score2": 3,
-      "started": true
-    },
-    {
-      "key": "1787385600|onside-gaming|full-sense",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
-      "phase": null,
-      "timestamp": 1787385600,
-      "bestOf": 3,
-      "team1": "ONSIDE GAMING",
-      "team2": "FULL SENSE",
-      "score1": 2,
-      "score2": 0,
       "started": true
     },
     {

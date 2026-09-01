@@ -3,48 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-01T14:16:33Z"
+    "fetchedAt": "2026-09-01T18:47:13Z"
   },
   "matches": [
-    {
-      "key": "1787385600|bilibili-gaming|tyloo",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1787385600,
-      "bestOf": 5,
-      "team1": "Bilibili Gaming",
-      "team2": "TYLOO",
-      "score1": 0,
-      "score2": 3,
-      "started": true
-    },
-    {
-      "key": "1787393400|detonation-focusme|zeta-division",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
-      "phase": null,
-      "timestamp": 1787393400,
-      "bestOf": 3,
-      "team1": "DetonatioN FocusMe",
-      "team2": "ZETA DIVISION",
-      "score1": 2,
-      "score2": 0,
-      "started": true
-    },
-    {
-      "key": "1787407200|team-liquid|eintracht-frankfurt",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1787407200,
-      "bestOf": 3,
-      "team1": "Team Liquid",
-      "team2": "Eintracht Frankfurt",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1787416200|team-vitality|fire-flux-esports",
       "event": "Vct 2026 Emea Stage 2",

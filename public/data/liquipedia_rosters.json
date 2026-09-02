@@ -6208,6 +6208,15 @@
           "leaveDate": "2025-05-15",
           "flag": "br",
           "status": "former"
+        },
+        {
+          "id": "Foxie",
+          "name": "Tyler Lowton",
+          "role": "Assistant Coach",
+          "joinDate": "2026-07-25",
+          "leaveDate": "2026-08-29",
+          "flag": "gb",
+          "status": "former"
         }
       ]
     },
@@ -8430,14 +8439,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "starxo",
-          "name": "Patryk Kopczyński",
-          "joinDate": "2025-11-20",
-          "flag": "pl",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "Proxh",
           "name": "Yusuf Emre Tunc",
           "joinDate": "2026-06-08",
@@ -8466,6 +8467,14 @@
           "name": "Taranvir Singh",
           "joinDate": "2025-11-20",
           "flag": "it",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "starxo",
+          "name": "Patryk Kopczyński",
+          "joinDate": "2025-11-20",
+          "flag": "pl",
           "captain": false,
           "playerStatus": "BENCHED"
         }
@@ -8667,6 +8676,15 @@
           "leaveDate": "2025-03-19",
           "newTeam": "Gentle Mates (Inactive)",
           "flag": "nl",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "starxo",
+          "name": "Patryk Kopczyński",
+          "joinDate": "2025-11-20",
+          "leaveDate": "2026-09-01",
+          "newTeam": "Gentle Mates (Inactive)",
+          "flag": "pl",
           "playerStatus": "STARTER"
         },
         {
@@ -26449,6 +26467,15 @@
           "newTeam": null,
           "flag": "kr",
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "Faither",
+          "name": "Lee Hwi-seong",
+          "joinDate": "2026-08-08",
+          "leaveDate": "2026-08-31",
+          "newTeam": null,
+          "flag": "kr",
+          "playerStatus": "INACTIVE"
         },
         {
           "id": "Faither",

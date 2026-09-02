@@ -3,35 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-02T04:59:39Z"
+    "fetchedAt": "2026-09-02T11:41:02Z"
   },
   "matches": [
-    {
-      "key": "1787472000|sharper-esports|onside-gaming",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
-      "phase": null,
-      "timestamp": 1787472000,
-      "bestOf": 3,
-      "team1": "Sharper Esports",
-      "team2": "ONSIDE GAMING",
-      "score1": 1,
-      "score2": 2,
-      "started": true
-    },
-    {
-      "key": "1787473200|jdg-esports|tyloo",
-      "event": "Vct 2026 China Stage 2",
-      "liquipediaPage": "VCT/2026/China League/Stage 2",
-      "phase": null,
-      "timestamp": 1787473200,
-      "bestOf": 5,
-      "team1": "JDG Esports",
-      "team2": "TYLOO",
-      "score1": 1,
-      "score2": 3,
-      "started": true
-    },
     {
       "key": "1787482800|t1|detonation-focusme",
       "event": "Vct 2026 Pacific Stage 2",

@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-02T23:32:14Z"
+    "fetchedAt": "2026-09-03T04:57:23Z"
   },
   "matches": [
-    {
-      "key": "1787530800|evil-geniuses|kr-esports",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
-      "phase": null,
-      "timestamp": 1787530800,
-      "bestOf": 3,
-      "team1": "Evil Geniuses",
-      "team2": "KRÜ Esports",
-      "score1": 2,
-      "score2": 1,
-      "started": true
-    },
     {
       "key": "1787731200|paper-rex|nongshim-redforce",
       "event": "Vct 2026 Pacific Stage 2",

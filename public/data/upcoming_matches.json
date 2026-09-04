@@ -3,48 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-04T11:41:19Z"
+    "fetchedAt": "2026-09-04T16:34:42Z"
   },
   "matches": [
-    {
-      "key": "1788002400|gen-g|t1",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
-      "phase": null,
-      "timestamp": 1788002400,
-      "bestOf": 3,
-      "team1": "Gen.G",
-      "team2": "T1",
-      "score1": 0,
-      "score2": 2,
-      "started": true
-    },
-    {
-      "key": "1788012000|team-jubilona|team-mandatorire",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2/Showmatch",
-      "phase": "Showmatch",
-      "timestamp": 1788012000,
-      "bestOf": 1,
-      "team1": "Team Jubilona",
-      "team2": "Team Mandatorire",
-      "score1": 11,
-      "score2": 13,
-      "started": true
-    },
-    {
-      "key": "1788016800|fut-esports|team-liquid",
-      "event": "Vct 2026 Emea Stage 2",
-      "liquipediaPage": "VCT/2026/EMEA League/Stage 2",
-      "phase": null,
-      "timestamp": 1788016800,
-      "bestOf": 5,
-      "team1": "FUT Esports",
-      "team2": "Team Liquid",
-      "score1": 0,
-      "score2": 3,
-      "started": true
-    },
     {
       "key": "1788037200|furia|g2-esports",
       "event": "Vct 2026 Americas Stage 2",
@@ -133,7 +94,7 @@
       "team1": "VARREL",
       "team2": "T1",
       "score1": 0,
-      "score2": 0,
+      "score2": 2,
       "started": true
     },
     {
@@ -163,14 +124,14 @@
       "started": false
     },
     {
-      "key": "1788595200|global-esports|tbd",
+      "key": "1788595200|global-esports|t1",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1788595200,
       "bestOf": 5,
       "team1": "Global Esports",
-      "team2": null,
+      "team2": "T1",
       "score1": null,
       "score2": null,
       "started": false

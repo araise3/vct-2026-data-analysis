@@ -1,9 +1,9 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-09-04T20:36:25Z",
+    "generatedAt": "2026-09-04T23:01:07Z",
     "playersConsidered": 86,
-    "poolMeanRating": 0.989,
+    "poolMeanRating": 0.991,
     "selection": "Wilson lower-bound confidence score (rating/3.0 as phat, maps played as n, z=2.0; same technique as playerDuels.js's aggregateKdByCountry; no eligibility gate; see build_player_week.py)"
   },
   "weekStart": "2026-08-29",
@@ -12,12 +12,12 @@
   "team": "G2 Esports",
   "countryCode": "us",
   "countryName": "United States",
-  "rating": 1.3,
-  "acs": 214.0,
-  "kd": 1.44,
-  "kast": 0.8056,
-  "adr": 138.0,
-  "hs": 0.3091,
-  "maps": 6,
-  "rounds": 128
+  "rating": 1.21,
+  "acs": 204.0,
+  "kd": 1.25,
+  "kast": 0.7621,
+  "adr": 133.0,
+  "hs": 0.3019,
+  "maps": 8,
+  "rounds": 163
 }

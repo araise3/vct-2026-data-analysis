@@ -12442,22 +12442,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "chloric",
-          "name": "Caide Heaton",
-          "joinDate": "2026-04-01",
-          "flag": "us",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "ExiT",
-          "name": "Abdullah Al-Twaijri",
-          "joinDate": "2026-04-01",
-          "flag": "sa",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "CyvOph",
           "name": "Clément Millard",
           "joinDate": "2026-06-25",
@@ -12470,6 +12454,22 @@
           "name": "Andrei Kiprskii",
           "joinDate": "2022-11-08",
           "flag": "non",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "chloric",
+          "name": "Caide Heaton",
+          "joinDate": "2026-04-01",
+          "flag": "us",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "ExiT",
+          "name": "Abdullah Al-Twaijri",
+          "joinDate": "2026-04-01",
+          "flag": "sa",
           "captain": false,
           "playerStatus": "BENCHED"
         }
@@ -12662,6 +12662,24 @@
           "leaveDate": "2025-06-02",
           "newTeam": "Natus Vincere (Inactive)",
           "flag": "ca",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "ExiT",
+          "name": "Abdullah Al-Twaijri",
+          "joinDate": "2026-04-01",
+          "leaveDate": "2026-09-03",
+          "newTeam": "Natus Vincere (Inactive)",
+          "flag": "sa",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "chloric",
+          "name": "Caide Heaton",
+          "joinDate": "2026-04-01",
+          "leaveDate": "2026-09-02",
+          "newTeam": "Natus Vincere (Inactive)",
+          "flag": "us",
           "playerStatus": "STARTER"
         },
         {
@@ -12877,14 +12895,6 @@
           "id": "Rb",
           "name": "Goo Sang-min",
           "joinDate": "2025-06-17",
-          "flag": "kr",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "WoohyuN",
-          "name": null,
-          "joinDate": "2026-07-03",
           "flag": "kr",
           "captain": false,
           "playerStatus": "STARTER"
@@ -15793,14 +15803,6 @@
     "Team Heretics": {
       "players": [
         {
-          "id": "Boo",
-          "name": "Ričardas Lukaševičius",
-          "joinDate": "2022-11-10",
-          "flag": "lt",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "benjyfishy",
           "name": "Benjy David Fish",
           "joinDate": "2023-07-12",
@@ -15831,6 +15833,14 @@
           "flag": "lt",
           "captain": false,
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "Boo",
+          "name": "Ričardas Lukaševičius",
+          "joinDate": "2022-11-10",
+          "flag": "lt",
+          "captain": false,
+          "playerStatus": "BENCHED"
         }
       ],
       "formerPlayers": [
@@ -16227,6 +16237,15 @@
           "joinDate": "2023-10-10",
           "leaveDate": "2025-10-09",
           "newTeam": "Team Liquid",
+          "flag": "lt",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Boo",
+          "name": "Ričardas Lukaševičius",
+          "joinDate": "2022-11-10",
+          "leaveDate": "2026-09-03",
+          "newTeam": "Team Heretics (Inactive)",
           "flag": "lt",
           "playerStatus": "STARTER"
         },
@@ -23423,58 +23442,18 @@
     "Joblife": {
       "players": [
         {
-          "id": "chiwa",
-          "name": "Egor Stepaniuk",
-          "joinDate": "2025-11-28",
-          "flag": "ru",
+          "id": "Enzo",
+          "name": "Enzo Mestari",
+          "joinDate": "2025-11-26",
+          "flag": "fr",
           "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "runneR",
-          "name": "Emil Trajkovski",
-          "joinDate": "2025-11-30",
-          "flag": "mk",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "Doma",
-          "name": "Domagoj Fancev",
-          "joinDate": "2025-12-02",
-          "flag": "hr",
-          "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "BENCHED"
         },
         {
           "id": "kamyk",
           "name": "Maksymilian Jan Rychlewski",
           "joinDate": "2025-12-02",
           "flag": "pl",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "UNFAKE",
-          "name": "Bartosz Bernacki",
-          "joinDate": "2026-04-15",
-          "flag": "pl",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "Pa1ze",
-          "name": "Mohammad Khatib",
-          "joinDate": "2026-07-24",
-          "flag": "dk",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "Enzo",
-          "name": "Enzo Mestari",
-          "joinDate": "2025-11-26",
-          "flag": "fr",
           "captain": false,
           "playerStatus": "BENCHED"
         }
@@ -23784,6 +23763,60 @@
           "leaveDate": "2025-05-25",
           "newTeam": "Joblife (Inactive)",
           "flag": "fr",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "chiwa",
+          "name": "Egor Stepaniuk",
+          "joinDate": "2025-11-28",
+          "leaveDate": "2026-09-02",
+          "newTeam": null,
+          "flag": "ru",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Doma",
+          "name": "Domagoj Fancev",
+          "joinDate": "2025-12-02",
+          "leaveDate": "2026-09-02",
+          "newTeam": null,
+          "flag": "hr",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "kamyk",
+          "name": "Maksymilian Jan Rychlewski",
+          "joinDate": "2025-12-02",
+          "leaveDate": "2026-09-02",
+          "newTeam": "Joblife (Inactive)",
+          "flag": "pl",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Pa1ze",
+          "name": "Mohammad Khatib",
+          "joinDate": "2026-07-24",
+          "leaveDate": "2026-09-02",
+          "newTeam": null,
+          "flag": "dk",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "runneR",
+          "name": "Emil Trajkovski",
+          "joinDate": "2025-11-30",
+          "leaveDate": "2026-09-01",
+          "newTeam": null,
+          "flag": "mk",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "UNFAKE",
+          "name": "Bartosz Bernacki",
+          "joinDate": "2026-04-15",
+          "leaveDate": "2026-09-01",
+          "newTeam": null,
+          "flag": "pl",
           "playerStatus": "STARTER"
         },
         {

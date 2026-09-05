@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-05T04:54:15Z"
+    "fetchedAt": "2026-09-05T10:53:43Z"
   },
   "matches": [
     {
@@ -67,22 +67,9 @@
       "bestOf": 5,
       "team1": "Global Esports",
       "team2": "T1",
-      "score1": null,
-      "score2": null,
-      "started": false
-    },
-    {
-      "key": "1788627600|nrg|loud",
-      "event": "Vct 2026 Americas Stage 2",
-      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
-      "phase": null,
-      "timestamp": 1788627600,
-      "bestOf": 5,
-      "team1": "NRG",
-      "team2": "LOUD",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 2,
+      "score2": 1,
+      "started": true
     },
     {
       "key": "1788627600|team-mel|team-daiki",
@@ -93,6 +80,19 @@
       "bestOf": 1,
       "team1": "Team meL",
       "team2": "Team daiki",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1788631200|nrg|loud",
+      "event": "Vct 2026 Americas Stage 2",
+      "liquipediaPage": "VCT/2026/Americas League/Stage 2",
+      "phase": null,
+      "timestamp": 1788631200,
+      "bestOf": 5,
+      "team1": "NRG",
+      "team2": "LOUD",
       "score1": null,
       "score2": null,
       "started": false

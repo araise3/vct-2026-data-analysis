@@ -23,28 +23,17 @@ function systemPrompt(today) {
 Convert the user's natural-language request into the provided JSON schema. Never answer the
 question and never invent a URL. Preserve every explicit constraint, even when the input has typos.
 
-Portal destinations:
-- players: player ranking/statistics table
-- teams: team aggregate statistics table
-- agents: agent meta, pick rates, map balance, agent performance
-- compositions: five-agent lineups
-- events: tournament/event statistics
-- ratings: Glicko-2 team strength/rating history
-- economy: buys, pistols, conversions, spending
-- records: statistical leaderboards and matchup records
-- graphics: exportable stat cards
-- compare: compare exactly two named players
-- analysis: a custom results view that can combine named player/team summaries, a role-based peer
-  table, a requested metric, and every supplied filter
-- statistics: legacy alias for analysis when only one metric was requested
+Always use destination=analysis. The product has one answer canvas, not traditional destination pages.
+Copy player/team names exactly as written into players/teams. If a role is named, set role; otherwise
+leave it empty. Set population to the entity type being requested. A named player implies players and
+a named team implies teams, but that does NOT imply a comparison table.
 
-Use destination=analysis whenever the request combines an entity, role, metric, or filter into a
-specific question. Copy player/team names exactly as written into players/teams. If a role is named,
-set role; otherwise leave it empty—the client infers a named player's primary role inside the chosen
-scope. Set population=players or teams when the request asks for a population/table; a named player
-or role implies players, and a named team implies teams. When the user names a statistic, copy its
-exact identifier into stat.
-Use an empty stat for every other destination. Set order=asc for shortest/lowest/fewest requests,
+Set includeTable=true only when the user explicitly asks for a table, leaderboard, ranking, list,
+population (for example “all Duelists” or “players in Stage 1”), or peer comparison. A request for one
+named player's or team's stats must set includeTable=false, even though population still identifies
+the entity type. Two named players can share one summary card without a population table unless the
+user explicitly requests one. When the user names a statistic, copy its exact identifier into stat.
+Set order=asc for shortest/lowest/fewest requests,
 order=desc for longest/highest/most/best requests, and an empty order when no direction is explicit.
 Available statistics:
 ${statistics}
@@ -60,15 +49,16 @@ Filter ontology:
 - event, phase, and week must be copied only when the user actually specifies them.
 
 Critical examples:
-“defuses in 2026 for vct americas” => analysis, players.total-defuses, years [2026], competitions [VCT], regions [Americas].
+“defuses in 2026 for vct americas” => analysis, players.total-defuses, includeTable true, years [2026], competitions [VCT], regions [Americas].
 “give me mada stats in Americas 2026 Stage 1” => analysis, players [mada], empty role/stat,
-population players, years [2026], regions [Americas], splits [Stage 1]. The client will infer mada's
-role and add peers.
-“best players in emea stage two 2025” => analysis, population players, years [2025], regions [EMEA], splits [Stage 2].
-“compare aspas and zekken” => compare, comparePlayers [aspas, zekken].
+population players, includeTable false, years [2026], regions [Americas], splits [Stage 1].
+“mada stats and a table of all Duelists in Stage 1” => analysis, players [mada], role Duelist,
+population players, includeTable true, splits [Stage 1].
+“best players in emea stage two 2025” => analysis, population players, includeTable true, years [2025], regions [EMEA], splits [Stage 2].
+“compare aspas and zekken” => analysis, players [aspas, zekken], population players, includeTable false.
 
 Use empty strings/arrays for fields the user did not constrain, including players, teams, role, population,
-stat, order, and comparePlayers. summary is a short confirmation of
+stat, and order. summary is a short confirmation of
 what will open, including every applied filter.`
 }
 

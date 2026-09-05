@@ -87,6 +87,38 @@ export function fuzzyPhraseScore(query, phrase) {
   return best
 }
 
+/**
+ * Statistic vocabulary needs a stricter matcher than general search terms.
+ * Requiring each word in a multi-word alias to match its counterpart prevents
+ * compact labels such as "Player HS%" from accidentally matching prose such
+ * as "players in", while still accepting small spelling mistakes.
+ */
+export function fuzzyStatisticScore(query, phrase) {
+  const haystack = normalizeQuery(query)
+  const needle = normalizeQuery(phrase)
+  if (!haystack || !needle) return Infinity
+  if (haystack === needle) return 0
+  if (` ${haystack} `.includes(` ${needle} `)) return 1
+
+  const words = haystack.split(' ')
+  const phraseWords = needle.split(' ')
+  let best = Infinity
+  for (let i = 0; i <= words.length - phraseWords.length; i++) {
+    const windowWords = words.slice(i, i + phraseWords.length)
+    const tokenDistances = phraseWords.map((word, index) => editDistance(windowWords[index], word))
+    const everyTokenMatches = tokenDistances.every((distance, index) => (
+      distance <= typoAllowance(Math.max(windowWords[index].length, phraseWords[index].length))
+    ))
+    if (!everyTokenMatches) continue
+
+    const distance = tokenDistances.reduce((sum, value) => sum + value, 0)
+    if (distance <= typoAllowance(Math.max(windowWords.join(' ').length, needle.length))) {
+      best = Math.min(best, 5 + distance)
+    }
+  }
+  return best
+}
+
 function iso(year, month, day) {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 }

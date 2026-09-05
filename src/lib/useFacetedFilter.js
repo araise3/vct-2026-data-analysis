@@ -41,12 +41,12 @@ import { SCOPE_SEP } from './entityBuckets'
  */
 const EMPTY_RANGE = { from: '', to: '' }
 
-function initialStateFromUrl(facets, initial) {
+function initialStateFromUrl(facets, initial, urlSearch) {
   const selections = Object.fromEntries(facets.map((facet) => [facet, initial[facet] ?? []]))
   const dateRange = { ...EMPTY_RANGE }
   if (typeof window === 'undefined') return { selections, dateRange }
 
-  const params = new URLSearchParams(window.location.search)
+  const params = new URLSearchParams(urlSearch ?? window.location.search)
   for (const facet of facets) {
     if (!params.has(facet)) continue
     const values = params.getAll(facet)
@@ -173,8 +173,11 @@ export function matchesFilters(record, facets, selections, dateRange = EMPTY_RAN
   return facets.every((f) => matchesOneFacet(record, selections[f], record[f]))
 }
 
-export function useFacetedFilter(records, facets, initial = {}) {
-  const [urlInitial] = useState(() => initialStateFromUrl(facets, initial))
+export function useFacetedFilter(records, facets, initial = {}, urlSearch) {
+  // `urlSearch` lets a self-contained analysis card keep its own scope even
+  // when several cards with different filters share the same canvas. Existing
+  // pages omit it and continue reading the browser URL exactly as before.
+  const [urlInitial] = useState(() => initialStateFromUrl(facets, initial, urlSearch))
   const [selections, setSelections] = useState(urlInitial.selections)
   const [dateRange, setDateRangeState] = useState(urlInitial.dateRange)
   const [includeHiddenEvents, setIncludeHiddenEvents] = useState(false)

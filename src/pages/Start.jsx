@@ -1,83 +1,9 @@
 import { useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useData, prefetchData } from '../lib/useData'
-import { editDistance, fuzzyPhraseScore, normalizeQuery, parseTimeframe, withScope } from '../lib/startQuery'
+import { editDistance, fuzzyStatisticScore, normalizeQuery, parseTimeframe, withScope } from '../lib/startQuery'
 import { intentToPath, sanitizeIntent } from '../lib/intentContract'
 import { STAT_CATALOG } from '../lib/statCatalog'
-import agentRoles from '../lib/agentRoles.json'
-
-const DESTINATIONS = [
-  {
-    label: 'Player statistics',
-    description: 'Rankings, form and individual profiles',
-    to: '/players',
-    data: ['player_buckets'],
-    keywords: ['player', 'players', 'best', 'top', 'rating', 'acs', 'kast', 'kills', 'performance'],
-  },
-  {
-    label: 'Team statistics',
-    description: 'Team records, maps and roster performance',
-    to: '/teams',
-    data: ['team_buckets'],
-    keywords: ['team', 'teams', 'record', 'roster', 'map win', 'performance'],
-  },
-  {
-    label: 'Compare players',
-    description: 'Side-by-side profile and head-to-head',
-    to: '/compare',
-    data: ['player_buckets'],
-    keywords: ['compare', 'comparison', 'versus', ' vs ', 'against', 'head to head'],
-  },
-  {
-    label: 'Team ratings',
-    description: 'Glicko-2 rankings and rating history',
-    to: '/ratings',
-    data: ['match_results'],
-    keywords: ['team rating', 'team ratings', 'power ranking', 'rankings', 'glicko', 'strongest team'],
-  },
-  {
-    label: 'Agent meta',
-    description: 'Pick rates, map balance and agent performance',
-    to: '/agents',
-    data: ['agents'],
-    keywords: ['agent', 'agents', 'meta', 'pick rate', 'attack', 'defense', 'defence'],
-  },
-  {
-    label: 'Compositions',
-    description: 'Five-agent lineups by map',
-    to: '/compositions',
-    data: ['match_results', 'match_players'],
-    keywords: ['composition', 'compositions', 'comp', 'comps', 'lineup', 'five agents'],
-  },
-  {
-    label: 'Event statistics',
-    description: 'Team performance within tournaments',
-    to: '/tournaments',
-    data: ['team_buckets'],
-    keywords: ['event', 'events', 'tournament', 'tournaments', 'masters', 'champions', 'kickoff'],
-  },
-  {
-    label: 'Economy',
-    description: 'Buy rounds, conversions and spending',
-    to: '/economy',
-    data: ['team_buckets'],
-    keywords: ['economy', 'eco', 'buy round', 'pistol', 'credits', 'conversion'],
-  },
-  {
-    label: 'Records',
-    description: 'Extreme matches and statistical records',
-    to: '/records',
-    data: ['match_results', 'series_length', 'map_length'],
-    keywords: ['record', 'records', 'longest', 'shortest', 'most kills', 'highest'],
-  },
-  {
-    label: 'Export graphics',
-    description: 'Create shareable stat cards',
-    to: '/graphics',
-    data: ['player_buckets', 'team_buckets'],
-    keywords: ['graphic', 'graphics', 'export', 'image', 'share', 'stat card'],
-  },
-]
 
 // Metrics are vocabulary for the query compiler, not fixed destinations.
 // Each one opens the composable analysis route, where it can be combined
@@ -90,7 +16,6 @@ const STAT_DESTINATIONS = STAT_CATALOG.map((statistic) => ({
   keywords: statistic.keywords,
 }))
 
-const AGENTS = Object.keys(agentRoles)
 const ENTITY_FUZZY_STOPWORDS = new Set([
   'a', 'an', 'and', 'at', 'between', 'best', 'by', 'compare', 'during', 'event', 'events',
   'for', 'from', 'in', 'last', 'me', 'month', 'most', 'of', 'on', 'one', 'past', 'player',
@@ -146,7 +71,7 @@ function findNamedEntities(names, query, limit = 5) {
 function destinationScore(destination, query) {
   let best = Infinity
   for (const keyword of destination.keywords) {
-    best = Math.min(best, fuzzyPhraseScore(query, keyword))
+    best = Math.min(best, fuzzyStatisticScore(query, keyword))
   }
   return best
 }
@@ -156,7 +81,7 @@ function statisticInQuery(query, entity = '') {
     .filter((statistic) => !entity || statistic.entity === entity)
     .map((statistic) => ({
       statistic,
-      score: Math.min(...statistic.keywords.map((keyword) => fuzzyPhraseScore(query, keyword))),
+      score: Math.min(...statistic.keywords.map((keyword) => fuzzyStatisticScore(query, keyword))),
     }))
     .filter((entry) => Number.isFinite(entry.score))
     .sort((a, b) => a.score - b.score || a.statistic.searchLabel.localeCompare(b.statistic.searchLabel))[0]
@@ -184,13 +109,18 @@ function roleInQuery(query) {
   return ROLES.find((role) => new RegExp(`\\b${role.toLowerCase()}s?\\b`).test(text)) || ''
 }
 
-function analysisPath({ players = [], teams = [], role = '', metric = '', population = '' }, scope) {
+function tableRequested(query) {
+  return /\b(?:all|table|leaderboard|leaders|ranking|rankings|ranked|list|players|teams|peers)\b/.test(normalized(query))
+}
+
+function analysisPath({ players = [], teams = [], role = '', metric = '', population = '', table = false }, scope) {
   const params = new URLSearchParams()
   players.forEach((player) => params.append('player', player))
   teams.forEach((team) => params.append('team', team))
   if (role) params.set('role', role)
   if (metric) params.set('metric', metric)
   if (population) params.set('population', population)
+  if (table) params.set('table', '1')
   return withScope(`/analysis?${params}`, scope)
 }
 
@@ -273,17 +203,19 @@ export default function Start() {
     const asksForAnalysis = scope.hasScope || explicitRole || /\b(?:give|show|stats?|statistics|performance|table|leaders?|best|top)\b/.test(needle)
     const playerPopulation = /\bplayers?\b/.test(needle)
     const teamPopulation = /\bteams?\b/.test(needle)
-    if (!comparisonRequest && asksForAnalysis && (playerCandidates.length || teamCandidates.length || explicitRole || playerPopulation || teamPopulation)) {
-      const player = playerCandidates[0]?.name
+    const wantsTable = tableRequested(query)
+    if (asksForAnalysis && (playerCandidates.length || teamCandidates.length || explicitRole || playerPopulation || teamPopulation)) {
+      const selectedPlayers = comparisonRequest ? playerCandidates.map((entry) => entry.name) : playerCandidates.slice(0, 1).map((entry) => entry.name)
+      const player = selectedPlayers[0]
       const team = !player ? teamCandidates[0]?.name : ''
       const matchedStatistic = statisticInQuery(query, player || explicitRole || playerPopulation ? 'players' : team || teamPopulation ? 'teams' : '')
       rows.push({
-        label: player ? `${player} in context` : team ? `${team} in context` : explicitRole ? `${explicitRole} players` : teamPopulation ? 'Teams in context' : 'Players in context',
-        description: player
-          ? `Player summary and ${explicitRole || 'inferred-role'} peer table`
-          : team ? 'Team summary and scoped team table' : explicitRole ? `All ${explicitRole.toLowerCase()} players in scope` : 'A table built from the requested scope',
+        label: selectedPlayers.length > 1 ? `${selectedPlayers.join(' and ')} comparison` : player ? `${player} statistics` : team ? `${team} statistics` : explicitRole ? `${explicitRole} players` : teamPopulation ? 'Team table' : 'Player table',
+        description: player || team
+          ? wantsTable ? 'Summary plus the requested table' : 'Focused summary only'
+          : 'A table built from the requested scope',
         kind: 'Analysis',
-        to: analysisPath({ players: player ? [player] : [], teams: team ? [team] : [], role: explicitRole, metric: matchedStatistic?.id || '', population: team || teamPopulation ? 'teams' : 'players' }, scope),
+        to: analysisPath({ players: selectedPlayers, teams: team ? [team] : [], role: explicitRole, metric: matchedStatistic?.id || '', population: team || teamPopulation ? 'teams' : 'players', table: wantsTable }, scope),
         data: player || explicitRole ? ['player_buckets', 'player_agents'] : ['team_buckets'],
         score: -12,
       })
@@ -298,42 +230,39 @@ export default function Start() {
     for (const result of findNamedEntities(players, query, 4)) {
       rows.push({
         label: result.name,
-        description: playerData?.meta?.[result.name]?.team || 'Player profile',
+        description: `${playerData?.meta?.[result.name]?.team || 'Player'} · Focused statistics card`,
         kind: 'Player',
-        to: `/players/${encodeURIComponent(result.name)}`,
+        to: analysisPath({ players: [result.name], population: 'players' }, scope),
+        data: ['player_buckets', 'player_agents'],
         score: result.score,
       })
     }
     for (const result of findNamedEntities(teams, query, 3)) {
       rows.push({
         label: result.name,
-        description: teamData?.meta?.[result.name]?.region || 'Team profile',
+        description: `${teamData?.meta?.[result.name]?.region || 'Team'} · Focused statistics card`,
         kind: 'Team',
-        to: `/teams/${encodeURIComponent(result.name)}`,
+        to: analysisPath({ teams: [result.name], population: 'teams' }, scope),
+        data: ['team_buckets'],
         score: result.score,
       })
     }
     for (const result of findNamedEntities(events, query, 2)) {
       rows.push({
         label: result.name,
-        description: 'Event statistics',
+        description: 'Team table for this event',
         kind: 'Event',
-        to: `/tournaments/${encodeURIComponent(result.name)}`,
+        to: `/analysis?population=teams&table=1&event=${encodeURIComponent(result.name)}`,
+        data: ['team_buckets'],
         score: result.score,
       })
     }
 
-    for (const destination of DESTINATIONS) {
-      const score = destinationScore(destination, query)
-      if (Number.isFinite(score)) rows.push({ ...destination, kind: 'Explore', score: score + 2 })
-    }
-
-    // A timeframe on its own is a useful request. Offer the most common
-    // scopes instead of treating “August 2026” as an unrecognized query.
     if (scope.hasScope && rows.length === 0) {
-      for (const destination of DESTINATIONS.filter((row) => ['/players', '/teams', '/agents', '/records', '/tournaments'].includes(row.to))) {
-        rows.push({ ...destination, kind: 'Explore', score: 40 })
-      }
+      rows.push({
+        label: 'Players in this scope', description: 'Scoped player table', kind: 'Analysis',
+        to: analysisPath({ population: 'players', table: true }, scope), data: ['player_buckets', 'player_agents'], score: 40,
+      })
     }
 
     return rows
@@ -375,11 +304,10 @@ export default function Start() {
     const playerMentions = mentionedPlayers(text)
     const wantsComparison = ['compare', ' versus ', ' vs ', 'against', 'head to head'].some((word) => needle.includes(word))
     if (wantsComparison && playerMentions.length >= 2) {
-      const params = new URLSearchParams({ a: playerMentions[0], b: playerMentions[1] })
-      return withScope(`/compare?${params}`, scope)
+      return analysisPath({ players: playerMentions.slice(0, 2), population: 'players' }, scope)
     }
     if (wantsComparison && playerMentions.length === 1) {
-      return withScope(`/compare?a=${encodeURIComponent(playerMentions[0])}`, scope)
+      return analysisPath({ players: [playerMentions[0]], population: 'players' }, scope)
     }
 
     const playerCandidate = playerMentions[0] || findNamedEntities(players, text, 1)[0]?.name
@@ -388,24 +316,22 @@ export default function Start() {
     const asksForAnalysis = scope.hasScope || explicitRole || /\b(?:give|show|stats?|statistics|performance|table|leaders?|best|top)\b/.test(needle)
     const playerPopulation = /\bplayers?\b/.test(needle)
     const teamPopulation = /\bteams?\b/.test(needle)
-    if (asksForAnalysis && (playerCandidate || teamCandidate || explicitRole || playerPopulation || teamPopulation)) {
-      const matchedStatistic = statisticInQuery(text, playerCandidate || explicitRole || playerPopulation ? 'players' : teamCandidate || teamPopulation ? 'teams' : '')
+    const matchedStatistic = statisticInQuery(text, playerCandidate || explicitRole || playerPopulation ? 'players' : teamCandidate || teamPopulation ? 'teams' : '')
+    if (asksForAnalysis && (playerCandidate || teamCandidate || explicitRole || playerPopulation || teamPopulation || matchedStatistic || scope.hasScope)) {
       return analysisPath({
         players: playerCandidate ? [playerCandidate] : [],
         teams: !playerCandidate && teamCandidate ? [teamCandidate] : [],
         role: explicitRole,
         metric: matchedStatistic?.id || '',
         population: !playerCandidate && (teamCandidate || teamPopulation) ? 'teams' : 'players',
+        table: tableRequested(text),
       }, scope)
     }
 
-    const entity = suggestions.find((row) => row.kind !== 'Explore')
+    const entity = suggestions[0]
     if (entity) return entity.to
 
-    const agent = AGENTS.find((name) => needle.includes(normalized(name)))
-    if (agent) return '/agents'
-
-    const destination = [...STAT_DESTINATIONS, ...DESTINATIONS]
+    const destination = STAT_DESTINATIONS
       .map((row) => ({ ...row, score: destinationScore(row, text) }))
       .filter((row) => Number.isFinite(row.score))
       .sort((a, b) => a.score - b.score)[0]
@@ -445,12 +371,13 @@ export default function Start() {
       setInterpreting(false)
     }
 
+    if (!to?.startsWith('/analysis')) to = resolve(submittedQuery)
     if (to) {
-      const destination = [...STAT_DESTINATIONS, ...DESTINATIONS].find((row) => to.startsWith(row.to))
-      go(to, destination?.data)
+      const params = new URL(to, 'https://vct-data.local').searchParams
+      go(to, [params.has('team') || params.get('population') === 'teams' ? 'team_buckets' : 'player_buckets'])
       return
     }
-    setMessage('Try a player, team, event, agent, ranking, comparison, record, or economy question.')
+    setMessage('Try a player, team, role, metric, ranking, comparison, or event scope.')
   }
 
   function onKeyDown(event) {

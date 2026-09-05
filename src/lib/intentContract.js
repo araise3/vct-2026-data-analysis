@@ -1,9 +1,6 @@
 import { STAT_IDS, getStatisticById } from './statCatalog.js'
 
-const DESTINATIONS = [
-  'players', 'teams', 'agents', 'compositions', 'events',
-  'ratings', 'economy', 'records', 'graphics', 'compare', 'statistics', 'analysis',
-]
+const DESTINATIONS = ['analysis']
 
 const STATS = STAT_IDS
 const COMPETITIONS = ['VCT', 'EWC']
@@ -21,7 +18,7 @@ export const INTENT_SCHEMA = {
     teams: { type: 'array', maxItems: 4, items: { type: 'string', maxLength: 100 } },
     role: { type: 'string', enum: ['', 'Duelist', 'Initiator', 'Controller', 'Sentinel'] },
     population: { type: 'string', enum: ['', 'players', 'teams'] },
-    comparePlayers: { type: 'array', maxItems: 2, items: { type: 'string', maxLength: 80 } },
+    includeTable: { type: 'boolean' },
     filters: {
       type: 'object',
       additionalProperties: false,
@@ -40,13 +37,7 @@ export const INTENT_SCHEMA = {
     },
     summary: { type: 'string', maxLength: 180 },
   },
-  required: ['destination', 'stat', 'order', 'players', 'teams', 'role', 'population', 'comparePlayers', 'filters', 'summary'],
-}
-
-const ROUTES = {
-  players: '/players', teams: '/teams', agents: '/agents', compositions: '/compositions',
-  events: '/tournaments', ratings: '/ratings', economy: '/economy', records: '/records',
-  graphics: '/graphics', compare: '/compare', analysis: '/analysis', statistics: '/analysis',
+  required: ['destination', 'stat', 'order', 'players', 'teams', 'role', 'population', 'includeTable', 'filters', 'summary'],
 }
 
 function oneOf(value, allowed, fallback = '') {
@@ -91,9 +82,7 @@ export function sanitizeIntent(raw) {
       : [],
     role: oneOf(raw.role, ['', 'Duelist', 'Initiator', 'Controller', 'Sentinel']),
     population: oneOf(raw.population, ['', 'players', 'teams']),
-    comparePlayers: Array.isArray(raw.comparePlayers)
-      ? raw.comparePlayers.map((name) => safeText(name, 80)).filter(Boolean).slice(0, 2)
-      : [],
+    includeTable: raw.includeTable === true,
     filters: {
       years,
       competitions: stringList(filters.competitions, COMPETITIONS),
@@ -118,25 +107,17 @@ export function intentToPath(rawIntent) {
   const intent = sanitizeIntent(rawIntent)
   if (!intent) return null
 
-  let path = ROUTES[intent.destination]
   const params = new URLSearchParams()
   if (intent.stat) {
     if (!getStatisticById(intent.stat)) return null
-    path = '/analysis'
     params.set('metric', intent.stat)
     if (intent.order) params.set('order', intent.order)
   }
-  if (!path) return null
-  if (intent.destination === 'analysis' || intent.destination === 'statistics' || intent.stat) {
-    addMany(params, 'player', intent.players)
-    addMany(params, 'team', intent.teams)
-    if (intent.role) params.set('role', intent.role)
-    if (intent.population) params.set('population', intent.population)
-  }
-  if (intent.destination === 'compare') {
-    if (intent.comparePlayers[0]) params.set('a', intent.comparePlayers[0])
-    if (intent.comparePlayers[1]) params.set('b', intent.comparePlayers[1])
-  }
+  addMany(params, 'player', intent.players)
+  addMany(params, 'team', intent.teams)
+  if (intent.role) params.set('role', intent.role)
+  if (intent.population) params.set('population', intent.population)
+  if (intent.includeTable) params.set('table', '1')
 
   addMany(params, 'year', intent.filters.years)
   addMany(params, 'competition', intent.filters.competitions)
@@ -154,5 +135,5 @@ export function intentToPath(rawIntent) {
   if (intent.filters.to) params.set('to', intent.filters.to)
 
   const query = params.toString()
-  return `${path}${query ? `?${query}` : ''}`
+  return `/analysis${query ? `?${query}` : ''}`
 }

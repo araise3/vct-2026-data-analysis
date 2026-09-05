@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-05T10:53:43Z"
+    "fetchedAt": "2026-09-05T15:30:00Z"
   },
   "matches": [
     {
@@ -67,7 +67,7 @@
       "bestOf": 5,
       "team1": "Global Esports",
       "team2": "T1",
-      "score1": 2,
+      "score1": 3,
       "score2": 1,
       "started": true
     },
@@ -98,14 +98,14 @@
       "started": false
     },
     {
-      "key": "1788681600|nongshim-redforce|tbd",
+      "key": "1788681600|nongshim-redforce|global-esports",
       "event": "Vct 2026 Pacific Stage 2",
       "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
       "phase": null,
       "timestamp": 1788681600,
       "bestOf": 5,
       "team1": "Nongshim RedForce",
-      "team2": null,
+      "team2": "Global Esports",
       "score1": null,
       "score2": null,
       "started": false

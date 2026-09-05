@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-05T15:30:00Z"
+    "fetchedAt": "2026-09-05T17:33:20Z"
   },
   "matches": [
     {
@@ -82,7 +82,7 @@
       "team2": "Team daiki",
       "score1": null,
       "score2": null,
-      "started": false
+      "started": true
     },
     {
       "key": "1788631200|nrg|loud",

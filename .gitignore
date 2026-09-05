@@ -33,3 +33,7 @@ CLAUDE.md
 # Machine-local Claude Code permission grants (absolute paths, per-machine).
 # .claude/launch.json IS committed -- it's the shared dev-server config.
 .claude/settings.local.json
+
+# Machine-local Codex guidance and implementation history.
+AGENTS.md
+.agents/

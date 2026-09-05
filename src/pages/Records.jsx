@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useData, useIdle } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
@@ -82,6 +82,8 @@ const PLAYER_LEADERS = [
 ]
 
 export default function Records() {
+  const [searchParams] = useSearchParams()
+  const requestedStat = searchParams.get('stat')
   const { data, loading } = useData('match_results')
   const { data: seriesData } = useData('series_length')
   const { data: mapLengthData } = useData('map_length')
@@ -215,6 +217,19 @@ export default function Records() {
       return { ...r, consistencyScore }
     })
   }, [leaderRows])
+
+  const orderedPlayerLeaders = useMemo(() => {
+    if (!requestedStat || !PLAYER_LEADERS.some((card) => card.key === requestedStat)) return PLAYER_LEADERS
+    return [...PLAYER_LEADERS].sort((a, b) => (a.key === requestedStat ? -1 : b.key === requestedStat ? 1 : 0))
+  }, [requestedStat])
+
+  useEffect(() => {
+    if (!leaderRows.length || !requestedStat) return undefined
+    const frame = requestAnimationFrame(() => {
+      document.getElementById(`record-${requestedStat}`)?.scrollIntoView({ block: 'center' })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [leaderRows.length, requestedStat])
 
   // Kill records: the single highest individual kill total across an
   // entire series (summed across every map of that match for one
@@ -535,33 +550,38 @@ export default function Records() {
             <p className="text-muted text-xs">Follows the filters above.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {PLAYER_LEADERS.map((c) => (
-              <LeaderCard
+            {orderedPlayerLeaders.map((c) => (
+              <div
                 key={c.key}
-                title={c.title}
-                note={c.note}
-                rows={topBy(c.key === 'consistencyScore' ? consistencyRows : leaderRows, c.key, {
-                  qualify: c.sampleKey
-                    ? dynamicQualify(leaderRows, c.sampleKey, { fixed: c.sampleMin })
-                    : c.qualify,
-                  invert: c.invert,
-                })}
-                renderEntity={(r) => (
-                  <>
-                    <Flag countryCode={r.countryCode} countryName={r.countryName} size={14} />
-                    <Link
-                      to={`/players/${encodeURIComponent(r.player)}`}
-                      className="font-medium text-ink truncate hover:text-accent-bright transition-colors"
-                    >
-                      {r.player}
-                    </Link>
-                    <TeamLogo team={r.team} size={20} />
-                  </>
-                )}
-                meta={c.meta}
-                value={c.value}
-                showRank
-              />
+                id={`record-${c.key}`}
+                className={`scroll-mt-20 rounded-2xl transition-shadow ${c.key === requestedStat ? 'ring-1 ring-accent/70 shadow-[0_0_28px_rgb(255_70_85_/_0.12)]' : ''}`}
+              >
+                <LeaderCard
+                  title={c.title}
+                  note={c.note}
+                  rows={topBy(c.key === 'consistencyScore' ? consistencyRows : leaderRows, c.key, {
+                    qualify: c.sampleKey
+                      ? dynamicQualify(leaderRows, c.sampleKey, { fixed: c.sampleMin })
+                      : c.qualify,
+                    invert: c.invert,
+                  })}
+                  renderEntity={(r) => (
+                    <>
+                      <Flag countryCode={r.countryCode} countryName={r.countryName} size={14} />
+                      <Link
+                        to={`/players/${encodeURIComponent(r.player)}`}
+                        className="font-medium text-ink truncate hover:text-accent-bright transition-colors"
+                      >
+                        {r.player}
+                      </Link>
+                      <TeamLogo team={r.team} size={20} />
+                    </>
+                  )}
+                  meta={c.meta}
+                  value={c.value}
+                  showRank
+                />
+              </div>
             ))}
           </div>
         </div>

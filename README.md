@@ -1,24 +1,35 @@
 # VCT 2026 — Season Stats
 
-A static stats dashboard for VCT 2026 tier-1 Valorant esports, built from
-scraped [vlr.gg](https://vlr.gg) data. No backend — everything is a JSON
-file baked in at build time, served as a static site.
+A statistics portal for VCT 2026 tier-1 Valorant esports, built from scraped
+[vlr.gg](https://vlr.gg) data. Statistics remain prebuilt JSON and aggregate
+in the browser; one Cloudflare Pages Function powers the natural-language
+start-page interpreter without exposing credentials client-side.
 
 **Live at:** deployed via Cloudflare Pages, connected to this repo's `main` branch.
 
 ## What's here
 
-Six views, plus per-player and per-team profile pages:
+A statistics-first portal, with player performance as the landing page. The desktop
+navigation groups statistics, analysis, and export tools; mobile uses a horizontal
+navigation rail. There are no fixture feeds, brackets, news, or schedule pages.
 
 | View | What it shows |
 |---|---|
-| **Overview** | Season KPIs (events, matches, maps, rounds, players, teams) and top-10 leaderboards |
-| **Players** | Every player's Rating, ACS, K/D, KAST, ADR, HS%, kills/deaths/multi-kills/clutches, sortable and searchable |
+| **Players (home)** | Searchable player performance, key/all metric views, sortable neutral tables and pagination |
 | **Teams** | Match/map records, win rates, pistol win rate, average player rating |
 | **Agents** | Pick rates and map win rates, filterable by Region → Stage → Phase → Week/Round (the last one is multi-select) |
 | **Economy** | Buy-tier distribution (eco/semi-eco/semi-buy/full-buy) and win rates by tier |
+| **Events** | Team-by-event statistical records, with event drill-downs and sample sizes, not tournament schedules |
+| **Analysis** | Player comparison, team ratings, compositions, and records |
 | **Player / Team profiles** | Click any name anywhere on the site to open a full breakdown |
 | **Graphics** | Build shareable HLTV-style stat cards — pick players or teams, pick a stat (rating, ACS, multi-kills/24R, round win%, pistol win%, …), filter the sample, tune minimum rounds/maps and top-N with live preview, then export a 2160px PNG |
+
+Shared scope controls use searchable multi-selects. Date ranges and event-specific
+phases/weeks live under **More filters**; statistical aggregation still sums raw
+counts before computing rates. Player gear/settings, trophy displays, coaching
+profiles, and roster timelines are no longer part of the portal UI. Historical
+match statistics retain source links for verification. Legacy event URLs open
+event statistics; patch and coach URLs lead to agent and team statistics.
 
 Most pages that touch China have an explicit toggle for known VLR data gaps
 (see [Data caveats](#data-caveats) below), and most also have a toggle to
@@ -28,6 +39,7 @@ fold in **Esports World Cup (EWC) 2026** results alongside the main VCT season.
 
 - **Vite + React** (function components, hooks — no class components)
 - **React Router** for client-side routing (`/players/:name`, `/teams/:name`, etc.)
+- **Cloudflare Pages Functions + Workers AI** for schema-constrained search intent
 - **Tailwind CSS**, design tokens in `tailwind.config.js` — colors and
   spacing pulled from a real reference site's stylesheet, with the accent
   color overridden to Valorant's official brand red (`#FF4655`)
@@ -40,6 +52,7 @@ fold in **Esports World Cup (EWC) 2026** results alongside the main VCT season.
 
 ```
 vct-site/
+├── functions/api/       Server-side natural-language intent interpreter
 ├── public/
 │   ├── data/            JSON data files (generated -- see below)
 │   ├── logos/           A few team logos re-hosted locally after
@@ -64,6 +77,18 @@ vct-site/
 │                          the scraper's SQLite output (see below)
 └── tailwind.config.js     Design tokens (colors, fonts, radius)
 ```
+
+## Natural-language start page
+
+`functions/api/interpret.js` uses a Workers AI binding named `AI` and returns a
+validated destination/filter object. In the Cloudflare Pages project, add a
+**Workers AI** binding with variable name **AI** to both Production and Preview,
+then redeploy. The client never accepts model-generated URLs; it constructs known
+internal routes from a strict allowlist and merges explicit scope terms as a
+guardrail. Ordinary Vite development has no edge binding, so it automatically
+uses the local typo-aware parser instead. To exercise the real binding locally
+after `npm run build`, use `npx wrangler pages dev dist --ai=AI` while logged into
+the relevant Cloudflare account.
 
 ## Regenerating the data
 

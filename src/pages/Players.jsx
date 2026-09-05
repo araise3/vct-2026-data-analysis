@@ -12,6 +12,7 @@ import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import AgentIcon from '../components/AgentIcon'
 import Select from '../components/ui/Select'
+import { Button, Input } from 'antd'
 import { rating, pct, num } from '../lib/format'
 
 export default function Players() {
@@ -20,6 +21,8 @@ export default function Players() {
   const [side, setSide] = useState('both') // 'both' | 't' (attack) | 'ct' (defend)
   const [agent, setAgent] = useState('')
   const [country, setCountry] = useState('')
+  const [query, setQuery] = useState('')
+  const [allMetrics, setAllMetrics] = useState(false)
 
   // This page used to fetch all three of these on mount -- 14.1MB of JSON
   // (3.9 + 4.7 + 5.5) parsed on the main thread before the table it renders
@@ -34,7 +37,7 @@ export default function Players() {
   //     idle instead of not at all -- off the critical path, but there well
   //     before anyone opens the dropdown.
   const idle = useIdle()
-  const { data, loading } = useData('player_buckets')
+  const { data, loading, error } = useData('player_buckets')
   const { data: sideData } = useData(side === 'both' ? null : 'player_sides')
   const { data: agentData } = useData(idle ? 'player_agents' : null)
 
@@ -230,13 +233,15 @@ export default function Players() {
   // ever removes rows, never reorders them.
   const rows = useMemo(() => {
     return allRows.filter((p) => {
+      if (query.trim() && !`${p.player} ${p.team}`.toLowerCase().includes(query.trim().toLowerCase())) return false
       if (playersWithAgent && !playersWithAgent.has(p.player)) return false
       if (country && p.countryName !== country) return false
       if (p.roundsPlayed < minRounds) return false
       return true
     })
-  }, [allRows, playersWithAgent, country, minRounds])
+  }, [allRows, playersWithAgent, country, minRounds, query])
 
+  if (error) return <p role="alert">Player statistics could not be loaded. Please refresh to try again.</p>
   if (loading || !data) return <div className="text-muted text-sm">Loading…</div>
 
   const columns = [
@@ -263,13 +268,13 @@ export default function Players() {
       ),
     },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', format: (v) => num(v) },
-    { key: 'roundsPlayed', label: 'RND', align: 'right', format: (v) => num(v) },
+    { key: 'roundsPlayed', label: 'Rounds', align: 'right', format: (v) => num(v) },
     // Widened by exactly what Econ below gives up, rather than each sizing
     // independently -- Rating is the headline stat here and Econ's own
     // label/data need far less room.
-    { key: 'avgRating', label: 'R', align: 'right', colorScale: true, width: 73, format: (v) => rating(v) },
+    { key: 'avgRating', label: 'Rating', align: 'right', colorScale: true, format: (v) => rating(v) },
     { key: 'avgAcs', label: 'ACS', align: 'right', colorScale: true, format: (v) => num(v, 0) },
-    { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v ? v.toFixed(2) : '—') },
+    { key: 'kd', label: 'K/D', align: 'right', colorScale: true, format: (v) => (v != null ? v.toFixed(2) : '—') },
     { key: 'avgKast', label: 'KAST', align: 'right', colorScale: true, format: (v) => pct(v) },
     { key: 'avgAdr', label: 'ADR', align: 'right', colorScale: true, format: (v) => num(v, 1) },
     // VLR's own per-round block order is KPR, APR, FKPR, FDPR -- matched
@@ -287,10 +292,10 @@ export default function Players() {
   ]
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div>
-        <h1 className="font-display text-2xl font-semibold text-ink">Players</h1>
-        <p className="text-muted text-sm mt-1">{rows.length} players shown</p>
+        <h1 className="font-display text-2xl font-semibold text-ink">Player statistics</h1>
+        <p className="text-muted text-sm mt-1">Compare performance across events, regions, and seasons.</p>
       </div>
 
       <FilterPanel
@@ -301,7 +306,8 @@ export default function Players() {
         activeCount={activeCount}
         dateRange={dateRange} setDateRange={setDateRange} dateBounds={dateBounds}
         includeHiddenEvents={includeHiddenEvents} setIncludeHiddenEvents={setIncludeHiddenEvents}
-        summary={`${rows.length} players`}
+        summary={`${rows.length} ${rows.length === 1 ? 'player' : 'players'}`}
+        additionalSummary={[side !== 'both' && (side === 't' ? 'Attack only' : 'Defence only'), agent, country, minRounds > 0 && `${minRounds}+ rounds`, ratedOnly && 'Rated maps only'].filter(Boolean).join(' · ')}
       >
         <div className="flex items-center gap-5 flex-wrap pt-1">
           <label className="flex items-center gap-2 text-xs text-muted">
@@ -347,6 +353,7 @@ export default function Players() {
             Agent
             <Select
               value={agent}
+              allowClear
               onChange={setAgent}
               placeholder="All agents"
               options={agentNames}
@@ -357,6 +364,7 @@ export default function Players() {
             Country
             <Select
               value={country}
+              allowClear
               onChange={setCountry}
               placeholder="All countries"
               options={countryNames}
@@ -366,11 +374,19 @@ export default function Players() {
         </div>
       </FilterPanel>
 
-      <div className="bg-surface2/40 border border-hairline rounded-xl px-4 py-3 text-xs text-muted leading-relaxed">
+      <details className="text-xs text-muted leading-relaxed">
+        <summary className="w-fit cursor-pointer">Data coverage and rating methodology</summary>
+        <p className="mt-2 max-w-3xl">
         China-region matches don't publish multi-kill, clutch, or economy data on VLR, so those
         columns read 0 for China players. A small number of China maps are also missing Rating 2.0 —
         by default they still count toward other stats, which can make a rating average cover fewer
         maps than the rest of the row; "Only maps with a Rating 2.0" makes every stat consistent.
+        </p>
+      </details>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Input aria-label="Filter players by name or team" placeholder="Find a player or team…" value={query} onChange={(event) => setQuery(event.target.value)} allowClear className="w-full sm:w-64" />
+        <div className="flex items-center gap-3"><span className="text-xs text-muted">{rows.length} {rows.length === 1 ? 'player' : 'players'}</span><Button aria-pressed={allMetrics} onClick={() => setAllMetrics(!allMetrics)}>{allMetrics ? 'Key metrics' : 'All metrics'}</Button></div>
       </div>
 
       {sideLoading ? (
@@ -382,7 +398,7 @@ export default function Players() {
           <p className="text-muted text-sm">No players match this filter combination.</p>
         </div>
       ) : (
-        <DataTable columns={columns} rows={rows} defaultSortKey="avgRating" />
+        <DataTable key={allMetrics ? 'all' : 'key'} columns={allMetrics ? columns : columns.filter((column) => ['player', 'team', 'mapsPlayed', 'roundsPlayed', 'avgRating', 'avgAcs', 'kd', 'avgKast', 'avgAdr', 'kpr'].includes(column.key))} rows={rows} defaultSortKey="avgRating" />
       )}
     </div>
   )

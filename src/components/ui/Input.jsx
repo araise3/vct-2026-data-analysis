@@ -1,4 +1,5 @@
 import { forwardRef } from 'react'
+import { Input as AntInput } from 'antd'
 import { cx } from '../../lib/cx'
 
 /**
@@ -10,11 +11,10 @@ import { cx } from '../../lib/cx'
  */
 const Input = forwardRef(function Input({ className, ...props }, ref) {
   return (
-    <input
+    <AntInput
       ref={ref}
       className={cx(
-        'bg-surface2 border border-hairline rounded-lg px-3 py-1.5 text-xs text-ink shadow-depth-xs transition-shadow duration-150',
-        'focus:outline-none focus:border-selected/50 focus:shadow-focus-ring',
+        'portal-input text-xs',
         className
       )}
       {...props}

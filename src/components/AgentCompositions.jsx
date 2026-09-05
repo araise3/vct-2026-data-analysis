@@ -4,9 +4,9 @@ import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import { expandMatchRows } from '../lib/entityBuckets'
 import { buildTeamMapRows, aggregateCompositions } from '../lib/compositions'
 import FilterPanel, { FACETS } from './FilterPanel'
-import FilterChips from './FilterChips'
 import CompositionsTable from './CompositionsTable'
-import mapIcons from '../lib/mapIcons.json'
+import MapArtwork from './MapArtwork'
+import Select from './ui/Select'
 import { pct, num } from '../lib/format'
 
 const blurb = 'text-muted text-xs'
@@ -107,14 +107,27 @@ export default function AgentCompositions() {
         summary={`${num(scoped.length)} team-maps in scope`}
       />
 
-      <div className="flex flex-col gap-1.5">
-        <span className="text-[11px] uppercase tracking-wide font-medium text-muted">Map</span>
-        <FilterChips
-          options={mapsInScope}
-          value={effectiveMap}
-          onChange={setSelectedMap}
-          getBg={(opt) => mapIcons[opt]}
-        />
+      <div className="grid gap-3 md:grid-cols-[minmax(220px,1fr)_minmax(280px,456px)] md:items-end">
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">Map focus</span>
+          <Select
+            value={effectiveMap}
+            onChange={setSelectedMap}
+            options={mapsInScope}
+            className="w-full"
+            searchable
+          />
+          <p className="text-[10px] leading-relaxed text-muted">
+            Compositions are compared within one map because the same five agents carry different meaning across maps.
+          </p>
+        </div>
+        {effectiveMap && (
+          <MapArtwork
+            map={effectiveMap}
+            eyebrow="Composition context"
+            detail={`${num(mapRows.length)} team-maps in scope`}
+          />
+        )}
       </div>
 
       {scoped.length === 0 ? (

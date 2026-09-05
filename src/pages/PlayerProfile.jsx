@@ -9,21 +9,19 @@ import {
 import { rolesInScope } from '../lib/peerComparison'
 import { aggregatePlayerDuelsByOpponent, aggregateKdByCountry } from '../lib/playerDuels'
 import { buildPlayerMapPerformance } from '../lib/playerMapPerformance'
-import { buildTrophyWinners, playerTrophies } from '../lib/trophies'
 import CountryKdChart from '../components/CountryKdChart'
-import TrophyCase from '../components/TrophyCase'
 import DataTable from '../components/DataTable'
 import MatchHistory from '../components/MatchHistory'
 import PerformanceStrip from '../components/PerformanceStrip'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import AgentIcon from '../components/AgentIcon'
-import RankIcon from '../components/RankIcon'
+import PlayerStatSummary from '../components/PlayerStatSummary'
 import EventLogo from '../components/EventLogo'
 import Button from '../components/ui/Button'
 import Select from '../components/ui/Select'
 import { dynamicQualify, dynamicQualifyThreshold } from '../components/LeaderCard'
-import { rating, pct, num, eventLabel, birthDateLabel, trackerProfileUrl } from '../lib/format'
+import { rating, pct, num, eventLabel, trackerProfileUrl } from '../lib/format'
 import trackerLinks from '../lib/trackerLinks.json'
 
 // Mirrors rft.gg's own player-page tab row (Overview/Matches/Champions/
@@ -31,7 +29,7 @@ import trackerLinks from '../lib/trackerLinks.json'
 // to build an equivalent of rft.gg's roster-timeline tab from.
 const TABS = [
   { id: 'overview', label: 'Overview' },
-  { id: 'matches', label: 'Matches' },
+  { id: 'matches', label: 'Match statistics' },
   { id: 'agents', label: 'Agents' },
 ]
 
@@ -145,13 +143,7 @@ export default function PlayerProfile() {
     }
     setTrackerMenuOpen((o) => !o)
   }
-  // Same Liquipedia infobox fetch as realName above, see
-  // liquipedia_player_names_scraper.py -- a separate file rather than a
-  // second field on player_real_names.json since a birth date is a
-  // structurally different kind of value (needs its own null-safe date
-  // formatting, not just a display string).
-  const { data: birthdatesData } = useData('player_birthdates')
-  const birthDate = birthdatesData?.[decodedName.toLowerCase()]
+  const tabs = TABS
 
   // Every one of this player's own buckets, across every year/competition --
   // the page-wide multi-facet FilterPanel (region/event/phase/week/split/
@@ -186,8 +178,6 @@ export default function PlayerProfile() {
   // wide like the header cards below it, not scoped to the Season/Event
   // picker -- a trophy won two seasons ago doesn't stop being real once the
   // page narrows to a single season.
-  const allTrophies = useMemo(() => buildTrophyWinners(matchData), [matchData])
-  const myTrophies = useMemo(() => playerTrophies(records, allTrophies), [records, allTrophies])
 
   // Season/Event scope -- `selectedYear` of `null` means "default to the
   // most recent season" (recentYear), same default the old fixed pin used;
@@ -749,29 +739,6 @@ export default function PlayerProfile() {
                   </span>
                 </>
               )}
-              {birthDate && (
-                <>
-                  <span className="text-hairline">·</span>
-                  <span className="flex items-center gap-1.5">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-3.5 h-3.5 opacity-70"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 2v4" />
-                      <path d="M16 2v4" />
-                      <rect width="18" height="18" x="3" y="4" rx="2" />
-                      <path d="M3 10h18" />
-                    </svg>
-                    {birthDateLabel(birthDate)}
-                  </span>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -884,7 +851,6 @@ export default function PlayerProfile() {
         </div>
         </div>
 
-        <TrophyCase trophies={myTrophies} />
         </div>
 
         {/* Divider -- flush against the card's own edges, same as rft.gg's
@@ -904,7 +870,7 @@ export default function PlayerProfile() {
             this can never land on a combination with nothing in it. */}
         <div className="flex flex-col-reverse items-center md:flex-row md:justify-between gap-2 sm:gap-4 px-3 sm:px-6 pt-1 pb-2 sm:pb-0">
           <div className="flex items-center gap-1 max-w-full overflow-x-auto">
-            {TABS.map((t) => (
+            {tabs.map((t) => (
               <button
                 key={t.id}
                 type="button"
@@ -933,156 +899,7 @@ export default function PlayerProfile() {
       </div>
 
       {activeTab === 'overview' && <>
-      {stats && stats.mapsPlayed > 0 && (
-        // tracker.gg-style "overview" card. The two inner pieces (GiantStat,
-        // the Tracker Score sub-card) keep tracker.gg's own real CSS custom
-        // properties (--color-surface-1 #0f1923, --color-surface-3 #2c3f52,
-        // --border-radius 0.5rem, etc, pulled from a saved copy of the
-        // actual page) for a literal 1:1 match there -- but this OUTER
-        // wrapper uses this site's own default card background/border
-        // (bg-grad-surface/border-hairline, same as the Performances panel
-        // right below it) per direct instruction, rather than tracker.gg's
-        // real page background, so the card sits inside this site's own
-        // visual language instead of looking like a patch of a different
-        // site. No brand-color left rail either (removed per direct
-        // instruction). Structure (a rank/RR/leaderboard + W-L strip --
-        // ranked only, pro matches have no personal rank -- 4 "giant" stat
-        // pills with a percentile fill bar each, and a Tracker Score
-        // footer) still comes from that same real page, restricted to only
-        // the stats this site actually has data for. No secondary stat grid
-        // (dropped per earlier direct instruction) -- Most Played Agent and
-        // Most Kills stay gone too (no equivalent on tracker.gg's real
-        // page; Most Played Agent duplicates the Agents table's own top row
-        // further down anyway).
-        <div className="relative bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-hidden">
-          <div className="pl-4 pr-3 py-3 sm:pl-5 sm:pr-5 sm:py-4 flex flex-col gap-4">
-            {/* Rank plate (left) + Source toggle (right) share one row --
-                the toggle used to sit on its own line above this, moved
-                down to line up with the rank plate per direct request. See
-                RankPlate's own comment for what the plate itself is built
-                from and why the Act tag lives there now rather than up
-                here next to the toggle. Ranked view only -- there's no
-                "rank" for a pro-match aggregate -- and absent entirely (not
-                a dash-filled placeholder) when the account has no rank on
-                file at all (e.g. genuinely unranked this Act); the row
-                still holds its height via the toggle alone in either
-                case. */}
-            <div className="flex items-start justify-between gap-4 flex-wrap">
-              {showRanked && actStats.rank ? (
-                <RankPlate rank={actStats.rank} actShort={actStats.actShort} />
-              ) : (
-                <span />
-              )}
-
-              {/* Source toggle -- only rendered when this player actually
-                  has linked-account Act stats, so it never appears as a
-                  dead control. Labels name the POPULATION each view
-                  describes ("Pro" vs "Ranked"), not the data source, since
-                  that's the distinction that matters to a reader. Alone in
-                  this corner now that the Act badge moved into the rank
-                  cluster above. */}
-              {actStats && (
-                <div className="flex items-center gap-0.5 p-0.5 bg-surface2 rounded-lg">
-                  {[
-                    { id: 'pro', label: 'Pro' },
-                    { id: 'ranked', label: 'Ranked' },
-                  ].map((opt) => (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => setStatSource(opt.id)}
-                      className={`text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors ${
-                        (opt.id === 'ranked') === showRanked
-                          ? 'bg-selected text-white'
-                          : 'text-muted hover:text-ink'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* First 3 pills stay equal-width to each other; Win % still
-                gets extra room for the docked donut+legend block at its own
-                right edge (see WinRateStat's comment), but less of it than
-                the first pass -- that version's stacked bar needed the full
-                width of a much wider column (1.6fr), the compact donut
-                doesn't, so 1fr/1fr/1fr/1.6fr shrank to 1.1fr/1.1fr/1.1fr/1.3fr
-                per direct request: the 0.3fr this frees up goes back into
-                the first three pills (+0.1fr each) instead of sitting
-                unused as extra Win % whitespace. Single column below sm
-                (each card, WinRateStat included, is legible full-width on
-                mobile without an awkward odd-one-out span), 2x2 at sm,
-                widened 4-across from md up. Tightened from gap-2 to gap-1.5
-                per direct request. */}
-            {perf && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[1.1fr_1.1fr_1.1fr_1.3fr] gap-1.5">
-                {perf.pills.slice(0, 3).map((m) => (
-                  <GiantStat key={m.statKey} {...m} />
-                ))}
-                <WinRateStat
-                  {...perf.pills[3]}
-                  wins={showRanked ? actStats.wins : stats.mapsWon}
-                  losses={showRanked ? actStats.losses : stats.mapsLost}
-                  draws={showRanked ? actStats.draws : undefined}
-                />
-              </div>
-            )}
-
-            {/* Tracker Score footer -- rebuilt against tracker.gg's own real
-                markup/CSS (a saved "Webpage, Complete" copy, not a guess):
-                .performance-score (bg surface-1, border-radius) wrapping
-                .performance-score__container (bg surface-2, CSS GRID with
-                "score stats" areas -- min-content + 1fr, stacking to one
-                column below sm), a subtle 7.5%-white border overlay, and
-                the crest/label/value cluster on the left with the 4-stat
-                grid on the right. The "+" dividers are DOM siblings here
-                (real page does it as a `:before` pseudo-element referencing
-                a CDN plus-icon SVG at the same 16px/rounded-full size --
-                same visual result, this is just how it has to be done from
-                inside JSX rather than a dedicated stylesheet). No tier-
-                colored border around the score cell either (dropped per
-                direct instruction -- the real page's own 1px gradient-to-
-                transparent technique there, tinted by whatever tier this
-                player's score happens to be, read as an unwanted colored
-                outline around the whole card). */}
-            {perf && (
-              <div className="relative bg-[#0f1923] rounded-lg overflow-hidden">
-                <div className="absolute inset-0 rounded-lg border border-white/[0.075] pointer-events-none z-10" aria-hidden="true" />
-                <div className="bg-[#1b2733] rounded-lg grid grid-cols-1 sm:grid-cols-[min-content_1fr]">
-                  <div className="flex items-center bg-[#1b2733] rounded-lg sm:rounded-r-none px-4 sm:px-7 py-3 w-full h-full">
-                    <TrackerScoreBadge score={perf.score} />
-                    <div className="flex flex-col ml-5 whitespace-nowrap">
-                      <span className="text-muted text-sm font-medium">Tracker Score</span>
-                      <span className="font-display text-2xl font-bold text-ink">
-                        {perf.score}
-                        <sup className="text-ink/75 text-xs">/1000</sup>
-                      </span>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4">
-                    {perf.scoreMetrics.map((m, i) => (
-                      <div key={m.statKey} className="relative">
-                        {i > 0 && (
-                          <span
-                            className="hidden sm:flex absolute -left-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-4 h-4 rounded-full bg-[#0f1923]"
-                            aria-hidden="true"
-                          >
-                            <svg viewBox="0 0 24 24" className="w-2.5 h-2.5 fill-white/70"><path d="M19,13H13v6H11V13H5V11h6V5h2v6h6Z" /></svg>
-                          </span>
-                        )}
-                        <TrackerScoreMetric {...m} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {stats && stats.mapsPlayed > 0 && <PlayerStatSummary perf={perf} stats={stats} actStats={actStats} showRanked={showRanked} setStatSource={setStatSource} />}
 
       {scopedMatchRows.length > 0 && (
         <PerformanceStrip rows={mapPerformanceRows} />
@@ -1178,336 +995,17 @@ export default function PlayerProfile() {
           </div>
         )
       )}
+
     </div>
   )
 }
+
 
 function Stat({ label, value }) {
   return (
     <div className="flex flex-col gap-0.5">
       <span className="text-muted text-xs uppercase tracking-wide">{label}</span>
       <span className="font-body text-lg text-ink font-medium">{value}</span>
-    </div>
-  )
-}
-
-// Real (if approximated) per-tier VALORANT competitive rank colors -- the
-// game's own rank icons are famously color-coded (Iron gray through
-// Radiant's pale gold-white) but rankIcons.json only carries an icon path,
-// no color, so this is a hand-picked hex per base tier eyedropped off the
-// real rank badges rather than an exact palette pull -- same "close, not
-// pixel-perfect" honesty as trackerTier's own percentile cutoffs below.
-// Keyed by BASE tier name (rank strips its own trailing " 1"/"2"/"3" --
-// "Diamond 2" and "Diamond 3" share one color, matching how the game
-// itself only recolors per major rank, not per division). Used to tint the
-// rank plate's icon glow and its Act tag so the whole cluster reads as one
-// tier-colored unit instead of a gray icon next to plain white text.
-const RANK_TIER_COLORS = {
-  iron: '#565a5e',
-  bronze: '#a3714a',
-  silver: '#9fb6ba',
-  gold: '#e8c15a',
-  platinum: '#3fa9a3',
-  diamond: '#c46fe0',
-  ascendant: '#39c47a',
-  immortal: '#b23458',
-  radiant: '#eee8b0',
-}
-function rankTierColor(tier) {
-  if (!tier) return null
-  const base = tier.toLowerCase().replace(/\s*\d+$/, '').trim()
-  return RANK_TIER_COLORS[base] ?? null
-}
-
-// The rank cluster, rebuilt as a self-contained tier-tinted plate -- its
-// own dark sub-panel (bg-[#11161f], hairline border) rather than a bare
-// icon+text cluster sitting directly on the overview card's background,
-// matching this card's own nested-panel language (the Tracker Score footer
-// further down does the same: a darker sub-surface bounded by its own
-// border). rankTierColor threads through THREE places here -- the ambient
-// blurred glow behind the icon, the icon's own drop-shadow, and the Act
-// tag's text color -- so "this rank" and "this Act" read as one tier-
-// colored unit instead of a gray icon sitting next to plain white text
-// with an unrelated badge bolted on. Falls back to a plain muted Act tag
-// and no glow for any tier not in RANK_TIER_COLORS (only "unranked"/
-// "unrated" hit this in practice) rather than rendering broken color math.
-function RankPlate({ rank, actShort }) {
-  const tierColor = rankTierColor(rank.tier)
-  return (
-    <div className="relative flex items-center gap-3.5 pl-3.5 pr-5 py-2.5 rounded-xl bg-[#11161f] border border-white/[0.06] overflow-hidden">
-      {tierColor && (
-        <div
-          className="absolute -left-8 -top-8 w-28 h-28 rounded-full blur-2xl opacity-25 pointer-events-none"
-          style={{ backgroundColor: tierColor }}
-          aria-hidden="true"
-        />
-      )}
-      <div
-        className="relative shrink-0"
-        style={tierColor ? { filter: `drop-shadow(0 0 8px ${tierColor}99)` } : undefined}
-      >
-        <RankIcon tier={rank.tier} size={48} />
-      </div>
-      <div className="relative flex flex-col gap-0.5 min-w-0">
-        {actShort && (
-          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: tierColor ?? '#9ba1b0' }}>
-            Act {actShort}
-          </span>
-        )}
-        <span className="font-display text-sm font-semibold text-ink truncate">{rank.tier}</span>
-        <span className="flex items-baseline gap-1.5 flex-wrap">
-          <span className="flex items-baseline gap-1">
-            <span className="font-display text-lg font-bold text-ink">{num(rank.rr)}</span>
-            <span className="text-ink/60 text-[10px] font-bold">RR</span>
-          </span>
-          {rank.leaderboardRank != null && (
-            <span className="text-muted text-[10px]">· #{num(rank.leaderboardRank)} leaderboard</span>
-          )}
-        </span>
-      </div>
-    </div>
-  )
-}
-
-// Tracker Score tier lookup -- colors are tracker.gg's own REAL per-tier
-// `--color-tier` values, pulled verbatim out of a saved copy of the site's
-// real stylesheet (.score--tier-S/A/B/C/D), not approximated: S=#3ecbff,
-// A=#5ee790, B=#e6bc5c, C=#a7c6cc, D=#bf868f. `tone` is the same color as an
-// arbitrary-value Tailwind text class (TrackerScoreMetric's tier letter is
-// plain colored text on the real page, not a background chip -- see that
-// component below). `dark`/`glow` are TrackerScoreBadge's own gradient/glow
-// inputs (raw hex/rgb -- box-shadow and SVG fill can't consume a Tailwind
-// class). Percentile cutoffs (90/75/50/25) are an even split, not a
-// reverse-engineered exact match -- tracker.gg doesn't publish theirs.
-function trackerTier(percentile) {
-  if (percentile == null) return null
-  if (percentile >= 90) return { label: 'S', tone: 'text-[#3ecbff]', light: '#3ecbff', dark: '#1f6b8c', glow: '62,203,255' }
-  if (percentile >= 75) return { label: 'A', tone: 'text-[#5ee790]', light: '#5ee790', dark: '#2f7a52', glow: '94,231,144' }
-  if (percentile >= 50) return { label: 'B', tone: 'text-[#e6bc5c]', light: '#e6bc5c', dark: '#8a6b30', glow: '230,188,92' }
-  if (percentile >= 25) return { label: 'C', tone: 'text-[#a7c6cc]', light: '#a7c6cc', dark: '#5c6f74', glow: '167,198,204' }
-  return { label: 'D', tone: 'text-[#bf868f]', light: '#bf868f', dark: '#6b454c', glow: '191,134,143' }
-}
-
-// The tier badge -- a pentagon "gem" crest per direct instruction/reference
-// markup: a dark-filled pentagon, all 5 edges double-stroked (a muted base
-// pass, then the tier's own color on top of 4 of the 5 -- the top edge
-// deliberately stays muted-only, matching the reference exactly), 5 small
-// corner notches for the faceted-gem look, and the tier letter centered
-// (the reference's own center graphic is an external asset this repo
-// doesn't have, so the letter stands in for it). Replaces an earlier
-// 6-point star version that, per direct feedback, read as a Star of David
-// rather than a rating medal -- not the intended association at all, hence
-// this replacement rather than a tweak.
-function TrackerScoreBadge({ score }) {
-  const tier = trackerTier(score / 10)
-  const light = tier?.light ?? '#a7c6cc'
-  return (
-    <div className="relative w-14 h-[3.73rem] shrink-0" style={{ filter: `drop-shadow(0 0 8px ${light}99)` }} title="Tracker Score tier">
-      <svg viewBox="0 0 60 64" className="w-full h-full" aria-hidden="true">
-        <polygon points="44.11,10.58 52.83,37.42 30.00,54.00 7.17,37.42 15.89,10.58" fill="#080e1a" />
-        <line x1="44.11" y1="10.58" x2="52.83" y2="37.42" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />
-        <line x1="52.83" y1="37.42" x2="30.00" y2="54.00" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />
-        <line x1="30.00" y1="54.00" x2="7.17" y2="37.42" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />
-        <line x1="7.17" y1="37.42" x2="15.89" y2="10.58" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />
-        <line x1="15.89" y1="10.58" x2="44.11" y2="10.58" stroke="#1a2535" strokeWidth="3.5" strokeLinecap="butt" />
-        <line x1="44.11" y1="10.58" x2="52.83" y2="37.42" stroke={light} strokeWidth="3.5" strokeLinecap="butt" />
-        <line x1="52.83" y1="37.42" x2="30.00" y2="54.00" stroke={light} strokeWidth="3.5" strokeLinecap="butt" />
-        <line x1="30.00" y1="54.00" x2="7.17" y2="37.42" stroke={light} strokeWidth="3.5" strokeLinecap="butt" />
-        <line x1="7.17" y1="37.42" x2="15.89" y2="10.58" stroke={light} strokeWidth="3.5" strokeLinecap="butt" />
-        <line x1="44.99" y1="9.37" x2="41.76" y2="13.82" stroke="#080e1a" strokeWidth="1.5" strokeLinecap="butt" />
-        <line x1="54.25" y1="37.88" x2="49.02" y2="36.18" stroke="#080e1a" strokeWidth="1.5" strokeLinecap="butt" />
-        <line x1="30.00" y1="55.50" x2="30.00" y2="50.00" stroke="#080e1a" strokeWidth="1.5" strokeLinecap="butt" />
-        <line x1="5.75" y1="37.88" x2="10.98" y2="36.18" stroke="#080e1a" strokeWidth="1.5" strokeLinecap="butt" />
-        <line x1="15.01" y1="9.37" x2="18.24" y2="13.82" stroke="#080e1a" strokeWidth="1.5" strokeLinecap="butt" />
-        <text x="30" y="35.5" textAnchor="middle" fontSize="16" fontWeight="800" fill="#ffffff" fontFamily="inherit">
-          {tier ? tier.label : '—'}
-        </text>
-      </svg>
-    </div>
-  )
-}
-
-// tracker.gg's real `.stat`: centered column (label, big value, percentile
-// line), a background gradient from --color-surface-1 at the top to the
-// tier color at 20% opacity at the bottom, and a fixed-width (not
-// percentile-sized -- confirmed against the real CSS, there is no
-// percentage-fill bar here at all, this site's earlier version invented
-// one) 3rem tier-colored accent bar along the very bottom edge. The tier
-// letter is plain colored text next to "· Top X%", not a background chip --
-// also corrected to match the real page.
-function TrackerScoreMetric({ label, value, format, percentile }) {
-  const tier = trackerTier(percentile)
-  const topPct = percentile == null ? null : Math.max(0.1, 100 - percentile)
-  const bg = tier
-    ? { backgroundImage: `linear-gradient(to bottom, #0f1923, rgba(${tier.glow}, 0.2))` }
-    : undefined
-  return (
-    <div
-      className="relative flex flex-col items-center justify-center text-center gap-1 py-3 px-2 min-w-0 border-l border-[#0f1923] first:border-l-0"
-      style={bg}
-    >
-      <span className="text-muted text-sm font-medium truncate max-w-full">{label}</span>
-      <span className="font-display text-2xl font-bold text-ink">{format(value)}</span>
-      {topPct != null && (
-        <span className="text-ink/75 text-[10px]">
-          {tier && <span className="font-semibold" style={{ color: tier.light }}>{tier.label}</span>}
-          {tier ? ' · ' : ''}Top {topPct.toFixed(1)}%
-        </span>
-      )}
-      {tier && (
-        <span
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 rounded-t"
-          style={{ backgroundColor: tier.light }}
-          aria-hidden="true"
-        />
-      )}
-    </div>
-  )
-}
-
-// tracker.gg's real `.stat.giant`: bg surface-2, a 4px vertical fill bar
-// (track = --color-background, the darkest token; fill = tracker.gg's own
-// real --color-accent, #bfbdb6 -- a neutral gray, confirmed by eyedropper
-// against a screenshot of the real page, and genuinely NOT the same as
-// their --color-action red used elsewhere) sized to the stat's own
-// percentile, a normal-weight/normal-case label (NOT the
-// small-caps micro-label this site uses everywhere else -- confirmed
-// against the real CSS, `.stat .numbers .name` carries no text-transform),
-// a big bold value, and a "Top X%" line -- gold (`#cbb765`, tracker.gg's
-// own real literal value for this, not a design token) once the percentile
-// clears an approximate "elite" cutoff, same as the real page's
-// `rank--leader` class (exact cutoff isn't published; 3% is this site's own
-// read of a handful of examples in a saved copy of the real page).
-function GiantStat({ label, value, format, percentile }) {
-  const topPct = percentile == null ? null : Math.max(0.1, 100 - percentile)
-  const isLeader = topPct != null && topPct <= 3
-  return (
-    <div className="flex items-stretch gap-4 bg-[#1b2733] rounded-lg px-5 py-3 shadow-[0_3px_6px_rgba(0,0,0,0.15)]">
-      <div className="relative w-1 shrink-0 bg-[#0F141A] rounded-full overflow-hidden">
-        {percentile != null && (
-          <div
-            className="absolute bottom-0 left-0 right-0 bg-[#bfbdb6] rounded-full"
-            style={{ height: `${Math.max(4, percentile)}%` }}
-          />
-        )}
-      </div>
-      <div className="flex flex-col justify-center min-w-0">
-        <span className="text-muted text-base font-medium truncate">{label}</span>
-        <span className="font-display text-xl font-bold text-ink">{value != null ? format(value) : '—'}</span>
-        {topPct != null && (
-          <span className={`text-[10px] font-medium ${isLeader ? '' : 'text-muted'}`} style={isLeader ? { color: '#cbb765' } : undefined}>
-            Top {topPct.toFixed(1)}%
-          </span>
-        )}
-      </div>
-    </div>
-  )
-}
-
-// The Win % pill, widened (see its md:1.6fr grid column above) to also
-// carry the map/match record that used to live in a separate WldBadge up
-// in the card's top-right corner. First pass put that record in a stacked
-// bar UNDER the value -- reverted per direct feedback ("add something on
-// the right where the space is gained, not underneath the stat"): the gap
-// this card gains over its 3 siblings is horizontal, on its right edge, so
-// the record now docks there instead, as its own block separated by a
-// hairline divider -- label/value/percentile keep the exact left-aligned
-// layout every other GiantStat pill uses, untouched by the wider column.
-function WinRateStat({ label, value, format, percentile, wins, losses, draws }) {
-  const topPct = percentile == null ? null : Math.max(0.1, 100 - percentile)
-  const isLeader = topPct != null && topPct <= 3
-  const total = (wins ?? 0) + (losses ?? 0) + (draws ?? 0)
-  return (
-    <div className="flex items-stretch gap-4 bg-[#1b2733] rounded-lg px-5 py-3 shadow-[0_3px_6px_rgba(0,0,0,0.15)]">
-      <div className="relative w-1 shrink-0 bg-[#0F141A] rounded-full overflow-hidden">
-        {percentile != null && (
-          <div
-            className="absolute bottom-0 left-0 right-0 bg-[#bfbdb6] rounded-full"
-            style={{ height: `${Math.max(4, percentile)}%` }}
-          />
-        )}
-      </div>
-      <div className="flex flex-col justify-center min-w-0 flex-1">
-        <span className="text-muted text-base font-medium truncate">{label}</span>
-        <span className="font-display text-xl font-bold text-ink">{value != null ? format(value) : '—'}</span>
-        {topPct != null && (
-          <span className={`text-[10px] font-medium ${isLeader ? '' : 'text-muted'}`} style={isLeader ? { color: '#cbb765' } : undefined}>
-            Top {topPct.toFixed(1)}%
-          </span>
-        )}
-      </div>
-      {/* The record block itself: a small win/loss/draw donut ring plus a
-          W/L/D legend, both fed by the same total-and-outcome numbers so
-          they never disagree. Center of the ring carries the map/match
-          COUNT (`total`) rather than repeating the win percentage already
-          shown as this pill's own headline value -- a number not shown
-          anywhere else on the card, so the ring earns its place instead of
-          just re-illustrating Win % a second time. */}
-      {total > 0 && (
-        <div className="flex items-center gap-3 pl-4 border-l border-white/[0.07] shrink-0">
-          <WinLossDonut wins={wins} losses={losses} draws={draws} total={total} />
-          <div className="flex flex-col gap-0.5 text-[10px] font-bold tabular-nums">
-            <span className="text-good">{num(wins)}W</span>
-            <span className="text-bad">{num(losses)}L</span>
-            {draws ? <span className="text-mid">{num(draws)}D</span> : null}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// Win/loss(/draw) donut ring -- three (or two, Pro side has no draws)
-// stroke segments around one circle, each sized to its outcome's own share
-// of `total` (same `strokeDasharray`/`strokeDashoffset` technique behind
-// every SVG donut chart; the whole ring is rotated -90deg first so the
-// first segment starts at 12 o'clock instead of SVG's default 3 o'clock).
-// Colors are the literal good/bad/mid hex values from tailwind.config.js,
-// not Tailwind fill/stroke classes -- this codebase has no prior instance
-// of a token-color stroke utility, and TrackerScoreBadge right above this
-// already establishes raw hex as how an SVG stroke/fill in this file
-// consumes these tokens. The center label is the map/match COUNT, not a
-// repeat of Win % -- see WinRateStat's own comment for why.
-function WinLossDonut({ wins, losses, draws, total }) {
-  if (!total) return null
-  const size = 40
-  const strokeWidth = 6
-  const r = (size - strokeWidth) / 2
-  const c = 2 * Math.PI * r
-  const segments = [
-    { v: wins, color: '#4ac97e' },
-    { v: losses, color: '#f7665e' },
-    ...(draws ? [{ v: draws, color: '#ffd47d' }] : []),
-  ].filter((s) => s.v > 0)
-  let cumulative = 0
-  return (
-    <div
-      className="relative shrink-0"
-      style={{ width: size, height: size }}
-      title={`${wins}W ${losses}L${draws ? ` ${draws}D` : ''}`}
-    >
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90" aria-hidden="true">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#0F141A" strokeWidth={strokeWidth} />
-        {segments.map((s, i) => {
-          const len = (s.v / total) * c
-          const dashoffset = -cumulative
-          cumulative += len
-          return (
-            <circle
-              key={i}
-              cx={size / 2} cy={size / 2} r={r}
-              fill="none"
-              stroke={s.color}
-              strokeWidth={strokeWidth}
-              strokeDasharray={`${len} ${c - len}`}
-              strokeDashoffset={dashoffset}
-            />
-          )
-        })}
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center font-display text-[11px] font-bold text-ink">
-        {total}
-      </span>
     </div>
   )
 }

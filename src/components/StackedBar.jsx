@@ -1,8 +1,8 @@
 const TIER_COLORS = {
   eco: '#6B7280',
   semiEco: '#4C7A9E',
-  semiBuy: '#ffd47d',
-  fullBuy: '#4ac97e',
+  semiBuy: '#f5b94c',
+  fullBuy: '#4bd389',
 }
 
 const TIER_LABELS = {

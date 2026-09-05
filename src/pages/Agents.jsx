@@ -3,8 +3,8 @@ import AgentOverview from '../components/AgentOverview'
 import AgentImpact from '../components/AgentImpact'
 
 /**
- * Agents -- two sub-tabs sharing this one route. "Overview" is the
- * original pick-rate/map win-rate page, driven by the pre-aggregated
+ * Agents -- two sub-tabs sharing this one route. "Meta overview" is the
+ * summary/pick-rate/map-balance page, driven by the pre-aggregated
  * agents.json buckets. "Agent impact" is a heavier match-level join
  * (match_results + match_players + team_map_detail, ~10.4MB combined) that
  * StageTabs only mounts -- and therefore only fetches -- once the user
@@ -22,16 +22,16 @@ export default function Agents() {
       <div>
         <h1 className="font-display text-2xl font-semibold text-ink">Agents</h1>
         <p className="text-muted text-sm mt-1">
-          Pick rates, map performance and per-agent impact, computed directly from per-map
-          player data. Every filter below is multi-select and independent — combine them freely.
+          Read the meta from the broad shape down to a specific map, then inspect agent-level
+          performance. Every view is computed directly from round and lineup data in scope.
         </p>
       </div>
 
       <StageTabs
         defaultTabId="overview"
         tabs={[
-          { id: 'overview', label: 'Overview', content: <AgentOverview /> },
-          { id: 'impact', label: 'Agent impact', content: <AgentImpact /> },
+          { id: 'overview', label: 'Meta overview', content: <AgentOverview /> },
+          { id: 'impact', label: 'Agent performance', content: <AgentImpact /> },
         ]}
       />
     </div>

@@ -41,6 +41,27 @@ import { SCOPE_SEP } from './entityBuckets'
  */
 const EMPTY_RANGE = { from: '', to: '' }
 
+function initialStateFromUrl(facets, initial) {
+  const selections = Object.fromEntries(facets.map((facet) => [facet, initial[facet] ?? []]))
+  const dateRange = { ...EMPTY_RANGE }
+  if (typeof window === 'undefined') return { selections, dateRange }
+
+  const params = new URLSearchParams(window.location.search)
+  for (const facet of facets) {
+    if (!params.has(facet)) continue
+    const values = params.getAll(facet)
+      .flatMap((value) => value.split(','))
+      .map((value) => value.trim())
+      .filter(Boolean)
+    selections[facet] = facet === 'year'
+      ? values.map(Number).filter(Number.isFinite)
+      : values
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(params.get('from') || '')) dateRange.from = params.get('from')
+  if (/^\d{4}-\d{2}-\d{2}$/.test(params.get('to') || '')) dateRange.to = params.get('to')
+  return { selections, dateRange }
+}
+
 /**
  * Events left out of every page's scope by default, regardless of Year/
  * Event facet selections, with a checkbox (rendered by FilterPanel) to
@@ -153,10 +174,9 @@ export function matchesFilters(record, facets, selections, dateRange = EMPTY_RAN
 }
 
 export function useFacetedFilter(records, facets, initial = {}) {
-  const [selections, setSelections] = useState(() =>
-    Object.fromEntries(facets.map((f) => [f, initial[f] ?? []]))
-  )
-  const [dateRange, setDateRangeState] = useState(EMPTY_RANGE)
+  const [urlInitial] = useState(() => initialStateFromUrl(facets, initial))
+  const [selections, setSelections] = useState(urlInitial.selections)
+  const [dateRange, setDateRangeState] = useState(urlInitial.dateRange)
   const [includeHiddenEvents, setIncludeHiddenEvents] = useState(false)
 
   const setFacet = useCallback((facet, values) => {

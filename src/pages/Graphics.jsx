@@ -320,7 +320,7 @@ export default function Graphics() {
                 type="checkbox"
                 checked={bottom}
                 onChange={(e) => setBottom(e.target.checked)}
-                className="accent-[#FF4655]"
+                className="accent-accent"
               />
               {isMatchLevel ? 'Show shortest instead of longest' : 'Show bottom instead of top'}
             </label>
@@ -330,7 +330,7 @@ export default function Graphics() {
                   type="checkbox"
                   checked={ratedOnly}
                   onChange={(e) => setRatedOnly(e.target.checked)}
-                  className="accent-[#FF4655]"
+                  className="accent-accent"
                 />
                 Rated maps only
               </label>
@@ -422,7 +422,7 @@ function RangeControl({ label, value, onChange, min, max, step, digits }) {
           step={step}
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="flex-1 accent-[#FF4655]"
+          className="flex-1 accent-accent"
         />
         <input
           type="number"

@@ -4,10 +4,10 @@ import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import { expandMatchRows } from '../lib/entityBuckets'
 import { buildTeamMapRows, aggregateAgentImpact, aggregateRoleSignatures } from '../lib/compositions'
 import FilterPanel, { FACETS } from './FilterPanel'
-import FilterChips from './FilterChips'
 import DataTable from './DataTable'
 import AgentIcon from './AgentIcon'
-import mapIcons from '../lib/mapIcons.json'
+import MapArtwork from './MapArtwork'
+import Select from './ui/Select'
 import { pct, num, rating } from '../lib/format'
 
 const heading = 'font-display text-sm font-semibold text-ink'
@@ -146,14 +146,27 @@ export default function AgentImpact() {
         summary={`${num(scoped.length)} team-maps in scope`}
       />
 
-      <div className="flex flex-col gap-1.5">
-        <span className="text-[11px] uppercase tracking-wide font-medium text-muted">Map</span>
-        <FilterChips
-          options={mapsInScope}
-          value={effectiveMap}
-          onChange={setSelectedMap}
-          getBg={(opt) => mapIcons[opt]}
-        />
+      <div className="grid gap-3 md:grid-cols-[minmax(220px,1fr)_minmax(280px,456px)] md:items-end">
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">Map focus</span>
+          <Select
+            value={effectiveMap}
+            onChange={setSelectedMap}
+            options={mapsInScope}
+            className="w-full"
+            searchable
+          />
+          <p className="text-[10px] leading-relaxed text-muted">
+            Select one map to keep lineup structure and agent performance comparable.
+          </p>
+        </div>
+        {effectiveMap && (
+          <MapArtwork
+            map={effectiveMap}
+            eyebrow="Agent performance"
+            detail={`${num(mapRows.length)} team-maps in scope`}
+          />
+        )}
       </div>
 
       {scoped.length === 0 ? (

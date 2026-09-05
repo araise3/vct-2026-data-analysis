@@ -1,3 +1,4 @@
+import { Card as AntCard } from 'antd'
 import { cx } from '../../lib/cx'
 
 /**
@@ -11,8 +12,9 @@ import { cx } from '../../lib/cx'
  */
 export default function Card({ className, ...props }) {
   return (
-    <div
-      className={cx('bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm', className)}
+    <AntCard
+      size="small"
+      className={cx('portal-card shadow-depth-xs', className)}
       {...props}
     />
   )

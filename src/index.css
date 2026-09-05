@@ -2,75 +2,138 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-/* Browsers default <img> to vertical-align:baseline, which creates a
-   small visual offset whenever an image sits inline next to text (team
-   logos, agent icons, flags, etc.) -- the exact "sits slightly high" bug
-   that kept recurring component-by-component. Fixing it once, globally,
-   here, rather than patching each new spot it shows up in. */
-img {
-  vertical-align: middle;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
-/* Reserve the vertical scrollbar's gutter on every page, even ones short
-   enough not to need it (e.g. Economy). Without this, navigating between a
-   tall page and a short one toggles the scrollbar on/off, and since the
-   whole layout is mx-auto-centered, losing/gaining that ~15px shifts the
-   entire page left/right -- this is what caused the Economy tab click to
-   visibly shove the page over. */
-html {
-  scrollbar-gutter: stable;
-}
+html { color-scheme: dark; scrollbar-gutter: stable; background: #0c0d0f; }
+html, body { margin: 0; padding: 0; }
 
 body {
-  background-color: #131619;
-  color: #fafafa;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-width: 320px;
+  background: #0c0d0f;
+  color: #f0f1f3;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Visible keyboard focus everywhere. No border-radius here on purpose --
-   modern browsers already clip the outline to whatever border-radius the
-   focused element itself declares, so a hardcoded value here doesn't
-   round the outline, it OVERRIDES the element's real radius outright. That
-   silently squared off every rounded pill/chip on the site the moment it
-   was focused/clicked (search bar, EventPicker's "Add an event…" input --
-   reported as "the box becomes square when selecting") since 6px (this
-   rule) beat whatever the element's own class declared (`rounded-full`
-   9999px at the time, now mostly `rounded-2xl` 14px) in the cascade
-   regardless of which one the element actually wanted. */
-:focus-visible {
-  outline: 2px solid #FF4655;
-  outline-offset: 2px;
+img { vertical-align: middle; }
+a, button, input, select { touch-action: manipulation; }
+
+:focus-visible { outline: 2px solid #ff6573; outline-offset: 3px; }
+::selection { background: #692c34; color: #fff4f5; }
+
+.portal-shell { min-height: 100dvh; padding-top: 56px; }
+.portal-header { position: fixed; inset: 0 0 auto; height: 56px; z-index: 60; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 28px; border-bottom: 1px solid #2d3238; background: #0f1012; }
+.portal-wordmark { flex-shrink: 0; color: #f0f1f3; font-size: 20px; font-weight: 600; letter-spacing: -1px; }
+.portal-wordmark span { color: #686e76; font-weight: 400; }
+.portal-search { width: min(340px, 55%); }
+.portal-navigation { position: fixed; inset: 56px auto 0 0; width: 180px; overflow-y: auto; border-right: 1px solid #2d3238; padding: 26px 14px; background: #101214; }
+.portal-nav-group + .portal-nav-group { margin-top: 25px; }
+.portal-nav-label { padding: 0 12px; margin: 0 0 8px; color: #747b84; font-size: 11px; }
+.portal-nav-link { display: block; padding: 9px 12px; margin: 2px 0; color: #9aa0a8; font-size: 13px; border-radius: 3px; white-space: nowrap; }
+.portal-nav-link:hover { color: #f0f1f3; background: #1b1e22; }
+.portal-nav-link.is-active { color: #ff9aa3; background: #2b1a1d; font-weight: 600; }
+.portal-nav-footnote { margin: 48px 12px 0; max-width: 120px; color: #747b84; font-size: 10px; line-height: 1.7; }
+.portal-main { min-width: 0; margin-left: 180px; padding: 32px clamp(20px, 3vw, 48px) 0; }
+.portal-main > div { max-width: 1600px; margin-inline: auto; }
+.portal-main h1 { letter-spacing: -0.035em; }
+.portal-footer { max-width: 1600px; margin: 48px auto 0; padding: 20px 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; border-top: 1px solid #2d3238; font-size: 10px; color: #747b84; }
+
+/* The root route is intentionally not part of the statistics shell. It is
+   one quiet navigation surface; suggestions remain visually attached to
+   the composer so the page never turns into another dashboard. */
+.start-shell { min-height: 100dvh; background: #0c0d0f; }
+.start-main { min-height: 100dvh; }
+.start-stage { min-height: 100dvh; display: grid; place-items: center; padding: 28px; }
+.start-console { width: min(680px, 100%); transform: translateY(-5vh); }
+.start-mark { margin: 0 0 22px; color: #f0f1f3; font-size: 15px; font-weight: 600; letter-spacing: -.035em; text-align: center; }
+.start-mark span { color: #686e76; font-weight: 400; }
+.start-form { position: relative; }
+.start-composer { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 38px; align-items: center; gap: 10px; min-height: 62px; padding: 10px 11px 10px 20px; border: 1px solid #363b42; border-radius: 16px; background: #141619; box-shadow: 0 16px 50px rgba(0, 0, 0, .22); transition: border-color 140ms ease, box-shadow 140ms ease, border-radius 140ms ease; }
+.start-composer:focus-within { border-color: #666d76; box-shadow: 0 18px 60px rgba(0, 0, 0, .32); }
+.start-composer.has-suggestions { border-radius: 16px 16px 6px 6px; }
+.start-composer textarea { width: 100%; min-height: 26px; max-height: 90px; resize: none; overflow: hidden; border: 0; outline: 0; padding: 2px 0; background: transparent; color: #f0f1f3; font: 400 16px/1.45 Inter, ui-sans-serif, system-ui, sans-serif; }
+.start-composer textarea::placeholder { color: #7f858d; opacity: 1; }
+.start-composer button { width: 38px; height: 38px; display: grid; place-items: center; border: 0; border-radius: 11px; background: #ff6573; color: #13090b; cursor: pointer; transition: background 120ms ease, opacity 120ms ease, transform 120ms ease; }
+.start-composer button:hover:not(:disabled) { background: #ff8b95; }
+.start-composer button:active:not(:disabled) { transform: translateX(1px); }
+.start-composer button:disabled { background: #25292e; color: #686e76; cursor: default; }
+.start-suggestions { position: absolute; z-index: 20; top: calc(100% + 7px); left: 0; right: 0; overflow: hidden; border: 1px solid #363b42; border-radius: 6px 6px 14px 14px; background: #141619; box-shadow: 0 22px 60px rgba(0, 0, 0, .34); }
+.start-suggestions button { width: 100%; min-height: 54px; display: flex; align-items: center; gap: 18px; border: 0; border-bottom: 1px solid #25292e; padding: 9px 14px 9px 18px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.start-suggestions button:last-child { border-bottom: 0; }
+.start-suggestions button:hover, .start-suggestions button.is-active { background: #1b1e22; }
+.start-suggestion-copy { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.start-suggestion-copy strong { overflow: hidden; color: #f0f1f3; font-size: 12px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.start-suggestion-copy small { overflow: hidden; color: #858b93; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.start-suggestion-kind { flex: 0 0 auto; color: #747b84; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.start-message { min-height: 18px; margin: 12px 4px 0; color: #747b84; font-size: 10px; text-align: center; }
+.portal-filters { border-top: 1px solid #2d3238; border-bottom: 1px solid #2d3238; padding-top: 16px; }
+.filter-primary { display: grid; grid-template-columns: minmax(85px,.65fr) minmax(110px,.8fr) minmax(120px,1fr) minmax(120px,1fr) minmax(180px,1.7fr); gap: 12px; }
+.filter-label { display: block; margin-bottom: 6px; color: #9aa0a8; font-size: 11px; font-weight: 500; }
+.skip-link { position: absolute; top: -100px; left: 16px; background: #1b1e22; color: #f0f1f3; padding: 8px; }
+.skip-link:focus { top: 8px; z-index: 70; }
+.portal-data-table .ant-table-thead > tr > th { font-size: 11px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+.portal-data-table .ant-table-container { border-top: 1px solid #2d3238; }
+.portal-data-table .ant-table-tbody > tr > td { transition: none; }
+.portal-data-table .ant-pagination { padding-top: 8px; }
+
+@media (max-width: 1050px) {
+  .filter-primary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .portal-header { padding: 0 16px; gap: 12px; }
+  .portal-wordmark { font-size: 18px; }
+  .portal-search { width: 62%; }
+  .portal-navigation { position: static; display: flex; width: 100%; gap: 14px; padding: 8px 12px; overflow-x: auto; border-right: 0; border-bottom: 1px solid #2d3238; }
+  .portal-nav-group { display: flex; gap: 2px; }
+  .portal-nav-group + .portal-nav-group { margin-top: 0; }
+  .portal-nav-label, .portal-nav-footnote { display: none; }
+  .portal-nav-link { padding: 7px 10px; font-size: 12px; }
+  .portal-main { margin-left: 0; padding: 24px 16px 0; }
+  .filter-primary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .filter-primary > :last-child { grid-column: 1 / -1; }
+  .portal-filters .ant-select { min-width: 0; }
+  .portal-footer { margin-top: 32px; }
+  .start-stage { padding: 18px; }
+  .start-console { transform: translateY(-8vh); }
+  .start-mark { margin-bottom: 18px; }
+  .start-composer { min-height: 58px; padding-left: 16px; border-radius: 14px; }
+  .start-composer.has-suggestions { border-radius: 14px 14px 5px 5px; }
+  .start-composer textarea { font-size: 16px; }
+  .start-suggestions { border-radius: 5px 5px 12px 12px; }
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0d0f11; }
+::-webkit-scrollbar-thumb { background: #363b42; border: 2px solid #0d0f11; }
+::-webkit-scrollbar-thumb:hover { background: #4a5058; }
+
+@layer components {
+  .portal-card > .ant-card-body { display: contents; }
+  .portal-input.ant-input { font-family: inherit; }
+  .ant-table-wrapper .ant-table { font-variant-numeric: tabular-nums; }
+  .ant-table-wrapper .ant-table-thead > tr > th { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .ant-table-wrapper .ant-table-cell { white-space: nowrap; }
+  .ant-table-wrapper .ant-table-column-sorter { color: #747b84; }
+  .ant-table-wrapper .ant-table-column-sorters { gap: 6px; }
+  .data-panel { @apply overflow-hidden rounded-md border border-hairline bg-surface shadow-depth-xs; }
+  .data-panel-header { @apply flex min-h-14 items-center justify-between gap-4 border-b border-hairline bg-surface px-4 py-3; }
+  .data-eyebrow { @apply text-[10px] font-medium text-muted; }
+  .data-link { @apply shrink-0 text-[11px] font-semibold text-accent transition-colors hover:text-accent-bright; }
+  .data-list { @apply w-full border-separate border-spacing-0 text-xs; }
+  .data-list th { @apply border-b border-hairline bg-surface2 px-3 py-2 text-left text-[9px] font-semibold uppercase tracking-wider text-muted; }
+  .data-list td { @apply border-b border-hairline/70 px-3 py-2 text-left text-[11px]; }
+  .data-list tbody tr:last-child td { border-bottom-width: 0; }
+  .data-list tbody tr:hover { background: #1c2024; }
+  .data-list .rank-cell { @apply w-9 text-right font-mono text-[10px] tabular-nums text-muted; }
+  .data-list .metric-cell, .metric-cell { @apply text-right font-mono text-[11px] tabular-nums text-ink; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
+    scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: #131619;
-}
-::-webkit-scrollbar-thumb {
-  background: #303133;
-  border-radius: 8px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #3a3d40;
 }

@@ -11,9 +11,7 @@ import EventPicker from '../components/EventPicker'
 import KpiCard from '../components/KpiCard'
 import MatchHistory from '../components/MatchHistory'
 import TeamLogo from '../components/TeamLogo'
-import TrophyCase from '../components/TrophyCase'
 import RosterTable from '../components/RosterTable'
-import RosterTimeline from '../components/RosterTimeline'
 import TeamRatingSection from '../components/TeamRatingSection'
 import DataTable from '../components/DataTable'
 import CompositionsTable from '../components/CompositionsTable'
@@ -22,7 +20,6 @@ import Button from '../components/ui/Button'
 import Select from '../components/ui/Select'
 import { buildTeamMapRows, aggregateCompositions, aggregateCompositionPlayers } from '../lib/compositions'
 import { aggregateTeamVetoStats } from '../lib/vetoStats'
-import { buildTrophyWinners } from '../lib/trophies'
 import mapIcons from '../lib/mapIcons.json'
 import teamLogos from '../lib/teamLogos.json'
 import { rating, pct, num, eventLabel } from '../lib/format'
@@ -42,7 +39,7 @@ const WIN_CONDITION_LABELS = { elim: 'Elimination', defuse: 'Defuse', boom: 'Spi
 // tab the way this page used to.
 const TABS = [
   { id: 'overview', label: 'Overview' },
-  { id: 'matches', label: 'Matches' },
+  { id: 'matches', label: 'Match statistics' },
   { id: 'maps', label: 'Maps' },
   { id: 'agents', label: 'Agents' },
   { id: 'roster', label: 'Roster' },
@@ -607,8 +604,6 @@ export default function TeamProfile() {
   // step, since trophies.js already keys each entry by the champion TEAM
   // directly. Career-wide (every year this team has ever won, unfiltered by
   // the page's active scope), same as PlayerProfile's trophy case.
-  const allTrophies = buildTrophyWinners(matchData)
-  const myTrophies = allTrophies.filter((t) => t.team === decodedName)
   const hasLogo = !!teamLogos[decodedName]?.logo
 
   return (
@@ -660,7 +655,6 @@ export default function TeamProfile() {
           </div>
         </div>
 
-        <TrophyCase trophies={myTrophies} />
         </div>
 
         {/* Divider -- flush against the card's own edges, same as
@@ -920,23 +914,10 @@ export default function TeamProfile() {
           rows={roster}
           liquipedia={liquipediaData?.teams?.[decodedName]}
           matches={matchRows}
-          coaches={coachesInScope}
           asOfDate={asOfDate}
           rosterIsCurrent={rosterIsCurrent}
         />
 
-        {playerData && (
-          <div className="flex flex-col gap-2">
-            <h2 className="font-display text-sm font-semibold text-ink">Roster timeline of {decodedName}</h2>
-            <RosterTimeline
-              playerBuckets={playerData}
-              team={decodedName}
-              matchResultsRows={matchData?.rows}
-              matchPlayersRows={matchPlayerData?.rows}
-              headCoaches={headCoaches}
-            />
-          </div>
-        )}
       </>}
     </div>
   )

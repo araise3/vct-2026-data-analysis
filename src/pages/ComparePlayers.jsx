@@ -7,13 +7,13 @@ import RadarChart from '../components/RadarChart'
 import Select from '../components/ui/Select'
 import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
-import { scaleColor, rating, num, eventLabel, roundLabel, vlrMatchUrl } from '../lib/format'
+import { rating, num, eventLabel, roundLabel, vlrMatchUrl } from '../lib/format'
 
 // Matches RadarChart.jsx's own (unexported) constants -- kept in sync here
 // the same way PlayerProfile.jsx already does for its legend dots, rather
 // than exporting them just for this one shared use.
-const SUBJECT_COLOR = '#FF4655'
-const COMPARE_COLOR = '#FFD47D'
+const SUBJECT_COLOR = '#315C8C'
+const COMPARE_COLOR = '#D43F52'
 
 // Sentinel for "no year filter" (a player's whole career) -- distinct from
 // any real year value (a number) so it can sit in the same options list.
@@ -400,11 +400,9 @@ function StatCell({ value, higher }) {
  */
 function RankBadge({ rank, n }) {
   if (!rank || !n) return <span className="text-muted text-[11px]">—</span>
-  const bg = scaleColor(rank, n, 1)
   return (
     <span
-      className="inline-flex items-center justify-center min-w-[40px] px-2 py-0.5 rounded-md text-[12px] font-bold text-ink shrink-0"
-      style={{ backgroundColor: bg }}
+      className="inline-flex items-center justify-center min-w-[40px] px-2 py-0.5 text-[12px] font-semibold text-muted shrink-0"
       title={`Rank #${rank} of ${n} qualified players`}
     >
       #{rank}

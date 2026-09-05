@@ -327,14 +327,10 @@ export function countdown(startDate, endDate, now = new Date()) {
 // already does (DataTable passes the currently-displayed rows' own
 // min/max for each colorScale column).
 //
-// The color law itself (hsl hue + fixed 20%/45% saturation/lightness) is
-// separately confirmed by sampling actual rendered pixels against their
-// known intended hue on both screenshots: a cell with hue 260 rendered as
-// rgb(107,92,138) -> H=259.6° S=20.0% L=45.1%, and a cell with hue 270
-// rendered as rgb(115,92,138) -> H=270.0° S=20.0% L=45.1%. Using VLR's
-// real values as-is.
-const SAT = 20
-const LIGHT = 45
+// Keep the hue signal low in the dark theme so heatmaps remain secondary to
+// the value labels and retain contrast with the shared light table text.
+const SAT = 36
+const LIGHT = 24
 export function scaleColor(value, min, max) {
   if (value === null || value === undefined || Number.isNaN(value) || min === max) {
     return 'transparent'
@@ -353,11 +349,10 @@ export function scaleColor(value, min, max) {
 // cell nearly grey -- 8 points is calibrated to that actual spread so a
 // real outlier (a lopsided map) hits full color rather than needing an
 // implausible 50%+65% win rate to do so. Saturation still runs past
-// scaleColor's own peak (35% vs. 20%) since this table only has two rows
-// to carry the signal, but 55% (tried first) rendered outliers neon-bright
-// rather than just clearly colored -- 35% is the toned-down middle ground.
+// scaleColor's own peak since this table only has two rows to carry the
+// signal; lightness stays shared so both table treatments remain coherent.
 const DIVERGE_SPREAD = 0.08
-const DIVERGE_MAX_SAT = 35
+const DIVERGE_MAX_SAT = 42
 export function scaleDivergingColor(value, mid = 0.5) {
   if (value === null || value === undefined || Number.isNaN(value)) return 'transparent'
   const t = Math.max(-1, Math.min(1, (value - mid) / DIVERGE_SPREAD))

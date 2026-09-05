@@ -40,7 +40,7 @@ const C = {
   dim: '#8b98ab',
   value: '#cdeaa5',
   valueTop: '#ffe94a',
-  accent: '#FF4655',
+  accent: '#D43F52',
 }
 
 function LogoTile({ team, size }) {

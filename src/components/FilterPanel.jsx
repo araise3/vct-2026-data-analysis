@@ -1,307 +1,99 @@
-import { useState } from 'react'
-import FacetGroup from './FacetGroup'
+import { useId, useState } from 'react'
+import { Button, Input, Select } from 'antd'
 import { unscopeValue } from '../lib/entityBuckets'
 import { eventLabel } from '../lib/format'
 import { HIDDEN_BY_DEFAULT_EVENTS } from '../lib/useFacetedFilter'
-import Card from './ui/Card'
-import Button from './ui/Button'
-import Input from './ui/Input'
 
-/**
- * `eventPhase` / `eventWeek` hold event-scoped values ("Vct 2026 Americas
- * Kickoff § Playoffs: Week 2") rather than bare week names, because a bare
- * "Week 2" exists in nearly every event and filtering on it used to select
- * that week across all of them at once. They're rendered as a sub-group per
- * selected event instead of one flat chip list.
- */
 export const FACETS = ['year', 'competition', 'region', 'split', 'event', 'eventPhase', 'eventWeek']
-
-/** Facets shown as flat chip groups, in order, above the per-event section. */
-const TOP_FACETS = ['year', 'competition', 'region', 'split', 'event']
-
-/** Facets scoped to a specific event, shown only once events are selected. */
-const SCOPED_FACETS = ['eventPhase', 'eventWeek']
-
 export const FACET_LABELS = {
-  year: 'Year',
-  competition: 'Competition',
-  region: 'Region',
-  split: 'Split',
-  event: 'Event',
-  eventPhase: 'Phase',
-  eventWeek: 'Week / Round',
+  year: 'Year', competition: 'Competition', region: 'Region', split: 'Split',
+  event: 'Event', eventPhase: 'Phase', eventWeek: 'Week / Round',
 }
-
-// Explicit chip order for facets where alphabetical (the hook's default)
-// reads wrong -- Split's season progression, not alphabetized, with
-// Qualifier (an EWC-only concept, orthogonal to the VCT Kickoff/Stage 1/
-// Stage 2 progression) pushed to the end rather than sorting ahead of
-// "Stage" alphabetically. Year is oldest-first, per direct request --
-// matches the hook's own default ascending sort, so this entry mostly
-// exists to keep Year's ordering rule explicit and co-located with
-// Split's rather than silently relying on the default. Listed out to
-// 2023 (the 2023/2024 historical backfill's earliest season) rather than
-// just 2025/2026, since an unlisted value sorts AFTER every listed one
-// (see orderOptions below) -- leaving 2023/2024 off would have put them
-// after 2026 instead of before 2025, breaking the oldest-first order this
-// array exists to guarantee.
-// Values not listed here keep their place at the end, in whatever order the
-// hook already sorted them.
-const FACET_ORDER = {
-  split: ['Kickoff', 'Stage 1', 'Stage 2', 'Qualifier'],
-  year: [2023, 2024, 2025, 2026],
-}
-
-function orderOptions(facet, opts) {
-  const order = FACET_ORDER[facet]
-  if (!order) return opts
-  return [...opts].sort((a, b) => {
-    const ai = order.indexOf(a.value)
-    const bi = order.indexOf(b.value)
-    if (ai === -1 && bi === -1) return 0
-    if (ai === -1) return 1
-    if (bi === -1) return -1
-    return ai - bi
-  })
-}
-
-// Week values carry their phase as a prefix ("Group Stage: Week 2") to be
-// unique within an event; the phase is its own chip group, so strip it.
-const bareWeek = (w) => (w.includes(': ') ? w.split(': ').slice(1).join(': ') : w)
-
-// Scoped values render as "EVENT — Week 2" outside the per-event section
-// (e.g. in the collapsed summary), where the event context isn't implied.
-const scopedLabel = (fmt) => (scoped) => {
+const bareWeek = (value) => value.includes(': ') ? value.split(': ').slice(1).join(': ') : value
+const scopedLabel = (format) => (scoped) => {
   const { event, value } = unscopeValue(scoped)
-  return `${eventLabel(event)} — ${fmt(value)}`
+  return `${eventLabel(event)} — ${format(value)}`
 }
-
 export const FACET_RENDERERS = {
   event: eventLabel,
-  eventPhase: scopedLabel((v) => v),
+  eventPhase: scopedLabel((value) => value),
   eventWeek: scopedLabel(bareWeek),
 }
 
-function Chevron({ open }) {
-  return (
-    <svg
-      viewBox="0 0 16 16" width="14" height="14" fill="none"
-      className={`shrink-0 transition-transform duration-150 ${open ? '' : '-rotate-90'}`}
-    >
-      <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6"
-            strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-/**
- * The single filter panel every page uses. Adding a facet here (or a new
- * page that renders this) requires no per-page filtering logic -- options
- * and availability are derived from whatever bucket records get passed to
- * useFacetedFilter.
- *
- * Collapsing is two-level: the whole panel contracts to a single summary
- * row, and each facet group folds independently. A facet with an active
- * selection is never folded away, so collapsing can't hide a filter that's
- * actually doing something.
- */
 export default function FilterPanel({
   selections, setFacet, clearAll, options, activeCount, children, summary,
-  dateRange, setDateRange, dateBounds,
-  includeHiddenEvents, setIncludeHiddenEvents,
-  defaultOpen = false,
+  dateRange, setDateRange, dateBounds, includeHiddenEvents, setIncludeHiddenEvents,
+  defaultOpen = false, additionalSummary,
 }) {
   const [open, setOpen] = useState(defaultOpen)
-  const [collapsed, setCollapsed] = useState(() => new Set())
+  const panelId = useId()
+  const advancedCount = (selections.eventPhase?.length || 0) + (selections.eventWeek?.length || 0)
+    + Number(!!dateRange?.from) + Number(!!dateRange?.to) + Number(!!includeHiddenEvents)
 
-  const toggleFacet = (f) =>
-    setCollapsed((prev) => {
-      const next = new Set(prev)
-      if (next.has(f)) next.delete(f)
-      else next.add(f)
-      return next
-    })
-
-  const selectedEvents = selections.event || []
-
-  // Compact description of what's active, shown when contracted so the
-  // current scope is never hidden behind a collapsed panel.
-  const activeBits = FACETS.flatMap((f) => {
-    const sel = selections[f] || []
-    if (!sel.length) return []
-    const render = FACET_RENDERERS[f] || ((x) => x)
-    return [
-      sel.length <= 2
-        ? sel.map(render).join(', ')
-        : `${sel.length} ${FACET_LABELS[f].toLowerCase()}`,
-    ]
-  })
-  if (dateRange?.from || dateRange?.to) {
-    activeBits.push(`${dateRange.from || '…'} → ${dateRange.to || '…'}`)
-  }
-
-  const renderFlatFacet = (f) => {
-    const sel = selections[f] || []
-    const opts = orderOptions(f, options[f] || [])
-    if (opts.length === 0) return null
-    const isCollapsed = collapsed.has(f) && sel.length === 0
+  function facetControl(facet, event) {
+    const scoped = !!event
+    const choices = (options[facet] || []).filter((option) => !scoped || unscopeValue(option.value).event === event)
+    if (!choices.length) return null
+    const selected = (selections[facet] || []).filter((value) => !scoped || unscopeValue(value).event === event)
     return (
-      <div key={f} className="flex flex-col gap-1.5">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => toggleFacet(f)}
-          className="flex items-center gap-1.5 w-fit justify-start px-1.5"
-          aria-expanded={!isCollapsed}
-        >
-          <Chevron open={!isCollapsed} />
-          <span className="text-[11px] uppercase tracking-wide font-medium">
-            {FACET_LABELS[f]}
-          </span>
-          <span className="text-[11px] text-muted/60">
-            {sel.length > 0 ? `${sel.length} selected` : opts.length}
-          </span>
-        </Button>
-        {!isCollapsed && (
-          <FacetGroup
-            options={opts}
-            selected={sel}
-            onChange={(vals) => setFacet(f, vals)}
-            renderLabel={FACET_RENDERERS[f]}
-            hideLabel
-          />
-        )}
+      <div className="min-w-0" key={`${facet}-${event || ''}`}>
+        <label className="filter-label" htmlFor={`${panelId}-${facet}-${event || ''}`}>{FACET_LABELS[facet]}</label>
+        <Select
+          id={`${panelId}-${facet}-${event || ''}`}
+          mode="multiple"
+          allowClear
+          showSearch
+          optionFilterProp="label"
+          maxTagCount="responsive"
+          className="w-full"
+          placeholder="All"
+          value={selected}
+          options={choices.map(({ value }) => ({
+            value,
+            label: scoped ? (facet === 'eventWeek' ? bareWeek(unscopeValue(value).value) : unscopeValue(value).value)
+              : String(FACET_RENDERERS[facet]?.(value) ?? value),
+          }))}
+          onChange={(values) => setFacet(facet, scoped
+            ? [...(selections[facet] || []).filter((value) => unscopeValue(value).event !== event), ...values]
+            : values)}
+        />
       </div>
     )
   }
 
   return (
-    <Card>
-      <div className="flex items-center justify-between gap-4 flex-wrap px-5 py-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setOpen((o) => !o)}
-          className="flex items-center gap-2 px-1.5 text-ink hover:text-accent-bright"
-          aria-expanded={open}
-        >
-          <Chevron open={open} />
-          <span className="font-display text-sm font-semibold">Filters</span>
-        </Button>
-
-        <div className="flex items-center gap-3 min-w-0">
-          {!open && activeBits.length > 0 && (
-            <span className="text-xs text-muted truncate max-w-md">{activeBits.join(' · ')}</span>
-          )}
-          {summary && <span className="text-xs text-muted whitespace-nowrap">{summary}</span>}
-          {activeCount > 0 && (
-            <Button variant="link" size="sm" className="text-xs whitespace-nowrap" onClick={clearAll}>
-              Clear all
-            </Button>
-          )}
-        </div>
+    <section className="portal-filters" aria-label="Filter statistics">
+      <div className="filter-primary">
+        {['year', 'competition', 'region', 'split', 'event'].map((facet) => facetControl(facet))}
       </div>
-
+      <div className="flex flex-wrap items-center gap-3 py-3">
+        <Button size="small" aria-expanded={open} aria-controls={panelId} onClick={() => setOpen(!open)}>
+          {open ? 'Fewer filters' : 'More filters'}{advancedCount > 0 ? ` (${advancedCount})` : ''}
+        </Button>
+        {activeCount > 0 && <Button type="text" size="small" onClick={clearAll}>Reset filters</Button>}
+        {summary && <span className="ml-auto text-xs text-muted">{summary}</span>}
+      </div>
       {open && (
-        <div className="px-5 pb-5 flex flex-col gap-4 border-t border-hairline pt-4">
-          {TOP_FACETS.map(renderFlatFacet)}
-
+        <div id={panelId} className="flex flex-col gap-4 border-t border-hairline py-4">
           {setDateRange && (
-            <div className="flex flex-col gap-1.5">
-              <span className="text-[11px] uppercase tracking-wide font-medium text-muted">
-                Date range
-              </span>
-              <div className="flex items-center gap-2 flex-wrap">
-                <Input
-                  type="date"
-                  value={dateRange?.from || ''}
-                  min={dateBounds?.min || undefined}
-                  max={dateBounds?.max || undefined}
-                  onChange={(e) => setDateRange({ from: e.target.value })}
-                  className="w-[150px] shrink-0"
-                />
-                <span className="text-muted text-xs">to</span>
-                <Input
-                  type="date"
-                  value={dateRange?.to || ''}
-                  min={dateBounds?.min || undefined}
-                  max={dateBounds?.max || undefined}
-                  onChange={(e) => setDateRange({ to: e.target.value })}
-                  className="w-[150px] shrink-0"
-                />
-                {(dateRange?.from || dateRange?.to) && (
-                  <Button variant="link" size="sm" className="text-[11px]" onClick={() => setDateRange({ from: '', to: '' })}>
-                    clear
-                  </Button>
-                )}
-              </div>
+            <div className="flex flex-wrap items-end gap-3">
+              <div><label className="filter-label" htmlFor={`${panelId}-from`}>From</label><Input id={`${panelId}-from`} type="date" value={dateRange?.from || ''} min={dateBounds?.min} max={dateBounds?.max} onChange={(event) => setDateRange({ from: event.target.value })} /></div>
+              <div><label className="filter-label" htmlFor={`${panelId}-to`}>To</label><Input id={`${panelId}-to`} type="date" value={dateRange?.to || ''} min={dateBounds?.min} max={dateBounds?.max} onChange={(event) => setDateRange({ to: event.target.value })} /></div>
+              {(dateRange?.from || dateRange?.to) && <Button type="text" onClick={() => setDateRange({ from: '', to: '' })}>Clear dates</Button>}
             </div>
           )}
-
-          {/* Phase / week, scoped to each selected event. Hidden until an
-              event is picked -- unscoped these lists run to hundreds of
-              near-identically-named chips. */}
-          {selectedEvents.length === 0 ? (
-            <p className="text-muted text-xs">
-              Select an event above to filter by its phases and weeks.
-            </p>
-          ) : (
-            selectedEvents.map((evName) => (
-              <div
-                key={evName}
-                className="flex flex-col gap-3 border-l-2 border-hairline pl-3"
-              >
-                <span className="text-[11px] uppercase tracking-wide font-semibold text-ink">
-                  {eventLabel(evName)}
-                </span>
-                {SCOPED_FACETS.map((f) => {
-                  const sel = selections[f] || []
-                  const opts = (options[f] || []).filter(
-                    (o) => unscopeValue(o.value).event === evName
-                  )
-                  if (opts.length === 0) return null
-                  const fmt = f === 'eventWeek' ? bareWeek : (v) => v
-                  return (
-                    <div key={f} className="flex flex-col gap-1.5">
-                      <span className="text-[11px] uppercase tracking-wide font-medium text-muted">
-                        {FACET_LABELS[f]}
-                      </span>
-                      <FacetGroup
-                        options={opts}
-                        selected={sel}
-                        onChange={(vals) => {
-                          // Preserve selections belonging to other events --
-                          // FacetGroup only knows about this event's subset.
-                          const others = sel.filter(
-                            (v) => unscopeValue(v).event !== evName
-                          )
-                          setFacet(f, [...others, ...vals])
-                        }}
-                        renderLabel={(v) => fmt(unscopeValue(v).value)}
-                        hideLabel
-                      />
-                    </div>
-                  )
-                })}
-              </div>
-            ))
-          )}
-
-          {setIncludeHiddenEvents && (
-            <label className="flex items-center gap-2 text-[11px] text-muted/70 hover:text-muted w-fit cursor-pointer">
-              <input
-                type="checkbox"
-                checked={!!includeHiddenEvents}
-                onChange={(e) => setIncludeHiddenEvents(e.target.checked)}
-                className="accent-accent w-3.5 h-3.5"
-              />
-              Include {[...HIDDEN_BY_DEFAULT_EVENTS].map(eventLabel).join(', ')} (excluded by default)
-            </label>
-          )}
-
-          {children}
+          {(selections.event || []).map((event) => (
+            <div key={event}>
+              <p className="mb-2 text-xs font-medium">{eventLabel(event)}</p>
+              <div className="grid max-w-2xl gap-3 sm:grid-cols-2">{facetControl('eventPhase', event)}{facetControl('eventWeek', event)}</div>
+            </div>
+          ))}
+          {!(selections.event || []).length && <p className="text-xs text-muted">Select an event to narrow by phase or week.</p>}
+          {setIncludeHiddenEvents && <label className="flex items-start gap-2 text-xs text-muted"><input type="checkbox" className="accent-accent" checked={!!includeHiddenEvents} onChange={(event) => setIncludeHiddenEvents(event.target.checked)} />Include {[...HIDDEN_BY_DEFAULT_EVENTS].map(eventLabel).join(', ')} (excluded by default)</label>}
         </div>
       )}
-    </Card>
+      {!open && additionalSummary && <p className="pb-3 text-xs text-muted md:hidden">{additionalSummary}</p>}
+      {children && <div className={`${open ? '' : 'hidden md:block'} border-t border-hairline py-3`}>{children}</div>}
+    </section>
   )
 }

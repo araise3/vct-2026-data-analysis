@@ -1,59 +1,36 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { AutoComplete, Input } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useData } from '../lib/useData'
-import { buildCoachIndex } from '../lib/coaches'
 import TeamLogo from './TeamLogo'
 import Flag from './Flag'
+import { STAT_CATALOG } from '../lib/statCatalog'
 
 const MAX_RESULTS = 8
 
-// Case-insensitive substring match, prefix matches ranked ahead of
-// mid-string ones -- deliberately simpler than rft.gg's own search, which
-// does fuzzy subsequence matching (typing "fake" surfaces "ShowMaker" and
-// "SAKEN" there, not just "Faker"). The real use case here is typing a
-// name you already know, which substring matching covers, without pulling
-// in a fuzzy-scoring dependency for it.
 function matchRank(name, query) {
-  const i = name.toLowerCase().indexOf(query)
-  return i === -1 ? null : i === 0 ? 0 : 1
+  const index = name.toLowerCase().indexOf(query)
+  return index === -1 ? null : index === 0 ? 0 : 1
 }
 
-/**
- * Global player/team/coach search, living in TopNav's inner row (same spot
- * as rft.gg's). Data source is `player_buckets.json` / `team_buckets.json`'s
- * `meta` objects -- the same per-entity metadata (team, region, flag)
- * every list page already reads off these files, keyed by name -- plus
- * `liquipedia_rosters.json` for coaches, run through the same
- * `buildCoachIndex` CoachProfile.jsx uses so a coach who's worked at
- * several teams surfaces once, not once per team.
- *
- * All three files are only fetched once the user actually focuses the box
- * (see `everFocused` and the matching comment on `useData`), not on mount --
- * TopNav renders on every route, and several routes don't otherwise load
- * any of these multi-MB files.
- */
 export default function SearchBar() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
-  const [activeIndex, setActiveIndex] = useState(0)
   const [everFocused, setEverFocused] = useState(false)
-  const containerRef = useRef(null)
-  const inputRef = useRef(null)
+  const searchRef = useRef(null)
 
   const { data: playerData } = useData(everFocused ? 'player_buckets' : null)
   const { data: teamData } = useData(everFocused ? 'team_buckets' : null)
-  const { data: liquipediaData } = useData(everFocused ? 'liquipedia_rosters' : null)
-  const coachIndex = useMemo(() => buildCoachIndex(liquipediaData), [liquipediaData])
 
   const results = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return []
+    const needle = query.trim().toLowerCase()
+    if (!needle) return []
 
     const players = []
     if (playerData) {
       for (const [name, meta] of Object.entries(playerData.meta)) {
-        const rank = matchRank(name, q)
+        const rank = matchRank(name, needle)
         if (rank !== null) {
           players.push({
             type: 'player', name, rank,
@@ -66,131 +43,101 @@ export default function SearchBar() {
     const teams = []
     if (teamData) {
       for (const [name, meta] of Object.entries(teamData.meta)) {
-        const rank = matchRank(name, q)
+        const rank = matchRank(name, needle)
         if (rank !== null) teams.push({ type: 'team', name, rank, sub: meta.region })
       }
     }
 
-    // Sub-label is whichever stint has no `leaveDate` (still current), or
-    // failing that the most recently started one -- same "current, else
-    // most recent" precedence CoachProfile.jsx's own header uses.
-    const coaches = []
-    for (const coach of coachIndex.values()) {
-      const rank = matchRank(coach.id, q)
+    const statistics = []
+    const includeStatistics = !['player', 'players', 'team', 'teams', 'stat', 'stats', 'statistics'].includes(needle)
+    for (const statistic of includeStatistics ? STAT_CATALOG : []) {
+      let rank = null
+      for (const phrase of statistic.keywords) {
+        const nextRank = matchRank(String(phrase), needle)
+        if (nextRank !== null) rank = rank === null ? nextRank : Math.min(rank, nextRank)
+      }
       if (rank !== null) {
-        const current = coach.stints.find((s) => !s.leaveDate)
-          ?? [...coach.stints].sort((a, b) => (b.joinDate || '').localeCompare(a.joinDate || ''))[0]
-        coaches.push({
-          type: 'coach', name: coach.id, rank,
-          sub: current?.team, countryCode: coach.flag, countryName: coach.name,
+        const order = /\b(?:shortest|lowest|least|fewest)\b/.test(needle)
+          ? 'asc'
+          : /\b(?:longest|highest|best|most|top)\b/.test(needle) ? 'desc' : ''
+        statistics.push({
+          type: 'statistic', name: statistic.searchLabel, rank,
+          sub: statistic.entity === 'players' ? 'Player leaderboard' : statistic.definition.matchLevel ? 'Matchup leaderboard' : 'Team leaderboard',
+          route: `/analysis?metric=${encodeURIComponent(statistic.id)}${order ? `&order=${order}` : ''}`,
         })
       }
     }
 
-    return [...players, ...teams, ...coaches]
+    return [...statistics, ...players, ...teams]
       .sort((a, b) => a.rank - b.rank || a.name.localeCompare(b.name))
       .slice(0, MAX_RESULTS)
-  }, [query, playerData, teamData, coachIndex])
+  }, [query, playerData, teamData])
 
-  useEffect(() => { setActiveIndex(0) }, [results])
-
-  // Closes the dropdown on an outside click -- a plain onBlur would also
-  // fire when clicking a result itself (blur happens before the result's
-  // own click handler runs), which is why `go()` below also guards against
-  // that via onMouseDown's preventDefault instead of relying on this.
   useEffect(() => {
-    function onClickOutside(e) {
-      if (containerRef.current && !containerRef.current.contains(e.target)) setOpen(false)
+    function focusSearch(event) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        setEverFocused(true)
+        setOpen(true)
+        searchRef.current?.focus()
+      }
     }
-    document.addEventListener('mousedown', onClickOutside)
-    return () => document.removeEventListener('mousedown', onClickOutside)
+    document.addEventListener('keydown', focusSearch)
+    return () => document.removeEventListener('keydown', focusSearch)
   }, [])
 
-  const ROUTE_BASE = { player: 'players', team: 'teams', coach: 'coaches' }
-
-  function go(result) {
+  const ROUTE_BASE = { player: 'players', team: 'teams' }
+  function go(index) {
+    const result = results[Number(index)]
     if (!result) return
-    navigate(`/${ROUTE_BASE[result.type]}/${encodeURIComponent(result.name)}`)
+    navigate(result.route || `/${ROUTE_BASE[result.type]}/${encodeURIComponent(result.name)}`)
     setQuery('')
     setOpen(false)
-    inputRef.current?.blur()
+    searchRef.current?.blur()
   }
 
-  function onKeyDown(e) {
-    if (!open || results.length === 0) return
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setActiveIndex((i) => (i + 1) % results.length)
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setActiveIndex((i) => (i - 1 + results.length) % results.length)
-    } else if (e.key === 'Enter') {
-      e.preventDefault()
-      go(results[activeIndex])
-    } else if (e.key === 'Escape') {
-      setOpen(false)
-      inputRef.current?.blur()
-    }
-  }
+  const options = results.map((result, index) => ({
+    value: String(index),
+    label: (
+      <div className="flex min-w-[260px] items-center gap-2.5 py-0.5">
+        {result.type === 'statistic'
+          ? <span className="flex h-[18px] w-[18px] items-center justify-center rounded bg-surface3 text-[10px] font-semibold text-accent-bright">Σ</span>
+          : result.type === 'team'
+          ? <TeamLogo team={result.name} size={18} showName={false} />
+          : <Flag countryCode={result.countryCode} countryName={result.countryName} size={16} />}
+        <span className="flex min-w-0 flex-1 flex-col leading-tight">
+          <span className="truncate text-xs font-semibold text-ink">{result.name}</span>
+          {result.sub && <span className="truncate text-[10px] text-muted">{result.sub}</span>}
+        </span>
+        <span className="text-[9px] uppercase tracking-wide text-muted">{result.type}</span>
+      </div>
+    ),
+  }))
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-[240px]">
-      <div className="flex items-center gap-2 h-7 px-2.5 rounded-md bg-ink/[0.04] border border-hairline shadow-depth-xs focus-within:border-selected/50 focus-within:shadow-focus-ring transition-all duration-150">
-        <svg
-          viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"
-          strokeLinecap="round" strokeLinejoin="round" className="text-muted shrink-0 opacity-70"
-        >
-          <path d="m21 21-4.34-4.34" />
-          <circle cx="11" cy="11" r="8" />
-        </svg>
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          placeholder="Search"
-          onFocus={() => { setEverFocused(true); setOpen(true) }}
-          onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
-          onKeyDown={onKeyDown}
-          // leading-none: without it the input inherits the row's taller
-          // line-height, so the blinking text caret renders much taller
-          // than the actual text-xs glyphs next to it.
-          className="flex-1 w-full min-w-0 bg-transparent text-xs leading-none text-ink placeholder:text-muted focus:outline-none"
-        />
-      </div>
-
-      {open && query.trim() !== '' && (
-        <div className="absolute right-0 mt-1.5 w-[280px] max-h-[360px] overflow-auto bg-surface border border-hairline rounded-xl shadow-depth-md py-1.5 z-50">
-          {results.length === 0 ? (
-            <div className="px-3 py-3 text-xs text-muted">No players, teams, or coaches found.</div>
-          ) : (
-            results.map((r, i) => (
-              <button
-                key={`${r.type}-${r.name}`}
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => go(r)}
-                onMouseEnter={() => setActiveIndex(i)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors ${
-                  i === activeIndex ? 'bg-surface2' : ''
-                }`}
-              >
-                {r.type === 'team' ? (
-                  <TeamLogo team={r.name} size={18} showName={false} />
-                ) : (
-                  <Flag countryCode={r.countryCode} countryName={r.countryName} size={16} />
-                )}
-                <span className="flex flex-col min-w-0 leading-tight">
-                  <span className="text-xs font-medium text-ink truncate">{r.name}</span>
-                  {r.sub && <span className="text-[10px] text-muted truncate">{r.sub}</span>}
-                </span>
-                <span className="ml-auto text-[10px] uppercase tracking-wide text-muted/60 shrink-0">
-                  {r.type}
-                </span>
-              </button>
-            ))
-          )}
-        </div>
-      )}
-    </div>
+    <AutoComplete
+      ref={searchRef}
+      value={query}
+      options={options}
+      open={open && query.trim() !== ''}
+      onOpenChange={setOpen}
+      onFocus={() => { setEverFocused(true); setOpen(true) }}
+      onSearch={(value) => { setQuery(value); setOpen(true) }}
+      onSelect={go}
+      notFoundContent={<span className="text-xs text-muted">No players, teams, or statistics found.</span>}
+      className="w-full"
+    >
+      <Input
+        prefix={(
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-4-4" />
+          </svg>
+        )}
+        suffix={<kbd className="hidden rounded border border-hairline bg-surface px-1.5 py-0.5 font-mono text-[9px] text-muted sm:block">Ctrl K</kbd>}
+        placeholder="Search players, teams, and statistics"
+        aria-label="Search players, teams, and statistics"
+      />
+    </AutoComplete>
   )
 }

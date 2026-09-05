@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
-const SUBJECT_COLOR = '#FF4655'
-const COMPARE_COLOR = '#FFD47D' // matches the `mid` design token -- distinct from the brand red
+const SUBJECT_COLOR = '#315C8C'
+const COMPARE_COLOR = '#D43F52'
 
 /**
  * Peer-relative radar chart -- one spoke per stat, each on its own scale
@@ -129,7 +129,7 @@ export default function RadarChart({ axes }) {
       />
 
       {geom.compareVertices.map((v) => (
-        <circle key={`cmp-${v.axis.key}`} cx={v.x} cy={v.y} r="3" fill={COMPARE_COLOR} stroke="#131619" strokeWidth="1.2">
+        <circle key={`cmp-${v.axis.key}`} cx={v.x} cy={v.y} r="3" fill={COMPARE_COLOR} stroke="#0a0d11" strokeWidth="1.2">
           <title>
             {`${v.axis.label}: ${v.axis.compareFormatted}${v.axis.compareRank ? ` (#${v.axis.compareRank} of ${v.axis.n})` : ''}`}
           </title>
@@ -137,7 +137,7 @@ export default function RadarChart({ axes }) {
       ))}
 
       {geom.dataVertices.map((v) => (
-        <circle key={v.axis.key} cx={v.x} cy={v.y} r="3" fill={SUBJECT_COLOR} stroke="#131619" strokeWidth="1.2">
+        <circle key={v.axis.key} cx={v.x} cy={v.y} r="3" fill={SUBJECT_COLOR} stroke="#0a0d11" strokeWidth="1.2">
           <title>
             {`${v.axis.label}: ${v.axis.formatted}${v.axis.rank ? ` (#${v.axis.rank} of ${v.axis.n})` : ''}`}
           </title>

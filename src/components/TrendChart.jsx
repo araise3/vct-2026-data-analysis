@@ -153,7 +153,7 @@ export default function TrendChart({
         />
       )}
 
-      <path d={path} fill="none" stroke="#FF4655" strokeWidth="1.8"
+      <path d={path} fill="none" stroke="#315C8C" strokeWidth="1.8"
             strokeLinejoin="round" strokeLinecap="round" />
 
       {geom.coords.map((c) => {
@@ -163,7 +163,7 @@ export default function TrendChart({
             key={c.date}
             cx={c.cx} cy={c.cy}
             r={isHighlighted ? 4.5 : 2.6}
-            fill="#FF4655"
+            fill="#315C8C"
             className={isHighlighted ? 'stroke-surface' : undefined}
             strokeWidth={isHighlighted ? 1.5 : 0}
           >

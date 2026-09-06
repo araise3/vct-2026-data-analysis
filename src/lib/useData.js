@@ -56,6 +56,12 @@ function fetchAndCache(name) {
   return p
 }
 
+// Promise-returning counterpart to prefetchData for flows that must wait for
+// an index before applying their local fallback resolver.
+export function loadData(name) {
+  return fetchAndCache(name)
+}
+
 /**
  * Fire-and-forget prefetch, for warming the cache before a page that needs
  * `name` actually mounts -- TopNav calls this on a nav link's hover/focus,

@@ -119,6 +119,34 @@ export function fuzzyStatisticScore(query, phrase) {
   return best
 }
 
+/**
+ * Match conversational event shorthand against canonical data names.
+ * VLR prefixes Masters events with "Valorant" and suffixes their year, while
+ * people naturally ask for "Masters London". The year remains mandatory when
+ * the query supplies one, preventing a 2025 request from fuzzily landing on a
+ * similarly named 2026 event.
+ */
+export function findEventNames(names, query, limit = 5) {
+  const text = normalizeQuery(query)
+  if (!text) return []
+  const requestedYear = text.match(/\b20\d{2}\b/)?.[0] || ''
+
+  return names
+    .map((name) => {
+      const canonical = normalizeQuery(name)
+      const eventYear = canonical.match(/\b20\d{2}\b/)?.[0] || ''
+      if (requestedYear && eventYear && requestedYear !== eventYear) return null
+
+      let alias = canonical.replace(/^valorant\s+/, '')
+      if (!requestedYear) alias = alias.replace(/\s+20\d{2}$/, '')
+      const score = Math.min(fuzzyPhraseScore(query, canonical), fuzzyPhraseScore(query, alias))
+      return Number.isFinite(score) ? { name, score } : null
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.score - b.score || b.name.localeCompare(a.name))
+    .slice(0, limit)
+}
+
 function iso(year, month, day) {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 }

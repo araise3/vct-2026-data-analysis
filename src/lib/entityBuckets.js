@@ -345,6 +345,8 @@ export function aggregatePlayerBuckets(buckets, { ratedOnly = false } = {}) {
     mapsWon: t.wn,
     mapsLost: t.maps - t.wn,
     winPct: div(t.wn, t.maps),
+    roundsWon: hasRoundWinData ? t.rndWn : null,
+    roundsLost: hasRoundWinData ? t.rnd - t.rndWn : null,
     // Real per-ROUND win rate (rounds this player's team won / rounds
     // played), distinct from winPct above which is per-MAP -- a 13-11 win
     // and a 13-1 win are both just "1 map won" to winPct, but very
@@ -448,14 +450,22 @@ export function aggregateTeamBuckets(buckets) {
   // padding the denominator with maps we have no real outcome for.
   const pistolWon = roundsWonByNum[0] + roundsWonByNum[12]
   const pistolPlayed = roundsPlayedByNum[0] + roundsPlayedByNum[12]
+  const roundsTracked = roundsPlayedByNum.reduce((total, rounds) => total + rounds, 0)
+  const roundsWon = roundsWonByNum.reduce((total, rounds) => total + rounds, 0)
   return {
     matchesPlayed: t.mP,
     matchesWon: t.mW,
+    matchesLost: t.mP - t.mW,
     matchWinPct: div(t.mW, t.mP),
     mapsPlayed: t.mapP,
     mapsWon: t.mapW,
+    mapsLost: t.mapP - t.mapW,
     mapWinPct: div(t.mapW, t.mapP),
     roundsPlayed: t.rnd,
+    roundsTracked,
+    roundsWon,
+    roundsLost: roundsTracked - roundsWon,
+    roundWinPct: div(roundsWon, roundsTracked),
     pistolWon,
     pistolPlayed,
     pistolWinPct: div(pistolWon, pistolPlayed),
@@ -470,8 +480,10 @@ export function aggregateTeamBuckets(buckets) {
     // per-side scores there). atkRounds/defRounds are 0 for maps where
     // the breakdown wasn't published.
     atkRounds: t.atkP,
+    atkWon: t.atkW,
     atkWinPct: div(t.atkW, t.atkP),
     defRounds: t.defP,
+    defWon: t.defW,
     defWinPct: div(t.defW, t.defP),
     // Overtime.
     otMaps: t.otM,
@@ -502,10 +514,13 @@ export function aggregateTeamBuckets(buckets) {
     // has no round 14 to follow up on, so it correctly doesn't count toward
     // this funnel).
     antiEcoRounds: t.aeR,
+    antiEcoWon: t.aeW,
     antiEcoWinPct: div(t.aeW, t.aeR),
     postPistolAntiEcoRounds: t.ae2R,
+    postPistolAntiEcoWon: t.ae2W,
     postPistolAntiEcoWinPct: div(t.ae2W, t.ae2R),
     bonusRounds: t.bonusR,
+    bonusWon: t.bonusW,
     bonusWinPct: div(t.bonusW, t.bonusR),
     // Comeback: faced a 3+ round deficit at some point across the entire
     // map and still won it. comebackWon/comebackMaps is a genuine success

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useData, prefetchData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
@@ -15,8 +15,9 @@ import {
 } from '../lib/entityBuckets'
 import { rolesInScope } from '../lib/peerComparison'
 import { STAT_CATALOG, getStatisticById } from '../lib/statCatalog'
+import { STAT_LIBRARY_ENTRIES, STAT_LIBRARY_GROUPS } from '../lib/statLibrary'
 import { teamTierExtras } from '../lib/statDefs'
-import { editDistance, fuzzyStatisticScore, normalizeQuery, parseTimeframe, withScope } from '../lib/startQuery'
+import { editDistance, findEventNames, fuzzyStatisticScore, normalizeQuery, parseTimeframe, withScope } from '../lib/startQuery'
 import { intentToPath, sanitizeIntent } from '../lib/intentContract'
 import DataTable from '../components/DataTable'
 import { FACETS } from '../components/FilterPanel'
@@ -34,6 +35,11 @@ const ENTITY_STOPWORDS = new Set([
   'teams', 'the', 'to', 'with',
 ])
 let nextCardId = 1
+
+function isLibraryLaunch(search) {
+  const params = new URLSearchParams(search)
+  return params.size === 1 && params.get('library') === '1'
+}
 
 function canonicalName(requested, names) {
   if (!requested || !names.length) return ''
@@ -86,20 +92,22 @@ function roleInQuery(query) {
   return ROLE_NAMES.find((role) => new RegExp(`\\b${role.toLowerCase()}s?\\b`).test(text)) || ''
 }
 
-function localAnalysisPath(query, players, teams) {
+function localAnalysisPath(query, players, teams, events) {
   const scope = parseTimeframe(query)
   const player = mentionedEntity(players, query)
   const team = player ? '' : mentionedEntity(teams, query)
+  const event = findEventNames(events, query, 1)[0]?.name || ''
   const role = roleInQuery(query)
   const statistic = statisticInQuery(query)
-  if (!player && !team && !role && !statistic && !scope.hasScope) return null
+  if (!player && !team && !event && !role && !statistic && !scope.hasScope) return null
 
   const params = new URLSearchParams()
   if (player) params.append('player', player)
   if (team) params.append('team', team)
+  if (event) params.set('event', event)
   if (role) params.set('role', role)
   if (statistic) params.set('metric', statistic.id)
-  const population = team || (!player && !role && statistic?.entity === 'teams') ? 'teams' : 'players'
+  const population = team || event || (!player && !role && statistic?.entity === 'teams') ? 'teams' : 'players'
   params.set('population', population)
   const wantsTable = TABLE_REQUEST_WORDS.test(query)
   if (wantsTable || (!player && !team)) params.set('table', '1')
@@ -211,7 +219,7 @@ function AnalysisResult({ search }) {
   }, [data, mode, statistic])
   const dayGroups = useMemo(() => (mode === 'players' && agentData ? buildPlayerDayGroups(agentData.buckets) : new Map()), [agentData, mode])
   const records = useMemo(() => (mode === 'players' ? attachDateSpans(rawRecords, dayGroups) : rawRecords), [dayGroups, mode, rawRecords])
-  const filters = useFacetedFilter(records, FACETS, { competition: ['VCT'], year: [2026] }, search)
+  const filters = useFacetedFilter(records, FACETS, params.has('event') ? {} : { competition: ['VCT'], year: [2026] }, search)
 
   const scopedAgentRecords = useMemo(() => {
     if (mode !== 'players' || !agentData) return []
@@ -262,6 +270,9 @@ function AnalysisResult({ search }) {
 
   if (error) return <p role="alert" className="analysis-card-state">This analysis could not be loaded. Please try again.</p>
   if (loading || (mode === 'players' && agentLoading) || !data) return <p role="status" className="analysis-card-state">Building analysis…</p>
+  if (params.has('event') && filters.filtered.length === 0) {
+    return <p role="status" className="analysis-card-state">No statistics are available for {params.get('event')} in this scope.</p>
+  }
 
   const requestedOrder = params.get('order')
   const defaultSortDir = requestedOrder === 'asc' || requestedOrder === 'desc' ? requestedOrder : statistic?.definition.higherIsBetter === false ? 'asc' : 'desc'
@@ -362,6 +373,8 @@ function AnalysisResult({ search }) {
   )
 }
 
+const MemoizedAnalysisResult = memo(AnalysisResult)
+
 function cardShowsTable(search) {
   const params = new URLSearchParams(search)
   return params.get('table') === '1' || (!params.has('player') && !params.has('team'))
@@ -377,13 +390,20 @@ function initialPosition(index, width) {
 
 function createCard(search, prompt, index) {
   const normalizedSearch = search.startsWith('?') ? search : `?${search}`
-  const width = cardShowsTable(normalizedSearch) ? 1060 : 720
-  return { id: nextCardId++, search: normalizedSearch, prompt, width, ...initialPosition(index, width) }
+  const table = cardShowsTable(normalizedSearch)
+  const viewportWidth = typeof window === 'undefined' ? 1200 : window.innerWidth
+  const width = Math.min(table ? 1060 : 720, Math.max(320, viewportWidth - 48))
+  const viewportHeight = typeof window === 'undefined' ? 900 : window.innerHeight
+  const height = table
+    ? Math.min(720, Math.max(420, viewportHeight - 180))
+    : Math.min(360, Math.max(240, viewportHeight - 180))
+  return { id: nextCardId++, search: normalizedSearch, prompt, width, height, ...initialPosition(index, width) }
 }
 
-function CanvasCard({ card, onMove, onFocus, onClose }) {
+const CanvasCard = memo(function CanvasCard({ card, onMove, onResize, onFocus, onClose }) {
   const cardRef = useRef(null)
   const dragRef = useRef(null)
+  const resizeRef = useRef(null)
 
   function moveTo(x, y) {
     const width = cardRef.current?.offsetWidth || 900
@@ -415,8 +435,80 @@ function CanvasCard({ card, onMove, onFocus, onClose }) {
     moveTo(card.x + directions[event.key][0], card.y + directions[event.key][1])
   }
 
+  function constrainedSize(width, height) {
+    const table = cardShowsTable(card.search)
+    const minWidth = table ? 480 : 360
+    const minHeight = table ? 280 : 190
+    const maxWidth = Math.max(minWidth, window.innerWidth - card.x - 16)
+    return {
+      width: Math.min(Math.max(minWidth, width), maxWidth),
+      height: Math.min(Math.max(minHeight, height), 1400),
+    }
+  }
+
+  function startResize(event, axis) {
+    if (event.button !== 0) return
+    event.preventDefault()
+    event.stopPropagation()
+    onFocus(card.id)
+    resizeRef.current = {
+      pointerId: event.pointerId,
+      axis,
+      startX: event.clientX,
+      startY: event.clientY,
+      width: cardRef.current?.offsetWidth || card.width,
+      height: cardRef.current?.offsetHeight || card.height,
+    }
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function resize(event) {
+    const active = resizeRef.current
+    if (!active || active.pointerId !== event.pointerId) return
+    const next = constrainedSize(
+      active.axis.includes('x') ? active.width + event.clientX - active.startX : active.width,
+      active.axis.includes('y') ? active.height + event.clientY - active.startY : active.height,
+    )
+    onResize(card.id, next.width, next.height)
+  }
+
+  function stopResize(event) {
+    if (resizeRef.current?.pointerId === event.pointerId) resizeRef.current = null
+  }
+
+  function resizeWithKeyboard(event, axis) {
+    const step = event.shiftKey ? 64 : 24
+    const deltas = {
+      ArrowLeft: axis.includes('x') ? [-step, 0] : null,
+      ArrowRight: axis.includes('x') ? [step, 0] : null,
+      ArrowUp: axis.includes('y') ? [0, -step] : null,
+      ArrowDown: axis.includes('y') ? [0, step] : null,
+    }
+    const delta = deltas[event.key]
+    if (!delta) return
+    event.preventDefault()
+    event.stopPropagation()
+    const next = constrainedSize(card.width + delta[0], card.height + delta[1])
+    onResize(card.id, next.width, next.height)
+  }
+
+  function resizeHandle(axis, className, dimension) {
+    return (
+      <button
+        type="button"
+        className={`analysis-resize-handle ${className}`}
+        aria-label={`Resize ${describeSearch(card.search)} card ${dimension}. Drag with the pointer or use arrow keys. Current size ${Math.round(card.width)} by ${Math.round(card.height)} pixels.`}
+        onPointerDown={(event) => startResize(event, axis)}
+        onPointerMove={resize}
+        onPointerUp={stopResize}
+        onPointerCancel={stopResize}
+        onKeyDown={(event) => resizeWithKeyboard(event, axis)}
+      />
+    )
+  }
+
   return (
-    <article ref={cardRef} className={`analysis-window${cardShowsTable(card.search) ? '' : ' is-compact'}`} style={{ '--card-x': `${card.x}px`, '--card-y': `${card.y}px`, '--card-width': `${card.width}px`, zIndex: card.z }} onPointerDown={() => onFocus(card.id)}>
+    <article ref={cardRef} className={`analysis-window${cardShowsTable(card.search) ? '' : ' is-compact'}`} style={{ '--card-x': `${card.x}px`, '--card-y': `${card.y}px`, '--card-width': `${card.width}px`, '--card-height': `${card.height}px`, zIndex: card.z }} onPointerDown={() => onFocus(card.id)}>
       <header className="analysis-window-bar">
         <button
           type="button"
@@ -433,46 +525,236 @@ function CanvasCard({ card, onMove, onFocus, onClose }) {
         </button>
         <button type="button" className="analysis-window-close" onClick={() => onClose(card.id)} aria-label={`Close ${describeSearch(card.search)} card`}>×</button>
       </header>
-      <div className="analysis-window-body"><AnalysisResult search={card.search} /></div>
+      <div className="analysis-window-body"><MemoizedAnalysisResult search={card.search} /></div>
+      {resizeHandle('x', 'is-right', 'width')}
+      {resizeHandle('y', 'is-bottom', 'height')}
+      {resizeHandle('xy', 'is-corner', 'width and height')}
     </article>
   )
-}
+})
 
 function submitIcon() {
   return <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M4 10h11M10.5 5.5 15 10l-4.5 4.5" /></svg>
 }
 
+function libraryIcon() {
+  return (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+      <path d="M3.5 4.25h5.25A1.25 1.25 0 0 1 10 5.5v10.25a2 2 0 0 0-2-2H3.5V4.25Z" />
+      <path d="M16.5 4.25h-5.25A1.25 1.25 0 0 0 10 5.5v10.25a2 2 0 0 1 2-2h4.5V4.25Z" />
+    </svg>
+  )
+}
+
+function miniatureSubject(statistic) {
+  if (statistic.matchLevel) return statistic.matchLevel === 'series' ? 'Matchup' : 'Map'
+  return statistic.entity === 'players' ? 'Player' : 'Team'
+}
+
+const StatisticLibrary = memo(function StatisticLibrary({ onAdd, onClose, onDragState, onPointerDrop }) {
+  const [activeGroup, setActiveGroup] = useState('all')
+  const pointerDragRef = useRef(null)
+  const suppressClickRef = useRef(false)
+  const visibleGroups = activeGroup === 'all'
+    ? STAT_LIBRARY_GROUPS
+    : STAT_LIBRARY_GROUPS.filter((group) => group.id === activeGroup)
+
+  return (
+    <aside id="analysis-card-library" className="analysis-library-panel" aria-labelledby="analysis-library-title">
+      <header className="analysis-library-header">
+        <div>
+          <span>Drag a window onto the canvas</span>
+          <h2 id="analysis-library-title">Card library</h2>
+        </div>
+        <button type="button" onClick={onClose} aria-label="Close card library">×</button>
+      </header>
+      <nav className="analysis-library-tabs" aria-label="Card categories">
+        <button type="button" className={activeGroup === 'all' ? 'is-active' : ''} aria-pressed={activeGroup === 'all'} onClick={() => setActiveGroup('all')}>All <span>{STAT_LIBRARY_ENTRIES.length}</span></button>
+        {STAT_LIBRARY_GROUPS.map((group) => (
+          <button key={group.id} type="button" className={activeGroup === group.id ? 'is-active' : ''} aria-pressed={activeGroup === group.id} onClick={() => setActiveGroup(group.id)}>{group.label} <span>{group.statistics.length}</span></button>
+        ))}
+      </nav>
+      <div className="analysis-library-scroll">
+        <p id="analysis-library-instructions" className="sr-only">Drag a miniature window onto the canvas. You can also click it or press Enter to add it automatically.</p>
+        {visibleGroups.map((group) => (
+          <section key={group.id} className="analysis-library-group" aria-labelledby={`analysis-library-${group.id}`}>
+            <div className="analysis-library-group-heading">
+              <div><h3 id={`analysis-library-${group.id}`}>{group.label}</h3><p>{group.description}</p></div>
+              <span>{group.statistics.length}</span>
+            </div>
+            <div className="analysis-library-miniatures">
+              {group.statistics.map((statistic) => (
+                <button
+                  key={statistic.id}
+                  type="button"
+                  className="analysis-library-miniature"
+                  aria-describedby="analysis-library-instructions"
+                  aria-label={`Add ${statistic.fullLabel} card to the canvas`}
+                  onMouseEnter={() => statistic.data.forEach(prefetchData)}
+                  onFocus={() => statistic.data.forEach(prefetchData)}
+                  onClick={() => {
+                    if (suppressClickRef.current) {
+                      suppressClickRef.current = false
+                      return
+                    }
+                    onAdd(statistic)
+                  }}
+                  onPointerDown={(event) => {
+                    if (event.button !== 0) return
+                    pointerDragRef.current = {
+                      pointerId: event.pointerId,
+                      statistic,
+                      startX: event.clientX,
+                      startY: event.clientY,
+                      dragging: false,
+                    }
+                    event.currentTarget.setPointerCapture(event.pointerId)
+                  }}
+                  onPointerMove={(event) => {
+                    const drag = pointerDragRef.current
+                    if (!drag || drag.pointerId !== event.pointerId) return
+                    if (!drag.dragging && Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 7) return
+                    drag.dragging = true
+                    onDragState({ statistic: drag.statistic, x: event.clientX, y: event.clientY })
+                  }}
+                  onPointerUp={(event) => {
+                    const drag = pointerDragRef.current
+                    if (!drag || drag.pointerId !== event.pointerId) return
+                    if (drag.dragging) {
+                      suppressClickRef.current = true
+                      onPointerDrop(drag.statistic, { x: event.clientX, y: event.clientY })
+                      onDragState(null)
+                    }
+                    pointerDragRef.current = null
+                  }}
+                  onPointerCancel={() => {
+                    pointerDragRef.current = null
+                    onDragState(null)
+                  }}
+                >
+                  <span className="analysis-library-mini-bar">
+                    <span aria-hidden="true" className="analysis-library-mini-grip"><i /><i /><i /><i /><i /><i /></span>
+                    <strong>{statistic.fullLabel}</strong>
+                    <span aria-hidden="true">+</span>
+                  </span>
+                  <span className="analysis-library-mini-body">
+                    <span className="analysis-library-mini-columns"><span>{miniatureSubject(statistic)}</span><span>{statistic.metricLabel}</span></span>
+                    <span className="analysis-library-mini-row"><i /><i /></span>
+                    <span className="analysis-library-mini-row"><i /><i /></span>
+                    <span className="analysis-library-mini-row"><i /><i /></span>
+                  </span>
+                  <span className="analysis-library-mini-foot">Drag to place <span>Click to add</span></span>
+                </button>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </aside>
+  )
+})
+
 export default function Analysis() {
   const location = useLocation()
   const navigate = useNavigate()
-  const [cards, setCards] = useState(() => [createCard(location.search || '?population=players&year=2026&competition=VCT', '', 0)])
+  const launchedFromLibrary = isLibraryLaunch(location.search)
+  const [cards, setCards] = useState(() => launchedFromLibrary ? [] : [createCard(location.search || '?population=players&year=2026&competition=VCT', '', 0)])
   const [query, setQuery] = useState('')
-  const [message, setMessage] = useState('Drag a card by its top bar. Ask another question to add more.')
+  const [message, setMessage] = useState(launchedFromLibrary ? 'Drag a miniature onto the canvas, or click one to add it.' : 'Drag a card by its top bar. Ask another question to add more.')
   const [interpreting, setInterpreting] = useState(false)
+  const [libraryOpen, setLibraryOpen] = useState(launchedFromLibrary)
+  const [libraryDrag, setLibraryDrag] = useState(null)
   const topZRef = useRef(2)
   const inputRef = useRef(null)
+  const libraryButtonRef = useRef(null)
+  const canvasRef = useRef(null)
   const promptBySearch = useRef(new Map())
   const { data: playerData } = useData('player_buckets')
   const { data: teamData } = useData('team_buckets')
   const players = useMemo(() => Object.keys(playerData?.meta || {}), [playerData])
   const teams = useMemo(() => Object.keys(teamData?.meta || {}), [teamData])
+  const events = useMemo(() => [...new Set(Object.values(teamData?.events || {}).map((event) => event.name).filter(Boolean))], [teamData])
 
   useEffect(() => {
-    if (!location.search) return
+    if (!location.search || isLibraryLaunch(location.search)) return
     setCards((current) => current.some((card) => card.search === location.search)
       ? current
       : [...current, createCard(location.search, promptBySearch.current.get(location.search) || '', current.length)])
   }, [location.search])
 
-  function focusCard(id) {
+  useEffect(() => {
+    if (!libraryOpen) return undefined
+    function closeOnEscape(event) {
+      if (event.key !== 'Escape') return
+      setLibraryOpen(false)
+      setLibraryDrag(null)
+      libraryButtonRef.current?.focus()
+    }
+    document.addEventListener('keydown', closeOnEscape)
+    return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [libraryOpen])
+
+  const focusCard = useCallback((id) => {
     topZRef.current += 1
     const z = topZRef.current
     setCards((items) => items.map((card) => card.id === id ? { ...card, z } : card))
-  }
+  }, [])
 
-  function moveCard(id, x, y) {
+  const moveCard = useCallback((id, x, y) => {
     setCards((items) => items.map((card) => card.id === id ? { ...card, x, y } : card))
-  }
+  }, [])
+
+  const resizeCard = useCallback((id, width, height) => {
+    setCards((items) => items.map((card) => card.id === id ? { ...card, width, height } : card))
+  }, [])
+
+  const closeCard = useCallback((id) => {
+    setCards((items) => items.filter((item) => item.id !== id))
+  }, [])
+
+  const closeLibrary = useCallback(() => {
+    setLibraryOpen(false)
+    setLibraryDrag(null)
+    requestAnimationFrame(() => libraryButtonRef.current?.focus())
+  }, [])
+
+  const setLibraryDragState = useCallback((drag) => setLibraryDrag(drag), [])
+
+  const addLibraryCard = useCallback((statistic, position) => {
+    if (!statistic) return
+    statistic.data.forEach(prefetchData)
+    topZRef.current += 1
+    const z = topZRef.current
+    setCards((current) => {
+      const card = { ...createCard(statistic.search, statistic.fullLabel, current.length), z }
+      if (position && window.innerWidth >= 768) {
+        const renderedWidth = Math.min(card.width, window.innerWidth - 48)
+        const maxX = Math.max(16, window.innerWidth - renderedWidth - 16)
+        card.x = Math.min(Math.max(16, position.x - 90), maxX)
+        card.y = Math.max(56, position.y - 22)
+      }
+      return [...current, card]
+    })
+    setLibraryDrag(null)
+    setMessage(`Added ${statistic.fullLabel}. Drag its top bar to fine-tune the position.`)
+    navigate(`/analysis${statistic.search}`, { replace: true })
+  }, [navigate])
+
+  const dropLibraryCard = useCallback((statistic, pointer) => {
+    const canvasBounds = canvasRef.current?.getBoundingClientRect()
+    const panelBounds = document.getElementById('analysis-card-library')?.getBoundingClientRect()
+    const insideCanvas = canvasBounds
+      && pointer.x >= canvasBounds.left && pointer.x <= canvasBounds.right
+      && pointer.y >= canvasBounds.top && pointer.y <= canvasBounds.bottom
+    const insidePanel = panelBounds
+      && pointer.x >= panelBounds.left && pointer.x <= panelBounds.right
+      && pointer.y >= panelBounds.top && pointer.y <= panelBounds.bottom
+    if (!insideCanvas || insidePanel) {
+      setMessage('Drop the miniature on the open canvas, or click it to add automatically.')
+      return
+    }
+    addLibraryCard(statistic, { x: pointer.x - canvasBounds.left, y: pointer.y - canvasBounds.top })
+  }, [addLibraryCard])
 
   async function submit(event) {
     event?.preventDefault()
@@ -484,16 +766,22 @@ export default function Analysis() {
     const timeout = setTimeout(() => controller.abort(), 12000)
     let to = null
     try {
-      const intent = await requestLlmIntent(submitted, controller.signal)
+      const rawIntent = await requestLlmIntent(submitted, controller.signal)
+      const canonicalEvent = rawIntent.filters?.event
+        ? findEventNames(events, rawIntent.filters.event, 1)[0]?.name
+        : ''
+      const intent = canonicalEvent
+        ? { ...rawIntent, filters: { ...rawIntent.filters, event: canonicalEvent } }
+        : rawIntent
       to = intentToPath(mergeExplicitScope(intent, parseTimeframe(submitted)))
     } catch {
-      to = localAnalysisPath(submitted, players, teams)
+      to = localAnalysisPath(submitted, players, teams, events)
     } finally {
       clearTimeout(timeout)
       setInterpreting(false)
     }
 
-    if (!to?.startsWith('/analysis')) to = localAnalysisPath(submitted, players, teams)
+    if (!to?.startsWith('/analysis')) to = localAnalysisPath(submitted, players, teams, events)
     if (!to) {
       setMessage('Try asking for a player, team, role, metric, or event scope.')
       return
@@ -513,7 +801,7 @@ export default function Analysis() {
     requestAnimationFrame(() => inputRef.current?.focus())
   }
 
-  const canvasHeight = Math.max(780, ...cards.map((card) => card.y + (cardShowsTable(card.search) ? 720 : 360)))
+  const canvasHeight = Math.max(780, ...cards.map((card) => card.y + card.height + 40))
 
   return (
     <div className="analysis-workspace">
@@ -522,34 +810,62 @@ export default function Analysis() {
         <div><span>{cards.length}</span> {cards.length === 1 ? 'card' : 'cards'} on canvas</div>
       </div>
 
-      <section className="analysis-canvas" aria-label="Analysis card canvas" style={{ minHeight: `${canvasHeight}px` }}>
-        {cards.map((card) => <CanvasCard key={card.id} card={card} onMove={moveCard} onFocus={focusCard} onClose={(id) => setCards((items) => items.filter((item) => item.id !== id))} />)}
-        {cards.length === 0 && <div className="analysis-empty"><strong>Your canvas is empty.</strong><span>Ask a question below to add a card.</span></div>}
+      <section
+        ref={canvasRef}
+        className={`analysis-canvas${libraryDrag ? ' is-library-dragging' : ''}`}
+        aria-label="Analysis card canvas"
+        style={{ minHeight: `${canvasHeight}px` }}
+      >
+        {cards.map((card) => <CanvasCard key={card.id} card={card} onMove={moveCard} onResize={resizeCard} onFocus={focusCard} onClose={closeCard} />)}
+        {cards.length === 0 && <div className="analysis-empty"><strong>Your canvas is empty.</strong><span>{libraryOpen ? 'Drag a miniature here, or click one to add it.' : 'Ask a question below or open the card library.'}</span></div>}
       </section>
 
+      {libraryDrag && (
+        <div className="analysis-library-drag-ghost" style={{ left: `${libraryDrag.x + 12}px`, top: `${libraryDrag.y + 12}px` }} aria-hidden="true">
+          <span className="analysis-library-mini-grip"><i /><i /><i /><i /><i /><i /></span>
+          <strong>{libraryDrag.statistic.fullLabel}</strong>
+        </div>
+      )}
+
       <div className="analysis-dock">
-        <form className="analysis-dock-form" onSubmit={submit} role="search">
-          <label htmlFor="analysis-followup" className="sr-only">Ask for more statistics</label>
-          <textarea
-            ref={inputRef}
-            id="analysis-followup"
-            rows={1}
-            value={query}
-            onChange={(event) => setQuery(event.target.value.replace(/\n/g, ' '))}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault()
-                submit()
-              }
-            }}
-            placeholder="Ask for another player, table, metric, or scope…"
-            autoComplete="off"
-            spellCheck="false"
-          />
-          <button type="submit" disabled={!query.trim() || interpreting} aria-label={interpreting ? 'Understanding follow-up' : 'Add analysis card'}>
-            {interpreting ? <span aria-hidden="true">···</span> : submitIcon()}
+        {libraryOpen && <StatisticLibrary onAdd={addLibraryCard} onClose={closeLibrary} onDragState={setLibraryDragState} onPointerDrop={dropLibraryCard} />}
+        <div className="analysis-dock-controls">
+          <form className="analysis-dock-form" onSubmit={submit} role="search">
+            <label htmlFor="analysis-followup" className="sr-only">Ask for more statistics</label>
+            <textarea
+              ref={inputRef}
+              id="analysis-followup"
+              rows={1}
+              value={query}
+              onChange={(event) => setQuery(event.target.value.replace(/\n/g, ' '))}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                  event.preventDefault()
+                  submit()
+                }
+              }}
+              placeholder="Ask for another player, table, metric, or scope…"
+              autoComplete="off"
+              spellCheck="false"
+            />
+            <button type="submit" disabled={!query.trim() || interpreting} aria-label={interpreting ? 'Understanding follow-up' : 'Add analysis card'}>
+              {interpreting ? <span aria-hidden="true">···</span> : submitIcon()}
+            </button>
+          </form>
+          <button
+            ref={libraryButtonRef}
+            type="button"
+            className="analysis-library-trigger"
+            aria-expanded={libraryOpen}
+            aria-controls="analysis-card-library"
+            title="Open the card library"
+            onClick={() => setLibraryOpen((open) => !open)}
+          >
+            {libraryIcon()}
+            <span>Library</span>
+            <small>{STAT_LIBRARY_ENTRIES.length}</small>
           </button>
-        </form>
+        </div>
         <p aria-live="polite">{message}</p>
       </div>
     </div>

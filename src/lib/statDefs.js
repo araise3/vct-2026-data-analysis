@@ -198,7 +198,7 @@ export const TEAM_STATS = [
     cardTitle: 'ROUND WIN%',
     compute: (s) => s.roundWinPct,
     format: fpct,
-    secondary: (s) => ({ value: s.tierRounds, label: 'rounds' }),
+    secondary: (s) => ({ value: s.roundsTracked, label: 'rounds tracked' }),
   },
   {
     key: 'mapWinPct',
@@ -393,19 +393,25 @@ export const TEAM_STATS = [
   },
 ]
 export function teamTierExtras(buckets) {
-  let ecoR = 0, ecoW = 0, fubR = 0, fubW = 0, allR = 0, allW = 0
+  let ecoR = 0, ecoW = 0, secR = 0, secW = 0, sebR = 0, sebW = 0, fubR = 0, fubW = 0
   for (const b of buckets) {
     ecoR += b.ecoR || 0; ecoW += b.ecoW || 0
+    secR += b.secR || 0; secW += b.secW || 0
+    sebR += b.sebR || 0; sebW += b.sebW || 0
     fubR += b.fubR || 0; fubW += b.fubW || 0
-    allR += (b.ecoR || 0) + (b.secR || 0) + (b.sebR || 0) + (b.fubR || 0)
-    allW += (b.ecoW || 0) + (b.secW || 0) + (b.sebW || 0) + (b.fubW || 0)
   }
   return {
     ecoRounds: ecoR,
+    ecoWon: ecoW,
     ecoWinPct: ecoR ? ecoW / ecoR : null,
+    semiEcoRounds: secR,
+    semiEcoWon: secW,
+    semiEcoWinPct: secR ? secW / secR : null,
+    semiBuyRounds: sebR,
+    semiBuyWon: sebW,
+    semiBuyWinPct: sebR ? sebW / sebR : null,
     fullBuyRounds: fubR,
+    fullBuyWon: fubW,
     fullBuyWinPct: fubR ? fubW / fubR : null,
-    tierRounds: allR,
-    roundWinPct: allR ? allW / allR : null,
   }
 }

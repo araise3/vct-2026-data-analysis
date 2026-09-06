@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-05T23:13:55Z"
+    "fetchedAt": "2026-09-06T05:01:48Z"
   },
   "matches": [
     {
@@ -94,7 +94,7 @@
       "team1": "NRG",
       "team2": "LOUD",
       "score1": 2,
-      "score2": 2,
+      "score2": 3,
       "started": true
     },
     {
@@ -111,14 +111,14 @@
       "started": false
     },
     {
-      "key": "1788714000|100-thieves|tbd",
+      "key": "1788714000|100-thieves|loud",
       "event": "Vct 2026 Americas Stage 2",
       "liquipediaPage": "VCT/2026/Americas League/Stage 2",
       "phase": null,
       "timestamp": 1788714000,
       "bestOf": 5,
       "team1": "100 Thieves",
-      "team2": null,
+      "team2": "LOUD",
       "score1": null,
       "score2": null,
       "started": false

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loadData, prefetchData, useData } from '../lib/useData'
-import { editDistance, findEventNames, fuzzyStatisticScore, normalizeQuery, parseTimeframe, withScope } from '../lib/startQuery'
-import { intentToPath, sanitizeIntent } from '../lib/intentContract'
+import { editDistance, findEventNames, fuzzyStatisticScore, isRosterHistoryQuery, isTeamProfileQuery, normalizeQuery, parseResultLimit, parseResultOrder, parseTimeframe, teamProfileTabFromQuery, withScope } from '../lib/startQuery'
+import { intentToPath, sanitizeIntents } from '../lib/intentContract'
 import { STAT_CATALOG } from '../lib/statCatalog'
 import { STAT_LIBRARY_ENTRIES } from '../lib/statLibrary'
 
@@ -15,13 +15,14 @@ const STAT_DESTINATIONS = STAT_CATALOG.map((statistic) => ({
   to: `/analysis?metric=${encodeURIComponent(statistic.id)}`,
   data: statistic.data,
   keywords: statistic.keywords,
+  statistic,
 }))
 
 const ENTITY_FUZZY_STOPWORDS = new Set([
   'a', 'an', 'and', 'at', 'between', 'best', 'by', 'compare', 'during', 'event', 'events',
-  'for', 'from', 'in', 'last', 'me', 'month', 'most', 'of', 'on', 'one', 'past', 'player',
+  'bottom', 'for', 'from', 'highest', 'in', 'last', 'lowest', 'me', 'month', 'most', 'of', 'on', 'one', 'past', 'player',
   'players', 'previous', 'show', 'stage', 'stat', 'stats', 'statistics', 'team', 'teams',
-  'the', 'this', 'to', 'two', 'week', 'year',
+  'the', 'this', 'to', 'top', 'two', 'week', 'worst', 'year',
   'jan', 'january', 'feb', 'february', 'mar', 'march', 'apr', 'april', 'may', 'jun', 'june',
   'jul', 'july', 'aug', 'august', 'sep', 'sept', 'september', 'oct', 'october',
   'nov', 'november', 'dec', 'december',
@@ -89,17 +90,18 @@ function statisticInQuery(query, entity = '') {
     ?.statistic || null
 }
 
-function explicitSortOrder(query) {
-  const text = normalized(query)
-  if (/\b(?:shortest|lowest|least|fewest)\b/.test(text)) return 'asc'
-  if (/\b(?:longest|highest|best|most|top)\b/.test(text)) return 'desc'
-  return ''
-}
-
 function withExplicitOrder(to, order) {
   if (!order) return to
   const url = new URL(to, 'https://vct-data.local')
   url.searchParams.set('order', order)
+  return `${url.pathname}${url.search}${url.hash}`
+}
+
+function withResultLimit(to, limit) {
+  if (!limit) return to
+  const url = new URL(to, 'https://vct-data.local')
+  url.searchParams.set('table', '1')
+  url.searchParams.set('limit', String(limit))
   return `${url.pathname}${url.search}${url.hash}`
 }
 
@@ -114,14 +116,18 @@ function tableRequested(query) {
   return /\b(?:all|table|leaderboard|leaders|ranking|rankings|ranked|list|players|teams|peers)\b/.test(normalized(query))
 }
 
-function analysisPath({ players = [], teams = [], role = '', metric = '', population = '', table = false, event = '' }, scope) {
+function analysisPath({ players = [], teams = [], role = '', metric = '', population = '', table = false, event = '', limit = 0, order = '', view = '', teamTab = '' }, scope) {
   const params = new URLSearchParams()
+  if (view) params.set('view', view)
+  if (view === 'team-profile' && teamTab) params.set('teamTab', teamTab)
   players.forEach((player) => params.append('player', player))
   teams.forEach((team) => params.append('team', team))
   if (role) params.set('role', role)
   if (metric) params.set('metric', metric)
+  if (order) params.set('order', order)
   if (population) params.set('population', population)
   if (table) params.set('table', '1')
+  if (limit) params.set('limit', String(limit))
   if (event) params.set('event', event)
   return withScope(`/analysis?${params}`, scope)
 }
@@ -164,7 +170,19 @@ function mergeExplicitScope(intent, scope) {
   return { ...intent, filters }
 }
 
-async function requestLlmIntent(query, signal) {
+function mergeExplicitRequest(intent, query) {
+  const limit = parseResultLimit(query)
+  const statistic = STAT_CATALOG.find((entry) => entry.id === intent.stat)
+  const order = parseResultOrder(query, statistic?.definition.higherIsBetter !== false)
+  const usesNaturalBestOrder = /\b(?:top|best)\b/.test(normalized(query))
+  return {
+    ...intent,
+    ...(limit ? { includeTable: true, limit } : {}),
+    ...(order || usesNaturalBestOrder ? { order } : {}),
+  }
+}
+
+async function requestLlmIntents(query, signal) {
   // Vite's development server does not run Cloudflare Pages Functions. Keep
   // local development quiet and deterministic; deployed Pages uses the LLM.
   if (import.meta.env.DEV) throw new Error('Workers AI is unavailable in Vite dev')
@@ -179,9 +197,9 @@ async function requestLlmIntent(query, signal) {
     throw new Error('Intent service unavailable')
   }
   const payload = await response.json()
-  const intent = sanitizeIntent(payload.intent)
-  if (!intent) throw new Error('Invalid intent')
-  return intent
+  const intents = sanitizeIntents(payload)
+  if (!intents.length) throw new Error('Invalid intent plan')
+  return intents
 }
 
 export default function Start() {
@@ -230,23 +248,44 @@ export default function Start() {
     const playerCandidates = findNamedEntities(players, suggestionQuery, 2)
     const teamCandidates = findNamedEntities(teams, suggestionQuery, 2)
     const explicitRole = roleInQuery(suggestionQuery)
-    const asksForAnalysis = suggestionScope.hasScope || explicitRole || /\b(?:give|show|stats?|statistics|performance|table|leaders?|best|top)\b/.test(needle)
+    const asksForAnalysis = suggestionScope.hasScope || explicitRole || isTeamProfileQuery(suggestionQuery) || /\b(?:give|show|stats?|statistics|performance|table|leaders?|best|top)\b/.test(needle)
     const playerPopulation = /\bplayers?\b/.test(needle)
     const teamPopulation = /\bteams?\b/.test(needle)
     const wantsTable = tableRequested(suggestionQuery)
-    if (asksForAnalysis && (playerCandidates.length || teamCandidates.length || explicitRole || playerPopulation || teamPopulation)) {
-      const selectedPlayers = comparisonRequest ? playerCandidates.map((entry) => entry.name) : playerCandidates.slice(0, 1).map((entry) => entry.name)
-      const player = selectedPlayers[0]
-      const team = !player ? teamCandidates[0]?.name : ''
-      const matchedStatistic = statisticInQuery(suggestionQuery, player || explicitRole || playerPopulation ? 'players' : team || teamPopulation ? 'teams' : '')
+    const resultLimit = parseResultLimit(suggestionQuery)
+    const rosterHistory = isRosterHistoryQuery(suggestionQuery)
+    const rosterTeam = rosterHistory ? teamCandidates[0]?.name : ''
+    if (rosterTeam) {
       rows.push({
-        label: selectedPlayers.length > 1 ? `${selectedPlayers.join(' and ')} comparison` : player ? `${player} statistics` : team ? `${team} statistics` : explicitRole ? `${explicitRole} players` : teamPopulation ? 'Team table' : 'Player table',
+        label: `${rosterTeam} roster history`,
+        description: 'Event-by-event roster timeline',
+        kind: 'Roster',
+        to: analysisPath({ teams: [rosterTeam], population: 'teams', view: 'roster-history' }, suggestionScope),
+        data: ['player_buckets', 'match_results', 'match_players', 'liquipedia_rosters'],
+        score: -24,
+      })
+    }
+    if (!rosterHistory && asksForAnalysis && (playerCandidates.length || teamCandidates.length || explicitRole || playerPopulation || teamPopulation)) {
+      const bestPlayer = playerCandidates[0]
+      const bestTeam = teamCandidates[0]
+      const teamWinsEntityMatch = !!bestTeam && (!bestPlayer || bestTeam.score < bestPlayer.score || teamPopulation)
+      const selectedPlayers = teamWinsEntityMatch
+        ? []
+        : comparisonRequest ? playerCandidates.map((entry) => entry.name) : playerCandidates.slice(0, 1).map((entry) => entry.name)
+      const player = selectedPlayers[0]
+      const team = !player ? bestTeam?.name : ''
+      const matchedStatistic = statisticInQuery(suggestionQuery, player || explicitRole || playerPopulation ? 'players' : team || teamPopulation ? 'teams' : '')
+      const teamSectionRequested = isTeamProfileQuery(suggestionQuery)
+      const teamProfile = !!team && !comparisonRequest && !wantsTable && (teamSectionRequested || !matchedStatistic)
+      const teamTab = teamProfileTabFromQuery(suggestionQuery) || 'overview'
+      rows.push({
+        label: selectedPlayers.length > 1 ? `${selectedPlayers.join(' and ')} comparison` : player ? `${player} statistics` : teamProfile ? `${team} team profile` : team ? `${team} statistics` : explicitRole ? `${explicitRole} players` : teamPopulation ? 'Team table' : 'Player table',
         description: player || team
-          ? wantsTable ? 'Summary plus the requested table' : 'Focused summary only'
+          ? teamProfile ? 'Overview, matches, maps, compositions, and roster' : wantsTable ? 'Summary plus the requested table' : 'Focused summary only'
           : 'A table built from the requested scope',
         kind: 'Analysis',
-        to: analysisPath({ players: selectedPlayers, teams: team ? [team] : [], role: explicitRole, metric: matchedStatistic?.id || '', population: team || teamPopulation ? 'teams' : 'players', table: wantsTable }, suggestionScope),
-        data: player || explicitRole ? ['player_buckets', 'player_agents'] : ['team_buckets'],
+        to: analysisPath({ players: selectedPlayers, teams: team ? [team] : [], role: explicitRole, metric: matchedStatistic?.id || '', population: team || teamPopulation ? 'teams' : 'players', table: teamProfile ? false : wantsTable || !!resultLimit, limit: teamProfile ? 0 : resultLimit, order: teamProfile ? '' : parseResultOrder(suggestionQuery, matchedStatistic?.definition.higherIsBetter !== false), view: teamProfile ? 'team-profile' : '', teamTab }, suggestionScope),
+        data: teamProfile ? ['team_buckets', 'player_buckets', 'match_results', 'team_map_buckets', 'match_players', 'liquipedia_rosters'] : player || explicitRole ? ['player_buckets', 'player_agents'] : ['team_buckets'],
         score: -12,
       })
     }
@@ -272,8 +311,8 @@ export default function Start() {
         label: result.name,
         description: `${teamData?.meta?.[result.name]?.region || 'Team'} · Focused statistics card`,
         kind: 'Team',
-        to: analysisPath({ teams: [result.name], population: 'teams' }, suggestionScope),
-        data: ['team_buckets'],
+        to: analysisPath({ teams: [result.name], population: 'teams', view: 'team-profile', teamTab: 'overview' }, suggestionScope),
+        data: ['team_buckets', 'player_buckets', 'match_results', 'team_map_buckets', 'match_players', 'liquipedia_rosters'],
         score: result.score,
       })
     }
@@ -300,7 +339,10 @@ export default function Start() {
       .map((row) => ({
         ...row,
         to: withScope(
-          row.kind === 'Statistic' ? withExplicitOrder(row.to, explicitSortOrder(suggestionQuery)) : row.to,
+          withResultLimit(
+            row.kind === 'Statistic' ? withExplicitOrder(row.to, parseResultOrder(suggestionQuery, row.statistic?.definition.higherIsBetter !== false)) : row.to,
+            resultLimit,
+          ),
           suggestionScope,
         ),
         description: suggestionScope.label ? `${row.description} · ${suggestionScope.label}` : row.description,
@@ -331,6 +373,11 @@ export default function Start() {
     const needle = normalized(text)
     if (!needle) return null
 
+    if (isRosterHistoryQuery(text)) {
+      const rosterTeam = findNamedEntities(teamNames, text, 1)[0]?.name
+      if (rosterTeam) return analysisPath({ teams: [rosterTeam], population: 'teams', view: 'roster-history' }, scope)
+    }
+
     const playerMentions = mentionedPlayers(text, playerNames)
     const wantsComparison = ['compare', ' versus ', ' vs ', 'against', 'head to head'].some((word) => needle.includes(word))
     if (wantsComparison && playerMentions.length >= 2) {
@@ -340,14 +387,28 @@ export default function Start() {
       return analysisPath({ players: [playerMentions[0]], population: 'players' }, scope)
     }
 
-    const playerCandidate = playerMentions[0] || findNamedEntities(playerNames, text, 1)[0]?.name
-    const teamCandidate = findNamedEntities(teamNames, text, 1)[0]?.name
+    const playerMatch = findNamedEntities(playerNames, text, 1)[0]
+    const teamMatch = findNamedEntities(teamNames, text, 1)[0]
+    const teamWinsEntityMatch = !!teamMatch && !playerMentions.length && (!playerMatch || teamMatch.score < playerMatch.score || /\bteams?\b/.test(needle))
+    const playerCandidate = playerMentions[0] || (teamWinsEntityMatch ? '' : playerMatch?.name)
+    const teamCandidate = !playerCandidate ? teamMatch?.name : ''
     const eventCandidate = findEventNames(eventNames, text, 1)[0]?.name
     const explicitRole = roleInQuery(text)
     const asksForAnalysis = scope.hasScope || explicitRole || /\b(?:give|show|stats?|statistics|performance|table|leaders?|best|top)\b/.test(needle)
     const playerPopulation = /\bplayers?\b/.test(needle)
     const teamPopulation = /\bteams?\b/.test(needle)
     const matchedStatistic = statisticInQuery(text, playerCandidate || explicitRole || playerPopulation ? 'players' : teamCandidate || teamPopulation ? 'teams' : '')
+    const resultLimit = parseResultLimit(text)
+    const teamSectionRequested = isTeamProfileQuery(text)
+    const teamProfile = !!teamCandidate && !wantsComparison && !tableRequested(text) && (teamSectionRequested || !matchedStatistic)
+    if (teamProfile) {
+      return analysisPath({
+        teams: [teamCandidate],
+        population: 'teams',
+        view: 'team-profile',
+        teamTab: teamProfileTabFromQuery(text) || 'overview',
+      }, scope)
+    }
     if (asksForAnalysis && (playerCandidate || teamCandidate || eventCandidate || explicitRole || playerPopulation || teamPopulation || matchedStatistic || scope.hasScope)) {
       return analysisPath({
         players: playerCandidate ? [playerCandidate] : [],
@@ -355,13 +416,15 @@ export default function Start() {
         role: explicitRole,
         metric: matchedStatistic?.id || '',
         population: !playerCandidate && !explicitRole && !playerPopulation && (teamCandidate || teamPopulation || eventCandidate) ? 'teams' : 'players',
-        table: tableRequested(text) || (!playerCandidate && !teamCandidate && !!eventCandidate),
+        table: tableRequested(text) || !!resultLimit || (!playerCandidate && !teamCandidate && !!eventCandidate),
         event: eventCandidate,
+        limit: resultLimit,
+        order: parseResultOrder(text, matchedStatistic?.definition.higherIsBetter !== false),
       }, scope)
     }
 
     if (playerCandidate) return analysisPath({ players: [playerCandidate], population: 'players' }, scope)
-    if (teamCandidate) return analysisPath({ teams: [teamCandidate], population: 'teams' }, scope)
+    if (teamCandidate) return analysisPath({ teams: [teamCandidate], population: 'teams', view: 'team-profile', teamTab: 'overview' }, scope)
     if (eventCandidate) return analysisPath({ population: 'teams', table: true, event: eventCandidate }, scope)
 
     const entity = suggestions[0]
@@ -379,6 +442,29 @@ export default function Start() {
     navigate(to)
   }
 
+  function goToPlan(plans) {
+    const valid = plans
+      .filter((plan) => plan.to?.startsWith('/analysis'))
+      .slice(0, 6)
+    if (!valid.length) return false
+    for (const plan of valid) {
+      const params = new URL(plan.to, 'https://vct-data.local').searchParams
+      prefetchData(params.has('team') || params.get('population') === 'teams' ? 'team_buckets' : 'player_buckets')
+    }
+    const last = valid.at(-1)
+    navigate(last.to, {
+      state: valid.length > 1
+        ? {
+            analysisCards: valid.map((plan) => ({
+              search: new URL(plan.to, 'https://vct-data.local').search,
+              prompt: plan.prompt || '',
+            })),
+          }
+        : undefined,
+    })
+    return true
+  }
+
   async function submit(event) {
     event?.preventDefault()
     if (interpreting) return
@@ -392,11 +478,19 @@ export default function Start() {
     setInterpreting(true)
     setMessage('Understanding your request…')
     const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 12000)
+    const timeout = setTimeout(() => controller.abort(), 20000)
     let to = null
+    let plans = []
     try {
-      const intent = canonicalizeIntentEvent(await requestLlmIntent(submittedQuery, controller.signal), events)
-      to = intentToPath(mergeExplicitScope(intent, parseTimeframe(submittedQuery)))
+      const intents = (await requestLlmIntents(submittedQuery, controller.signal))
+        .map((intent) => canonicalizeIntentEvent(intent, events))
+      const prepared = intents.length === 1
+        ? [mergeExplicitScope(mergeExplicitRequest(intents[0], submittedQuery), parseTimeframe(submittedQuery))]
+        : intents
+      plans = prepared
+        .map((intent) => ({ to: intentToPath(intent), prompt: intent.summary || submittedQuery }))
+        .filter((plan) => plan.to)
+      to = plans[0]?.to || null
     } catch {
       // Vite has no Pages Function or Workers AI binding. The deterministic
       // resolver is intentionally retained as a fast/offline fallback, and
@@ -424,6 +518,7 @@ export default function Start() {
       setInterpreting(false)
     }
 
+    if (plans.length > 1 && goToPlan(plans)) return
     if (!to?.startsWith('/analysis')) to = resolve(submittedQuery)
     if (to) {
       const params = new URL(to, 'https://vct-data.local').searchParams

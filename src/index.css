@@ -88,7 +88,7 @@ a, button, input, select { touch-action: manipulation; }
 .analysis-canvas.is-library-dragging { background: #0a0c0e; box-shadow: inset 0 0 0 2px rgba(255,101,115,.48); }
 .analysis-canvas.is-library-dragging::after { content: 'Drop card on canvas'; position: fixed; z-index: 105; top: 62px; left: 50%; transform: translateX(-50%); border: 1px solid #704048; border-radius: 999px; padding: 7px 12px; background: #2b1a1d; color: #ff9aa3; font-size: 9px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; pointer-events: none; }
 
-.analysis-window { position: absolute; left: 0; top: 0; min-width: 0; width: min(var(--card-width, 1060px), calc(100vw - 48px)); height: var(--card-height, 720px); transform: translate3d(var(--card-x), var(--card-y), 0); overflow: hidden; border: 1px solid #30343a; border-radius: 10px; background: #111316; box-shadow: 0 28px 90px rgba(0,0,0,.48), 0 2px 8px rgba(0,0,0,.42); transition: border-color 140ms ease, box-shadow 140ms ease; }
+.analysis-window { position: absolute; left: 0; top: 0; min-width: 0; width: min(var(--card-width, 900px), calc(100vw - 48px)); height: var(--card-height, 560px); transform: translate3d(var(--card-x), var(--card-y), 0); overflow: hidden; border: 1px solid #30343a; border-radius: 10px; background: #111316; box-shadow: 0 28px 90px rgba(0,0,0,.48), 0 2px 8px rgba(0,0,0,.42); transition: border-color 140ms ease, box-shadow 140ms ease; }
 .analysis-window:focus-within { border-color: #4a5058; box-shadow: 0 32px 100px rgba(0,0,0,.56), 0 0 0 1px rgba(255,101,115,.08); }
 .analysis-window-bar { height: 46px; display: flex; align-items: stretch; justify-content: space-between; border-bottom: 1px solid #292d32; background: #17191c; }
 .analysis-drag-handle { min-width: 0; flex: 1; display: flex; align-items: center; gap: 12px; border: 0; padding: 0 14px; background: transparent; color: #c7cacf; cursor: grab; touch-action: none; text-align: left; }
@@ -101,9 +101,15 @@ a, button, input, select { touch-action: manipulation; }
 .analysis-window-close:hover { background: #24272b; color: #f0f1f3; }
 .analysis-window-body { height: calc(100% - 46px); min-height: 0; overflow: auto; overscroll-behavior: contain; }
 .analysis-resize-handle { position: absolute; z-index: 4; border: 0; padding: 0; background: transparent; touch-action: none; }
-.analysis-resize-handle.is-right { inset: 46px 0 14px auto; width: 9px; cursor: ew-resize; }
-.analysis-resize-handle.is-bottom { inset: auto 14px 0 0; height: 9px; cursor: ns-resize; }
-.analysis-resize-handle.is-corner { right: 0; bottom: 0; width: 18px; height: 18px; cursor: nwse-resize; }
+.analysis-resize-handle.is-left { inset: 18px auto 18px 0; width: 9px; cursor: ew-resize; }
+.analysis-resize-handle.is-right { inset: 18px 0 18px auto; width: 9px; cursor: ew-resize; }
+.analysis-resize-handle.is-top { inset: 0 18px auto; height: 9px; cursor: ns-resize; }
+.analysis-resize-handle.is-bottom { inset: auto 18px 0; height: 9px; cursor: ns-resize; }
+.analysis-resize-handle.is-top-left, .analysis-resize-handle.is-top-right, .analysis-resize-handle.is-bottom-left, .analysis-resize-handle.is-bottom-right { width: 18px; height: 18px; }
+.analysis-resize-handle.is-top-left { left: 0; top: 0; cursor: nwse-resize; }
+.analysis-resize-handle.is-top-right { right: 0; top: 0; cursor: nesw-resize; }
+.analysis-resize-handle.is-bottom-left { left: 0; bottom: 0; cursor: nesw-resize; }
+.analysis-resize-handle.is-bottom-right { right: 0; bottom: 0; cursor: nwse-resize; }
 .analysis-resize-handle:focus-visible { outline: 1px solid #ff6573; outline-offset: -2px; }
 .analysis-result { min-width: 0; padding: 16px; }
 
@@ -122,10 +128,7 @@ a, button, input, select { touch-action: manipulation; }
 .analysis-card-state { margin: 0; padding: 36px 18px; color: #8f959d; font-size: 12px; text-align: center; }
 
 .analysis-table-section { margin-top: 18px; }
-.analysis-table-heading { min-height: 38px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
-.analysis-table-heading h3 { margin: 0; color: #e7e9eb; font-size: 12px; font-weight: 650; }
-.analysis-table-heading p { margin: 3px 0 0; color: #777d85; font-size: 9px; }
-.analysis-table-heading > span { flex: 0 0 auto; color: #777d85; font-size: 9px; }
+.analysis-table-section.is-only-table { margin-top: 0; }
 .analysis-table-section .portal-data-table .ant-table-container { border-color: #2d3238; }
 .analysis-table-section .ant-table { border-radius: 5px; overflow: hidden; }
 

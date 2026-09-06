@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, memo, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useData, prefetchData } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
@@ -17,22 +17,28 @@ import { rolesInScope } from '../lib/peerComparison'
 import { STAT_CATALOG, getStatisticById } from '../lib/statCatalog'
 import { STAT_LIBRARY_ENTRIES, STAT_LIBRARY_GROUPS } from '../lib/statLibrary'
 import { teamTierExtras } from '../lib/statDefs'
-import { editDistance, findEventNames, fuzzyStatisticScore, normalizeQuery, parseTimeframe, withScope } from '../lib/startQuery'
-import { intentToPath, sanitizeIntent } from '../lib/intentContract'
-import DataTable from '../components/DataTable'
+import { editDistance, findEventNames, fuzzyStatisticScore, isRosterHistoryQuery, isTeamProfileQuery, normalizeQuery, parseResultLimit, parseResultOrder, parseTimeframe, teamProfileTabFromQuery, withScope } from '../lib/startQuery'
+import { intentToPath, sanitizeIntents } from '../lib/intentContract'
+import DataTable, { DataTableStickyHeaderContext } from '../components/DataTable'
 import { FACETS } from '../components/FilterPanel'
 import Flag from '../components/Flag'
 import TeamLogo from '../components/TeamLogo'
 import { eventLabel, num, pct, rating } from '../lib/format'
+import { rankRows } from '../lib/rankRows'
+import { resizeCardGeometry } from '../lib/cardGeometry'
+import { headCoachesForTeam } from '../lib/coaches'
+import RosterTimeline from '../components/RosterTimeline'
+
+const TeamProfile = lazy(() => import('./TeamProfile'))
 
 const ROLE_NAMES = ['Duelist', 'Initiator', 'Controller', 'Sentinel']
 const CONTEXT_WORDS = /\b(?:also|and|same|again|his|her|their|that|those|what about)\b/i
 const SUBJECT_WORDS = /\b(?:players?|teams?|duelists?|initiators?|controllers?|sentinels?)\b/i
 const TABLE_REQUEST_WORDS = /\b(?:all|table|leaderboard|leaders|ranking|rankings|ranked|list|players|teams|duelists|initiators|controllers|sentinels|peers)\b/i
 const ENTITY_STOPWORDS = new Set([
-  'also', 'and', 'another', 'best', 'for', 'from', 'give', 'in', 'me', 'more', 'of',
+  'also', 'and', 'another', 'best', 'bottom', 'for', 'from', 'give', 'highest', 'in', 'lowest', 'me', 'more', 'of',
   'on', 'player', 'players', 'show', 'stage', 'stat', 'stats', 'statistics', 'team',
-  'teams', 'the', 'to', 'with',
+  'teams', 'the', 'to', 'top', 'with', 'worst',
 ])
 let nextCardId = 1
 
@@ -94,8 +100,20 @@ function roleInQuery(query) {
 
 function localAnalysisPath(query, players, teams, events) {
   const scope = parseTimeframe(query)
+  if (isRosterHistoryQuery(query)) {
+    const team = mentionedEntity(teams, query)
+    if (team) return withScope(`/analysis?view=roster-history&team=${encodeURIComponent(team)}&population=teams`, scope)
+  }
+  const profileTeam = mentionedEntity(teams, query)
+  const profileStatistic = statisticInQuery(query)
+  const comparesEntities = /\b(?:compare|versus|vs|against|head to head)\b/i.test(query)
+  const asksForPopulation = /\b(?:all|table|leaderboard|leaders|ranking|rankings|ranked|list|peers)\b/i.test(query) || parseResultLimit(query) > 0
+  if (profileTeam && !comparesEntities && !asksForPopulation && (isTeamProfileQuery(query) || !profileStatistic)) {
+    const teamTab = teamProfileTabFromQuery(query) || 'overview'
+    return withScope(`/analysis?view=team-profile&teamTab=${teamTab}&team=${encodeURIComponent(profileTeam)}&population=teams`, scope)
+  }
   const player = mentionedEntity(players, query)
-  const team = player ? '' : mentionedEntity(teams, query)
+  const team = player ? '' : profileTeam
   const event = findEventNames(events, query, 1)[0]?.name || ''
   const role = roleInQuery(query)
   const statistic = statisticInQuery(query)
@@ -107,10 +125,14 @@ function localAnalysisPath(query, players, teams, events) {
   if (event) params.set('event', event)
   if (role) params.set('role', role)
   if (statistic) params.set('metric', statistic.id)
+  const order = parseResultOrder(query, statistic?.definition.higherIsBetter !== false)
+  if (order) params.set('order', order)
   const population = team || event || (!player && !role && statistic?.entity === 'teams') ? 'teams' : 'players'
   params.set('population', population)
   const wantsTable = TABLE_REQUEST_WORDS.test(query)
-  if (wantsTable || (!player && !team)) params.set('table', '1')
+  const limit = parseResultLimit(query)
+  if (wantsTable || limit || (!player && !team)) params.set('table', '1')
+  if (limit) params.set('limit', String(limit))
   return withScope(`/analysis?${params}`, scope)
 }
 
@@ -129,7 +151,19 @@ function mergeExplicitScope(intent, scope) {
   return { ...intent, filters }
 }
 
-async function requestLlmIntent(query, signal) {
+function mergeExplicitRequest(intent, query) {
+  const limit = parseResultLimit(query)
+  const statistic = getStatisticById(intent.stat)
+  const order = parseResultOrder(query, statistic?.definition.higherIsBetter !== false)
+  const usesNaturalBestOrder = /\b(?:top|best)\b/.test(normalizeQuery(query))
+  return {
+    ...intent,
+    ...(limit ? { includeTable: true, limit } : {}),
+    ...(order || usesNaturalBestOrder ? { order } : {}),
+  }
+}
+
+async function requestLlmIntents(query, signal) {
   if (import.meta.env.DEV) throw new Error('Workers AI is unavailable in Vite dev')
   const response = await fetch('/api/interpret', {
     method: 'POST',
@@ -139,9 +173,9 @@ async function requestLlmIntent(query, signal) {
   })
   if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) throw new Error('Intent service unavailable')
   const payload = await response.json()
-  const intent = sanitizeIntent(payload.intent)
-  if (!intent) throw new Error('Invalid intent')
-  return intent
+  const intents = sanitizeIntents(payload)
+  if (!intents.length) throw new Error('Invalid intent plan')
+  return intents
 }
 
 function contextualizeSearch(nextSearch, previousSearch, query) {
@@ -155,7 +189,8 @@ function contextualizeSearch(nextSearch, previousSearch, query) {
       if (!next.has(key)) previous.getAll(key).forEach((value) => next.append(key, value))
     }
   }
-  for (const key of ['population', 'metric', 'order', 'table', 'year', 'competition', 'region', 'split', 'event', 'eventPhase', 'eventWeek', 'from', 'to']) {
+  for (const key of ['view', 'teamTab', 'population', 'metric', 'order', 'table', 'limit', 'year', 'competition', 'region', 'split', 'event', 'eventPhase', 'eventWeek', 'from', 'to']) {
+    if (key === 'limit' && /\ball\b/i.test(query)) continue
     if (!next.has(key) && previous.has(key)) previous.getAll(key).forEach((value) => next.append(key, value))
   }
   return `?${next}`
@@ -170,6 +205,14 @@ function scopeParts(search) {
 
 function describeSearch(search) {
   const params = new URLSearchParams(search)
+  if (params.get('view') === 'roster-history') {
+    return `${params.getAll('team')[0] || 'Team'} roster history`
+  }
+  if (params.get('view') === 'team-profile') {
+    const tab = params.get('teamTab')
+    const suffix = { matches: 'match history', maps: 'map statistics', agents: 'compositions', roster: 'roster' }[tab] || 'team profile'
+    return `${params.getAll('team')[0] || 'Team'} ${suffix}`
+  }
   const subject = params.getAll('player')[0]
     || params.getAll('team')[0]
     || params.get('role')
@@ -192,12 +235,16 @@ function AnalysisResult({ search }) {
   const params = useMemo(() => new URLSearchParams(search), [search])
   const requestedPlayers = params.getAll('player').filter(Boolean)
   const requestedTeams = params.getAll('team').filter(Boolean)
-  const showTable = params.get('table') === '1' || (!requestedPlayers.length && !requestedTeams.length)
   const requestedRole = ROLE_NAMES.includes(params.get('role')) ? params.get('role') : ''
   const requestedPopulation = ['players', 'teams'].includes(params.get('population')) ? params.get('population') : ''
+  const parsedLimit = Number(params.get('limit'))
+  const requestedLimit = Number.isInteger(parsedLimit) && parsedLimit >= 1 && parsedLimit <= 1000 ? parsedLimit : 0
   const statistic = getStatisticById(params.get('metric'))
+  const showTable = params.get('table') === '1' || !!statistic?.definition.matchLevel || (!requestedPlayers.length && !requestedTeams.length)
   const hasPlayerQuestion = requestedPlayers.length > 0 || !!requestedRole
-  const mode = hasPlayerQuestion
+  const mode = statistic?.definition.matchLevel && !hasPlayerQuestion
+    ? 'matches'
+    : hasPlayerQuestion
     ? 'players'
     : requestedTeams.length || requestedPopulation === 'teams'
       ? 'teams'
@@ -262,11 +309,14 @@ function AnalysisResult({ search }) {
   const tableRows = useMemo(() => (mode === 'players' && effectiveRole ? entityRows.filter((row) => row.role === effectiveRole) : entityRows), [effectiveRole, entityRows, mode])
   const matchRows = useMemo(() => {
     if (mode !== 'matches') return []
+    const matchTeamNames = [...new Set(filters.filtered.flatMap((row) => [row.team1, row.team2]).filter(Boolean))]
+    const requestedMatchTeams = new Set(requestedTeams.map((name) => canonicalName(name, matchTeamNames)).filter(Boolean))
     return filters.filtered
       .filter((row) => statistic.definition.matchLevel !== 'series' || row.fullyTimed)
+      .filter((row) => !requestedMatchTeams.size || requestedMatchTeams.has(row.team1) || requestedMatchTeams.has(row.team2))
       .map((row) => ({ ...row, metricValue: statistic.definition.compute(row) }))
       .filter((row) => Number.isFinite(row.metricValue))
-  }, [filters.filtered, mode, statistic])
+  }, [filters.filtered, mode, requestedTeams, statistic])
 
   if (error) return <p role="alert" className="analysis-card-state">This analysis could not be loaded. Please try again.</p>
   if (loading || (mode === 'players' && agentLoading) || !data) return <p role="status" className="analysis-card-state">Building analysis…</p>
@@ -317,11 +367,9 @@ function AnalysisResult({ search }) {
     ...(statistic?.definition.matchLevel === 'map' ? [{ key: 'mapName', label: 'Map', align: 'left' }] : []),
     { key: 'metricValue', label: statistic?.definition.label || 'Value', align: 'right', format: (value) => statistic.definition.format(value) },
   ]
-  const shownRows = mode === 'matches' ? matchRows : tableRows
-  const tableTitle = mode === 'players'
-    ? effectiveRole ? `${effectiveRole} players` : activeStatistic ? activeStatistic.searchLabel : 'Players'
-    : mode === 'teams' ? activeStatistic ? activeStatistic.searchLabel : 'Teams'
-    : statistic.searchLabel
+  const allShownRows = mode === 'matches' ? matchRows : tableRows
+  const defaultSortKey = activeStatistic ? 'metricValue' : mode === 'players' ? 'avgRating' : mode === 'teams' ? 'matchWinPct' : 'metricValue'
+  const shownRows = rankRows(allShownRows, defaultSortKey, defaultSortDir, requestedLimit)
   return (
     <div className="analysis-result">
       {featuredRows.map((row) => (
@@ -356,28 +404,96 @@ function AnalysisResult({ search }) {
 
       {((mode === 'players' ? requestedPlayers.length : mode === 'teams' ? requestedTeams.length : 0) > featuredRows.length) && <p className="analysis-card-state">One or more requested names had no data in this scope.</p>}
 
-      {showTable && <section className="analysis-table-section">
-        <div className="analysis-table-heading">
-          <div><h3>{tableTitle}</h3>{effectiveRole && inferredRole && !requestedRole && <p>Role inferred from {featuredRows[0]?.name}'s agent usage in this scope.</p>}</div>
-          <span>{shownRows.length} {mode === 'players' ? 'players' : mode === 'teams' ? 'teams' : 'results'}</span>
-        </div>
+      {showTable && <section className={`analysis-table-section${featuredRows.length ? '' : ' is-only-table'}`}>
         <DataTable
           columns={mode === 'players' ? playerColumns : mode === 'teams' ? teamColumns : matchColumns}
           rows={shownRows}
-          defaultSortKey={activeStatistic ? 'metricValue' : mode === 'players' ? 'avgRating' : mode === 'teams' ? 'matchWinPct' : 'metricValue'}
+          defaultSortKey={defaultSortKey}
           defaultSortDir={defaultSortDir}
           expandKey={(row) => mode === 'matches' ? row.id : row.name}
+          stickyHeader={false}
         />
       </section>}
     </div>
   )
 }
 
-const MemoizedAnalysisResult = memo(AnalysisResult)
+function RosterHistoryResult({ search }) {
+  const params = useMemo(() => new URLSearchParams(search), [search])
+  const requestedTeam = params.getAll('team')[0] || ''
+  const { data: teamData, loading: teamsLoading, error: teamsError } = useData('team_buckets')
+  const { data: playerData, loading: playersLoading, error: playersError } = useData('player_buckets')
+  const { data: matchData, loading: matchesLoading, error: matchesError } = useData('match_results')
+  const { data: matchPlayerData } = useData('match_players')
+  const { data: liquipediaData } = useData('liquipedia_rosters')
+  const team = useMemo(
+    () => canonicalName(requestedTeam, Object.keys(teamData?.meta || {})),
+    [requestedTeam, teamData],
+  )
+  const headCoaches = useMemo(
+    () => headCoachesForTeam(liquipediaData, team),
+    [liquipediaData, team],
+  )
+
+  if (teamsError || playersError || matchesError) {
+    return <p role="alert" className="analysis-card-state">This roster history could not be loaded. Please try again.</p>
+  }
+  if (teamsLoading || playersLoading || matchesLoading || !teamData || !playerData || !matchData) {
+    return <p role="status" className="analysis-card-state">Building roster history…</p>
+  }
+  if (!requestedTeam || !team) {
+    return <p role="status" className="analysis-card-state">Choose a known team to show its roster history.</p>
+  }
+
+  return (
+    <div className="analysis-result">
+      <RosterTimeline
+        playerBuckets={playerData}
+        team={team}
+        matchResultsRows={matchData.rows || []}
+        matchPlayersRows={matchPlayerData?.rows || []}
+        headCoaches={headCoaches}
+      />
+    </div>
+  )
+}
+
+function TeamProfileResult({ search }) {
+  const params = useMemo(() => new URLSearchParams(search), [search])
+  const requestedTeam = params.getAll('team')[0] || ''
+  const { data: teamData, loading, error } = useData('team_buckets')
+  const team = useMemo(
+    () => canonicalName(requestedTeam, Object.keys(teamData?.meta || {})),
+    [requestedTeam, teamData],
+  )
+
+  if (error) return <p role="alert" className="analysis-card-state">This team profile could not be loaded. Please try again.</p>
+  if (loading || !teamData) return <p role="status" className="analysis-card-state">Building team profile…</p>
+  if (!requestedTeam || !team) return <p role="status" className="analysis-card-state">Choose a known team to show its profile.</p>
+
+  return (
+    <div className="analysis-result analysis-team-profile">
+      <Suspense fallback={<p role="status" className="analysis-card-state">Building team profile…</p>}>
+        <DataTableStickyHeaderContext.Provider value={false}>
+          <TeamProfile team={team} initialTab={params.get('teamTab') || 'overview'} />
+        </DataTableStickyHeaderContext.Provider>
+      </Suspense>
+    </div>
+  )
+}
+
+function RoutedAnalysisResult({ search }) {
+  const view = new URLSearchParams(search).get('view')
+  if (view === 'roster-history') return <RosterHistoryResult search={search} />
+  if (view === 'team-profile') return <TeamProfileResult search={search} />
+  return <AnalysisResult search={search} />
+}
+
+const MemoizedAnalysisResult = memo(RoutedAnalysisResult)
 
 function cardShowsTable(search) {
   const params = new URLSearchParams(search)
-  return params.get('table') === '1' || (!params.has('player') && !params.has('team'))
+  return ['roster-history', 'team-profile'].includes(params.get('view')) || params.get('table') === '1' || (!params.has('player') && !params.has('team'))
 }
 
 function initialPosition(index, width) {
@@ -392,11 +508,11 @@ function createCard(search, prompt, index) {
   const normalizedSearch = search.startsWith('?') ? search : `?${search}`
   const table = cardShowsTable(normalizedSearch)
   const viewportWidth = typeof window === 'undefined' ? 1200 : window.innerWidth
-  const width = Math.min(table ? 1060 : 720, Math.max(320, viewportWidth - 48))
+  const width = Math.min(table ? 900 : 620, Math.max(320, viewportWidth - 48))
   const viewportHeight = typeof window === 'undefined' ? 900 : window.innerHeight
   const height = table
-    ? Math.min(720, Math.max(420, viewportHeight - 180))
-    : Math.min(360, Math.max(240, viewportHeight - 180))
+    ? Math.min(560, Math.max(360, viewportHeight - 240))
+    : Math.min(300, Math.max(220, viewportHeight - 240))
   return { id: nextCardId++, search: normalizedSearch, prompt, width, height, ...initialPosition(index, width) }
 }
 
@@ -435,27 +551,23 @@ const CanvasCard = memo(function CanvasCard({ card, onMove, onResize, onFocus, o
     moveTo(card.x + directions[event.key][0], card.y + directions[event.key][1])
   }
 
-  function constrainedSize(width, height) {
+  function resizeConstraints() {
     const table = cardShowsTable(card.search)
-    const minWidth = table ? 480 : 360
-    const minHeight = table ? 280 : 190
-    const maxWidth = Math.max(minWidth, window.innerWidth - card.x - 16)
-    return {
-      width: Math.min(Math.max(minWidth, width), maxWidth),
-      height: Math.min(Math.max(minHeight, height), 1400),
-    }
+    return { minWidth: table ? 480 : 360, minHeight: table ? 280 : 190 }
   }
 
-  function startResize(event, axis) {
+  function startResize(event, edge) {
     if (event.button !== 0) return
     event.preventDefault()
     event.stopPropagation()
     onFocus(card.id)
     resizeRef.current = {
       pointerId: event.pointerId,
-      axis,
+      edge,
       startX: event.clientX,
       startY: event.clientY,
+      x: card.x,
+      y: card.y,
       width: cardRef.current?.offsetWidth || card.width,
       height: cardRef.current?.offsetHeight || card.height,
     }
@@ -465,44 +577,50 @@ const CanvasCard = memo(function CanvasCard({ card, onMove, onResize, onFocus, o
   function resize(event) {
     const active = resizeRef.current
     if (!active || active.pointerId !== event.pointerId) return
-    const next = constrainedSize(
-      active.axis.includes('x') ? active.width + event.clientX - active.startX : active.width,
-      active.axis.includes('y') ? active.height + event.clientY - active.startY : active.height,
+    const next = resizeCardGeometry(
+      active,
+      active.edge,
+      event.clientX - active.startX,
+      event.clientY - active.startY,
+      resizeConstraints(),
+      window.innerWidth,
     )
-    onResize(card.id, next.width, next.height)
+    onResize(card.id, next)
   }
 
   function stopResize(event) {
     if (resizeRef.current?.pointerId === event.pointerId) resizeRef.current = null
   }
 
-  function resizeWithKeyboard(event, axis) {
+  function resizeWithKeyboard(event, edge) {
     const step = event.shiftKey ? 64 : 24
+    const horizontal = edge.includes('w') || edge.includes('e')
+    const vertical = edge.includes('n') || edge.includes('s')
     const deltas = {
-      ArrowLeft: axis.includes('x') ? [-step, 0] : null,
-      ArrowRight: axis.includes('x') ? [step, 0] : null,
-      ArrowUp: axis.includes('y') ? [0, -step] : null,
-      ArrowDown: axis.includes('y') ? [0, step] : null,
+      ArrowLeft: horizontal ? [-step, 0] : null,
+      ArrowRight: horizontal ? [step, 0] : null,
+      ArrowUp: vertical ? [0, -step] : null,
+      ArrowDown: vertical ? [0, step] : null,
     }
     const delta = deltas[event.key]
     if (!delta) return
     event.preventDefault()
     event.stopPropagation()
-    const next = constrainedSize(card.width + delta[0], card.height + delta[1])
-    onResize(card.id, next.width, next.height)
+    const next = resizeCardGeometry(card, edge, delta[0], delta[1], resizeConstraints(), window.innerWidth)
+    onResize(card.id, next)
   }
 
-  function resizeHandle(axis, className, dimension) {
+  function resizeHandle(edge, className, dimension) {
     return (
       <button
         type="button"
         className={`analysis-resize-handle ${className}`}
         aria-label={`Resize ${describeSearch(card.search)} card ${dimension}. Drag with the pointer or use arrow keys. Current size ${Math.round(card.width)} by ${Math.round(card.height)} pixels.`}
-        onPointerDown={(event) => startResize(event, axis)}
+        onPointerDown={(event) => startResize(event, edge)}
         onPointerMove={resize}
         onPointerUp={stopResize}
         onPointerCancel={stopResize}
-        onKeyDown={(event) => resizeWithKeyboard(event, axis)}
+        onKeyDown={(event) => resizeWithKeyboard(event, edge)}
       />
     )
   }
@@ -526,9 +644,14 @@ const CanvasCard = memo(function CanvasCard({ card, onMove, onResize, onFocus, o
         <button type="button" className="analysis-window-close" onClick={() => onClose(card.id)} aria-label={`Close ${describeSearch(card.search)} card`}>×</button>
       </header>
       <div className="analysis-window-body"><MemoizedAnalysisResult search={card.search} /></div>
-      {resizeHandle('x', 'is-right', 'width')}
-      {resizeHandle('y', 'is-bottom', 'height')}
-      {resizeHandle('xy', 'is-corner', 'width and height')}
+      {resizeHandle('w', 'is-left', 'from the left edge')}
+      {resizeHandle('e', 'is-right', 'from the right edge')}
+      {resizeHandle('n', 'is-top', 'from the top edge')}
+      {resizeHandle('s', 'is-bottom', 'from the bottom edge')}
+      {resizeHandle('nw', 'is-top-left', 'from the top-left corner')}
+      {resizeHandle('ne', 'is-top-right', 'from the top-right corner')}
+      {resizeHandle('sw', 'is-bottom-left', 'from the bottom-left corner')}
+      {resizeHandle('se', 'is-bottom-right', 'from the bottom-right corner')}
     </article>
   )
 })
@@ -658,13 +781,24 @@ export default function Analysis() {
   const location = useLocation()
   const navigate = useNavigate()
   const launchedFromLibrary = isLibraryLaunch(location.search)
-  const [cards, setCards] = useState(() => launchedFromLibrary ? [] : [createCard(location.search || '?population=players&year=2026&competition=VCT', '', 0)])
+  const [cards, setCards] = useState(() => {
+    if (launchedFromLibrary) return []
+    const planned = Array.isArray(location.state?.analysisCards)
+      ? location.state.analysisCards
+        .filter((card) => typeof card?.search === 'string' && card.search.startsWith('?'))
+        .filter((card, index, all) => all.findIndex((other) => other.search === card.search) === index)
+        .slice(0, 6)
+      : []
+    return planned.length
+      ? planned.map((card, index) => createCard(card.search, typeof card.prompt === 'string' ? card.prompt : '', index))
+      : [createCard(location.search || '?population=players&year=2026&competition=VCT', '', 0)]
+  })
   const [query, setQuery] = useState('')
   const [message, setMessage] = useState(launchedFromLibrary ? 'Drag a miniature onto the canvas, or click one to add it.' : 'Drag a card by its top bar. Ask another question to add more.')
   const [interpreting, setInterpreting] = useState(false)
   const [libraryOpen, setLibraryOpen] = useState(launchedFromLibrary)
   const [libraryDrag, setLibraryDrag] = useState(null)
-  const topZRef = useRef(2)
+  const topZRef = useRef(Math.max(2, cards.length + 1))
   const inputRef = useRef(null)
   const libraryButtonRef = useRef(null)
   const canvasRef = useRef(null)
@@ -704,8 +838,8 @@ export default function Analysis() {
     setCards((items) => items.map((card) => card.id === id ? { ...card, x, y } : card))
   }, [])
 
-  const resizeCard = useCallback((id, width, height) => {
-    setCards((items) => items.map((card) => card.id === id ? { ...card, width, height } : card))
+  const resizeCard = useCallback((id, geometry) => {
+    setCards((items) => items.map((card) => card.id === id ? { ...card, ...geometry } : card))
   }, [])
 
   const closeCard = useCallback((id) => {
@@ -763,41 +897,52 @@ export default function Analysis() {
     setInterpreting(true)
     setMessage('Understanding your follow-up…')
     const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 12000)
-    let to = null
+    const timeout = setTimeout(() => controller.abort(), 20000)
+    let plans = []
     try {
-      const rawIntent = await requestLlmIntent(submitted, controller.signal)
-      const canonicalEvent = rawIntent.filters?.event
-        ? findEventNames(events, rawIntent.filters.event, 1)[0]?.name
-        : ''
-      const intent = canonicalEvent
-        ? { ...rawIntent, filters: { ...rawIntent.filters, event: canonicalEvent } }
-        : rawIntent
-      to = intentToPath(mergeExplicitScope(intent, parseTimeframe(submitted)))
+      const intents = (await requestLlmIntents(submitted, controller.signal)).map((intent) => {
+        const canonicalEvent = intent.filters?.event
+          ? findEventNames(events, intent.filters.event, 1)[0]?.name
+          : ''
+        return canonicalEvent
+          ? { ...intent, filters: { ...intent.filters, event: canonicalEvent } }
+          : intent
+      })
+      const prepared = intents.length === 1
+        ? [mergeExplicitScope(mergeExplicitRequest(intents[0], submitted), parseTimeframe(submitted))]
+        : intents
+      plans = prepared
+        .map((intent) => ({ to: intentToPath(intent), prompt: intent.summary || submitted }))
+        .filter((plan) => plan.to?.startsWith('/analysis'))
     } catch {
-      to = localAnalysisPath(submitted, players, teams, events)
+      const to = localAnalysisPath(submitted, players, teams, events)
+      if (to) plans = [{ to, prompt: submitted }]
     } finally {
       clearTimeout(timeout)
       setInterpreting(false)
     }
 
-    if (!to?.startsWith('/analysis')) to = localAnalysisPath(submitted, players, teams, events)
-    if (!to) {
+    if (!plans.length) {
       setMessage('Try asking for a player, team, role, metric, or event scope.')
       return
     }
 
     const latest = cards.at(-1)?.search || location.search
-    const nextSearch = contextualizeSearch(new URL(to, 'https://vct-data.local').search, latest, submitted)
-    topZRef.current += 1
-    const nextCard = { ...createCard(nextSearch, submitted, cards.length), z: topZRef.current }
-    promptBySearch.current.set(nextSearch, submitted)
-    setCards((current) => [...current, nextCard])
+    const nextCards = plans.map((plan, index) => {
+      const planSearch = new URL(plan.to, 'https://vct-data.local').search
+      const search = plans.length === 1 ? contextualizeSearch(planSearch, latest, submitted) : planSearch
+      topZRef.current += 1
+      promptBySearch.current.set(search, plan.prompt)
+      return { ...createCard(search, plans.length === 1 ? submitted : plan.prompt, cards.length + index), z: topZRef.current }
+    })
+    setCards((current) => [...current, ...nextCards])
     setQuery('')
-    setMessage('Added a new card. Drag its top bar to place it anywhere.')
-    const nextParams = new URLSearchParams(nextSearch)
-    prefetchData(nextParams.get('population') === 'teams' || nextParams.has('team') ? 'team_buckets' : 'player_buckets')
-    navigate(`/analysis${nextSearch}`, { replace: true })
+    setMessage(plans.length === 1 ? 'Added a new card. Drag its top bar to place it anywhere.' : `Added ${plans.length} cards from your request.`)
+    for (const card of nextCards) {
+      const params = new URLSearchParams(card.search)
+      prefetchData(params.get('population') === 'teams' || params.has('team') ? 'team_buckets' : 'player_buckets')
+    }
+    navigate(`/analysis${nextCards.at(-1).search}`, { replace: true })
     requestAnimationFrame(() => inputRef.current?.focus())
   }
 

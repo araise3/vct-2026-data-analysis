@@ -28,6 +28,79 @@ export function normalizeQuery(value) {
     .replace(/\s+/g, ' ')
 }
 
+/** Identify requests for the event-by-event team roster chart. */
+export function isRosterHistoryQuery(query) {
+  const text = normalizeQuery(query)
+  const namesRoster = /\b(?:roster|lineup|squad)s?\b/.test(text)
+  const namesHistory = /\b(?:history|historical|timeline|chart|changes?|evolution|past)\b/.test(text)
+  return namesRoster && namesHistory
+}
+
+/** Pick the legacy team-profile tab named by a natural-language request. */
+export function teamProfileTabFromQuery(query) {
+  const text = normalizeQuery(query)
+  if (isRosterHistoryQuery(text)) return ''
+  if (/\b(?:compositions?|comps?)\b/.test(text) || /\bagents?\s+(?:usage|picks?|compositions?)\b/.test(text)) return 'agents'
+  if (/\b(?:picks?\s*(?:and|&)?\s*bans?|veto(?:es)?|map\s+(?:stats?|statistics|record|history))\b/.test(text)) return 'maps'
+  if (/\b(?:match\s+history|match\s+results?|recent\s+matches|matches)\b/.test(text)) return 'matches'
+  if (/\b(?:roster|lineup|squad)s?\b/.test(text)) return 'roster'
+  return ''
+}
+
+/** Broad team requests should restore the full tabbed profile, not a five-number summary. */
+export function isTeamProfileQuery(query) {
+  const text = normalizeQuery(query)
+  return !!teamProfileTabFromQuery(text)
+    || /\b(?:team\s+)?(?:profile|overview)\b/.test(text)
+    || /\b(?:all|full|complete)\s+(?:team\s+)?(?:stats?|statistics)\b/.test(text)
+    || /\b(?:team\s+stats?|team\s+statistics)\b/.test(text)
+}
+
+const RESULT_NUMBER_WORDS = {
+  one: 1, two: 2, three: 3, four: 4, five: 5,
+  six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+  eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15,
+  sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20,
+}
+
+const RESULT_NUMBER_PATTERN = `(?:\\d{1,4}|${Object.keys(RESULT_NUMBER_WORDS).join('|')})`
+
+function resultNumber(value) {
+  const parsed = RESULT_NUMBER_WORDS[value] || Number(value)
+  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 1000 ? parsed : 0
+}
+
+/**
+ * Read an explicitly requested result count without mistaking a season, stage,
+ * date, or stat value for a table limit. The intent model uses the same bound.
+ */
+export function parseResultLimit(query) {
+  const text = normalizeQuery(query)
+  const directionFirst = new RegExp(`\\b(?:top|bottom|best|worst|highest|lowest|most|least)\\s+(?:the\\s+)?(${RESULT_NUMBER_PATTERN})\\b`).exec(text)
+  if (directionFirst) return resultNumber(directionFirst[1])
+
+  const countWithDirection = new RegExp(`\\b(${RESULT_NUMBER_PATTERN})\\s+(?:top|bottom|best|worst|highest|lowest)\\b`).exec(text)
+  if (countWithDirection) return resultNumber(countWithDirection[1])
+
+  const requestedCount = new RegExp(`\\b(?:show|give|list|return|display)(?:\\s+me)?(?:\\s+the)?\\s+(${RESULT_NUMBER_PATTERN})\\b`).exec(text)
+  if (requestedCount) return resultNumber(requestedCount[1])
+
+  const orderedEntities = new RegExp(`\\b(?:first|last)\\s+(${RESULT_NUMBER_PATTERN})\\s+(?:players?|teams?|results?|matches?|maps?|series)\\b`).exec(text)
+  if (orderedEntities) return resultNumber(orderedEntities[1])
+
+  const countFirst = new RegExp(`\\b(${RESULT_NUMBER_PATTERN})\\s+(?:(?:top|bottom|best|worst|highest|lowest)\\s+)?(?:players?|teams?|results?|matches?|maps?|series|duelists?|initiators?|controllers?|sentinels?)\\b`).exec(text)
+  return countFirst ? resultNumber(countFirst[1]) : 0
+}
+
+/** Resolve only explicit ranking language; an empty value keeps the stat's natural direction. */
+export function parseResultOrder(query, higherIsBetter = true) {
+  const text = normalizeQuery(query)
+  if (/\b(?:shortest|lowest|least|fewest)\b/.test(text)) return 'asc'
+  if (/\b(?:longest|highest|most)\b/.test(text)) return 'desc'
+  if (/\b(?:bottom|worst)\b/.test(text)) return higherIsBetter ? 'asc' : 'desc'
+  return ''
+}
+
 /** Damerau-Levenshtein distance, including the typo people make most: transposed letters. */
 export function editDistance(left, right) {
   const a = normalizeQuery(left)

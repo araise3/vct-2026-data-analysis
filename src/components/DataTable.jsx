@@ -1,7 +1,8 @@
-import { useMemo } from 'react'
+import { createContext, useContext, useMemo } from 'react'
 import { Empty, Table } from 'antd'
 
 const WORD_JOINER = '⁠'
+export const DataTableStickyHeaderContext = createContext(true)
 function noBreakSlash(label) {
   return typeof label === 'string' ? label.replace(/\//g, `${WORD_JOINER}/${WORD_JOINER}`) : label
 }
@@ -30,7 +31,10 @@ function compareValues(key) {
  */
 export default function DataTable({
   columns, rows, defaultSortKey, defaultSortDir = 'desc', summaryRow, renderExpanded, expandKey,
+  stickyHeader,
 }) {
+  const inheritedStickyHeader = useContext(DataTableStickyHeaderContext)
+  const effectiveStickyHeader = stickyHeader ?? inheritedStickyHeader
   const rowKeys = useMemo(() => new Map(rows.map((row, index) => [row, index])), [rows])
 
   const antColumns = useMemo(() => columns.map((column) => ({
@@ -82,7 +86,7 @@ export default function DataTable({
     <Table
       className="portal-data-table"
       size="small"
-      sticky={{ offsetHeader: 56 }}
+      sticky={effectiveStickyHeader ? { offsetHeader: 56 } : false}
       pagination={rows.length > 50 ? { defaultPageSize: 50, showSizeChanger: true, pageSizeOptions: [25, 50, 100], hideOnSinglePage: false, showTotal: (total, range) => `${range[0]}–${range[1]} of ${total}` } : false}
       columns={antColumns}
       dataSource={rows}

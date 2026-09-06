@@ -1,6 +1,8 @@
 import { STAT_IDS, getStatisticById } from './statCatalog.js'
 
 const DESTINATIONS = ['analysis']
+const VIEWS = ['', 'team-profile', 'roster-history']
+const TEAM_TABS = ['', 'overview', 'matches', 'maps', 'agents', 'roster']
 
 const STATS = STAT_IDS
 const COMPETITIONS = ['VCT', 'EWC']
@@ -12,6 +14,8 @@ export const INTENT_SCHEMA = {
   additionalProperties: false,
   properties: {
     destination: { type: 'string', enum: DESTINATIONS },
+    view: { type: 'string', enum: VIEWS },
+    teamTab: { type: 'string', enum: TEAM_TABS },
     stat: { type: 'string', enum: STATS },
     order: { type: 'string', enum: ['', 'asc', 'desc'] },
     players: { type: 'array', maxItems: 4, items: { type: 'string', maxLength: 80 } },
@@ -19,6 +23,7 @@ export const INTENT_SCHEMA = {
     role: { type: 'string', enum: ['', 'Duelist', 'Initiator', 'Controller', 'Sentinel'] },
     population: { type: 'string', enum: ['', 'players', 'teams'] },
     includeTable: { type: 'boolean' },
+    limit: { type: 'integer', minimum: 0, maximum: 1000 },
     filters: {
       type: 'object',
       additionalProperties: false,
@@ -37,7 +42,22 @@ export const INTENT_SCHEMA = {
     },
     summary: { type: 'string', maxLength: 180 },
   },
-  required: ['destination', 'stat', 'order', 'players', 'teams', 'role', 'population', 'includeTable', 'filters', 'summary'],
+  required: ['destination', 'view', 'teamTab', 'stat', 'order', 'players', 'teams', 'role', 'population', 'includeTable', 'limit', 'filters', 'summary'],
+}
+
+export const INTENT_BATCH_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    intents: {
+      type: 'array',
+      minItems: 1,
+      maxItems: 6,
+      items: INTENT_SCHEMA,
+    },
+    summary: { type: 'string', maxLength: 240 },
+  },
+  required: ['intents', 'summary'],
 }
 
 function oneOf(value, allowed, fallback = '') {
@@ -69,9 +89,14 @@ export function sanitizeIntent(raw) {
   const years = Array.isArray(filters.years)
     ? [...new Set(filters.years.map(Number).filter((year) => Number.isInteger(year) && year >= 2023 && year <= 2100))]
     : []
+  const limit = typeof raw.limit === 'number' && Number.isInteger(raw.limit) && raw.limit >= 1 && raw.limit <= 1000
+    ? raw.limit
+    : 0
 
   return {
     destination,
+    view: oneOf(raw.view, VIEWS),
+    teamTab: oneOf(raw.teamTab, TEAM_TABS),
     stat: oneOf(raw.stat, STATS),
     order: oneOf(raw.order, ['', 'asc', 'desc']),
     players: Array.isArray(raw.players)
@@ -82,7 +107,8 @@ export function sanitizeIntent(raw) {
       : [],
     role: oneOf(raw.role, ['', 'Duelist', 'Initiator', 'Controller', 'Sentinel']),
     population: oneOf(raw.population, ['', 'players', 'teams']),
-    includeTable: raw.includeTable === true,
+    includeTable: raw.includeTable === true || limit > 0,
+    limit,
     filters: {
       years,
       competitions: stringList(filters.competitions, COMPETITIONS),
@@ -108,6 +134,8 @@ export function intentToPath(rawIntent) {
   if (!intent) return null
 
   const params = new URLSearchParams()
+  if (intent.view) params.set('view', intent.view)
+  if (intent.view === 'team-profile' && intent.teamTab) params.set('teamTab', intent.teamTab)
   if (intent.stat) {
     if (!getStatisticById(intent.stat)) return null
     params.set('metric', intent.stat)
@@ -118,6 +146,7 @@ export function intentToPath(rawIntent) {
   if (intent.role) params.set('role', intent.role)
   if (intent.population) params.set('population', intent.population)
   if (intent.includeTable) params.set('table', '1')
+  if (intent.limit) params.set('limit', String(intent.limit))
 
   addMany(params, 'year', intent.filters.years)
   addMany(params, 'competition', intent.filters.competitions)
@@ -136,4 +165,12 @@ export function intentToPath(rawIntent) {
 
   const query = params.toString()
   return `/analysis${query ? `?${query}` : ''}`
+}
+
+/** Accept the current multi-card response and the former single-intent shape during rollout. */
+export function sanitizeIntents(raw) {
+  const candidates = Array.isArray(raw?.intents)
+    ? raw.intents
+    : raw?.intent ? [raw.intent] : [raw]
+  return candidates.map(sanitizeIntent).filter(Boolean).slice(0, 6)
 }

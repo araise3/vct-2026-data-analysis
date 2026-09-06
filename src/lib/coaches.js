@@ -20,6 +20,16 @@ export function buildCoachIndex(liquipediaData) {
   return byId
 }
 
+/** Return the lead-coach succession used by roster identity and timeline views. */
+export function headCoachesForTeam(liquipediaData, team) {
+  const coaches = liquipediaData?.teams?.[team]?.coaches ?? []
+  const named = coaches.filter((coach) => (coach.role || '').toLowerCase().includes('head coach'))
+  const pool = named.length
+    ? named
+    : coaches.filter((coach) => (coach.role || '').trim().toLowerCase() === 'coach')
+  return [...pool].sort((left, right) => (left.joinDate || '').localeCompare(right.joinDate || ''))
+}
+
 /**
  * Whichever of `coaches` (a team's own Head-Coach-role entries, both
  * active and former) covered a given date -- i.e. `date` falls inside

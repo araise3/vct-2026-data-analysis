@@ -24,7 +24,7 @@ import mapIcons from '../lib/mapIcons.json'
 import teamLogos from '../lib/teamLogos.json'
 import { rating, pct, num, eventLabel } from '../lib/format'
 import { buildEventDateOrder } from '../lib/rosterTimeline'
-import { coachAt } from '../lib/coaches'
+import { coachAt, headCoachesForTeam } from '../lib/coaches'
 
 // win_condition values as scraped straight from VLR's round-end icon
 // filename (elim.webp -> "elim", etc.) -- labeled/ordered for display.
@@ -59,9 +59,10 @@ function ScopeEmptyState({ scopeLabel, onReset }) {
   )
 }
 
-export default function TeamProfile() {
+export default function TeamProfile({ team: embeddedTeam = '', initialTab = 'overview' }) {
   const { name } = useParams()
-  const decodedName = decodeURIComponent(name)
+  const decodedName = embeddedTeam || decodeURIComponent(name || '')
+  const requestedInitialTab = TABS.some((tab) => tab.id === initialTab) ? initialTab : 'overview'
   const { data: teamData, loading: teamsLoading } = useData('team_buckets')
   const { data: playerData, loading: playersLoading } = useData('player_buckets')
   const { data: liquipediaData } = useData('liquipedia_rosters')
@@ -76,29 +77,10 @@ export default function TeamProfile() {
   // component's own comment) AND, further down, whichever of these
   // actually covered the page's currently selected scope (coachesInScope,
   // computed once `filtered` exists below) for the Coaching Staff card.
-  const headCoaches = useMemo(() => {
-    const coaches = liquipediaData?.teams?.[decodedName]?.coaches ?? []
-    const named = coaches.filter((c) => (c.role || '').toLowerCase().includes('head coach'))
-    // Some orgs' Liquipedia pages never use the literal "Head Coach" label at
-    // all -- their lead coach is just listed as plain "Coach" (confirmed for
-    // 7 teams: Paper Rex's alecks since 2021, MIBR's fRoD, ENVY's Stunner,
-    // Trace Esports' destroyeR, Attacking Soul Esports/Totoro Gaming/BESTIA's
-    // sole coach -- all had zero rendered Coaching Staff/roster-timeline
-    // coach column before this fallback). Only applied when a team has NO
-    // "Head Coach"-labeled entry at all: for a team that DOES have one,
-    // plain "Coach" is a genuinely different, subordinate staff role and
-    // must not be folded in -- e.g. KIWOOM DRX's real Head Coach "termi" has
-    // run alongside two separate plain-"Coach" staff for the same period,
-    // and blindly matching "Coach" there would add two fake extra head
-    // coaches. Verified across the full dataset: a plain "Coach" entry never
-    // date-overlaps a "Head Coach" entry on any team that has both, so this
-    // fallback can't introduce that same ambiguity for the 7 teams it does
-    // apply to.
-    const pool = named.length
-      ? named
-      : coaches.filter((c) => (c.role || '').trim().toLowerCase() === 'coach')
-    return pool.sort((a, b) => (a.joinDate || '').localeCompare(b.joinDate || ''))
-  }, [liquipediaData, decodedName])
+  const headCoaches = useMemo(
+    () => headCoachesForTeam(liquipediaData, decodedName),
+    [liquipediaData, decodedName],
+  )
   const { data: matchData } = useData('match_results')
   const { data: teamMapData } = useData('team_map_buckets')
   // match_players.json feeds the roster timeline's split-seat chronology
@@ -154,10 +136,10 @@ export default function TeamProfile() {
   // Header tab row (TABS above) -- resets to Overview on team switch, same
   // as every other per-team UI state on this page (year/eventOverrides
   // above, matchLimit/selectedCompMap below).
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState(requestedInitialTab)
   useEffect(() => {
-    setActiveTab('overview')
-  }, [decodedName])
+    setActiveTab(requestedInitialTab)
+  }, [decodedName, requestedInitialTab])
 
   const yearOptions = useMemo(
     () => [...new Set(records.map((r) => r.year))].sort((a, b) => a - b),
@@ -593,7 +575,7 @@ export default function TeamProfile() {
   if (!meta) {
     return (
       <div className="flex flex-col gap-4">
-        <Link to="/teams" className="text-sm text-accent-bright hover:underline">← Back to Teams</Link>
+        {!embeddedTeam && <Link to="/teams" className="text-sm text-accent-bright hover:underline">← Back to Teams</Link>}
         <p className="text-muted text-sm">No team found matching "{decodedName}".</p>
       </div>
     )
@@ -608,7 +590,7 @@ export default function TeamProfile() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link to="/teams" className="text-sm text-muted hover:text-ink w-fit">← Back to Teams</Link>
+      {!embeddedTeam && <Link to="/teams" className="text-sm text-muted hover:text-ink w-fit">← Back to Teams</Link>}
 
       {/* One merged card for the header info AND the scope-control row below
           it -- a literal structural copy of PlayerProfile's own header card

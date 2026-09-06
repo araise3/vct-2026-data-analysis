@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "Derived from player_agents.json",
-    "generatedAt": "2026-09-05T22:53:35Z",
+    "generatedAt": "2026-09-06T00:13:08Z",
     "playersConsidered": 61,
     "poolMeanRating": 0.991,
     "selection": "Wilson lower-bound confidence score (rating/3.0 as phat, maps played as n, z=2.0; same technique as playerDuels.js's aggregateKdByCountry; no eligibility gate; see build_player_week.py)"
@@ -12,12 +12,12 @@
   "team": "LOUD",
   "countryCode": "cl",
   "countryName": "Chile",
-  "rating": 1.38,
-  "acs": 249.0,
-  "kd": 1.57,
-  "kast": 0.8028,
-  "adr": 160.0,
-  "hs": 0.3185,
-  "maps": 4,
-  "rounds": 81
+  "rating": 1.25,
+  "acs": 224.0,
+  "kd": 1.26,
+  "kast": 0.7529,
+  "adr": 145.0,
+  "hs": 0.2581,
+  "maps": 9,
+  "rounds": 182
 }

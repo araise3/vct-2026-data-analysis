@@ -8853,7 +8853,7 @@
         },
         {
           "id": "PatMen",
-          "name": "John Patrick Ramos Mendoza",
+          "name": "Jhon Patrick Ramos Mendoza",
           "joinDate": "2025-12-15",
           "flag": "ph",
           "captain": false,
@@ -13355,15 +13355,6 @@
           "status": "active"
         },
         {
-          "id": "WJpang",
-          "name": "Piao Wenjie",
-          "role": "Coach",
-          "joinDate": "2025-12-11",
-          "leaveDate": null,
-          "flag": "cn",
-          "status": "active"
-        },
-        {
           "id": "24K",
           "name": "Shao Yubo",
           "role": "Coach",
@@ -13378,6 +13369,15 @@
           "role": "Head Coach",
           "joinDate": "2024-03-29",
           "leaveDate": "2025-11-09",
+          "flag": "cn",
+          "status": "former"
+        },
+        {
+          "id": "WJpang",
+          "name": null,
+          "role": "Coach",
+          "joinDate": "2025-12-11",
+          "leaveDate": "2026-09-04",
           "flag": "cn",
           "status": "former"
         },
@@ -13981,7 +13981,7 @@
         },
         {
           "id": "PatMen",
-          "name": "John Patrick Ramos Mendoza",
+          "name": "Jhon Patrick Ramos Mendoza",
           "joinDate": "2025-03-04",
           "leaveDate": "2025-12-15",
           "newTeam": "Global Esports",
@@ -15827,14 +15827,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "koshmaras",
-          "name": "Martynas Namikas",
-          "joinDate": "2026-04-08",
-          "flag": "lt",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "Boo",
           "name": "Ričardas Lukaševičius",
           "joinDate": "2022-11-10",
@@ -16237,6 +16229,15 @@
           "joinDate": "2023-10-10",
           "leaveDate": "2025-10-09",
           "newTeam": "Team Liquid",
+          "flag": "lt",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "koshmaras",
+          "name": "Martynas Namikas",
+          "joinDate": "2026-04-08",
+          "leaveDate": "2026-09-04",
+          "newTeam": null,
           "flag": "lt",
           "playerStatus": "STARTER"
         },
@@ -27586,7 +27587,7 @@
           "name": "Yousef Imad El-Yousef",
           "joinDate": "2025-03-12",
           "leaveDate": "2026-05-25",
-          "newTeam": null,
+          "newTeam": "Oasis Gaming",
           "flag": "ph",
           "playerStatus": "STARTER"
         },

@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-06T20:45:49Z"
+    "fetchedAt": "2026-09-06T23:05:18Z"
   },
   "matches": [
     {
@@ -119,8 +119,8 @@
       "bestOf": 5,
       "team1": "100 Thieves",
       "team2": "LOUD",
-      "score1": 1,
-      "score2": 1,
+      "score1": 3,
+      "score2": 2,
       "started": true
     }
   ]

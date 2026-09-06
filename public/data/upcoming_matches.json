@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-06T11:18:10Z"
+    "fetchedAt": "2026-09-06T15:43:19Z"
   },
   "matches": [
     {
@@ -107,7 +107,7 @@
       "team1": "Nongshim RedForce",
       "team2": "Global Esports",
       "score1": 2,
-      "score2": 1,
+      "score2": 3,
       "started": true
     },
     {

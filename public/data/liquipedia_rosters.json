@@ -4496,6 +4496,15 @@
         {
           "id": "meco1e",
           "name": "Cole Lewis",
+          "role": "Inactive Coach",
+          "joinDate": "2026-05-07",
+          "leaveDate": "2026-09-08",
+          "flag": "us",
+          "status": "former"
+        },
+        {
+          "id": "meco1e",
+          "name": "Cole Lewis",
           "role": "Assistant Coach",
           "joinDate": "2025-12-06",
           "leaveDate": "2026-05-07",
@@ -4506,14 +4515,6 @@
     },
     "FNATIC": {
       "players": [
-        {
-          "id": "Boaster",
-          "name": "Jake Howlett",
-          "joinDate": "2021-02-03",
-          "flag": "gb",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
         {
           "id": "Alfajer",
           "name": "Emir Ali Beder",
@@ -4545,6 +4546,14 @@
           "flag": "ru",
           "captain": false,
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "Boaster",
+          "name": "Jake Howlett",
+          "joinDate": "2021-02-03",
+          "flag": "gb",
+          "captain": false,
+          "playerStatus": "BENCHED"
         },
         {
           "id": "Veqaj",
@@ -4798,6 +4807,15 @@
           "newTeam": "Retired",
           "flag": "se",
           "playerStatus": "INACTIVE"
+        },
+        {
+          "id": "Boaster",
+          "name": "Jake Howlett",
+          "joinDate": "2021-02-03",
+          "leaveDate": "2026-09-08",
+          "newTeam": "Fnatic (Inactive)",
+          "flag": "gb",
+          "playerStatus": "STARTER"
         },
         {
           "id": "CyvOph",
@@ -10533,7 +10551,7 @@
           "joinDate": "2023-07-30",
           "leaveDate": "2023-12-12",
           "newTeam": "Karmine Corp (Assistant Coach)",
-          "flag": "fr",
+          "flag": "eg",
           "playerStatus": "INACTIVE"
         },
         {
@@ -10587,7 +10605,7 @@
           "joinDate": "2023-04-19",
           "leaveDate": "2023-07-30",
           "newTeam": "Karmine Corp (Inactive)",
-          "flag": "fr",
+          "flag": "eg",
           "playerStatus": "STARTER"
         },
         {
@@ -10778,7 +10796,7 @@
           "role": "Head Coach",
           "joinDate": "2026-05-01",
           "leaveDate": null,
-          "flag": "fr",
+          "flag": "eg",
           "status": "active"
         },
         {
@@ -10823,7 +10841,7 @@
           "role": "Assistant Coach",
           "joinDate": "2022-05-05",
           "leaveDate": "2023-04-19",
-          "flag": "fr",
+          "flag": "eg",
           "status": "former"
         },
         {
@@ -10859,7 +10877,7 @@
           "role": "Assistant Coach",
           "joinDate": "2023-12-12",
           "leaveDate": "2026-05-01",
-          "flag": "fr",
+          "flag": "eg",
           "status": "former"
         }
       ]
@@ -17741,7 +17759,7 @@
           "role": "Assistant Coach",
           "joinDate": "2021-09-10",
           "leaveDate": "2022-04-06",
-          "flag": "fr",
+          "flag": "eg",
           "status": "former"
         },
         {
@@ -19961,15 +19979,6 @@
           "status": "active"
         },
         {
-          "id": "mini",
-          "name": "Jacob Harris",
-          "role": "Coaching Advisor",
-          "joinDate": "2025-12-15",
-          "leaveDate": null,
-          "flag": "gb",
-          "status": "active"
-        },
-        {
           "id": "JUNiOR",
           "name": "Yuya Sawada",
           "role": "Coach",
@@ -20066,6 +20075,15 @@
           "joinDate": "2024-10-16",
           "leaveDate": "2025-02-10",
           "flag": "jp",
+          "status": "former"
+        },
+        {
+          "id": "mini",
+          "name": "Jacob Harris",
+          "role": "Coaching Advisor",
+          "joinDate": "2025-12-15",
+          "leaveDate": "2026-09-08",
+          "flag": "gb",
           "status": "former"
         },
         {
@@ -21430,28 +21448,12 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "MONSTEERR",
-          "name": "Ondřej Petrů",
-          "joinDate": "2026-01-09",
-          "flag": "cz",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "musashi",
           "name": "Alessio Xhaferi",
           "joinDate": "2026-01-09",
           "flag": "de",
           "captain": true,
           "playerStatus": "STARTER"
-        },
-        {
-          "id": "kendo",
-          "name": "Khian-Kai Rufin",
-          "joinDate": "2026-04-11",
-          "flag": "gb",
-          "captain": false,
-          "playerStatus": "SUBSTITUTE"
         }
       ],
       "formerPlayers": [
@@ -21615,6 +21617,24 @@
           "leaveDate": "2025-05-13",
           "newTeam": "Gentle Mates (Loan)",
           "flag": "de",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "kendo",
+          "name": "Khian-Kai Rufin",
+          "joinDate": "2026-04-11",
+          "leaveDate": "2026-09-07",
+          "newTeam": null,
+          "flag": "gb",
+          "playerStatus": "SUBSTITUTE"
+        },
+        {
+          "id": "MONSTEERR",
+          "name": "Ondřej Petrů",
+          "joinDate": "2026-01-09",
+          "leaveDate": "2026-09-01",
+          "newTeam": null,
+          "flag": "cz",
           "playerStatus": "STARTER"
         },
         {

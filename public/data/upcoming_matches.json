@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-09T16:52:22Z"
+    "fetchedAt": "2026-09-09T21:08:18Z"
   },
   "matches": [
     {
@@ -96,6 +96,110 @@
       "score1": 3,
       "score2": 2,
       "started": true
+    },
+    {
+      "key": "1790240400|team-liquid|paper-rex",
+      "event": "Valorant Champions 2026",
+      "liquipediaPage": "VCT/2026/Champions",
+      "phase": null,
+      "timestamp": 1790240400,
+      "bestOf": 3,
+      "team1": "Team Liquid",
+      "team2": "Paper Rex",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1790251200|tyloo|g2-esports",
+      "event": "Valorant Champions 2026",
+      "liquipediaPage": "VCT/2026/Champions",
+      "phase": null,
+      "timestamp": 1790251200,
+      "bestOf": 3,
+      "team1": "TYLOO",
+      "team2": "G2 Esports",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1790326800|nongshim-redforce|nrg",
+      "event": "Valorant Champions 2026",
+      "liquipediaPage": "VCT/2026/Champions",
+      "phase": null,
+      "timestamp": 1790326800,
+      "bestOf": 3,
+      "team1": "Nongshim RedForce",
+      "team2": "NRG",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1790337600|karmine-corp|xi-lai-gaming",
+      "event": "Valorant Champions 2026",
+      "liquipediaPage": "VCT/2026/Champions",
+      "phase": null,
+      "timestamp": 1790337600,
+      "bestOf": 3,
+      "team1": "Karmine Corp",
+      "team2": "Xi Lai Gaming",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1790413200|global-esports|team-vitality",
+      "event": "Valorant Champions 2026",
+      "liquipediaPage": "VCT/2026/Champions",
+      "phase": null,
+      "timestamp": 1790413200,
+      "bestOf": 3,
+      "team1": "Global Esports",
+      "team2": "Team Vitality",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1790424000|loud|edward-gaming",
+      "event": "Valorant Champions 2026",
+      "liquipediaPage": "VCT/2026/Champions",
+      "phase": null,
+      "timestamp": 1790424000,
+      "bestOf": 3,
+      "team1": "LOUD",
+      "team2": "EDward Gaming",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1790499600|100-thieves|t1",
+      "event": "Valorant Champions 2026",
+      "liquipediaPage": "VCT/2026/Champions",
+      "phase": null,
+      "timestamp": 1790499600,
+      "bestOf": 3,
+      "team1": "100 Thieves",
+      "team2": "T1",
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1790510400|jdg-esports|fut-esports",
+      "event": "Valorant Champions 2026",
+      "liquipediaPage": "VCT/2026/Champions",
+      "phase": null,
+      "timestamp": 1790510400,
+      "bestOf": 3,
+      "team1": "JDG Esports",
+      "team2": "FUT Esports",
+      "score1": null,
+      "score2": null,
+      "started": false
     }
   ]
 }

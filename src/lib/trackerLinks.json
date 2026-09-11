@@ -1584,7 +1584,7 @@
   "pxs": [
     {
       "puuid": "e3dada8e-0c04-5c7f-a7f4-9f5b25ca0909",
-      "riotId": "INTZ pxs#2001"
+      "riotId": "pxs#001"
     }
   ],
   "elite": [
@@ -1601,7 +1601,7 @@
   ],
   "aspas": [
     {
-      "puuid": null,
+      "puuid": "1ec77176-4fe8-5f95-8379-93340c789929",
       "riotId": "MIBR aspas#naхy"
     }
   ]

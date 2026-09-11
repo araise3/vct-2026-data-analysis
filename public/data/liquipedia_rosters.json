@@ -1220,15 +1220,6 @@
           "status": "active"
         },
         {
-          "id": "Viento",
-          "name": "Göktuğ Alp Çebi",
-          "role": "Assistant Coach",
-          "joinDate": "2025-12-19",
-          "leaveDate": null,
-          "flag": "tr",
-          "status": "active"
-        },
-        {
           "id": "GAIS",
           "name": "Eray Sarıkaya",
           "role": "Coach",
@@ -1361,6 +1352,15 @@
           "joinDate": "2024-10-25",
           "leaveDate": "2025-06-09",
           "flag": null,
+          "status": "former"
+        },
+        {
+          "id": "Viento",
+          "name": "Göktuğ Alp Çebi",
+          "role": "Assistant Coach",
+          "joinDate": "2025-12-19",
+          "leaveDate": "2026-09-09",
+          "flag": "tr",
           "status": "former"
         },
         {
@@ -3304,38 +3304,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "keznit",
-          "name": "Angelo Mori",
-          "joinDate": "2026-01-09",
-          "flag": "cl",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "Rossy",
-          "name": "Daniel Abedrabbo",
-          "joinDate": "2026-01-09",
-          "flag": "us",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "Demon1",
-          "name": "Maximilian Mazanov",
-          "joinDate": "2026-02-05",
-          "flag": "us",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "GLYPH",
-          "name": "Conner Garcia",
-          "joinDate": "2026-06-30",
-          "flag": "ph",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "nightz",
           "name": "Christian Smith",
           "joinDate": "2026-07-15",
@@ -3356,6 +3324,38 @@
           "name": "Matteo Weber",
           "joinDate": "2025-03-08",
           "flag": "us",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "keznit",
+          "name": "Angelo Mori",
+          "joinDate": "2026-01-09",
+          "flag": "cl",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "Rossy",
+          "name": "Daniel Abedrabbo",
+          "joinDate": "2026-01-09",
+          "flag": "us",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "Demon1",
+          "name": "Maximilian Mazanov",
+          "joinDate": "2026-02-05",
+          "flag": "us",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "GLYPH",
+          "name": "Conner Garcia",
+          "joinDate": "2026-06-30",
+          "flag": "ph",
           "captain": false,
           "playerStatus": "BENCHED"
         }
@@ -3488,6 +3488,42 @@
           "playerStatus": "STARTER"
         },
         {
+          "id": "Demon1",
+          "name": "Maximilian Mazanov",
+          "joinDate": "2026-02-05",
+          "leaveDate": "2026-09-09",
+          "newTeam": "ENVY (Inactive)",
+          "flag": "us",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "GLYPH",
+          "name": "Conner Garcia",
+          "joinDate": "2026-06-30",
+          "leaveDate": "2026-09-09",
+          "newTeam": "ENVY (Inactive)",
+          "flag": "ph",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "keznit",
+          "name": "Angelo Mori",
+          "joinDate": "2026-01-09",
+          "leaveDate": "2026-09-09",
+          "newTeam": "ENVY (Inactive)",
+          "flag": "cl",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Rossy",
+          "name": "Daniel Abedrabbo",
+          "joinDate": "2026-01-09",
+          "leaveDate": "2026-09-08",
+          "newTeam": "ENVY (Inactive)",
+          "flag": "us",
+          "playerStatus": "STARTER"
+        },
+        {
           "id": "P0PPIN",
           "name": "Matteo Weber",
           "joinDate": "2025-03-08",
@@ -3571,15 +3607,6 @@
           "status": "active"
         },
         {
-          "id": "WKN",
-          "name": "Álvaro Bustos",
-          "role": "Assistant Coach",
-          "joinDate": "2026-01-09",
-          "leaveDate": null,
-          "flag": "cl",
-          "status": "active"
-        },
-        {
           "id": "Mikes",
           "name": "Michael Hockom",
           "role": "Coach",
@@ -3595,6 +3622,15 @@
           "joinDate": "2021-10-13",
           "leaveDate": "2022-02-10",
           "flag": "us",
+          "status": "former"
+        },
+        {
+          "id": "WKN",
+          "name": "Álvaro Bustos",
+          "role": "Assistant Coach",
+          "joinDate": "2026-01-09",
+          "leaveDate": "2026-09-09",
+          "flag": "cl",
           "status": "former"
         }
       ]
@@ -4856,15 +4892,6 @@
       ],
       "coaches": [
         {
-          "id": "Engh",
-          "name": "Andrey Sholokhov",
-          "role": "Head Coach",
-          "joinDate": "2026-05-29",
-          "leaveDate": null,
-          "flag": "ru",
-          "status": "active"
-        },
-        {
           "id": "Desmo",
           "name": "Casper Rasmussen",
           "role": "Assistant Coach",
@@ -5042,6 +5069,15 @@
           "joinDate": "2023-10-21",
           "leaveDate": "2025-02-06",
           "flag": "au",
+          "status": "former"
+        },
+        {
+          "id": "Engh",
+          "name": "Andrey Sholokhov",
+          "role": "Head Coach",
+          "joinDate": "2026-05-29",
+          "leaveDate": "2026-09-09",
+          "flag": "ru",
           "status": "former"
         },
         {
@@ -7660,14 +7696,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "Jesse",
-          "name": "Adam Čtvrtníček",
-          "joinDate": "2026-07-25",
-          "flag": "cz",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "tomaszy",
           "name": "Tomás Machado",
           "joinDate": "2025-04-16",
@@ -7801,6 +7829,15 @@
           "leaveDate": "2025-04-16",
           "newTeam": "GIANTX (Inactive)",
           "flag": "pt",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Jesse",
+          "name": "Adam Čtvrtníček",
+          "joinDate": "2026-07-25",
+          "leaveDate": "2026-09-09",
+          "newTeam": null,
+          "flag": "cz",
           "playerStatus": "STARTER"
         },
         {
@@ -10013,20 +10050,20 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "Saadhak",
-          "name": "Matias Delipetro",
-          "joinDate": "2025-12-13",
-          "flag": "ar",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "heat",
           "name": "Olavo Marcelo Saabi Batista Lemes",
           "joinDate": "2026-06-26",
           "flag": "br",
           "captain": false,
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "Saadhak",
+          "name": "Matias Delipetro",
+          "joinDate": "2025-12-13",
+          "flag": "ar",
+          "captain": false,
+          "playerStatus": "BENCHED"
         }
       ],
       "formerPlayers": [
@@ -10307,6 +10344,15 @@
           "leaveDate": "2025-01-17",
           "newTeam": "OXEN",
           "flag": "cl",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Saadhak",
+          "name": "Matias Delipetro",
+          "joinDate": "2025-12-13",
+          "leaveDate": "2026-09-10",
+          "newTeam": "KRÜ Esports (Inactive)",
+          "flag": "ar",
           "playerStatus": "STARTER"
         },
         {
@@ -14440,14 +14486,6 @@
           "flag": "ca",
           "captain": false,
           "playerStatus": "STARTER"
-        },
-        {
-          "id": "Marved",
-          "name": "Jimmy Nguyen",
-          "joinDate": "2026-07-15",
-          "flag": "ca",
-          "captain": false,
-          "playerStatus": "STAND-IN"
         }
       ],
       "formerPlayers": [
@@ -14738,6 +14776,15 @@
           "newTeam": "100 Thieves",
           "flag": "us",
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "Marved",
+          "name": "Jimmy Nguyen",
+          "joinDate": "2026-07-15",
+          "leaveDate": "2026-09-09",
+          "newTeam": null,
+          "flag": "ca",
+          "playerStatus": "STAND-IN"
         },
         {
           "id": "Victor",
@@ -16417,14 +16464,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "purp0",
-          "name": "Semyon Borchev",
-          "joinDate": "2025-12-12",
-          "flag": "ru",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "Kicks",
           "name": "Kimmie Laasner",
           "joinDate": "2026-06-26",
@@ -16441,10 +16480,26 @@
           "playerStatus": "STARTER"
         },
         {
+          "id": "GSR",
+          "name": "Ognjen Bondžić",
+          "joinDate": "2026-09-09",
+          "flag": "rs",
+          "captain": false,
+          "playerStatus": "STARTER"
+        },
+        {
           "id": "MiniBoo",
           "name": "Dominykas Lukaševičius",
           "joinDate": "2025-12-12",
           "flag": "lt",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "purp0",
+          "name": "Semyon Borchev",
+          "joinDate": "2025-12-12",
+          "flag": "ru",
           "captain": false,
           "playerStatus": "BENCHED"
         },
@@ -16726,6 +16781,15 @@
           "leaveDate": "2025-03-18",
           "newTeam": "Gentle Mates",
           "flag": "pl",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "purp0",
+          "name": "Semyon Borchev",
+          "joinDate": "2025-12-12",
+          "leaveDate": "2026-09-09",
+          "newTeam": "Team Liquid (Inactive)",
+          "flag": "ru",
           "playerStatus": "STARTER"
         },
         {

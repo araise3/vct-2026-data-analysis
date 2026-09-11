@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-11T05:08:30Z"
+    "fetchedAt": "2026-09-11T11:44:57Z"
   },
   "matches": [
     {
@@ -389,6 +389,19 @@
       "liquipediaPage": "VCT/2026/Champions",
       "phase": null,
       "timestamp": 1791547200,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1791622800|tbd|tbd",
+      "event": "Valorant Champions 2026",
+      "liquipediaPage": "VCT/2026/Champions",
+      "phase": null,
+      "timestamp": 1791622800,
       "bestOf": 3,
       "team1": null,
       "team2": null,

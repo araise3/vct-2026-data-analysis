@@ -3,22 +3,9 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-12T04:57:07Z"
+    "fetchedAt": "2026-09-12T11:12:43Z"
   },
   "matches": [
-    {
-      "key": "1788681600|nongshim-redforce|global-esports",
-      "event": "Vct 2026 Pacific Stage 2",
-      "liquipediaPage": "VCT/2026/Pacific League/Stage 2",
-      "phase": null,
-      "timestamp": 1788681600,
-      "bestOf": 5,
-      "team1": "Nongshim RedForce",
-      "team2": "Global Esports",
-      "score1": 2,
-      "score2": 3,
-      "started": true
-    },
     {
       "key": "1788714000|100-thieves|loud",
       "event": "Vct 2026 Americas Stage 2",
@@ -220,6 +207,19 @@
       "liquipediaPage": "VCT/2026/Champions",
       "phase": null,
       "timestamp": 1790931600,
+      "bestOf": 3,
+      "team1": null,
+      "team2": null,
+      "score1": null,
+      "score2": null,
+      "started": false
+    },
+    {
+      "key": "1790942400|tbd|tbd",
+      "event": "Valorant Champions 2026",
+      "liquipediaPage": "VCT/2026/Champions",
+      "phase": null,
+      "timestamp": 1790942400,
       "bestOf": 3,
       "team1": null,
       "team2": null,

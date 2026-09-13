@@ -843,14 +843,6 @@
     "BBL Esports": {
       "players": [
         {
-          "id": "Crewen",
-          "name": "Ali Eren Sargin",
-          "joinDate": "2025-11-27",
-          "flag": "tr",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "Lar0k",
           "name": "Yusuf Kaan Kanber",
           "joinDate": "2025-11-27",
@@ -867,20 +859,28 @@
           "playerStatus": "STARTER"
         },
         {
+          "id": "Crewen",
+          "name": "Ali Eren Sargin",
+          "joinDate": "2025-11-27",
+          "flag": "tr",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
           "id": "lovers rock",
           "name": "Umut Pekdoğan",
           "joinDate": "2025-11-27",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "BENCHED"
         },
         {
           "id": "Rosé",
           "name": "Eren Erzan",
           "joinDate": "2025-11-27",
           "flag": "tr",
-          "captain": true,
-          "playerStatus": "STARTER"
+          "captain": false,
+          "playerStatus": "BENCHED"
         }
       ],
       "formerPlayers": [
@@ -1198,6 +1198,33 @@
           "newTeam": null,
           "flag": "lt",
           "playerStatus": "STAND-IN"
+        },
+        {
+          "id": "Crewen",
+          "name": "Ali Eren Sargin",
+          "joinDate": "2025-11-27",
+          "leaveDate": "2026-09-11",
+          "newTeam": "BBL Esports (Inactive)",
+          "flag": "tr",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "lovers rock",
+          "name": "Umut Pekdoğan",
+          "joinDate": "2025-11-27",
+          "leaveDate": "2026-09-11",
+          "newTeam": "BBL Esports (Inactive)",
+          "flag": "tr",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Rosé",
+          "name": "Eren Erzan",
+          "joinDate": "2025-11-27",
+          "leaveDate": "2026-09-11",
+          "newTeam": "BBL Esports (Inactive)",
+          "flag": "tr",
+          "playerStatus": "STARTER"
         },
         {
           "id": "LêwN",
@@ -3662,14 +3689,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "nekky",
-          "name": "Anıl Dağdeviren",
-          "joinDate": "2026-03-20",
-          "flag": "tr",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "Spear",
           "name": "Arda Burak Kartal",
           "joinDate": "2026-07-22",
@@ -3681,6 +3700,14 @@
           "id": "Izzy",
           "name": "Baran Yılmaz",
           "joinDate": "2024-10-14",
+          "flag": "tr",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "nekky",
+          "name": "Anıl Dağdeviren",
+          "joinDate": "2026-03-20",
           "flag": "tr",
           "captain": false,
           "playerStatus": "BENCHED"
@@ -3936,6 +3963,15 @@
           "joinDate": "2025-06-01",
           "leaveDate": "2025-08-31",
           "newTeam": null,
+          "flag": "tr",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "nekky",
+          "name": "Anıl Dağdeviren",
+          "joinDate": "2026-03-20",
+          "leaveDate": "2026-09-11",
+          "newTeam": "Eternal Fire (Inactive)",
           "flag": "tr",
           "playerStatus": "STARTER"
         },

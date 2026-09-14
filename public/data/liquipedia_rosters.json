@@ -8538,14 +8538,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "H1ber",
-          "name": "Joona Parviainen",
-          "joinDate": "2026-08-05",
-          "flag": "fi",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "Click",
           "name": "Haydem Ali",
           "joinDate": "2024-12-04",
@@ -8767,6 +8759,15 @@
           "leaveDate": "2025-03-19",
           "newTeam": "Gentle Mates (Inactive)",
           "flag": "nl",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "H1ber",
+          "name": "Joona Parviainen",
+          "joinDate": "2026-08-05",
+          "leaveDate": "2026-09-13",
+          "newTeam": null,
+          "flag": "fi",
           "playerStatus": "STARTER"
         },
         {
@@ -13800,15 +13801,6 @@
           "status": "active"
         },
         {
-          "id": "ZaeS",
-          "name": "Dario Gomez",
-          "role": "Assistant Coach",
-          "joinDate": "2026-04-02",
-          "leaveDate": null,
-          "flag": "es",
-          "status": "active"
-        },
-        {
           "id": "Haul",
           "name": "Arda Özgül",
           "role": "Assistant Coach",
@@ -13833,6 +13825,15 @@
           "joinDate": "2024-04-30",
           "leaveDate": "2024-06-02",
           "flag": "tr",
+          "status": "former"
+        },
+        {
+          "id": "ZaeS",
+          "name": "Dario Gomez",
+          "role": "Assistant Coach",
+          "joinDate": "2026-04-02",
+          "leaveDate": "2026-09-11",
+          "flag": "es",
           "status": "former"
         },
         {
@@ -17212,15 +17213,6 @@
           "status": "active"
         },
         {
-          "id": "skyeSG",
-          "name": "Felipe Skye Lim",
-          "role": "Coach",
-          "joinDate": "2026-07-15",
-          "leaveDate": null,
-          "flag": "sg",
-          "status": "active"
-        },
-        {
           "id": "Fayde",
           "name": "Chong Hoc Wah",
           "role": "Coach",
@@ -17272,6 +17264,15 @@
           "joinDate": "2024-05-22",
           "leaveDate": "2025-01-09",
           "flag": "us",
+          "status": "former"
+        },
+        {
+          "id": "skyeSG",
+          "name": "Felipe Skye Lim",
+          "role": "Coach",
+          "joinDate": "2026-07-15",
+          "leaveDate": "2026-09-10",
+          "flag": "sg",
           "status": "former"
         },
         {
@@ -21849,20 +21850,20 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "Magnum",
-          "name": "Martin Peňkov",
-          "joinDate": "2026-01-14",
-          "flag": "cz",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "paTiTek",
           "name": "Patryk Fabrowski",
           "joinDate": "2026-06-10",
           "flag": "pl",
           "captain": false,
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "Magnum",
+          "name": "Martin Peňkov",
+          "joinDate": "2026-01-14",
+          "flag": "cz",
+          "captain": false,
+          "playerStatus": "BENCHED"
         }
       ],
       "formerPlayers": [
@@ -22152,6 +22153,15 @@
           "leaveDate": "2025-10-27",
           "newTeam": "Formulation Gaming",
           "flag": "pl",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Magnum",
+          "name": "Martin Peňkov",
+          "joinDate": "2026-01-14",
+          "leaveDate": "2026-09-13",
+          "newTeam": "Enterprise Esports (Inactive)",
+          "flag": "cz",
           "playerStatus": "STARTER"
         },
         {

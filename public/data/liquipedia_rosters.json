@@ -10063,14 +10063,6 @@
     "KRÜ Esports": {
       "players": [
         {
-          "id": "Dantedeu5",
-          "name": "Jesús Federico Larrosa",
-          "joinDate": "2025-07-12",
-          "flag": "ar",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "Less",
           "name": "Felipe de Loyola Basso",
           "joinDate": "2025-12-13",
@@ -10093,6 +10085,14 @@
           "flag": "br",
           "captain": false,
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "Dantedeu5",
+          "name": "Jesús Federico Larrosa",
+          "joinDate": "2025-07-12",
+          "flag": "ar",
+          "captain": false,
+          "playerStatus": "BENCHED"
         },
         {
           "id": "Saadhak",
@@ -10381,6 +10381,15 @@
           "leaveDate": "2025-01-17",
           "newTeam": "OXEN",
           "flag": "cl",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Dantedeu5",
+          "name": "Jesús Federico Larrosa",
+          "joinDate": "2025-07-12",
+          "leaveDate": "2026-09-15",
+          "newTeam": "KRÜ Esports (Inactive)",
+          "flag": "ar",
           "playerStatus": "STARTER"
         },
         {
@@ -13523,22 +13532,6 @@
     "PCIFIC Esports": {
       "players": [
         {
-          "id": "al0rante",
-          "name": "Felix Brandl",
-          "joinDate": "2026-01-20",
-          "flag": "de",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "NINJA",
-          "name": "Patryk Koczyba",
-          "joinDate": "2026-01-20",
-          "flag": "pl",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "qpert",
           "name": "Mateja Mijović",
           "joinDate": "2026-01-20",
@@ -13561,6 +13554,22 @@
           "flag": "gb",
           "captain": false,
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "al0rante",
+          "name": "Felix Brandl",
+          "joinDate": "2026-01-20",
+          "flag": "de",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "NINJA",
+          "name": "Patryk Koczyba",
+          "joinDate": "2026-01-20",
+          "flag": "pl",
+          "captain": false,
+          "playerStatus": "BENCHED"
         }
       ],
       "formerPlayers": [
@@ -13779,6 +13788,24 @@
           "newTeam": "There is no Tomorrow",
           "flag": "tr",
           "playerStatus": "INACTIVE"
+        },
+        {
+          "id": "NINJA",
+          "name": "Patryk Koczyba",
+          "joinDate": "2026-01-20",
+          "leaveDate": "2026-09-15",
+          "newTeam": "PCIFIC Esports (Inactive)",
+          "flag": "pl",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "al0rante",
+          "name": "Felix Brandl",
+          "joinDate": "2026-01-20",
+          "leaveDate": "2026-09-14",
+          "newTeam": "PCIFIC Esports (Inactive)",
+          "flag": "de",
+          "playerStatus": "STARTER"
         },
         {
           "id": "cNed",
@@ -14418,15 +14445,6 @@
       ],
       "coaches": [
         {
-          "id": "Jovi",
-          "name": "Jovanni Vera",
-          "role": "Head Coach",
-          "joinDate": "2025-11-28",
-          "leaveDate": null,
-          "flag": "us",
-          "status": "active"
-        },
-        {
           "id": "Warbirds",
           "name": "Evan Olzem",
           "role": "Assistant Coach",
@@ -14479,6 +14497,15 @@
           "leaveDate": "2025-10-16",
           "flag": "za",
           "status": "former"
+        },
+        {
+          "id": "Jovi",
+          "name": "Jovanni Vera",
+          "role": "Head Coach",
+          "joinDate": "2025-11-28",
+          "leaveDate": "2026-09-14",
+          "flag": "us",
+          "status": "former"
         }
       ]
     },
@@ -14522,7 +14549,7 @@
           "joinDate": "2026-03-24",
           "flag": "ca",
           "captain": false,
-          "playerStatus": "STARTER"
+          "playerStatus": "BENCHED"
         }
       ],
       "formerPlayers": [
@@ -14812,6 +14839,15 @@
           "leaveDate": "2025-10-22",
           "newTeam": "100 Thieves",
           "flag": "us",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Jerrwin",
+          "name": "Gurjiwan Gill",
+          "joinDate": "2026-03-24",
+          "leaveDate": "2026-09-15",
+          "newTeam": "Sentinels (Inactive)",
+          "flag": "ca",
           "playerStatus": "STARTER"
         },
         {
@@ -16959,20 +16995,20 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "STYRON",
-          "name": "Tidus Goh Zhen Wei",
-          "joinDate": "2026-07-15",
-          "flag": "sg",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "Zeus",
           "name": "Jhian Zeus Dela Vega",
           "joinDate": "2026-07-15",
           "flag": "ph",
           "captain": false,
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "STYRON",
+          "name": "Tidus Goh Zhen Wei",
+          "joinDate": "2026-07-15",
+          "flag": "sg",
+          "captain": false,
+          "playerStatus": "BENCHED"
         }
       ],
       "formerPlayers": [
@@ -17148,6 +17184,15 @@
           "playerStatus": "STARTER"
         },
         {
+          "id": "STYRON",
+          "name": "Tidus Goh Zhen Wei",
+          "joinDate": "2026-07-15",
+          "leaveDate": "2026-09-14",
+          "newTeam": "Team Secret (Inactive)",
+          "flag": "sg",
+          "playerStatus": "STARTER"
+        },
+        {
           "id": "Zeus",
           "name": "Jhian Zeus Dela Vega",
           "joinDate": "2026-03-27",
@@ -17204,15 +17249,6 @@
       ],
       "coaches": [
         {
-          "id": "Spin",
-          "name": "Peter Bradford",
-          "role": "Head Coach",
-          "joinDate": "2026-07-15",
-          "leaveDate": null,
-          "flag": "gb",
-          "status": "active"
-        },
-        {
           "id": "Fayde",
           "name": "Chong Hoc Wah",
           "role": "Coach",
@@ -17264,6 +17300,15 @@
           "joinDate": "2024-05-22",
           "leaveDate": "2025-01-09",
           "flag": "us",
+          "status": "former"
+        },
+        {
+          "id": "Spin",
+          "name": "Peter Bradford",
+          "role": "Head Coach",
+          "joinDate": "2026-07-15",
+          "leaveDate": "2026-09-15",
+          "flag": "gb",
           "status": "former"
         },
         {
@@ -22185,15 +22230,6 @@
       ],
       "coaches": [
         {
-          "id": "itopata",
-          "name": "Dimitar Staev",
-          "role": "Head Coach",
-          "joinDate": "2026-01-14",
-          "leaveDate": null,
-          "flag": "bg",
-          "status": "active"
-        },
-        {
           "id": "ShadoW",
           "name": "Tobias Flodström",
           "role": "Assistant Coach",
@@ -22245,6 +22281,15 @@
           "joinDate": "2025-02-02",
           "leaveDate": "2025-03-06",
           "flag": "it",
+          "status": "former"
+        },
+        {
+          "id": "itopata",
+          "name": "Dimitar Staev",
+          "role": "Head Coach",
+          "joinDate": "2026-01-14",
+          "leaveDate": "2026-09-15",
+          "flag": "bg",
           "status": "former"
         }
       ]
@@ -26479,15 +26524,6 @@
           "status": "active"
         },
         {
-          "id": "FIN",
-          "name": "Franklin Ascencio",
-          "role": "Assistant Coach",
-          "joinDate": "2026-04-16",
-          "leaveDate": null,
-          "flag": "us",
-          "status": "active"
-        },
-        {
           "id": "GUNTER",
           "name": "Luke Clives",
           "role": "Assistant Coach",
@@ -26524,6 +26560,15 @@
           "status": "former"
         },
         {
+          "id": "FIN",
+          "name": "Franklin Ascencio",
+          "role": "Assistant Coach",
+          "joinDate": "2026-04-16",
+          "leaveDate": "2026-09-14",
+          "flag": "us",
+          "status": "former"
+        },
+        {
           "id": "NiSMO",
           "name": "Marc-Andre Tayar",
           "role": "Head Coach",
@@ -26535,48 +26580,7 @@
       ]
     },
     "ONSIDE GAMING": {
-      "players": [
-        {
-          "id": "Cloudy",
-          "name": "Gu Min-jae",
-          "joinDate": "2025-12-16",
-          "flag": "kr",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "Ray",
-          "name": "Oh Eun-hyuk",
-          "joinDate": "2025-12-16",
-          "flag": "kr",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "Wolverine",
-          "name": "Cho Hyun-tae",
-          "joinDate": "2025-12-16",
-          "flag": "kr",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "Xiesta",
-          "name": "Jung Si-hwan",
-          "joinDate": "2026-02-20",
-          "flag": "kr",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "Hermes",
-          "name": "Ahn Byeong-wook",
-          "joinDate": "2026-08-04",
-          "flag": "kr",
-          "captain": false,
-          "playerStatus": "STARTER"
-        }
-      ],
+      "players": [],
       "formerPlayers": [
         {
           "id": "Aru",
@@ -26633,13 +26637,58 @@
           "playerStatus": "STARTER"
         },
         {
+          "id": "Cloudy",
+          "name": "Gu Min-jae",
+          "joinDate": "2025-12-16",
+          "leaveDate": "2026-09-15",
+          "newTeam": null,
+          "flag": "kr",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Hermes",
+          "name": "Ahn Byeong-wook",
+          "joinDate": "2026-08-04",
+          "leaveDate": "2026-09-15",
+          "newTeam": null,
+          "flag": "kr",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Ray",
+          "name": "Oh Eun-hyuk",
+          "joinDate": "2025-12-16",
+          "leaveDate": "2026-09-15",
+          "newTeam": null,
+          "flag": "kr",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Wolverine",
+          "name": "Cho Hyun-tae",
+          "joinDate": "2025-12-16",
+          "leaveDate": "2026-09-15",
+          "newTeam": null,
+          "flag": "kr",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Xiesta",
+          "name": "Jung Si-hwan",
+          "joinDate": "2026-02-20",
+          "leaveDate": "2026-09-15",
+          "newTeam": "Gen.G Esports (Inactive)",
+          "flag": "kr",
+          "playerStatus": "STARTER"
+        },
+        {
           "id": "Faither",
           "name": "Lee Hwi-seong",
           "joinDate": "2026-08-08",
           "leaveDate": "2026-08-31",
           "newTeam": null,
           "flag": "kr",
-          "playerStatus": "INACTIVE"
+          "playerStatus": "STARTER"
         },
         {
           "id": "Faither",
@@ -26671,33 +26720,6 @@
       ],
       "coaches": [
         {
-          "id": "Hype",
-          "name": "Park Min-su",
-          "role": "Head Coach",
-          "joinDate": "2025-12-16",
-          "leaveDate": null,
-          "flag": "kr",
-          "status": "active"
-        },
-        {
-          "id": "Doo",
-          "name": null,
-          "role": "Coach",
-          "joinDate": "2025-12-17",
-          "leaveDate": null,
-          "flag": "kr",
-          "status": "active"
-        },
-        {
-          "id": "Leg1t",
-          "name": "Choi Gye-ryun",
-          "role": "Coach",
-          "joinDate": "2026-08-10",
-          "leaveDate": null,
-          "flag": "kr",
-          "status": "active"
-        },
-        {
           "id": "Xive",
           "name": "Lee Do-hoon",
           "role": "Head Coach",
@@ -26712,6 +26734,33 @@
           "role": "Coach",
           "joinDate": "2025-06-26",
           "leaveDate": "2025-09-03",
+          "flag": "kr",
+          "status": "former"
+        },
+        {
+          "id": "Doo",
+          "name": null,
+          "role": "Coach",
+          "joinDate": "2025-12-17",
+          "leaveDate": "2026-09-15",
+          "flag": "kr",
+          "status": "former"
+        },
+        {
+          "id": "Hype",
+          "name": "Park Min-su",
+          "role": "Head Coach",
+          "joinDate": "2025-12-16",
+          "leaveDate": "2026-09-15",
+          "flag": "kr",
+          "status": "former"
+        },
+        {
+          "id": "Leg1t",
+          "name": "Choi Gye-ryun",
+          "role": "Coach",
+          "joinDate": "2026-08-10",
+          "leaveDate": "2026-09-15",
           "flag": "kr",
           "status": "former"
         },

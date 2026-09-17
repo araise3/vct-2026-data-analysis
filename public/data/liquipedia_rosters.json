@@ -11412,14 +11412,6 @@
     "LOUD": {
       "players": [
         {
-          "id": "cauanzin",
-          "name": "Cauan Pereira",
-          "joinDate": "2022-11-10",
-          "flag": "br",
-          "captain": false,
-          "playerStatus": "BENCHED"
-        },
-        {
           "id": "lukxo",
           "name": "Lucca Travaioli",
           "joinDate": "2025-01-15",
@@ -11566,6 +11558,15 @@
           "joinDate": "2024-11-16",
           "leaveDate": "2025-04-30",
           "newTeam": "TBK Esports",
+          "flag": "br",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "cauanzin",
+          "name": "Cauan Pereira",
+          "joinDate": "2022-11-10",
+          "leaveDate": "2026-09-15",
+          "newTeam": null,
           "flag": "br",
           "playerStatus": "STARTER"
         },
@@ -13548,14 +13549,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "waddle",
-          "name": "Wadir Taraki",
-          "joinDate": "2026-07-14",
-          "flag": "gb",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "al0rante",
           "name": "Felix Brandl",
           "joinDate": "2026-01-20",
@@ -13568,6 +13561,14 @@
           "name": "Patryk Koczyba",
           "joinDate": "2026-01-20",
           "flag": "pl",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "waddle",
+          "name": "Wadir Taraki",
+          "joinDate": "2026-07-14",
+          "flag": "gb",
           "captain": false,
           "playerStatus": "BENCHED"
         }
@@ -13788,6 +13789,15 @@
           "newTeam": "There is no Tomorrow",
           "flag": "tr",
           "playerStatus": "INACTIVE"
+        },
+        {
+          "id": "waddle",
+          "name": "Wadir Taraki",
+          "joinDate": "2026-07-14",
+          "leaveDate": "2026-09-16",
+          "newTeam": "PCIFIC Esports (Inactive)",
+          "flag": "gb",
+          "playerStatus": "STARTER"
         },
         {
           "id": "NINJA",
@@ -16971,22 +16981,6 @@
     "Team Secret": {
       "players": [
         {
-          "id": "kellyS",
-          "name": "Kelly Kent Sedillo",
-          "joinDate": "2025-05-15",
-          "flag": "ph",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
-          "id": "Sylvan",
-          "name": "Ko Young-sub",
-          "joinDate": "2025-10-28",
-          "flag": "kr",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "naTz",
           "name": "Jonathan Adiputra",
           "joinDate": "2026-07-15",
@@ -17001,6 +16995,22 @@
           "flag": "ph",
           "captain": false,
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "kellyS",
+          "name": "Kelly Kent Sedillo",
+          "joinDate": "2025-05-15",
+          "flag": "ph",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "Sylvan",
+          "name": "Ko Young-sub",
+          "joinDate": "2025-10-28",
+          "flag": "kr",
+          "captain": false,
+          "playerStatus": "BENCHED"
         },
         {
           "id": "STYRON",
@@ -17181,6 +17191,24 @@
           "leaveDate": "2025-05-13",
           "newTeam": "Jade Lions",
           "flag": "ph",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "kellyS",
+          "name": "Kelly Kent Sedillo",
+          "joinDate": "2025-05-15",
+          "leaveDate": "2026-09-16",
+          "newTeam": "Team Secret (Inactive)",
+          "flag": "ph",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "Sylvan",
+          "name": "Ko Young-sub",
+          "joinDate": "2025-10-28",
+          "leaveDate": "2026-09-16",
+          "newTeam": "Team Secret (Inactive)",
+          "flag": "kr",
           "playerStatus": "STARTER"
         },
         {
@@ -26739,7 +26767,7 @@
         },
         {
           "id": "Doo",
-          "name": null,
+          "name": "Jung Hyeon Doo",
           "role": "Coach",
           "joinDate": "2025-12-17",
           "leaveDate": "2026-09-15",

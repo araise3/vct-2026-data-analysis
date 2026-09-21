@@ -3331,14 +3331,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "nightz",
-          "name": "Christian Smith",
-          "joinDate": "2026-07-15",
-          "flag": "us",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "ion2x",
           "name": "Ayan Rastogi",
           "joinDate": "2025-03-08",
@@ -3383,6 +3375,14 @@
           "name": "Conner Garcia",
           "joinDate": "2026-06-30",
           "flag": "ph",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "nightz",
+          "name": "Christian Smith",
+          "joinDate": "2026-07-15",
+          "flag": "us",
           "captain": false,
           "playerStatus": "BENCHED"
         }
@@ -3512,6 +3512,15 @@
           "leaveDate": "2022-01-13",
           "newTeam": "Team Envy",
           "flag": "ca",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "nightz",
+          "name": "Christian Smith",
+          "joinDate": "2026-07-15",
+          "leaveDate": "2026-09-16",
+          "newTeam": "ENVY (Inactive)",
+          "flag": "us",
           "playerStatus": "STARTER"
         },
         {
@@ -12553,14 +12562,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "CyvOph",
-          "name": "Clément Millard",
-          "joinDate": "2026-06-25",
-          "flag": "fr",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "Shao",
           "name": "Andrei Kiprskii",
           "joinDate": "2022-11-08",
@@ -12581,6 +12582,14 @@
           "name": "Abdullah Al-Twaijri",
           "joinDate": "2026-04-01",
           "flag": "sa",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "CyvOph",
+          "name": "Clément Millard",
+          "joinDate": "2026-06-25",
+          "flag": "fr",
           "captain": false,
           "playerStatus": "BENCHED"
         }
@@ -12773,6 +12782,15 @@
           "leaveDate": "2025-06-02",
           "newTeam": "Natus Vincere (Inactive)",
           "flag": "ca",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "CyvOph",
+          "name": "Clément Millard",
+          "joinDate": "2026-06-25",
+          "leaveDate": "2026-09-17",
+          "newTeam": "Natus Vincere (Inactive)",
+          "flag": "fr",
           "playerStatus": "STARTER"
         },
         {
@@ -13829,15 +13847,6 @@
       ],
       "coaches": [
         {
-          "id": "thinkii",
-          "name": "Manuel Martínez",
-          "role": "Head Coach",
-          "joinDate": "2026-04-02",
-          "leaveDate": null,
-          "flag": "es",
-          "status": "active"
-        },
-        {
           "id": "Haul",
           "name": "Arda Özgül",
           "role": "Assistant Coach",
@@ -13862,6 +13871,15 @@
           "joinDate": "2024-04-30",
           "leaveDate": "2024-06-02",
           "flag": "tr",
+          "status": "former"
+        },
+        {
+          "id": "thinkii",
+          "name": "Manuel Martínez",
+          "role": "Head Coach",
+          "joinDate": "2026-04-02",
+          "leaveDate": "2026-09-18",
+          "flag": "es",
           "status": "former"
         },
         {
@@ -14455,15 +14473,6 @@
       ],
       "coaches": [
         {
-          "id": "Warbirds",
-          "name": "Evan Olzem",
-          "role": "Assistant Coach",
-          "joinDate": "2024-10-10",
-          "leaveDate": null,
-          "flag": "us",
-          "status": "active"
-        },
-        {
           "id": "Rebecca",
           "name": "Rebecca Wong",
           "role": "Performance Coach",
@@ -14506,6 +14515,15 @@
           "joinDate": "2022-09-30",
           "leaveDate": "2025-10-16",
           "flag": "za",
+          "status": "former"
+        },
+        {
+          "id": "Warbirds",
+          "name": "Evan Olzem",
+          "role": "Assistant Coach",
+          "joinDate": "2024-10-10",
+          "leaveDate": "2026-09-17",
+          "flag": "us",
           "status": "former"
         },
         {
@@ -21899,14 +21917,6 @@
     "Enterprise Esports": {
       "players": [
         {
-          "id": "iluri",
-          "name": "Ilari Puranen",
-          "joinDate": "2026-01-14",
-          "flag": "fi",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "kozzy",
           "name": "Denis-Stefan Aionitoaei",
           "joinDate": "2026-01-14",
@@ -21929,6 +21939,14 @@
           "flag": "pl",
           "captain": false,
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "iluri",
+          "name": "Ilari Puranen",
+          "joinDate": "2026-01-14",
+          "flag": "fi",
+          "captain": false,
+          "playerStatus": "BENCHED"
         },
         {
           "id": "Magnum",
@@ -22229,6 +22247,15 @@
           "playerStatus": "STARTER"
         },
         {
+          "id": "iluri",
+          "name": "Ilari Puranen",
+          "joinDate": "2026-01-14",
+          "leaveDate": "2026-09-17",
+          "newTeam": "Enterprise Esports (Inactive)",
+          "flag": "fi",
+          "playerStatus": "STARTER"
+        },
+        {
           "id": "Magnum",
           "name": "Martin Peňkov",
           "joinDate": "2026-01-14",
@@ -22325,14 +22352,6 @@
     "Fire Flux Esports": {
       "players": [
         {
-          "id": "batujnax",
-          "name": "Mehmet Batu Özaslan",
-          "joinDate": "2026-08-05",
-          "flag": "tr",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "DeadInk",
           "name": "Utku Onur Aydın",
           "joinDate": "2026-08-05",
@@ -22370,7 +22389,15 @@
           "joinDate": "2026-08-05",
           "flag": "tr",
           "captain": false,
-          "playerStatus": "SUBSTITUTE"
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "batujnax",
+          "name": "Mehmet Batu Özaslan",
+          "joinDate": "2026-08-05",
+          "flag": "tr",
+          "captain": false,
+          "playerStatus": "BENCHED"
         }
       ],
       "formerPlayers": [
@@ -22798,11 +22825,29 @@
           "playerStatus": "STARTER"
         },
         {
+          "id": "batujnax",
+          "name": "Mehmet Batu Özaslan",
+          "joinDate": "2026-08-05",
+          "leaveDate": "2026-09-21",
+          "newTeam": "Fire Flux Esports (Inactive)",
+          "flag": "tr",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "b1squw1",
+          "name": null,
+          "joinDate": "2026-08-05",
+          "leaveDate": "2026-09-13",
+          "newTeam": "Fire Flux Esports (Inactive)",
+          "flag": "tr",
+          "playerStatus": "SUBSTITUTE"
+        },
+        {
           "id": "Celasun",
           "name": "Emir Celasun",
           "joinDate": "2026-06-04",
           "leaveDate": "2026-07-24",
-          "newTeam": null,
+          "newTeam": "Trigon Titans",
           "flag": "tr",
           "playerStatus": "STARTER"
         },

@@ -7899,7 +7899,7 @@
           "name": "Cihan Göçer",
           "joinDate": "2026-07-14",
           "leaveDate": "2026-07-25",
-          "newTeam": null,
+          "newTeam": "Trigon Titans",
           "flag": "tr",
           "playerStatus": "STARTER"
         },
@@ -10431,15 +10431,6 @@
           "status": "active"
         },
         {
-          "id": "arthur",
-          "name": "Arthur Leon",
-          "role": "Performance Coach",
-          "joinDate": "2025-11-26",
-          "leaveDate": null,
-          "flag": "br",
-          "status": "active"
-        },
-        {
           "id": "Onur",
           "name": "Rodrigo Milton Dalmagro",
           "role": "Coach",
@@ -10527,6 +10518,15 @@
           "joinDate": "2022-01-31",
           "leaveDate": "2025-09-06",
           "flag": "ar",
+          "status": "former"
+        },
+        {
+          "id": "arthur",
+          "name": "Arthur Leon",
+          "role": "Performance Coach",
+          "joinDate": "2025-11-26",
+          "leaveDate": "2026-09-21",
+          "flag": "br",
           "status": "former"
         }
       ]
@@ -11736,20 +11736,20 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "tex",
-          "name": "Ian Botsch",
-          "joinDate": "2025-12-18",
-          "flag": "us",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "zekken",
           "name": "Zachary Jude Patrone",
           "joinDate": "2025-12-18",
           "flag": "us",
           "captain": false,
           "playerStatus": "STARTER"
+        },
+        {
+          "id": "tex",
+          "name": "Ian Botsch",
+          "joinDate": "2025-12-18",
+          "flag": "us",
+          "captain": false,
+          "playerStatus": "BENCHED"
         }
       ],
       "formerPlayers": [
@@ -11976,6 +11976,15 @@
           "leaveDate": "2025-02-27",
           "newTeam": "MIBR (Inactive)",
           "flag": "ar",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "tex",
+          "name": "Ian Botsch",
+          "joinDate": "2025-12-18",
+          "leaveDate": "2026-09-21",
+          "newTeam": "MIBR (Inactive)",
+          "flag": "us",
           "playerStatus": "STARTER"
         },
         {
@@ -20317,14 +20326,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "Brinks",
-          "name": "João Victor",
-          "joinDate": "2025-11-26",
-          "flag": "br",
-          "captain": true,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "gobera",
           "name": "Vitor Gobo Cesar",
           "joinDate": "2026-01-20",
@@ -20451,6 +20452,15 @@
           "playerStatus": "STARTER"
         },
         {
+          "id": "Brinks",
+          "name": "João Victor",
+          "joinDate": "2025-11-26",
+          "leaveDate": "2026-09-21",
+          "newTeam": null,
+          "flag": "br",
+          "playerStatus": "STARTER"
+        },
+        {
           "id": "lz",
           "name": "Luiz Reche",
           "joinDate": "2025-11-26",
@@ -20475,15 +20485,6 @@
           "name": "Gabriel Carli",
           "role": "Head Coach",
           "joinDate": "2026-04-30",
-          "leaveDate": null,
-          "flag": "br",
-          "status": "active"
-        },
-        {
-          "id": "NegaraL",
-          "name": "Alexandre Lopes",
-          "role": "Coach",
-          "joinDate": "2025-12-01",
           "leaveDate": null,
           "flag": "br",
           "status": "active"
@@ -20530,6 +20531,15 @@
           "role": "Coach",
           "joinDate": "2024-05-20",
           "leaveDate": "2025-09-08",
+          "flag": "br",
+          "status": "former"
+        },
+        {
+          "id": "NegaraL",
+          "name": "Alexandre Lopes",
+          "role": "Coach",
+          "joinDate": "2025-12-01",
+          "leaveDate": "2026-09-21",
           "flag": "br",
           "status": "former"
         },
@@ -21933,14 +21943,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "paTiTek",
-          "name": "Patryk Fabrowski",
-          "joinDate": "2026-06-10",
-          "flag": "pl",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "iluri",
           "name": "Ilari Puranen",
           "joinDate": "2026-01-14",
@@ -21953,6 +21955,14 @@
           "name": "Martin Peňkov",
           "joinDate": "2026-01-14",
           "flag": "cz",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "paTiTek",
+          "name": "Patryk Fabrowski",
+          "joinDate": "2026-06-10",
+          "flag": "pl",
           "captain": false,
           "playerStatus": "BENCHED"
         }
@@ -22247,6 +22257,15 @@
           "playerStatus": "STARTER"
         },
         {
+          "id": "paTiTek",
+          "name": "Patryk Fabrowski",
+          "joinDate": "2026-06-10",
+          "leaveDate": "2026-09-21",
+          "newTeam": "Enterprise Esports (Inactive)",
+          "flag": "pl",
+          "playerStatus": "STARTER"
+        },
+        {
           "id": "iluri",
           "name": "Ilari Puranen",
           "joinDate": "2026-01-14",
@@ -22352,14 +22371,6 @@
     "Fire Flux Esports": {
       "players": [
         {
-          "id": "DeadInk",
-          "name": "Utku Onur Aydın",
-          "joinDate": "2026-08-05",
-          "flag": "tr",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "hezacoil",
           "name": "Berkay Doğar",
           "joinDate": "2026-08-05",
@@ -22376,14 +22387,6 @@
           "playerStatus": "STARTER"
         },
         {
-          "id": "reazy",
-          "name": "Kaan Ürpek",
-          "joinDate": "2026-08-05",
-          "flag": "tr",
-          "captain": false,
-          "playerStatus": "STARTER"
-        },
-        {
           "id": "b1squw1",
           "name": "Mehmet Aydın",
           "joinDate": "2026-08-05",
@@ -22394,6 +22397,22 @@
         {
           "id": "batujnax",
           "name": "Mehmet Batu Özaslan",
+          "joinDate": "2026-08-05",
+          "flag": "tr",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "DeadInk",
+          "name": "Utku Onur Aydın",
+          "joinDate": "2026-08-05",
+          "flag": "tr",
+          "captain": false,
+          "playerStatus": "BENCHED"
+        },
+        {
+          "id": "reazy",
+          "name": "Kaan Ürpek",
           "joinDate": "2026-08-05",
           "flag": "tr",
           "captain": false,
@@ -22834,8 +22853,26 @@
           "playerStatus": "STARTER"
         },
         {
+          "id": "DeadInk",
+          "name": "Utku Onur Aydın",
+          "joinDate": "2026-08-05",
+          "leaveDate": "2026-09-21",
+          "newTeam": "Fire Flux Esports (Inactive)",
+          "flag": "tr",
+          "playerStatus": "STARTER"
+        },
+        {
+          "id": "reazy",
+          "name": "Kaan Ürpek",
+          "joinDate": "2026-08-05",
+          "leaveDate": "2026-09-21",
+          "newTeam": "Fire Flux Esports (Inactive)",
+          "flag": "tr",
+          "playerStatus": "STARTER"
+        },
+        {
           "id": "b1squw1",
-          "name": null,
+          "name": "Mehmet Aydın",
           "joinDate": "2026-08-05",
           "leaveDate": "2026-09-13",
           "newTeam": "Fire Flux Esports (Inactive)",
@@ -22944,15 +22981,6 @@
       ],
       "coaches": [
         {
-          "id": "Lêv",
-          "name": "Levent Köktürk",
-          "role": "Head Coach",
-          "joinDate": "2026-08-05",
-          "leaveDate": null,
-          "flag": "nl",
-          "status": "active"
-        },
-        {
           "id": "XovLoV",
           "name": "Buğra Erdönmez",
           "role": "Assistant Coach",
@@ -23058,6 +23086,15 @@
           "joinDate": "2025-01-17",
           "leaveDate": "2025-03-15",
           "flag": "gb",
+          "status": "former"
+        },
+        {
+          "id": "Lêv",
+          "name": "Levent Köktürk",
+          "role": "Head Coach",
+          "joinDate": "2026-08-05",
+          "leaveDate": "2026-09-21",
+          "flag": "nl",
           "status": "former"
         },
         {
@@ -26354,10 +26391,20 @@
           "joinDate": "2026-08-07",
           "flag": "br",
           "captain": false,
+          "playerStatus": "BENCHED"
+        }
+      ],
+      "formerPlayers": [
+        {
+          "id": "Zanatsu",
+          "name": "Carlos Eduardo Mena",
+          "joinDate": "2026-08-07",
+          "leaveDate": "2026-09-22",
+          "newTeam": "Fluxo W7M (Inactive)",
+          "flag": "br",
           "playerStatus": "STARTER"
         }
       ],
-      "formerPlayers": [],
       "coaches": [
         {
           "id": "stk",

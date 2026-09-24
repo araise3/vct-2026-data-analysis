@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-24T05:17:31Z"
+    "fetchedAt": "2026-09-24T12:09:05Z"
   },
   "matches": [
     {
@@ -15,16 +15,16 @@
       "bestOf": 3,
       "team1": "Team Liquid",
       "team2": "Paper Rex",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 1,
+      "score2": 2,
+      "started": true
     },
     {
-      "key": "1790251200|tyloo|g2-esports",
+      "key": "1790252400|tyloo|g2-esports",
       "event": "Valorant Champions 2026",
       "liquipediaPage": "VCT/2026/Champions",
       "phase": null,
-      "timestamp": 1790251200,
+      "timestamp": 1790252400,
       "bestOf": 3,
       "team1": "TYLOO",
       "team2": "G2 Esports",
@@ -111,14 +111,14 @@
       "started": false
     },
     {
-      "key": "1790672400|tbd|tbd",
+      "key": "1790672400|tbd|paper-rex",
       "event": "Valorant Champions 2026",
       "liquipediaPage": "VCT/2026/Champions",
       "phase": null,
       "timestamp": 1790672400,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "Paper Rex",
       "score1": null,
       "score2": null,
       "started": false
@@ -163,14 +163,14 @@
       "started": false
     },
     {
-      "key": "1790845200|tbd|tbd",
+      "key": "1790845200|tbd|team-liquid",
       "event": "Valorant Champions 2026",
       "liquipediaPage": "VCT/2026/Champions",
       "phase": null,
       "timestamp": 1790845200,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "Team Liquid",
       "score1": null,
       "score2": null,
       "started": false

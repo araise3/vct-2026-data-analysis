@@ -63,7 +63,7 @@ export default function SearchBar() {
         statistics.push({
           type: 'statistic', name: statistic.searchLabel, rank,
           sub: statistic.entity === 'players' ? 'Player leaderboard' : statistic.definition.matchLevel ? 'Matchup leaderboard' : 'Team leaderboard',
-          route: `/analysis?metric=${encodeURIComponent(statistic.id)}${order ? `&order=${order}` : ''}`,
+          route: `${statistic.to}${order ? `?order=${order}` : ''}`,
         })
       }
     }

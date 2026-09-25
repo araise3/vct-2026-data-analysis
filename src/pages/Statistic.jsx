@@ -113,7 +113,7 @@ function StatisticPage({ entity, statSlug }) {
     return (
       <div className="py-12">
         <h1 className="font-display text-2xl font-semibold text-ink">Statistic not found</h1>
-        <Link className="data-link mt-3 inline-block" to="/">Search for another statistic</Link>
+        <Link className="data-link mt-3 inline-block" to="/statistics">Browse all statistics</Link>
       </div>
     )
   }

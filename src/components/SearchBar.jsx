@@ -5,6 +5,7 @@ import { useData } from '../lib/useData'
 import TeamLogo from './TeamLogo'
 import Flag from './Flag'
 import { STAT_CATALOG } from '../lib/statCatalog'
+import { teamBreakdownUrl } from '../lib/teamUrl'
 
 const MAX_RESULTS = 8
 
@@ -86,11 +87,12 @@ export default function SearchBar() {
     return () => document.removeEventListener('keydown', focusSearch)
   }, [])
 
-  const ROUTE_BASE = { player: 'players', team: 'teams' }
   function go(index) {
     const result = results[Number(index)]
     if (!result) return
-    navigate(result.route || `/${ROUTE_BASE[result.type]}/${encodeURIComponent(result.name)}`)
+    navigate(result.route || (result.type === 'team'
+      ? teamBreakdownUrl(result.name)
+      : `/players/${encodeURIComponent(result.name)}`))
     setQuery('')
     setOpen(false)
     searchRef.current?.blur()

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { teamBreakdownUrl } from '../lib/teamUrl'
 import TeamLogo from './TeamLogo'
 import Select from './ui/Select'
 import teamLogos from '../lib/teamLogos.json'
@@ -262,7 +263,7 @@ export default function PerformanceStrip({ rows }) {
                             </div>
                           </a>
                           <Link
-                            to={`/teams/${encodeURIComponent(b.opponent)}`}
+                            to={teamBreakdownUrl(b.opponent)}
                             className="hover:opacity-70 mt-2 flex h-11 flex-col items-center justify-end gap-1"
                           >
                             <div className="relative">

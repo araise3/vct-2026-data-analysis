@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
 import { useData, useIdle } from '../lib/useData'
 import { HIDDEN_BY_DEFAULT_EVENTS } from '../lib/useFacetedFilter'
 import {
@@ -12,6 +11,7 @@ import KpiCard from '../components/KpiCard'
 import MatchHistory from '../components/MatchHistory'
 import TeamLogo from '../components/TeamLogo'
 import RosterTable from '../components/RosterTable'
+import RosterTimeline from '../components/RosterTimeline'
 import TeamRatingSection from '../components/TeamRatingSection'
 import DataTable from '../components/DataTable'
 import CompositionsTable from '../components/CompositionsTable'
@@ -59,9 +59,7 @@ function ScopeEmptyState({ scopeLabel, onReset }) {
   )
 }
 
-export default function TeamProfile({ team: embeddedTeam = '', initialTab = 'overview' }) {
-  const { name } = useParams()
-  const decodedName = embeddedTeam || decodeURIComponent(name || '')
+export default function TeamProfile({ team: decodedName, initialTab = 'overview' }) {
   const requestedInitialTab = TABS.some((tab) => tab.id === initialTab) ? initialTab : 'overview'
   const { data: teamData, loading: teamsLoading } = useData('team_buckets')
   const { data: playerData, loading: playersLoading } = useData('player_buckets')
@@ -575,7 +573,6 @@ export default function TeamProfile({ team: embeddedTeam = '', initialTab = 'ove
   if (!meta) {
     return (
       <div className="flex flex-col gap-4">
-        {!embeddedTeam && <Link to="/teams" className="text-sm text-accent-bright hover:underline">← Back to Teams</Link>}
         <p className="text-muted text-sm">No team found matching "{decodedName}".</p>
       </div>
     )
@@ -590,8 +587,6 @@ export default function TeamProfile({ team: embeddedTeam = '', initialTab = 'ove
 
   return (
     <div className="flex flex-col gap-6">
-      {!embeddedTeam && <Link to="/teams" className="text-sm text-muted hover:text-ink w-fit">← Back to Teams</Link>}
-
       {/* One merged card for the header info AND the scope-control row below
           it -- a literal structural copy of PlayerProfile's own header card
           (info block, hairline divider, then a controls row, all inside one
@@ -629,7 +624,7 @@ export default function TeamProfile({ team: embeddedTeam = '', initialTab = 'ove
 
           <div className="flex flex-col gap-1.5 min-w-0">
             <div className="flex items-center gap-2.5 min-w-0">
-              <h1 className="font-display text-xl sm:text-2xl font-semibold text-ink truncate">{decodedName}</h1>
+              <h2 className="font-display text-xl sm:text-2xl font-semibold text-ink truncate">{decodedName}</h2>
             </div>
             <div className="flex items-center gap-2 flex-wrap text-muted text-sm">
               <span>{meta.region}</span>
@@ -896,10 +891,23 @@ export default function TeamProfile({ team: embeddedTeam = '', initialTab = 'ove
           rows={roster}
           liquipedia={liquipediaData?.teams?.[decodedName]}
           matches={matchRows}
+          coaches={coachesInScope}
           asOfDate={asOfDate}
           rosterIsCurrent={rosterIsCurrent}
         />
 
+        {playerData && (
+          <div className="flex flex-col gap-2">
+            <h3 className="font-display text-sm font-semibold text-ink">Roster timeline of {decodedName}</h3>
+            <RosterTimeline
+              playerBuckets={playerData}
+              team={decodedName}
+              matchResultsRows={matchData?.rows}
+              matchPlayersRows={matchPlayerData?.rows}
+              headCoaches={headCoaches}
+            />
+          </div>
+        )}
       </>}
     </div>
   )

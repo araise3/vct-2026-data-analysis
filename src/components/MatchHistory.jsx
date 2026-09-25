@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { teamBreakdownUrl } from '../lib/teamUrl'
 import TeamLogo from './TeamLogo'
 import { eventLabel, roundLabel, vlrMatchUrl } from '../lib/format'
 
@@ -187,7 +188,7 @@ export default function MatchHistory({
                     // parsing the score.
                     <div className="flex items-center gap-2 whitespace-nowrap">
                       <Link
-                        to={`/teams/${encodeURIComponent(m.team1)}`}
+                        to={teamBreakdownUrl(m.team1)}
                         onClick={(e) => e.stopPropagation()}
                         className={`hover:text-accent-bright transition-colors ${
                           m.s1 > m.s2 ? 'text-ink font-medium' : 'text-muted'
@@ -197,7 +198,7 @@ export default function MatchHistory({
                       </Link>
                       <span className="text-muted/50 text-xs">vs</span>
                       <Link
-                        to={`/teams/${encodeURIComponent(m.team2)}`}
+                        to={teamBreakdownUrl(m.team2)}
                         onClick={(e) => e.stopPropagation()}
                         className={`hover:text-accent-bright transition-colors ${
                           m.s2 > m.s1 ? 'text-ink font-medium' : 'text-muted'
@@ -218,7 +219,7 @@ export default function MatchHistory({
                   {perspective ? (
                     opponent && (
                       <Link
-                        to={`/teams/${encodeURIComponent(opponent)}`}
+                        to={teamBreakdownUrl(opponent)}
                         onClick={(e) => e.stopPropagation()}
                         className="flex items-center hover:text-accent-bright transition-colors"
                       >

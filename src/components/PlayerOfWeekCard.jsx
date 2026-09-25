@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { teamBreakdownUrl } from '../lib/teamUrl'
 import Flag from './Flag'
 import TeamLogo from './TeamLogo'
 import { RailCard } from './MatchRail'
@@ -121,7 +122,7 @@ export default function PlayerOfWeekCard({ data, photosData, mapRows }) {
             </Link>
             {data.team && (
               <Link
-                to={`/teams/${encodeURIComponent(data.team)}`}
+                to={teamBreakdownUrl(data.team)}
                 className="mt-1 flex min-w-0 items-center text-[11px] text-muted transition-colors hover:text-ink"
               >
                 <TeamLogo team={data.team} size={14} />

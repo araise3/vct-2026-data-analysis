@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { teamBreakdownUrl } from '../lib/teamUrl'
 import { useData } from '../lib/useData'
 import { expandMatchRows } from '../lib/entityBuckets'
 import { stageStructureFor } from '../lib/tournamentStructure'
@@ -198,7 +199,7 @@ function GroupStandings({ title, stage, result }) {
                 <tr key={r.team} className="hover:bg-surface2/40 transition-colors">
                   <td className={`${td} ${bd} text-right text-muted`}>{r.rank}</td>
                   <td className={`${td} ${bd}`}>
-                    <Link to={`/teams/${encodeURIComponent(r.team)}`} className="hover:text-accent-bright transition-colors">
+                    <Link to={teamBreakdownUrl(r.team)} className="hover:text-accent-bright transition-colors">
                       <TeamLogo team={r.team} size={20} />
                     </Link>
                     {r.stillTiedWith && (

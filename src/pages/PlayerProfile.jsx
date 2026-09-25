@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useParams, Link } from 'react-router-dom'
+import { teamBreakdownUrl } from '../lib/teamUrl'
 import { useData, useIdle } from '../lib/useData'
 import {
   expandBuckets, aggregatePlayerBuckets, aggregateAgentBuckets, teamInScope,
@@ -715,7 +716,7 @@ export default function PlayerProfile() {
                 <>
                   <span className="text-hairline">·</span>
                   <Link
-                    to={`/teams/${encodeURIComponent(displayTeam)}`}
+                    to={teamBreakdownUrl(displayTeam)}
                     className="flex items-center hover:text-accent-bright transition-colors"
                   >
                     <TeamLogo team={displayTeam} size={18} />

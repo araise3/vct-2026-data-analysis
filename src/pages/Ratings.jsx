@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { teamBreakdownUrl } from '../lib/teamUrl'
 import { useData } from '../lib/useData'
 import {
   buildDailyRun, buildRatings, buildTeamPoints, internationalEventWindows, PROVISIONAL_RD,
@@ -148,7 +149,7 @@ export function RegionTable({ region, rows, showProvisional, limit }) {
                 <td className="py-1.5 pr-2 text-muted text-xs tabular-nums w-6 text-right">{i + 1}</td>
                 <td className="py-1.5 pr-2 min-w-0">
                   <Link
-                    to={`/teams/${encodeURIComponent(r.team)}`}
+                    to={teamBreakdownUrl(r.team)}
                     className="flex items-center gap-2 text-xs font-medium hover:text-accent-bright transition-colors"
                   >
                     {/* showName off, name rendered here instead: TeamLogo's
@@ -430,7 +431,7 @@ export default function Ratings() {
       key: 'team',
       label: 'Team',
       format: (v, row) => (
-        <Link to={`/teams/${encodeURIComponent(v)}`} className="flex items-center gap-2 font-medium hover:text-accent-bright transition-colors">
+        <Link to={teamBreakdownUrl(v)} className="flex items-center gap-2 font-medium hover:text-accent-bright transition-colors">
           {/* TeamLogo renders the name itself (showName defaults on), same
               as every other team column on the site -- don't add another. */}
           <TeamLogo team={v} size={22} />

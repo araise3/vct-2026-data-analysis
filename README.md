@@ -34,7 +34,7 @@ fold in **Esports World Cup (EWC) 2026** results alongside the main VCT season.
 ## Tech stack
 
 - **Vite + React** (function components, hooks — no class components)
-- **React Router** for client-side routing (`/players/:name`, `/teams/:name`, etc.)
+- **React Router** for client-side routing (`/players/:name`, `/teams?tab=breakdown&team=…`, etc.; old `/teams/:name` links redirect)
 - **Tailwind CSS**, design tokens in `tailwind.config.js` — colors and
   spacing pulled from a real reference site's stylesheet, with the accent
   color overridden to Valorant's official brand red (`#FF4655`)

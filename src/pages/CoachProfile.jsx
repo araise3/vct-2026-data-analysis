@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { teamBreakdownUrl } from '../lib/teamUrl'
 import { useData } from '../lib/useData'
 import { expandMatchRows } from '../lib/entityBuckets'
 import { buildCoachIndex, coachStintRecord } from '../lib/coaches'
@@ -77,7 +78,7 @@ export default function CoachProfile() {
           {current ? (
             <p className="text-muted text-sm flex items-center gap-1.5">
               {current.role} of{' '}
-              <Link to={`/teams/${encodeURIComponent(current.team)}`} className="text-ink hover:text-accent-bright inline-flex items-center gap-1.5">
+              <Link to={teamBreakdownUrl(current.team)} className="text-ink hover:text-accent-bright inline-flex items-center gap-1.5">
                 <TeamLogo team={current.team} size={16} showName={false} />
                 {current.team}
               </Link>
@@ -133,7 +134,7 @@ export default function CoachProfile() {
                   <tr key={`${s.team}-${s.role}-${s.joinDate}-${i}`} className="hover:bg-surface2/40 transition-colors">
                     <td className={`${td} ${bd}`}>
                       <Link
-                        to={`/teams/${encodeURIComponent(s.team)}`}
+                        to={teamBreakdownUrl(s.team)}
                         className="flex items-center gap-2 text-ink hover:text-accent-bright transition-colors"
                       >
                         <TeamLogo team={s.team} size={16} showName={false} />

@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import TopNav from './components/TopNav'
+import { teamBreakdownUrl } from './lib/teamUrl'
 
 // Keep pages split so the overview does not download every data view and tool.
 const Tournaments = lazy(() => import('./pages/Tournaments'))
@@ -9,7 +10,6 @@ const Players = lazy(() => import('./pages/Players'))
 const PlayerProfile = lazy(() => import('./pages/PlayerProfile'))
 const ComparePlayers = lazy(() => import('./pages/ComparePlayers'))
 const Teams = lazy(() => import('./pages/Teams'))
-const TeamProfile = lazy(() => import('./pages/TeamProfile'))
 const CoachProfile = lazy(() => import('./pages/CoachProfile'))
 const Agents = lazy(() => import('./pages/Agents'))
 const Compositions = lazy(() => import('./pages/Compositions'))
@@ -35,6 +35,11 @@ function EventStatsRedirect() {
   return <Navigate to={`/teams${search}`} replace />
 }
 
+function TeamRedirect() {
+  const { name } = useParams()
+  return <Navigate to={teamBreakdownUrl(name)} replace />
+}
+
 function AppSurface() {
   return (
     <div className="portal-shell">
@@ -51,7 +56,7 @@ function AppSurface() {
             <Route path="/players/:name" element={<PlayerProfile />} />
             <Route path="/compare" element={<ComparePlayers />} />
             <Route path="/teams" element={<Teams />} />
-            <Route path="/teams/:name" element={<TeamProfile />} />
+            <Route path="/teams/:name" element={<TeamRedirect />} />
             <Route path="/coaches/:id" element={<CoachProfile />} />
             <Route path="/ratings" element={<RatingsRedirect />} />
             <Route path="/agents" element={<Agents />} />

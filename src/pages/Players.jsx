@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { teamBreakdownUrl } from '../lib/teamUrl'
 import { useData, useIdle } from '../lib/useData'
 import { useFacetedFilter, matchesFilters } from '../lib/useFacetedFilter'
 import {
@@ -262,7 +263,7 @@ export default function Players() {
     {
       key: 'team', label: 'Team', align: 'left',
       format: (v) => (
-        <Link to={`/teams/${encodeURIComponent(v)}`} className="hover:text-accent-bright transition-colors">
+        <Link to={teamBreakdownUrl(v)} className="hover:text-accent-bright transition-colors">
           <TeamLogo team={v} size={22} showName={false} showTag />
         </Link>
       ),

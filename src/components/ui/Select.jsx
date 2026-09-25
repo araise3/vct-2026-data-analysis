@@ -8,7 +8,7 @@ import { cx } from '../../lib/cx'
  * placement, focus management, keyboard navigation and visual states.
  */
 export default function Select({
-  value, onChange, options, placeholder = 'Select…', renderIcon, searchable,
+  id, value, onChange, options, placeholder = 'Select…', renderIcon, searchable,
   className, disabled, variant = 'default', allowClear = false,
 }) {
   const normalized = useMemo(
@@ -38,6 +38,7 @@ export default function Select({
 
   return (
     <AntSelect
+      id={id}
       value={value === '' && !normalized.some((option) => option.value === '') ? undefined : value}
       onChange={(next) => onChange(next ?? '')}
       allowClear={allowClear}

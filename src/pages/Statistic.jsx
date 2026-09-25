@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
+import { teamBreakdownUrl } from '../lib/teamUrl'
 import { useData, useIdle } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
 import {
@@ -134,9 +135,9 @@ function StatisticPage({ entity, statSlug }) {
           key: 'matchup', label: 'Matchup', align: 'left',
           format: (_, row) => (
             <div className="flex items-center gap-2">
-              <Link to={`/teams/${encodeURIComponent(row.team1)}`}><TeamLogo team={row.team1} size={22} /></Link>
+              <Link to={teamBreakdownUrl(row.team1)}><TeamLogo team={row.team1} size={22} /></Link>
               <span className="text-muted text-xs">vs</span>
-              <Link to={`/teams/${encodeURIComponent(row.team2)}`}><TeamLogo team={row.team2} size={22} /></Link>
+              <Link to={teamBreakdownUrl(row.team2)}><TeamLogo team={row.team2} size={22} /></Link>
             </div>
           ),
         },
@@ -153,7 +154,7 @@ function StatisticPage({ entity, statSlug }) {
                 ? <Flag countryCode={row.countryCode} countryName={row.countryName} size={16} />
                 : <TeamLogo team={value} size={24} showName={false} />}
               <Link
-                to={`/${isPlayer ? 'players' : 'teams'}/${encodeURIComponent(value)}`}
+                to={isPlayer ? `/players/${encodeURIComponent(value)}` : teamBreakdownUrl(value)}
                 className="font-medium hover:text-accent-bright transition-colors"
               >
                 {value}
@@ -164,7 +165,7 @@ function StatisticPage({ entity, statSlug }) {
         ...(isPlayer ? [{
           key: 'team', label: 'Team', align: 'left',
           format: (value) => (
-            <Link to={`/teams/${encodeURIComponent(value)}`}>
+            <Link to={teamBreakdownUrl(value)}>
               <TeamLogo team={value} size={22} showName={false} showTag />
             </Link>
           ),

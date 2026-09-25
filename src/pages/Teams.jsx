@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
 import {
@@ -11,9 +11,12 @@ import DataTable from '../components/DataTable'
 import LeaderCard, { topBy, dynamicQualify } from '../components/LeaderCard'
 import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
+import Select from '../components/ui/Select'
 import { pct, num, rating, duration, regionAbbr } from '../lib/format'
+import { teamBreakdownUrl } from '../lib/teamUrl'
 
 const Ratings = lazy(() => import('./Ratings'))
+const TeamProfile = lazy(() => import('./TeamProfile'))
 
 
 /**
@@ -99,11 +102,15 @@ const TEAM_LEADERS = [
 
 export default function Teams() {
   const [searchParams] = useSearchParams()
-  const showingRatings = searchParams.get('tab') === 'ratings'
+  const activeView = ['ratings', 'breakdown'].includes(searchParams.get('tab'))
+    ? searchParams.get('tab') : 'statistics'
   const statisticsParams = new URLSearchParams(searchParams)
   statisticsParams.delete('tab')
+  statisticsParams.delete('team')
   const ratingsParams = new URLSearchParams(searchParams)
   ratingsParams.set('tab', 'ratings')
+  ratingsParams.delete('team')
+  const selectedTeam = searchParams.get('team') || ''
 
   return (
     <div className="flex min-w-0 flex-col gap-6">
@@ -111,18 +118,53 @@ export default function Teams() {
       <nav aria-label="Team views" className="flex flex-wrap gap-2 border-b border-hairline pb-3">
         <Link
           to={`/teams${statisticsParams.toString() ? `?${statisticsParams}` : ''}`}
-          aria-current={!showingRatings ? 'page' : undefined}
-          className={`rounded px-4 py-2 text-sm font-semibold transition-colors ${showingRatings ? 'text-muted hover:bg-surface2 hover:text-ink' : 'bg-accent/15 text-accent-bright'}`}
+          aria-current={activeView === 'statistics' ? 'page' : undefined}
+          className={`rounded px-4 py-2 text-sm font-semibold transition-colors ${activeView === 'statistics' ? 'bg-accent/15 text-accent-bright' : 'text-muted hover:bg-surface2 hover:text-ink'}`}
         >Statistics</Link>
         <Link
           to={`/teams?${ratingsParams}`}
-          aria-current={showingRatings ? 'page' : undefined}
-          className={`rounded px-4 py-2 text-sm font-semibold transition-colors ${showingRatings ? 'bg-accent/15 text-accent-bright' : 'text-muted hover:bg-surface2 hover:text-ink'}`}
+          aria-current={activeView === 'ratings' ? 'page' : undefined}
+          className={`rounded px-4 py-2 text-sm font-semibold transition-colors ${activeView === 'ratings' ? 'bg-accent/15 text-accent-bright' : 'text-muted hover:bg-surface2 hover:text-ink'}`}
         >Ratings</Link>
+        <Link
+          to={selectedTeam ? teamBreakdownUrl(selectedTeam) : '/teams?tab=breakdown'}
+          aria-current={activeView === 'breakdown' ? 'page' : undefined}
+          className={`rounded px-4 py-2 text-sm font-semibold transition-colors ${activeView === 'breakdown' ? 'bg-accent/15 text-accent-bright' : 'text-muted hover:bg-surface2 hover:text-ink'}`}
+        >Team breakdown</Link>
       </nav>
-      {showingRatings
+      {activeView === 'ratings'
         ? <Suspense fallback={<div className="text-muted text-sm">Loading ratings…</div>}><Ratings /></Suspense>
-        : <TeamStatistics />}
+        : activeView === 'breakdown'
+          ? <TeamBreakdown team={selectedTeam} />
+          : <TeamStatistics />}
+    </div>
+  )
+}
+
+function TeamBreakdown({ team }) {
+  const navigate = useNavigate()
+  const { data, loading } = useData('team_buckets')
+  const teams = useMemo(() => Object.keys(data?.meta || {}).sort((a, b) => a.localeCompare(b)), [data])
+
+  if (loading || !data) return <div className="text-muted text-sm">Loading teams…</div>
+
+  return (
+    <div className="flex min-w-0 flex-col gap-6">
+      <div className="flex flex-wrap items-center gap-3">
+        <label htmlFor="team-breakdown-picker" className="text-sm font-medium text-muted">Team</label>
+        <Select
+          id="team-breakdown-picker"
+          className="w-full sm:w-72"
+          value={team}
+          onChange={(next) => navigate(teamBreakdownUrl(next))}
+          options={teams}
+          placeholder="Choose a team…"
+          searchable
+        />
+      </div>
+      {team
+        ? <Suspense fallback={<div className="text-muted text-sm">Loading team breakdown…</div>}><TeamProfile key={team} team={team} /></Suspense>
+        : <div className="rounded-lg border border-hairline bg-surface p-8 text-center text-sm text-muted">Choose a team to explore its results, maps, agents, and roster.</div>}
     </div>
   )
 }
@@ -166,17 +208,15 @@ function TeamStatistics() {
     {
       key: 'team', label: 'Team', align: 'left',
       format: (v) => (
-        <Link to={`/teams/${encodeURIComponent(v)}`} className="font-medium hover:text-accent-bright transition-colors">
+        <Link to={teamBreakdownUrl(v)} className="font-medium hover:text-accent-bright transition-colors">
           <TeamLogo team={v} size={24} />
         </Link>
       ),
     },
-    // Abbreviated (AMER/CN/APAC, EMEA is already this short) so the column
-    // no longer needs to be sized for "Americas" -- the width it gives up
-    // goes to Rounds below.
-    { key: 'region', label: 'Region', align: 'left', width: 56, format: (v) => regionAbbr(v) },
-    { key: 'matchesPlayed', label: 'Matches', align: 'right', format: (v) => num(v) },
-    // Evenly split -- Maps and Rounds share the width Region gave up above.
+    // Ant renders sticky headers in a separate table. These widths must fit
+    // the header labels and sorter icons or its columns drift from the rows.
+    { key: 'region', label: 'Region', align: 'left', width: 73, format: (v) => regionAbbr(v) },
+    { key: 'matchesPlayed', label: 'Matches', align: 'right', width: 82, format: (v) => num(v) },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', width: 69, format: (v) => num(v) },
     { key: 'roundsPlayed', label: 'RND', align: 'right', width: 69, format: (v) => num(v) },
     { key: 'matchWinPct', label: 'Match Win%', align: 'right', colorScale: true, format: (v) => pct(v) },
@@ -234,7 +274,7 @@ function TeamStatistics() {
                     invert: c.invert,
                   })}
                   renderEntity={(r) => (
-                    <Link to={`/teams/${encodeURIComponent(r.team)}`} className="min-w-0">
+                    <Link to={teamBreakdownUrl(r.team)} className="min-w-0">
                       <TeamLogo team={r.team} size={22} />
                     </Link>
                   )}

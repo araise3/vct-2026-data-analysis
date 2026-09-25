@@ -3,7 +3,7 @@
     "source": "Liquipedia",
     "license": "CC-BY-SA 3.0",
     "attribution": "Upcoming match schedule from Liquipedia (liquipedia.net), licensed CC-BY-SA 3.0.",
-    "fetchedAt": "2026-09-25T05:18:23Z"
+    "fetchedAt": "2026-09-25T12:08:19Z"
   },
   "matches": [
     {
@@ -41,16 +41,16 @@
       "bestOf": 3,
       "team1": "Nongshim RedForce",
       "team2": "NRG",
-      "score1": null,
-      "score2": null,
-      "started": false
+      "score1": 0,
+      "score2": 2,
+      "started": true
     },
     {
-      "key": "1790337600|karmine-corp|xi-lai-gaming",
+      "key": "1790335800|karmine-corp|xi-lai-gaming",
       "event": "Valorant Champions 2026",
       "liquipediaPage": "VCT/2026/Champions",
       "phase": null,
-      "timestamp": 1790337600,
+      "timestamp": 1790335800,
       "bestOf": 3,
       "team1": "Karmine Corp",
       "team2": "Xi Lai Gaming",
@@ -124,14 +124,14 @@
       "started": false
     },
     {
-      "key": "1790683200|tbd|tbd",
+      "key": "1790683200|tbd|nrg",
       "event": "Valorant Champions 2026",
       "liquipediaPage": "VCT/2026/Champions",
       "phase": null,
       "timestamp": 1790683200,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "NRG",
       "score1": null,
       "score2": null,
       "started": false
@@ -176,14 +176,14 @@
       "started": false
     },
     {
-      "key": "1790856000|tbd|tbd",
+      "key": "1790856000|tbd|nongshim-redforce",
       "event": "Valorant Champions 2026",
       "liquipediaPage": "VCT/2026/Champions",
       "phase": null,
       "timestamp": 1790856000,
       "bestOf": 3,
       "team1": null,
-      "team2": null,
+      "team2": "Nongshim RedForce",
       "score1": null,
       "score2": null,
       "started": false

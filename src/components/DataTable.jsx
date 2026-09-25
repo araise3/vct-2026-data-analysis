@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo } from 'react'
 import { Empty, Table } from 'antd'
+import { scaleColor, scaleDivergingColor } from '../lib/format'
 
 const WORD_JOINER = '⁠'
 export const DataTableStickyHeaderContext = createContext(true)
@@ -36,6 +37,22 @@ export default function DataTable({
   const inheritedStickyHeader = useContext(DataTableStickyHeaderContext)
   const effectiveStickyHeader = stickyHeader ?? inheritedStickyHeader
   const rowKeys = useMemo(() => new Map(rows.map((row, index) => [row, index])), [rows])
+  const colorRanges = useMemo(() => {
+    const ranges = {}
+    for (const column of columns) {
+      if (!column.colorScale || column.diverging) continue
+      let min = Infinity
+      let max = -Infinity
+      for (const row of rows) {
+        const value = row[column.key]
+        if (value == null || Number.isNaN(value)) continue
+        if (value < min) min = value
+        if (value > max) max = value
+      }
+      ranges[column.key] = min === Infinity ? [0, 1] : [min, max]
+    }
+    return ranges
+  }, [columns, rows])
 
   const antColumns = useMemo(() => columns.map((column) => ({
     key: column.key,
@@ -52,16 +69,27 @@ export default function DataTable({
         {column.format ? column.format(value, row) : value ?? '—'}
       </span>
     ),
-    onCell: () => {
+    onCell: (row) => {
+      const range = colorRanges[column.key]
+      const backgroundColor = column.colorScale
+        ? column.diverging
+          ? scaleDivergingColor(row[column.key])
+          : scaleColor(
+              row[column.key],
+              column.colorInvert ? range[1] : range[0],
+              column.colorInvert ? range[0] : range[1],
+            )
+        : undefined
       return {
         style: {
+          backgroundColor,
           padding: column.noPadding ? 0 : undefined,
           fontVariantNumeric: 'tabular-nums',
           fontSize: 12,
         },
       }
     },
-  })), [columns, defaultSortDir, defaultSortKey])
+  })), [columns, colorRanges, defaultSortDir, defaultSortKey])
 
   const summary = summaryRow
     ? () => (

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useData, useIdle } from '../lib/useData'
 import { HIDDEN_BY_DEFAULT_EVENTS } from '../lib/useFacetedFilter'
 import {
@@ -11,7 +12,6 @@ import KpiCard from '../components/KpiCard'
 import MatchHistory from '../components/MatchHistory'
 import TeamLogo from '../components/TeamLogo'
 import RosterTable from '../components/RosterTable'
-import RosterTimeline from '../components/RosterTimeline'
 import TeamRatingSection from '../components/TeamRatingSection'
 import DataTable from '../components/DataTable'
 import CompositionsTable from '../components/CompositionsTable'
@@ -25,6 +25,7 @@ import teamLogos from '../lib/teamLogos.json'
 import { rating, pct, num, eventLabel } from '../lib/format'
 import { buildEventDateOrder } from '../lib/rosterTimeline'
 import { coachAt, headCoachesForTeam } from '../lib/coaches'
+import { teamHistoryUrl } from '../lib/teamUrl'
 
 // win_condition values as scraped straight from VLR's round-end icon
 // filename (elim.webp -> "elim", etc.) -- labeled/ordered for display.
@@ -64,31 +65,21 @@ export default function TeamProfile({ team: decodedName, initialTab = 'overview'
   const { data: teamData, loading: teamsLoading } = useData('team_buckets')
   const { data: playerData, loading: playersLoading } = useData('player_buckets')
   const { data: liquipediaData } = useData('liquipedia_rosters')
-  // Head Coach ONLY (Assistant Coach/Analyst/etc. dropped), computed once
-  // here rather than separately inside both RosterTable (the Coaching
-  // Staff card) and RosterTimeline (its coach column) since both need the
-  // same underlying list. `liquipedia_rosters.json`'s `coaches` now
-  // carries BOTH active and former Head Coaches (build_liquipedia_data.py
-  // used to throw former ones away at the build step; see its own comment)
-  // -- this is that full history, sorted oldest-first, feeding
-  // RosterTimeline's succession chain (deliberately unscoped -- see that
-  // component's own comment) AND, further down, whichever of these
-  // actually covered the page's currently selected scope (coachesInScope,
-  // computed once `filtered` exists below) for the Coaching Staff card.
+  // Head Coach ONLY (Assistant Coach/Analyst/etc. dropped). Keep the full
+  // historical list so coachesInScope below can show whoever covered the
+  // selected events in the Coaching Staff card. Team history uses the same
+  // source separately for the unscoped timeline's coach column.
   const headCoaches = useMemo(
     () => headCoachesForTeam(liquipediaData, decodedName),
     [liquipediaData, decodedName],
   )
   const { data: matchData } = useData('match_results')
   const { data: teamMapData } = useData('team_map_buckets')
-  // match_players.json feeds the roster timeline's split-seat chronology
-  // (see rosterTimeline.js's buildPlayerEventDates) and, below, the
-  // Compositions section's per-map agent join (lib/compositions.js) --
+  // match_players.json feeds the Compositions section's per-map agent join
+  // (lib/compositions.js) --
   // idle-loaded like Players.jsx's own player_agents fetch, so it doesn't
   // compete with the page's primary data for bandwidth/parse time on first
-  // paint. The timeline already renders correctly without it (a split seat
-  // falls back to its old maps-descending order) until it lands a beat
-  // later; Compositions simply doesn't render its section until it does.
+  // paint. Compositions simply doesn't render its section until it lands.
   const idle = useIdle()
   const { data: matchPlayerData } = useData(idle ? 'match_players' : null)
   // Raw per-(match, map, team) ATK/DEF round counts + each player's own
@@ -879,12 +870,9 @@ export default function TeamProfile({ team: decodedName, initialTab = 'overview'
         )
       )}
 
-      {/* Roster identity (Coaching Staff + Players) and its timeline
-          deliberately are NOT gated on `stats.mapsPlayed` the way the tabs
-          above are: Coaching Staff comes from Liquipedia's always-current
-          snapshot (unrelated to whatever scope is selected) and
-          RosterTimeline already reads the team's full, unfiltered history
-          on its own (see its own comment on why it isn't scoped at all). */}
+      {/* Roster identity is not gated on `stats.mapsPlayed`: Coaching Staff
+          comes from Liquipedia's current snapshot. The full unscoped roster
+          timeline and per-lineup results now live on Team history. */}
       {activeTab === 'roster' && <>
         <RosterTable
           team={decodedName}
@@ -896,18 +884,9 @@ export default function TeamProfile({ team: decodedName, initialTab = 'overview'
           rosterIsCurrent={rosterIsCurrent}
         />
 
-        {playerData && (
-          <div className="flex flex-col gap-2">
-            <h3 className="font-display text-sm font-semibold text-ink">Roster timeline of {decodedName}</h3>
-            <RosterTimeline
-              playerBuckets={playerData}
-              team={decodedName}
-              matchResultsRows={matchData?.rows}
-              matchPlayersRows={matchPlayerData?.rows}
-              headCoaches={headCoaches}
-            />
-          </div>
-        )}
+        <Link to={teamHistoryUrl(decodedName)} className="w-fit text-sm font-semibold text-accent-bright hover:underline">
+          View roster history and lineup stats →
+        </Link>
       </>}
     </div>
   )

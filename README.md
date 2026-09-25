@@ -15,11 +15,12 @@ mobile navigation wraps so all destinations remain visible.
 |---|---|
 | **Overview & events (home)** | Season overview, ratings preview, event links and recent results |
 | **Players** | Searchable player performance, key/all metric views, sortable tables and pagination |
-| **Teams** | Statistics and Glicko-2 ratings in two views, including match/map records, win rates, and rating trajectories |
+| **Teams** | Statistics, Glicko-2 ratings, and a selected team breakdown with match/map records and rating trajectories |
+| **Team history** | Event-by-event roster timeline plus series, map, round, rating, and K/D stats for each consecutive lineup |
 | **Agents** | Pick rates and map win rates, filterable by Region → Stage → Phase → Week/Round (the last one is multi-select) |
 | **Compare players, Compositions, Records** | Dedicated analysis pages |
 | **All statistics** | Browse every supported player, team, and match leaderboard |
-| **Player / Team profiles** | Click any name anywhere on the site to open a full breakdown |
+| **Player profiles** | Click a player name to open a full breakdown; team names open the Teams breakdown |
 | **Graphics** | Build shareable HLTV-style stat cards — pick players or teams, pick a stat (rating, ACS, multi-kills/24R, round win%, pistol win%, …), filter the sample, tune minimum rounds/maps and top-N with live preview, then export a 2160px PNG |
 
 Shared scope controls use searchable multi-selects. Date ranges and event-specific
@@ -34,7 +35,7 @@ fold in **Esports World Cup (EWC) 2026** results alongside the main VCT season.
 ## Tech stack
 
 - **Vite + React** (function components, hooks — no class components)
-- **React Router** for client-side routing (`/players/:name`, `/teams?tab=breakdown&team=…`, etc.; old `/teams/:name` links redirect)
+- **React Router** for client-side routing (`/players/:name`, `/teams?tab=breakdown&team=…`, `/team-history?team=…`; old `/teams/:name` links redirect)
 - **Tailwind CSS**, design tokens in `tailwind.config.js` — colors and
   spacing pulled from a real reference site's stylesheet, with the accent
   color overridden to Valorant's official brand red (`#FF4655`)

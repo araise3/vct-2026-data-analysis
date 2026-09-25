@@ -1,5 +1,5 @@
 /**
- * Event-based "who held which seat" roster history for a team profile --
+ * Event-based "who held which seat" roster history for Team history --
  * replaces the old calendar Gantt chart entirely (see RosterTimeline.jsx).
  * Rows are events (VCT/EWC, chronological); columns are the team's 5
  * starting seats, each a "seat succession chain" rather than a fixed role

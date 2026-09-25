@@ -6,6 +6,7 @@ const pages = [
   { to: '/tournaments', label: 'Overview & events', data: ['team_buckets'] },
   { to: '/players', label: 'Players', data: ['player_buckets'] },
   { to: '/teams', label: 'Teams', data: ['team_buckets'] },
+  { to: '/team-history', label: 'Team history', data: ['team_buckets'] },
   { to: '/agents', label: 'Agents', data: ['agents'] },
   { to: '/compare', label: 'Compare players', data: [] },
   { to: '/compositions', label: 'Compositions', data: ['match_results', 'match_players'] },

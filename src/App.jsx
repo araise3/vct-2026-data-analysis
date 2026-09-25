@@ -10,6 +10,7 @@ const Players = lazy(() => import('./pages/Players'))
 const PlayerProfile = lazy(() => import('./pages/PlayerProfile'))
 const ComparePlayers = lazy(() => import('./pages/ComparePlayers'))
 const Teams = lazy(() => import('./pages/Teams'))
+const TeamHistory = lazy(() => import('./pages/TeamHistory'))
 const CoachProfile = lazy(() => import('./pages/CoachProfile'))
 const Agents = lazy(() => import('./pages/Agents'))
 const Compositions = lazy(() => import('./pages/Compositions'))
@@ -56,6 +57,7 @@ function AppSurface() {
             <Route path="/players/:name" element={<PlayerProfile />} />
             <Route path="/compare" element={<ComparePlayers />} />
             <Route path="/teams" element={<Teams />} />
+            <Route path="/team-history" element={<TeamHistory />} />
             <Route path="/teams/:name" element={<TeamRedirect />} />
             <Route path="/coaches/:id" element={<CoachProfile />} />
             <Route path="/ratings" element={<RatingsRedirect />} />

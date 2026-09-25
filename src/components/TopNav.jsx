@@ -4,15 +4,11 @@ import { prefetchData } from '../lib/useData'
 
 const pages = [
   { to: '/tournaments', label: 'Overview & events', data: ['team_buckets'] },
-  { to: '/event-stats', label: 'Event statistics', data: ['team_buckets'] },
   { to: '/players', label: 'Players', data: ['player_buckets'] },
   { to: '/teams', label: 'Teams', data: ['team_buckets'] },
   { to: '/agents', label: 'Agents', data: ['agents'] },
   { to: '/compare', label: 'Compare players', data: [] },
-  { to: '/ratings', label: 'Team ratings', data: ['match_results'] },
   { to: '/compositions', label: 'Compositions', data: ['match_results', 'match_players'] },
-  { to: '/economy', label: 'Economy', data: ['team_buckets'] },
-  { to: '/patches', label: 'Patches', data: ['patch_notes', 'event_meta'] },
   { to: '/records', label: 'Records', data: ['match_results', 'series_length', 'map_length', 'player_buckets'] },
   { to: '/statistics', label: 'All statistics', data: [] },
   { to: '/graphics', label: 'Export graphics', data: ['player_buckets', 'team_buckets', 'series_length', 'map_length'] },

@@ -14,7 +14,7 @@ import { RC, PANEL_STYLE, pillStyle } from '../lib/ratingTheme'
 import { num, pct, regionAbbr, shortDate } from '../lib/format'
 
 /**
- * /ratings -- Glicko-2 team ratings, one independent run per calendar year.
+ * The Ratings view on /teams -- Glicko-2 ratings, one independent run per year.
  *
  * The one page on the site with no FilterPanel, deliberately: a Glicko-2
  * rating is the end state of a sequence of updates over every game in
@@ -219,7 +219,7 @@ export default function Ratings() {
   // shared link re-derives the same field and window from this year's run
   // instead of needing them serialized too.
   const scopedEvent = useMemo(() => {
-    const id = searchParams.get('event')
+    const id = searchParams.get('ratingEvent')
     if (!id) return null
     return eventBands.find((b) => String(b.id) === id) || null
   }, [eventBands, searchParams])
@@ -361,7 +361,7 @@ export default function Ratings() {
     const base = scopedEvent ? [] : chartTeams
     if (base.includes(team)) return
     const next = new URLSearchParams(searchParams)
-    next.delete('event')
+    next.delete('ratingEvent')
     next.set('teams', [...base, team].slice(-MAX_SERIES).join(','))
     setSearchParams(next, { replace: true })
   }
@@ -374,14 +374,14 @@ export default function Ratings() {
   function scopeToEvent(band) {
     const next = new URLSearchParams(searchParams)
     next.delete('teams')
-    next.set('event', String(band.id))
+    next.set('ratingEvent', String(band.id))
     setSearchParams(next, { replace: true })
   }
 
   function resetChart() {
     const next = new URLSearchParams(searchParams)
     next.delete('teams')
-    next.delete('event')
+    next.delete('ratingEvent')
     setSearchParams(next, { replace: true })
   }
 
@@ -513,7 +513,7 @@ export default function Ratings() {
     <div className="flex flex-col gap-6">
       <div className="flex items-baseline justify-between gap-4 flex-wrap">
         <div className="flex flex-col gap-1">
-          <h1 className="font-display text-xl font-semibold text-ink">Glicko-2 team ratings</h1>
+          <h2 className="font-display text-xl font-semibold text-ink">Glicko-2 team ratings</h2>
           <p className="text-muted text-xs max-w-2xl">
             Every team starts each season unrated at 1500 ± 350 and is rated on series results
             alone. Ratings are rebuilt from scratch for each year, so a 2026 number says nothing

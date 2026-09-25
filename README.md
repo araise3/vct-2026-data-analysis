@@ -14,13 +14,10 @@ mobile navigation wraps so all destinations remain visible.
 | View | What it shows |
 |---|---|
 | **Overview & events (home)** | Season overview, ratings preview, event links and recent results |
-| **Event statistics** | Team-by-event records with scope filters |
 | **Players** | Searchable player performance, key/all metric views, sortable tables and pagination |
-| **Teams** | Match/map records, win rates, pistol win rate, average player rating |
+| **Teams** | Statistics and Glicko-2 ratings in two views, including match/map records, win rates, and rating trajectories |
 | **Agents** | Pick rates and map win rates, filterable by Region → Stage → Phase → Week/Round (the last one is multi-select) |
-| **Economy** | Buy-tier distribution (eco/semi-eco/semi-buy/full-buy) and win rates by tier |
-| **Compare players, Team ratings, Compositions, Records** | Dedicated analysis pages |
-| **Patches** | Patch timeline and agent performance trends |
+| **Compare players, Compositions, Records** | Dedicated analysis pages |
 | **All statistics** | Browse every supported player, team, and match leaderboard |
 | **Player / Team profiles** | Click any name anywhere on the site to open a full breakdown |
 | **Graphics** | Build shareable HLTV-style stat cards — pick players or teams, pick a stat (rating, ACS, multi-kills/24R, round win%, pistol win%, …), filter the sample, tune minimum rounds/maps and top-N with live preview, then export a 2160px PNG |
@@ -57,11 +54,11 @@ vct-site/
 │   │                    than pointing back at the original CDN
 │   └── _redirects       Cloudflare Pages SPA routing config
 ├── src/
-│   ├── components/      DataTable, HorizontalBarChart, StackedBar,
+│   ├── components/      DataTable, HorizontalBarChart,
 │   │                    RoundSquares, TeamLogo, AgentIcon, FilterChips,
 │   │                    MultiFilterChips, KpiCard, RankedList, TopNav,
 │   │                    SearchBar, MatchHistory, PerformanceStrip
-│   ├── pages/            Overview, Players, Teams, Agents, Economy,
+│   ├── pages/            Overview, Players, Teams, Agents,
 │   │                    Records, Graphics, Tournaments, PlayerProfile,
 │   │                    TeamProfile, MatchRedirect
 │   ├── lib/              useData.js (fetch+cache hook), format.js

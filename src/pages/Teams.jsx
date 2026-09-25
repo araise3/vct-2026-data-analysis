@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { lazy, Suspense, useMemo } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useData } from '../lib/useData'
 import { useFacetedFilter } from '../lib/useFacetedFilter'
 import {
@@ -13,6 +13,7 @@ import FilterPanel, { FACETS } from '../components/FilterPanel'
 import TeamLogo from '../components/TeamLogo'
 import { pct, num, rating, duration, regionAbbr } from '../lib/format'
 
+const Ratings = lazy(() => import('./Ratings'))
 
 
 /**
@@ -97,6 +98,36 @@ const TEAM_LEADERS = [
 ]
 
 export default function Teams() {
+  const [searchParams] = useSearchParams()
+  const showingRatings = searchParams.get('tab') === 'ratings'
+  const statisticsParams = new URLSearchParams(searchParams)
+  statisticsParams.delete('tab')
+  const ratingsParams = new URLSearchParams(searchParams)
+  ratingsParams.set('tab', 'ratings')
+
+  return (
+    <div className="flex min-w-0 flex-col gap-6">
+      <h1 className="font-display text-2xl font-semibold text-ink">Teams</h1>
+      <nav aria-label="Team views" className="flex flex-wrap gap-2 border-b border-hairline pb-3">
+        <Link
+          to={`/teams${statisticsParams.toString() ? `?${statisticsParams}` : ''}`}
+          aria-current={!showingRatings ? 'page' : undefined}
+          className={`rounded px-4 py-2 text-sm font-semibold transition-colors ${showingRatings ? 'text-muted hover:bg-surface2 hover:text-ink' : 'bg-accent/15 text-accent-bright'}`}
+        >Statistics</Link>
+        <Link
+          to={`/teams?${ratingsParams}`}
+          aria-current={showingRatings ? 'page' : undefined}
+          className={`rounded px-4 py-2 text-sm font-semibold transition-colors ${showingRatings ? 'bg-accent/15 text-accent-bright' : 'text-muted hover:bg-surface2 hover:text-ink'}`}
+        >Ratings</Link>
+      </nav>
+      {showingRatings
+        ? <Suspense fallback={<div className="text-muted text-sm">Loading ratings…</div>}><Ratings /></Suspense>
+        : <TeamStatistics />}
+    </div>
+  )
+}
+
+function TeamStatistics() {
   const { data, loading } = useData('team_buckets')
 
   const records = useMemo(() => (data ? expandBuckets(data, 't') : []), [data])
@@ -160,7 +191,7 @@ export default function Teams() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-display text-2xl font-semibold text-ink">Teams</h1>
+        <h2 className="font-display text-xl font-semibold text-ink">Team statistics</h2>
         <p className="text-muted text-sm mt-1">{rows.length} teams shown</p>
       </div>
 

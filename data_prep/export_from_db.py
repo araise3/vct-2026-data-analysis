@@ -1353,8 +1353,8 @@ def main():
         d["pisW"] = int(g['pistol_won'].fillna(0).sum())
         # Buy-type counts live here rather than in a separate economy file:
         # they're per-team-per-map like everything else in this bucket, so
-        # folding them in means the Economy view inherits the same facets
-        # (region/event/stage/phase/week) with no extra plumbing.
+        # folding them in lets the Teams and statistic views use the same
+        # region/event/stage/phase/week facets with no extra plumbing.
         for short, col in (("eco", "eco"), ("sec", "semi_eco"),
                            ("seb", "semi_buy"), ("fub", "full_buy")):
             rounds = int(g[f'{col}_rounds'].fillna(0).sum())

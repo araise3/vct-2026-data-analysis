@@ -135,7 +135,7 @@ export default function TeamRatingSection({ matchData, team, year }) {
           Glicko-2 rating — {resolvedYear} season
         </h2>
         <Link
-          to={`/ratings?year=${resolvedYear}&teams=${encodeURIComponent(team)}`}
+          to={`/teams?tab=ratings&year=${resolvedYear}&teams=${encodeURIComponent(team)}`}
           className="text-xs transition-colors hover:text-accent-bright"
           style={{ color: RC.textDim }}
         >

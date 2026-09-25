@@ -862,31 +862,6 @@ export function expandMapLengthRows(data) {
   }))
 }
 
-const BUY_TIERS = [
-  { key: 'eco', label: 'Eco', r: 'ecoR', w: 'ecoW' },
-  { key: 'semiEco', label: 'Semi-eco', r: 'secR', w: 'secW' },
-  { key: 'semiBuy', label: 'Semi-buy', r: 'sebR', w: 'sebW' },
-  { key: 'fullBuy', label: 'Full buy', r: 'fubR', w: 'fubW' },
-]
-
-/** Buy-type distribution and win rates, summed from team buckets. */
-export function aggregateEconomyBuckets(buckets) {
-  const tiers = BUY_TIERS.map(({ key, label, r, w }) => {
-    let rounds = 0
-    let won = 0
-    for (const b of buckets) {
-      rounds += b[r] || 0
-      won += b[w] || 0
-    }
-    return { key, label, rounds, won, winPct: rounds ? won / rounds : null }
-  })
-  const totalRounds = tiers.reduce((n, t) => n + t.rounds, 0)
-  return {
-    tiers: tiers.map((t) => ({ ...t, share: totalRounds ? t.rounds / totalRounds : 0 })),
-    totalRounds,
-  }
-}
-
 /** Season-level counts for the Overview KPIs. */
 export function aggregateOverview(teamRecords, playerRecords) {
   let matches = 0

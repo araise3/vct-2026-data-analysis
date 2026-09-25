@@ -224,7 +224,7 @@ export default function Tournaments() {
         <div className="flex min-w-0 flex-col gap-4">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <h1 className="font-display text-2xl font-semibold text-ink">Overview</h1>
-            <Link to="/ratings" className="text-xs text-muted transition-colors hover:text-ink">
+            <Link to="/teams?tab=ratings" className="text-xs text-muted transition-colors hover:text-ink">
               Full ratings →
             </Link>
           </div>

@@ -1,27 +1,39 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import TopNav from './components/TopNav'
 
 // Keep pages split so the overview does not download every data view and tool.
 const Tournaments = lazy(() => import('./pages/Tournaments'))
 const TournamentDetail = lazy(() => import('./pages/TournamentDetail'))
-const EventStats = lazy(() => import('./pages/EventStats'))
 const Players = lazy(() => import('./pages/Players'))
 const PlayerProfile = lazy(() => import('./pages/PlayerProfile'))
 const ComparePlayers = lazy(() => import('./pages/ComparePlayers'))
 const Teams = lazy(() => import('./pages/Teams'))
 const TeamProfile = lazy(() => import('./pages/TeamProfile'))
 const CoachProfile = lazy(() => import('./pages/CoachProfile'))
-const Ratings = lazy(() => import('./pages/Ratings'))
 const Agents = lazy(() => import('./pages/Agents'))
 const Compositions = lazy(() => import('./pages/Compositions'))
-const Economy = lazy(() => import('./pages/Economy'))
-const Patches = lazy(() => import('./pages/Patches'))
 const Records = lazy(() => import('./pages/Records'))
 const Statistics = lazy(() => import('./pages/Statistics'))
 const Statistic = lazy(() => import('./pages/Statistic'))
 const Graphics = lazy(() => import('./pages/Graphics'))
 const MatchRedirect = lazy(() => import('./pages/MatchRedirect'))
+
+function RatingsRedirect() {
+  const { search } = useLocation()
+  const params = new URLSearchParams(search)
+  if (params.has('event')) {
+    params.set('ratingEvent', params.get('event'))
+    params.delete('event')
+  }
+  params.set('tab', 'ratings')
+  return <Navigate to={`/teams?${params}`} replace />
+}
+
+function EventStatsRedirect() {
+  const { search } = useLocation()
+  return <Navigate to={`/teams${search}`} replace />
+}
 
 function AppSurface() {
   return (
@@ -34,18 +46,18 @@ function AppSurface() {
             <Route path="/" element={<Navigate to="/tournaments" replace />} />
             <Route path="/tournaments" element={<Tournaments />} />
             <Route path="/tournaments/:event" element={<TournamentDetail />} />
-            <Route path="/event-stats" element={<EventStats />} />
+            <Route path="/event-stats" element={<EventStatsRedirect />} />
             <Route path="/players" element={<Players />} />
             <Route path="/players/:name" element={<PlayerProfile />} />
             <Route path="/compare" element={<ComparePlayers />} />
             <Route path="/teams" element={<Teams />} />
             <Route path="/teams/:name" element={<TeamProfile />} />
             <Route path="/coaches/:id" element={<CoachProfile />} />
-            <Route path="/ratings" element={<Ratings />} />
+            <Route path="/ratings" element={<RatingsRedirect />} />
             <Route path="/agents" element={<Agents />} />
             <Route path="/compositions" element={<Compositions />} />
-            <Route path="/economy" element={<Economy />} />
-            <Route path="/patches" element={<Patches />} />
+            <Route path="/economy" element={<Navigate to="/statistics#statistics-economy" replace />} />
+            <Route path="/patches" element={<Navigate to="/agents" replace />} />
             <Route path="/records" element={<Records />} />
             <Route path="/statistics" element={<Statistics />} />
             <Route path="/statistics/:entity/:stat" element={<Statistic />} />

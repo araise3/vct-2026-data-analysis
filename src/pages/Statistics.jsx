@@ -1,9 +1,16 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { STAT_LIBRARY_GROUPS } from '../lib/statLibrary'
 import { getStatisticById } from '../lib/statCatalog'
 import { prefetchData } from '../lib/useData'
 
 export default function Statistics() {
+  const { hash } = useLocation()
+
+  useEffect(() => {
+    if (hash) document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView()
+  }, [hash])
+
   return (
     <div className="flex min-w-0 flex-col gap-8">
       <div>
@@ -12,7 +19,7 @@ export default function Statistics() {
       </div>
       {STAT_LIBRARY_GROUPS.map((group) => (
         <section key={group.id} aria-labelledby={`statistics-${group.id}`}>
-          <h2 id={`statistics-${group.id}`} className="text-lg font-semibold">{group.label}</h2>
+          <h2 id={`statistics-${group.id}`} className="scroll-mt-20 text-lg font-semibold">{group.label}</h2>
           <p className="mt-1 text-xs text-muted">{group.description}</p>
           <div className="statistics-links">
             {group.statistics.map((entry) => {

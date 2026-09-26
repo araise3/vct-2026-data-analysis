@@ -1,9 +1,7 @@
 import { useState } from 'react'
 
-// flag-icons (flagicons.lipis.dev) ships each country as a real vector with
-// its own baked-in aspect ratio (the 4x3 set), not a size we crop or stretch
-// to fit. Only height is set here — width is left to the browser so every
-// flag keeps its native proportions instead of being squashed or cropped.
+// Every bundled flag SVG has a 640x480 viewBox. Reserve that 4:3 footprint
+// before the image loads so table columns do not resize when flags appear.
 //
 // Served from public/flags/ (fetched once by scraper/download_flags.py)
 // rather than hotlinked from jsDelivr on every page view. A table like
@@ -19,18 +17,20 @@ import { useState } from 'react'
 // draws its own broken-image box using the alt text, which for a flag
 // sitting right next to a label showing that SAME country name (e.g.
 // Select's option rows) read as the text rendering twice, overlapping.
-// `failed` tracks that per-instance so a missing flag actually goes blank.
+// `failed` tracks that per-instance so a missing flag goes blank while its
+// reserved footprint stays in place.
 export default function Flag({ countryCode, countryName, size = 20 }) {
   const [failed, setFailed] = useState(false)
-  if (!countryCode || failed) return null
+  if (!countryCode) return null
+  if (failed) return <span className="inline-block shrink-0" style={{ height: size, width: size * 4 / 3 }} />
   return (
     <img
       src={`${import.meta.env.BASE_URL}flags/${countryCode.toLowerCase()}.svg`}
       alt={countryName || countryCode}
       title={countryName || countryCode}
-      style={{ height: size, width: 'auto' }}
+      style={{ height: size, width: size * 4 / 3 }}
       className="rounded-sm shrink-0"
-      loading="lazy"
+      loading="eager"
       onError={() => setFailed(true)}
     />
   )

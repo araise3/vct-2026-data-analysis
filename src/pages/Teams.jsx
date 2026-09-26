@@ -213,8 +213,7 @@ function TeamStatistics() {
         </Link>
       ),
     },
-    // Ant renders sticky headers in a separate table. These widths must fit
-    // the header labels and sorter icons or its columns drift from the rows.
+    // Keep narrow numeric columns wide enough for their labels and sorter icons.
     { key: 'region', label: 'Region', align: 'left', width: 73, format: (v) => regionAbbr(v) },
     { key: 'matchesPlayed', label: 'Matches', align: 'right', width: 82, format: (v) => num(v) },
     { key: 'mapsPlayed', label: 'Maps', align: 'right', width: 69, format: (v) => num(v) },

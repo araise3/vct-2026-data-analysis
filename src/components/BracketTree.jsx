@@ -1,7 +1,7 @@
 /**
  * Hand-rolled bracket tree (no charting/bracket library exists anywhere in
  * this codebase -- matches the established "hand-rolled inline SVG/CSS"
- * convention RadarChart.jsx/RosterTimeline.jsx already use). Renders one
+ * convention RosterTimeline.jsx already uses). Renders one
  * of tournament_structure.json's `brackets.playIns`/`brackets.playoffs`
  * skeletons: a flat `{round, match, opponent1, opponent2}` list, grouped
  * into CSS-flex columns per round.

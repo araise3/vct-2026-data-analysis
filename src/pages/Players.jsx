@@ -13,7 +13,7 @@ import TeamLogo from '../components/TeamLogo'
 import Flag from '../components/Flag'
 import AgentIcon from '../components/AgentIcon'
 import Select from '../components/ui/Select'
-import { Button, Input } from 'antd'
+import { Input } from 'antd'
 import { rating, pct, num } from '../lib/format'
 
 export default function Players() {
@@ -23,7 +23,6 @@ export default function Players() {
   const [agent, setAgent] = useState('')
   const [country, setCountry] = useState('')
   const [query, setQuery] = useState('')
-  const [allMetrics, setAllMetrics] = useState(false)
 
   // This page used to fetch all three of these on mount -- 14.1MB of JSON
   // (3.9 + 4.7 + 5.5) parsed on the main thread before the table it renders
@@ -387,7 +386,7 @@ export default function Players() {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Input aria-label="Filter players by name or team" placeholder="Find a player or team…" value={query} onChange={(event) => setQuery(event.target.value)} allowClear className="w-full sm:w-64" />
-        <div className="flex items-center gap-3"><span className="text-xs text-muted">{rows.length} {rows.length === 1 ? 'player' : 'players'}</span><Button aria-pressed={allMetrics} onClick={() => setAllMetrics(!allMetrics)}>{allMetrics ? 'Key metrics' : 'All metrics'}</Button></div>
+        <span className="text-xs text-muted">{rows.length} {rows.length === 1 ? 'player' : 'players'}</span>
       </div>
 
       {sideLoading ? (
@@ -399,7 +398,7 @@ export default function Players() {
           <p className="text-muted text-sm">No players match this filter combination.</p>
         </div>
       ) : (
-        <DataTable key={allMetrics ? 'all' : 'key'} columns={allMetrics ? columns : columns.filter((column) => ['player', 'team', 'mapsPlayed', 'roundsPlayed', 'avgRating', 'avgAcs', 'kd', 'avgKast', 'avgAdr', 'kpr'].includes(column.key))} rows={rows} defaultSortKey="avgRating" />
+        <DataTable columns={columns} rows={rows} defaultSortKey="avgRating" />
       )}
     </div>
   )

@@ -8,14 +8,12 @@ const Tournaments = lazy(() => import('./pages/Tournaments'))
 const TournamentDetail = lazy(() => import('./pages/TournamentDetail'))
 const Players = lazy(() => import('./pages/Players'))
 const PlayerProfile = lazy(() => import('./pages/PlayerProfile'))
-const ComparePlayers = lazy(() => import('./pages/ComparePlayers'))
 const Teams = lazy(() => import('./pages/Teams'))
 const TeamHistory = lazy(() => import('./pages/TeamHistory'))
 const CoachProfile = lazy(() => import('./pages/CoachProfile'))
 const Agents = lazy(() => import('./pages/Agents'))
 const Compositions = lazy(() => import('./pages/Compositions'))
 const Records = lazy(() => import('./pages/Records'))
-const Statistics = lazy(() => import('./pages/Statistics'))
 const Statistic = lazy(() => import('./pages/Statistic'))
 const Graphics = lazy(() => import('./pages/Graphics'))
 const MatchRedirect = lazy(() => import('./pages/MatchRedirect'))
@@ -55,7 +53,7 @@ function AppSurface() {
             <Route path="/event-stats" element={<EventStatsRedirect />} />
             <Route path="/players" element={<Players />} />
             <Route path="/players/:name" element={<PlayerProfile />} />
-            <Route path="/compare" element={<ComparePlayers />} />
+            <Route path="/compare" element={<Navigate to="/players" replace />} />
             <Route path="/teams" element={<Teams />} />
             <Route path="/team-history" element={<TeamHistory />} />
             <Route path="/teams/:name" element={<TeamRedirect />} />
@@ -63,14 +61,14 @@ function AppSurface() {
             <Route path="/ratings" element={<RatingsRedirect />} />
             <Route path="/agents" element={<Agents />} />
             <Route path="/compositions" element={<Compositions />} />
-            <Route path="/economy" element={<Navigate to="/statistics#statistics-economy" replace />} />
+            <Route path="/economy" element={<Navigate to="/teams" replace />} />
             <Route path="/patches" element={<Navigate to="/agents" replace />} />
             <Route path="/records" element={<Records />} />
-            <Route path="/statistics" element={<Statistics />} />
+            <Route path="/statistics" element={<Navigate to="/tournaments" replace />} />
             <Route path="/statistics/:entity/:stat" element={<Statistic />} />
             <Route path="/graphics" element={<Graphics />} />
             <Route path="/matches/:id" element={<MatchRedirect />} />
-            <Route path="/analysis" element={<Navigate to="/statistics" replace />} />
+            <Route path="/analysis" element={<Navigate to="/tournaments" replace />} />
             <Route path="*" element={<div className="py-12"><h1 className="text-2xl font-semibold">Page not found</h1><a className="data-link" href="/tournaments">Go to overview</a></div>} />
           </Routes>
         </Suspense>

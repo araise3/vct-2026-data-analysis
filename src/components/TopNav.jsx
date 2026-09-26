@@ -8,10 +8,8 @@ const pages = [
   { to: '/teams', label: 'Teams', data: ['team_buckets'] },
   { to: '/team-history', label: 'Team history', data: ['team_buckets'] },
   { to: '/agents', label: 'Agents', data: ['agents'] },
-  { to: '/compare', label: 'Compare players', data: [] },
   { to: '/compositions', label: 'Compositions', data: ['match_results', 'match_players'] },
   { to: '/records', label: 'Records', data: ['match_results', 'series_length', 'map_length', 'player_buckets'] },
-  { to: '/statistics', label: 'All statistics', data: [] },
   { to: '/graphics', label: 'Export graphics', data: ['player_buckets', 'team_buckets', 'series_length', 'map_length'] },
 ]
 

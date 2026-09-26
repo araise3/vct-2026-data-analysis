@@ -31,10 +31,6 @@ a, button, input, select { touch-action: manipulation; }
 .portal-nav-link { display: block; padding: 9px 12px; margin: 2px 0; color: #9aa0a8; font-size: 13px; border-radius: 3px; white-space: nowrap; }
 .portal-nav-link:hover { color: #f0f1f3; background: #1b1e22; }
 .portal-nav-link.is-active { color: #ff9aa3; background: #2b1a1d; font-weight: 600; }
-.statistics-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; margin-top: 14px; }
-.statistics-link { min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #2d3238; border-radius: 4px; padding: 12px 14px; background: #141619; color: #d5d8dc; font-size: 13px; }
-.statistics-link:hover { border-color: #725057; color: #ff9aa3; background: #1b1e22; }
-.statistics-link > span:last-child { color: #747b84; }
 .portal-main { min-width: 0; margin-left: 180px; padding: 32px clamp(20px, 3vw, 48px) 0; }
 .portal-main > div { max-width: 1600px; margin-inline: auto; }
 .portal-main h1 { letter-spacing: -0.035em; }

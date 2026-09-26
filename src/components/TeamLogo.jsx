@@ -11,7 +11,7 @@ export default function TeamLogo({ team, size = 20, showName = true, showTag = f
           alt={team}
           className="object-contain shrink-0"
           style={{ width: size, height: size }}
-          loading="lazy"
+          loading="eager"
         />
       ) : (
         <span className="rounded shrink-0 bg-surface2" style={{ width: size, height: size }} />

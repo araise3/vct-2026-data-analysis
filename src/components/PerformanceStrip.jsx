@@ -238,7 +238,7 @@ export default function PerformanceStrip({ rows }) {
                             className="group relative flex h-64 w-full items-end justify-center"
                           >
                             <div
-                              className="relative w-6 rounded-t-lg transition-all group-hover:opacity-90"
+                              className="relative w-6 rounded-t-[8px] transition-all group-hover:opacity-90"
                               style={{
                                 height: `${Math.max(heightPct(value, stat.domain), value != null ? (MIN_BAR_PX / CHART_PX) * 100 : 0)}%`,
                                 background: tierStyle.hex
@@ -255,7 +255,7 @@ export default function PerformanceStrip({ rows }) {
                                   // wider than the then-w-8 (32px) column that used to hold it,
                                   // which let adjacent maps' badges overlap. The column itself grew
                                   // to w-10 (40px) + a small inter-column gap below to match.
-                                  className={`absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 flex h-[30px] min-w-[34px] items-center justify-center rounded-lg px-[3px] text-[12px] font-bold whitespace-nowrap transition-transform group-hover:scale-105 border-[3px] border-surface ${tierStyle.bg} ${tierStyle.text}`}
+                                  className={`absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 flex h-[30px] min-w-[34px] items-center justify-center rounded-[8px] px-[3px] text-[12px] font-bold whitespace-nowrap transition-transform group-hover:scale-105 border-[3px] border-surface ${tierStyle.bg} ${tierStyle.text}`}
                                 >
                                   {stat.format(value)}
                                 </div>

@@ -589,7 +589,7 @@ export default function TeamProfile({ team: decodedName, initialTab = 'overview'
           same TrophyCase strip -- trophies.js's `team` field already names
           the champion team directly, so this needs no player-roster
           narrowing step the way PlayerProfile's `playerTrophies` does. */}
-      <div className="relative flex flex-col bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm overflow-hidden">
+      <div className="relative flex flex-col bg-grad-surface border border-hairline rounded-2xl shadow-depth-sm">
         <div className="flex flex-col gap-4 px-4 py-4 sm:px-6">
         <div className="flex items-center gap-4 sm:gap-6 min-w-0">
           {/* Same halo treatment as PlayerProfile's photo frame, and the

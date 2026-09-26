@@ -1,10 +1,8 @@
 /**
  * This player's own kill duels against every individual opponent they've
- * faced, summed across every map of every match -- distinct from
- * ComparePlayers.jsx's h2h duels (which fixes BOTH players in advance and
- * only ever looks at the matches between that one specific pair). Here the
- * subject is fixed and every opponent they've ever lined up against is a
- * row, grouped by that opponent's own country. Originally fed its own
+ * faced, summed across every map of every match. The subject is fixed and
+ * every opponent they've ever lined up against is a row, grouped by that
+ * opponent's own country. Originally fed its own
  * "Duels by country" widget directly (mirroring vlr.gg's own per-match duel
  * widget -- team logo, player, kills-for/kills-against/diff); that widget
  * was removed and this is now purely an intermediate step for
@@ -67,14 +65,11 @@ export function aggregatePlayerDuelsByOpponent(duelRows, matchIds, subjectName, 
 }
 
 // --- Dynamic minimum-volume gate ----------------------------------------
-// Same shape as radarProfile.js's own qualification bar (`max(floor, 0.5 x
-// median)`): a country this player has barely faced at all (a one-off
+// A country this player has barely faced at all (a one-off
 // cameo matchup) shouldn't get a bar in the first place, but a FIXED
 // minimum would either be toothless for a player with generally deep data
 // or wipe out half the chart for one with generally thin data. Scaling to
-// each player's own median duel volume per country solves that the same
-// way the radar's bar solves "nobody clears 100 rounds in a one-event
-// scope".
+// each player's own median duel volume per country solves that.
 //
 // The volume unit is DISTINCT MAPS played against that country -- not
 // opponent count, not total duel kills, not rounds. All four were measured
